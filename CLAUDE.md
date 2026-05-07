@@ -27,13 +27,14 @@ Every day's script must follow this structure:
 
 1. **Hook** — what problem does this solve? (~2 min)
 2. **Core Concepts** — Azure-native explanation from first principles (~10–15 min)
-3. **Portal Demo Steps** — every step labeled ✅ (Free Tier) or 💳 (Paid — instructor demo) (~20–40 min)
+3. **Portal Demo Steps** — every step labeled ✅ (Free Tier) or 💳 (Paid — instructor demo). **No time cap** — cover every important feature completely. Can run 40–120 min depending on scope.
 4. **Summary + What's Next** (~2–3 min)
 5. **Key Takeaways**
 
 ### Length and tone
 
-- **Length target:** 1,500–3,000 words (maps to ~30–60 min of narration; demos fill remaining time)
+- **Length target:** No fixed cap. Write as much as the topic demands to cover all key features, options, and use cases. A single day can be 3,000–6,000+ words if the topic requires it. The goal is technical completeness.
+- **Depth standard:** Deep dive, not high level. Cover every important feature of each service. Do not skip steps or options for brevity. Students want thorough, hands-on technical content.
 - **Tone:** Conversational and enthusiastic, instructor speaking to camera — not dry documentation
 
 ---

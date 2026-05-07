@@ -29,8 +29,9 @@
 7. **Script Structure Per Video:**
    - Hook (what problem does this solve?) — ~2 min
    - Core concept explanation — ~10–15 min
-   - Portal demo / hands-on — ~20–40 min
+   - Portal demo / hands-on — **no time cap**; cover every important feature completely. Can run 40–120 min depending on the day's scope. The goal is completeness, not speed.
    - Summary + what's next — ~2–3 min
+8. **Deep Dive, Not High Level** — This is a technical hands-on course. Cover all key features, configuration options, and real-world use cases for each service. Do not skip steps or features for brevity. Students prefer more technical content and longer hands-on sessions over shorter, surface-level overviews.
 
 ---
 

@@ -1,0 +1,89 @@
+site_name: LearnWithMithran — Azure Complete Beginner's Guide
+site_description: A complete beginner's guide to Azure Cloud and Azure DevOps — 29 days, zero assumed cloud knowledge.
+site_url: https://learnwithmithran.github.io/LWM-Azure/
+repo_url: https://github.com/learnwithmithran/LWM-Azure
+repo_name: learnwithmithran/LWM-Azure
+
+theme:
+  name: material
+  palette:
+    - scheme: default
+      primary: blue
+      accent: light blue
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: blue
+      accent: light blue
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - navigation.footer
+    - search.highlight
+    - search.suggest
+    - content.code.copy
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - tables
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+nav:
+  - Home: index.md
+  - "Phase 0 — Foundations":
+      - "Day 0 — Account Setup & Free Tier": day00_account_setup.md
+      - "Day 1 — Core Concepts & Portal": day01_fundamentals.md
+  - "Phase 1 — Compute":
+      - "Day 2 — Virtual Machines Part 1": day02_vms_part1.md
+      - "Day 3 — Virtual Machines Part 2": day03_vms_part2.md
+      - "Day 4 — Azure App Service": day04_app_service.md
+      - "Day 5 — Azure Functions": day05_functions.md
+  - "Phase 2 — Networking":
+      - "Day 6 — Virtual Network": day06_virtual_network.md
+      - "Day 7 — Load Balancer": day07_load_balancer.md
+      - "Day 8 — VPN & ExpressRoute": day08_vpn_expressroute.md
+  - "Phase 3 — Storage & Databases":
+      - "Day 9 — Storage Accounts": day09_storage_account.md
+      - "Day 10 — Azure SQL Database": day10_sql_database.md
+      - "Day 11 — Cosmos DB": day11_cosmos_db.md
+      - "Day 12 — Other Databases": day12_other_databases.md
+  - "Phase 4 — Identity, Security & Monitoring":
+      - "Day 13 — Microsoft Entra ID": day13_entra_id.md
+      - "Day 14 — RBAC": day14_rbac.md
+      - "Day 15 — Key Vault": day15_key_vault.md
+      - "Day 16 — Azure Monitor": day16_azure_monitor.md
+  - "Phase 5 — Azure DevOps":
+      - "Day 17 — DevOps Intro": day17_devops_intro.md
+      - "Day 18 — Azure Repos": day18_azure_repos.md
+      - "Day 19 — Pipelines: CI": day19_pipelines_ci.md
+      - "Day 20 — Pipelines: CD": day20_pipelines_cd.md
+      - "Day 21 — Artifacts": day21_artifacts.md
+  - "Phase 6 — Infrastructure as Code":
+      - "Day 22 — ARM & Bicep": day22_arm_bicep.md
+      - "Day 23 — Terraform": day23_terraform.md
+  - "Phase 7 — Containers & AKS":
+      - "Day 24 — ACR & Docker": day24_acr_docker.md
+      - "Day 25 — AKS Setup": day25_aks_setup.md
+      - "Day 26 — AKS Advanced": day26_aks_advanced.md
+  - "Phase 8 — Capstone Project":
+      - "Day 27 — Capstone Part 1": day27_capstone_part1.md
+      - "Day 28 — Capstone Part 2": day28_capstone_part2.md
