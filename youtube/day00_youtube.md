@@ -91,33 +91,4 @@ Greens Technologys, Perumbakkam (https://maps.app.goo.gl/u34U3rXu8zPFfQh5A)
 
 ## Tags
 
-azure for beginners
-microsoft azure tutorial
-azure account setup
-azure free tier
-create azure account
-what is cloud computing
-cloud computing for beginners
-iaas paas saas explained
-azure portal tutorial
-azure free account 2024
-az-900 azure fundamentals
-azure certification
-azure tutorial
-cloud computing tutorial
-on premise vs cloud
-microsoft azure for beginners
-azure devops
-learn azure from scratch
-learnwithmithran
-azure course
-azure beginner guide
-cloud for beginners
-what is microsoft azure
-azure pricing
-azure portal
-azure subscription
-free cloud account
-azure students
-greens technologies
-azure training
+azure for beginners, microsoft azure tutorial, azure account setup, azure free tier, create azure account, what is cloud computing, cloud computing for beginners, iaas paas saas explained, azure portal tutorial, azure free account 2024, az-900 azure fundamentals, azure certification, azure tutorial, cloud computing tutorial, on premise vs cloud, microsoft azure for beginners, azure devops, learn azure from scratch, learnwithmithran, azure course, azure beginner guide, cloud for beginners, what is microsoft azure, azure pricing, azure portal, azure subscription, free cloud account, azure students, greens technologies, azure training
