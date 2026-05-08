@@ -1,0 +1,10 @@
+# MkDocs build output
+site/
+
+# Claude Code session data
+.claude/
+
+# Environment / secrets
+.env
+*.token
+*.secret
