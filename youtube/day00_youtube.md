@@ -38,7 +38,6 @@ No prior experience needed. No surprise charges. Let's start from zero. 🚀
 • The full 29-day course roadmap and certifications covered
 • How to create a FREE Azure account (step by step)
 • How to navigate the Azure Portal
-• How to set up a $1 budget alert so you never get a surprise bill
 
 ---
 
@@ -53,8 +52,7 @@ No prior experience needed. No surprise charges. Let's start from zero. 🚀
 27:00 — Azure vs Azure DevOps — What This Course Covers
 30:30 — Create Your Free Azure Account (Live Demo)
 38:00 — Azure Portal Tour
-44:00 — Set Up a $1 Budget Alert (Most Important Step!)
-50:00 — Summary & What's Next (Day 1 Preview)
+44:00 — Summary & What's Next (Day 1 Preview)
 
 ---
 
@@ -103,8 +101,6 @@ cloud computing tutorial
 on premise vs cloud
 microsoft azure for beginners
 azure devops
-azure cost management
-azure budget alert
 learn azure from scratch
 learnwithmithran
 azure course

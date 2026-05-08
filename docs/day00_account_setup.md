@@ -266,7 +266,6 @@ By the end of Day 28, you'll have built and deployed a real multi-component appl
 
 - What the Azure Free Account actually includes (no surprises)
 - Why the credit card is identity verification — not a billing trigger
-- How to set a budget alert so Azure emails you before you spend a cent
 - How to navigate the Azure Portal confidently
 
 ---
@@ -387,53 +386,17 @@ All steps below are **✅ Free Tier** — you can follow every one.
 
 ---
 
-### Part C — Set a Budget Alert
-
-This is the most important step in Day 0. A budget alert means Azure emails you the moment you approach any real spending.
-
-!!! success "Step 8 — Open Cost Management"
-    In the top search bar, type **"Cost Management"** and click **Cost Management + Billing**.
-
-!!! success "Step 9 — Navigate to Budgets"
-    In the left-hand menu, click **"Cost Management"** (the sub-section), then click **"Budgets."**
-
-!!! success "Step 10 — Create a new budget"
-    Click **"+ Add"** and fill in the form:
-
-    | Field | Value |
-    |-------|-------|
-    | Name | `LearningBudget` |
-    | Reset period | Monthly |
-    | Amount | `1` (one dollar) |
-
-    Click **Next.**
-
-!!! success "Step 11 — Set the alert threshold"
-    | Field | Value |
-    |-------|-------|
-    | Alert type | Actual |
-    | % of budget | `80` |
-    | Alert email | *your email address* |
-
-    Click **Create.**
-
-!!! success "Step 12 — Confirm it's there"
-    You'll be taken back to the Budgets list. Your `LearningBudget` should appear with a $1 limit. Done — your safety net is live.
-
----
-
 ## Summary
 
 ```mermaid
 graph LR
     A["✅ Cloud fundamentals understood"] --> B["✅ Course roadmap clear"]
     B --> C["✅ Account created"]
-    C --> D["✅ Budget alert set"]
-    D --> E["✅ Portal explored"]
-    E --> F["Ready for Day 1"]
+    C --> D["✅ Portal explored"]
+    D --> E["Ready for Day 1"]
 ```
 
-You now understand what cloud is and why it matters, where Azure fits in the enterprise world, what certifications and skills this course builds toward, and you have a working Azure account with a safety budget alert in place.
+You now understand what cloud is and why it matters, where Azure fits in the enterprise world, what certifications and skills this course builds toward, and you have a working Azure account ready to go. Budget alert setup is the very first thing we do on Day 1.
 
 **No money spent. No surprises. Let's build.**
 
@@ -450,7 +413,6 @@ You now understand what cloud is and why it matters, where Azure fits in the ent
 | Free Account layers | $200 credit (30 days) → 12 months free services → 25+ always-free |
 | Credit card | Identity verification only — Azure suspends, never auto-charges |
 | Azure for Students | No credit card, $100 credit, .edu email required |
-| Budget alerts | Cost Management → Budgets → set $1 / 80% threshold |
 | Azure Portal | `portal.azure.com` — your home for this entire course |
 | Course scope | Azure-native tools only — separate series covers standalone DevOps tools |
 

@@ -8,6 +8,7 @@
 
 ## What You'll Learn
 
+- Setting up a $1 budget alert — your financial safety net for the entire course
 - How Azure's global infrastructure is organized: Regions, Availability Zones, Region Pairs
 - The full resource hierarchy: Management Groups → Subscriptions → Resource Groups → Resources
 - Azure Resource Manager (ARM) — the control plane behind everything
@@ -576,7 +577,42 @@ All steps below are **✅ Free Tier** — you can follow every one.
 
 ---
 
-### Part A — Create and Tag a Resource Group
+### Part A — Set a $1 Budget Alert
+
+Before we create a single resource, we set a budget alert. This is your financial safety net for everything you build in this course.
+
+!!! success "Step 1 — Open Cost Management"
+    In the Azure Portal top search bar, type **"Cost Management"** and click **Cost Management + Billing**.
+
+!!! success "Step 2 — Navigate to Budgets"
+    In the left-hand menu, click **"Cost Management"** (the sub-section), then click **"Budgets."**
+
+!!! success "Step 3 — Create a new budget"
+    Click **"+ Add"** and fill in the form:
+
+    | Field | Value |
+    |-------|-------|
+    | Name | `LearningBudget` |
+    | Reset period | Monthly |
+    | Amount | `1` (one dollar) |
+
+    Click **Next.**
+
+!!! success "Step 4 — Set the alert threshold"
+    | Field | Value |
+    |-------|-------|
+    | Alert type | Actual |
+    | % of budget | `80` |
+    | Alert email | *your email address* |
+
+    Click **Create.**
+
+!!! success "Step 5 — Confirm it's active"
+    You'll be taken back to the Budgets list. `LearningBudget` should appear with a $1 limit. Azure will now email you if you're about to spend anything — your safety net is live for the rest of this course.
+
+---
+
+### Part B — Create and Tag a Resource Group
 
 !!! success "Step 1 — Open Resource Groups"
     In the Azure Portal search bar, type **"Resource groups"** and click the result.
@@ -622,7 +658,7 @@ All steps below are **✅ Free Tier** — you can follow every one.
 
 ---
 
-### Part B — Azure Cloud Shell
+### Part C — Azure Cloud Shell
 
 !!! success "Step 6 — Open Cloud Shell"
     In the Azure Portal top bar, click the **>_** icon (between the search bar and notifications). A panel opens at the bottom of the screen.
@@ -660,7 +696,7 @@ All steps below are **✅ Free Tier** — you can follow every one.
 
 ---
 
-### Part C — Azure Pricing Calculator
+### Part D — Azure Pricing Calculator
 
 !!! success "Step 11 — Open the Pricing Calculator"
     Open a new browser tab and go to **azure.microsoft.com/en-us/pricing/calculator/**
@@ -686,7 +722,7 @@ All steps below are **✅ Free Tier** — you can follow every one.
 
 ---
 
-### Part D — Azure Advisor
+### Part E — Azure Advisor
 
 !!! success "Step 15 — Open Azure Advisor"
     In the Azure Portal search bar, type **"Advisor"** and click the result.
@@ -702,7 +738,7 @@ All steps below are **✅ Free Tier** — you can follow every one.
 
 ---
 
-### Part E — Azure Service Health
+### Part F — Azure Service Health
 
 !!! success "Step 19 — Open Service Health"
     In the Azure Portal search bar, type **"Service Health"** and click the result.
@@ -728,7 +764,7 @@ All steps below are **✅ Free Tier** — you can follow every one.
 
 ---
 
-### Part E — Azure Marketplace
+### Part G — Azure Marketplace
 
 !!! success "Step 23 — Open Azure Marketplace"
     In the top search bar, type **"Marketplace"** and click the result. Browse the categories on the left: Compute, Networking, Databases, Developer Tools, Security.
@@ -741,7 +777,7 @@ All steps below are **✅ Free Tier** — you can follow every one.
 
 ---
 
-### Part F — Create a Custom Dashboard
+### Part H — Create a Custom Dashboard
 
 !!! success "Step 26 — Create a new dashboard"
     Click the portal home icon (☰ menu → Dashboard). Click **"+ New dashboard"** → **"Blank dashboard."** Name it `AzureCourse Overview`.
