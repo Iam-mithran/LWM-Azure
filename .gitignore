@@ -8,3 +8,6 @@ site/
 .env
 *.token
 *.secret
+
+# YouTube working files not for public repo
+youtube/Copyright.md
