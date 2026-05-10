@@ -39,7 +39,6 @@ In this video, we explore cloud computing from the ground up — covering on-pre
 
 ☎️ *Contact Information:*
 Phone Mithran: +91 91500 87745
-Phone Suren: +91 80158 49303 (Greens Technologys Admin)
 Greens Technologys, Perumbakkam (https://maps.app.goo.gl/u34U3rXu8zPFfQh5A)
 
 🧩 *Put the pieces together with this reference – watch here!*
