@@ -21,6 +21,30 @@
 
 ---
 
+## Before We Begin — Create a Resource Group
+
+Every resource in Azure needs a home. We create a dedicated resource group first so that when we're done, one delete cleans everything up.
+
+**✅ Free Tier**
+
+!!! success "Step 1 — Open Resource Groups"
+    In the Azure Portal search bar, type **"Resource groups"** and click the result.
+
+!!! success "Step 2 — Create the resource group"
+    Click **"+ Create"** and fill in:
+
+    | Field | Value |
+    |-------|-------|
+    | Subscription | *(your subscription)* |
+    | Resource group name | `vm-demo-rg` |
+    | Region | *(closest to you — e.g., East US, Australia East, West Europe)* |
+
+    Click **"Review + create"** → **"Create."**
+
+    > **Why a separate resource group?** Everything we create today — the VM, its disk, its public IP, its NSG, its virtual network — lands here. When we're done learning, deleting this one resource group cleans everything up instantly.
+
+---
+
 ## What Is a Virtual Machine?
 
 A **Virtual Machine (VM)** is a software-defined computer running inside a physical server in one of Microsoft's data centers. You don't buy or touch that server — you rent a slice of it.
@@ -66,9 +90,18 @@ graph TD
 - The physical hardware underneath
 - The hypervisor that keeps your VM isolated from others
 - Power, cooling, and physical security in the data center
-- Hardware failures (if the physical server dies, Azure migrates your VM)
+- Hardware failures — if the physical server dies, Azure migrates your VM
 
-This separation is what makes cloud VMs compelling: you get the experience of owning a server without any of the hardware management.
+---
+
+### Hands-On: Navigate to Virtual Machines
+
+**✅ Free Tier**
+
+!!! success "Step 3 — Open Virtual Machines"
+    In the Azure Portal search bar, type **"Virtual machines"** and click the result. You'll see the VM list (empty for now). Click **"+ Create"** → **"Azure virtual machine"** to open the creation wizard.
+
+    Keep this wizard open — we'll fill it in section by section as we learn each concept.
 
 ---
 
@@ -112,7 +145,53 @@ graph LR
     The Azure Free Tier includes **750 hours per month of B1s compute for 12 months** — that's enough to run a B1s VM around the clock for an entire year at zero cost. Every demo step today uses the B1s and is fully free.
 
 !!! tip "How to pick a size"
-    Start small — B2s or D2s — and use Azure Advisor's **right-sizing recommendations** to tell you if your VM is consistently under- or over-utilized. It's easier to resize up than to guess up front.
+    Start small — B2s or D2s — and use Azure Advisor's right-sizing recommendations to tell you if your VM is consistently under- or over-utilized. It's easier to resize up than to guess up front.
+
+---
+
+### Hands-On: Fill In the Basics Tab
+
+Back in the VM creation wizard on the **Basics** tab.
+
+**✅ Free Tier**
+
+!!! success "Step 4 — Project details"
+    | Field | Value |
+    |-------|-------|
+    | Subscription | *(your subscription)* |
+    | Resource group | `vm-demo-rg` |
+
+!!! success "Step 5 — Instance details"
+    | Field | Value |
+    |-------|-------|
+    | Virtual machine name | `ubuntu-demo-vm01` |
+    | Region | *(same region as the resource group)* |
+    | Availability options | **No infrastructure redundancy required** |
+    | Security type | **Standard** |
+    | Image | **Ubuntu Server 24.04 LTS — x64 Gen2** |
+    | VM architecture | **x64** |
+    | Run with Azure Spot discount | *(leave unchecked)* |
+    | Size | Click **"See all sizes"** → filter by **B-series** → select **B1s (1 vCPU, 1 GiB RAM)** → click **Select** |
+
+    > **Why Ubuntu 24.04 LTS?** LTS stands for Long-Term Support — this version receives security updates until 2034. Industry-standard choice for cloud Linux servers.
+
+!!! success "Step 6 — Administrator account"
+    | Field | Value |
+    |-------|-------|
+    | Authentication type | **SSH public key** |
+    | Username | `azureuser` |
+    | SSH public key source | **Generate new key pair** |
+    | Key pair name | `ubuntu-demo-vm01_key` |
+
+    > **SSH key vs password:** SSH public key authentication is more secure than a password. Azure generates a key pair — the private key goes to your laptop, the public key goes to the VM. Only someone with the private key file can log in.
+
+!!! success "Step 7 — Inbound port rules"
+    | Field | Value |
+    |-------|-------|
+    | Public inbound ports | **Allow selected ports** |
+    | Select inbound ports | **SSH (22)** |
+
+    Leave the Basics tab open — **do not click "Review + create" yet.** Click **"Next: Disks >"**
 
 ---
 
@@ -132,7 +211,7 @@ graph TD
     end
 ```
 
-**Pricing comparison example — Standard_D2s_v3 in East US:**
+**Pricing comparison — Standard_D2s_v3 in East US:**
 
 | Pricing Model | Monthly cost (approx.) | Savings vs PAYG |
 |--------------|----------------------|-----------------|
@@ -142,16 +221,16 @@ graph TD
 | Spot (when available) | ~$7–$15/month | up to 90% cheaper |
 
 !!! warning "Spot VMs are not for everything"
-    If Azure needs that capacity back, your Spot VM gets a 30-second eviction notice and then shuts down. This is fine for batch processing or rendering jobs that save their state. It is not suitable for web servers, databases, or anything that needs to be always available.
+    If Azure needs that capacity back, your Spot VM gets a 30-second eviction notice and then shuts down. Fine for batch processing or rendering jobs that save their state. Not suitable for web servers, databases, or anything that needs to be always available.
 
 !!! tip "Azure Hybrid Benefit"
-    If your organization already owns Windows Server or SQL Server licenses (with Software Assurance), you can bring those licenses to Azure and avoid paying for the OS layer — typically saving another 30–40% on top of Reserved pricing. This is called **Azure Hybrid Benefit** and is configured when creating the VM.
+    If your organization already owns Windows Server or SQL Server licenses with Software Assurance, you can bring those to Azure and avoid paying for the OS layer — typically saving another 30–40% on top of Reserved pricing.
 
 ---
 
 ## OS Options and the Azure Marketplace
 
-When you create a VM, you choose an **image** — a pre-built snapshot of an operating system ready to boot. Azure provides hundreds of images through the **Azure Marketplace**.
+When you create a VM, you choose an **image** — a pre-built snapshot of an operating system ready to boot.
 
 **First-party images (Microsoft-published):**
 
@@ -173,17 +252,13 @@ When you create a VM, you choose an **image** — a pre-built snapshot of an ope
 
 **Generation 1 vs Generation 2:**
 - **Gen 1**: Legacy BIOS, wider compatibility
-- **Gen 2**: UEFI boot, supports larger disks (>2 TB OS disk), faster boot, required for some features like Trusted Launch
-- For new VMs, always use Gen 2 when the image supports it
-
-!!! tip "Image versioning matters"
-    Ubuntu 22.04 LTS has multiple minor versions. The Marketplace image labeled "Ubuntu Server 22.04 LTS" always gives you the latest minor release. If you need a pinned version for reproducibility, select it explicitly in the image details.
+- **Gen 2**: UEFI boot, supports larger disks (>2 TB OS disk), faster boot, required for Trusted Launch — always use Gen 2 for new VMs when supported
 
 ---
 
 ## Managed Disks
 
-Every VM needs storage. Azure storage for VMs comes in two categories:
+Every VM needs storage. Azure storage for VMs comes in three categories:
 
 ```mermaid
 graph TD
@@ -208,10 +283,40 @@ graph TD
 | **Ultra Disk** | SAP HANA, top-tier databases, HPC | Up to 160,000 IOPS | Sub-ms | Highest |
 
 !!! info "Managed vs Unmanaged Disks"
-    **Managed disks** are the modern standard — Azure creates and manages the underlying storage account for you. You just pick the size and tier. **Unmanaged disks** are legacy — you manage the storage account yourself. Always use managed disks for new VMs.
+    **Managed disks** are the modern standard — Azure manages the underlying storage account for you. You just pick the size and tier. Always use managed disks for new VMs.
 
-**Disk snapshots:**
-A **snapshot** is a point-in-time read-only copy of a managed disk. You can create a snapshot before making risky changes, and restore from it if something goes wrong. Snapshots are billed by the size of changed data, not the full disk size.
+---
+
+### Hands-On: Configure the Disks Tab
+
+Still in the VM creation wizard, now on the **Disks** tab.
+
+**✅ Free Tier**
+
+!!! success "Step 8 — OS disk configuration"
+    | Field | Value |
+    |-------|-------|
+    | OS disk size | **Default size (30 GiB)** |
+    | OS disk type | **Standard SSD (locally redundant storage)** |
+    | Delete with VM | ✅ Checked |
+
+    > **Delete with VM:** Checking this means the OS disk is deleted when you delete the VM. If unchecked, the disk (and its cost) persists even after the VM is gone — a common source of surprise charges.
+
+!!! success "Step 9 — Add a Data Disk"
+    Click **"+ Create and attach a new disk."** Configure:
+
+    | Field | Value |
+    |-------|-------|
+    | Name | `ubuntu-demo-vm01-data01` |
+    | Source type | **None (empty disk)** |
+    | Size | Click **"Change size"** → select **4 GiB, Standard HDD** → **OK** |
+    | Delete disk with virtual machine | ✅ Checked |
+
+    Click **"OK."**
+
+    > In production, your application data, logs, and databases live on separate data disks — never on the OS disk.
+
+    Click **"Next: Networking >"**
 
 ---
 
@@ -221,7 +326,7 @@ For your VM to be reachable from the internet, it needs a **Public IP address**.
 
 ```mermaid
 graph LR
-    YOU["👤 You\nyour-laptop.isp.com\n203.x.x.x"] -->|"SSH port 22"| PIP["🌐 Public IP\ne.g., 20.84.x.x\nAttached to VM's NIC"]
+    YOU["👤 You\nyour-laptop\n203.x.x.x"] -->|"SSH port 22"| PIP["🌐 Public IP\ne.g., 20.84.x.x\nAttached to VM's NIC"]
     PIP --> NIC["Network Interface Card (NIC)\nVM's network adapter"]
     NIC --> VM["Your Ubuntu VM\nPrivate IP: 10.0.0.4"]
 ```
@@ -234,7 +339,7 @@ graph LR
 | **Static** | IP stays the same forever | Production, DNS records, whitelisted IPs |
 
 !!! tip "DNS labels instead of IPs"
-    Azure lets you assign a **DNS label** to a Public IP: `myvm.eastus.cloudapp.azure.com`. This hostname always resolves to your VM's current public IP — even if you use a dynamic IP and it changes. Much easier to use and remember than a raw IP.
+    Azure lets you assign a **DNS label** to a Public IP: `myvm.eastus.cloudapp.azure.com`. This hostname always resolves to your VM's current public IP — even if you use a dynamic IP and it changes.
 
 ---
 
@@ -269,7 +374,6 @@ graph TD
 | **Direction** | Inbound (traffic coming in to the VM) or Outbound (traffic leaving the VM) |
 | **Action** | Allow or Deny |
 | **Source** | Any IP, a specific IP/CIDR range, a VNet, or a Service Tag (e.g., `Internet`, `AzureCloud`) |
-| **Destination** | Same options as Source |
 | **Protocol** | TCP, UDP, ICMP, or Any |
 
 **Default inbound rules (always present, cannot be deleted):**
@@ -281,158 +385,32 @@ graph TD
 | 65500 | DenyAllInBound | Deny | Blocks everything not explicitly allowed above |
 
 !!! tip "NSG can be attached to a subnet or a NIC"
-    When attached to a **subnet**, it applies to every VM in that subnet. When attached to a **NIC** (network interface), it applies to one specific VM. You can use both — traffic is evaluated at the subnet NSG first, then the NIC NSG.
+    When attached to a **subnet**, it applies to every VM in that subnet. When attached to a **NIC**, it applies to one specific VM. You can use both — traffic is evaluated at the subnet NSG first, then the NIC NSG.
 
 ---
 
-## Demo: Create and Connect to Your First VM
+### Hands-On: Configure Networking, Management, and Deploy
 
-All steps below are **✅ Free Tier** — you can follow every single one on an Azure Free or Pay-As-You-Go account.
+Still in the VM creation wizard — **Networking**, **Management**, **Monitoring**, **Tags**, then deploy.
 
----
+**✅ Free Tier**
 
-### Part A — Create a Resource Group
-
-!!! success "Step 1 — Open Resource Groups"
-    In the Azure Portal search bar, type **"Resource groups"** and click the result.
-
-!!! success "Step 2 — Create a dedicated resource group for this demo"
-    Click **"+ Create"** and fill in:
+!!! success "Step 10 — Networking tab"
+    Azure auto-creates a Virtual Network and subnet since this is the first VM in this resource group.
 
     | Field | Value |
     |-------|-------|
-    | Subscription | *(your subscription)* |
-    | Resource group name | `vm-demo-rg` |
-    | Region | *(closest to you — e.g., East US, Australia East, West Europe)* |
-
-    Click **"Review + create"** → **"Create"**.
-
-    > **Why a separate resource group?** Everything we create today — the VM, its disk, its public IP, its NSG, its virtual network — will live here. When we're done, deleting this one resource group cleans everything up instantly.
-
----
-
-### Part B — Create an Ubuntu VM
-
-!!! success "Step 3 — Start the VM creation wizard"
-    In the Azure Portal search bar, type **"Virtual machines"** and click the result. Click **"+ Create"** → **"Azure virtual machine."**
-
-    The creation wizard has 7 tabs. We'll walk through each one.
-
----
-
-#### Basics Tab
-
-!!! success "Step 4 — Project details"
-    | Field | Value |
-    |-------|-------|
-    | Subscription | *(your subscription)* |
-    | Resource group | `vm-demo-rg` |
-
-!!! success "Step 5 — Instance details"
-    | Field | Value |
-    |-------|-------|
-    | Virtual machine name | `ubuntu-demo-vm01` |
-    | Region | *(same region you used for the resource group)* |
-    | Availability options | **No infrastructure redundancy required** |
-    | Security type | **Standard** |
-    | Image | **Ubuntu Server 24.04 LTS — x64 Gen2** |
-    | VM architecture | **x64** |
-    | Run with Azure Spot discount | *(leave unchecked)* |
-    | Size | Click **"See all sizes"** → filter by **B-series** → select **B1s (1 vCPU, 1 GiB RAM)** → click **Select** |
-
-    > **Why B1s?** It's the size included in the Azure Free Tier — 750 hours per month, free for 12 months. Perfect for learning.
-
-    > **Why Ubuntu 24.04 LTS?** LTS stands for Long-Term Support — this version receives security updates until 2034. It's the industry-standard choice for cloud Linux servers.
-
-!!! success "Step 6 — Administrator account"
-    | Field | Value |
-    |-------|-------|
-    | Authentication type | **SSH public key** |
-    | Username | `azureuser` |
-    | SSH public key source | **Generate new key pair** |
-    | Key pair name | `ubuntu-demo-vm01_key` |
-
-    > **SSH key vs password:** SSH public key authentication is more secure than a password. Azure generates a key pair — the private key goes to your laptop, the public key goes to the VM. Only someone with the private key file can log in.
-
-!!! success "Step 7 — Inbound port rules"
-    | Field | Value |
-    |-------|-------|
-    | Public inbound ports | **Allow selected ports** |
-    | Select inbound ports | **SSH (22)** |
-
-    This creates an NSG rule that allows SSH traffic from any IP. We'll inspect this NSG in detail after the VM is created.
-
-    Click **"Next: Disks >"**
-
----
-
-#### Disks Tab
-
-!!! success "Step 8 — OS disk configuration"
-    | Field | Value |
-    |-------|-------|
-    | OS disk size | **Default size (30 GiB)** |
-    | OS disk type | **Standard SSD (locally redundant storage)** |
-    | Delete with VM | ✅ Checked |
-
-    > **OS disk type:** We're using Standard SSD instead of Premium SSD to stay within free tier limits. Premium SSD offers lower latency and higher IOPS — we'll use it for production databases later in the course.
-
-    > **Delete with VM:** Checking this means the OS disk is automatically deleted when you delete the VM. If unchecked, the disk (and its cost) persists even after the VM is gone.
-
-!!! success "Step 9 — Add a Data Disk"
-    Click **"+ Create and attach a new disk."** Configure:
-
-    | Field | Value |
-    |-------|-------|
-    | Name | `ubuntu-demo-vm01-data01` |
-    | Source type | **None (empty disk)** |
-    | Size | Click **"Change size"** → select **4 GiB, Standard HDD** → **OK** |
-    | Delete disk with virtual machine | ✅ Checked |
-
-    Click **"OK."**
-
-    > We're adding a tiny data disk just to see how the concept works. In production, your application data, logs, and databases live on separate data disks — never on the OS disk.
-
-    Click **"Next: Networking >"**
-
----
-
-#### Networking Tab
-
-!!! success "Step 10 — Virtual network and subnet"
-    Azure will automatically create a new Virtual Network and subnet for you since this is your first VM in this resource group.
-
-    | Field | Value |
-    |-------|-------|
-    | Virtual network | *(auto-generated: `ubuntu-demo-vm01-vnet`)* |
+    | Virtual network | *(auto-generated)* |
     | Subnet | *(auto-generated: `default 10.0.0.0/24`)* |
-    | Public IP | *(auto-generated: `ubuntu-demo-vm01-ip`)* |
-
-    > We'll explore Virtual Networks in detail on Day 6. For now, Azure's defaults get us connected.
-
-!!! success "Step 11 — Network Security Group"
-    | Field | Value |
-    |-------|-------|
+    | Public IP | *(auto-generated)* |
     | NIC network security group | **Basic** |
     | Public inbound ports | **Allow selected ports** |
     | Select inbound ports | **SSH (22)** |
-
-    > This creates an NSG named `ubuntu-demo-vm01-nsg` with one inbound rule: allow TCP port 22 from any source.
-
-!!! success "Step 12 — Load balancing (skip)"
-    | Field | Value |
-    |-------|-------|
     | Load balancing options | **None** |
-
-    We'll set up load balancing on Day 7.
 
     Click **"Next: Management >"**
 
----
-
-#### Management Tab
-
-!!! success "Step 13 — Auto-shutdown"
+!!! success "Step 11 — Management tab: Enable auto-shutdown"
     Scroll to **"Auto-shutdown."** Enable it:
 
     | Field | Value |
@@ -443,39 +421,20 @@ All steps below are **✅ Free Tier** — you can follow every single one on an 
     | Send notification before shutdown | ✅ On |
     | Notification email | *(your email address)* |
 
-    > **This is important for cost control.** Auto-shutdown automatically deallocates your VM each night so you're not paying for compute while you sleep. You can manually start it again the next day.
-
-    Leave everything else on this tab at defaults.
+    > **This is critical for cost control.** Auto-shutdown deallocates your VM each night so you're not paying for compute while you sleep.
 
     Click **"Next: Monitoring >"**
 
----
-
-#### Monitoring Tab
-
-!!! success "Step 14 — Diagnostics"
+!!! success "Step 12 — Monitoring tab"
     | Field | Value |
     |-------|-------|
     | Boot diagnostics | **Enable with managed storage account (recommended)** |
-    | OS guest diagnostics | Off *(leave as default)* |
 
-    > **Boot diagnostics** captures a screenshot of your VM's console during startup and stores it in a storage account. If your VM ever fails to boot, this screenshot is how you diagnose what went wrong — you'd otherwise have no visibility into a headless cloud VM.
+    > **Boot diagnostics** captures a screenshot of your VM's console during startup. If your VM ever fails to boot, this is your only way to see what went wrong on a headless cloud VM.
 
-    Click **"Next: Advanced >"**
+    Click **"Next: Advanced >"** → leave defaults → click **"Next: Tags >"**
 
----
-
-#### Advanced Tab
-
-Leave all settings at defaults. This tab covers cloud-init scripts, user data, and proximity placement groups — topics for later in the course.
-
-Click **"Next: Tags >"**
-
----
-
-#### Tags Tab
-
-!!! success "Step 15 — Apply tags"
+!!! success "Step 13 — Tags tab"
     | Name | Value |
     |------|-------|
     | Environment | Learning |
@@ -485,94 +444,81 @@ Click **"Next: Tags >"**
 
     Click **"Next: Review + create >"**
 
----
-
-#### Review + Create
-
-!!! success "Step 16 — Review and deploy"
-    Azure validates all your settings. Review the summary — confirm:
+!!! success "Step 14 — Review and deploy"
+    Azure validates all your settings. Confirm:
     - VM size: **Standard_B1s**
     - Image: **Ubuntu Server 24.04 LTS**
     - OS disk: **Standard SSD, 30 GiB**
     - Data disk: **Standard HDD, 4 GiB**
-    - Region: *(your region)*
 
     Click **"Create."**
 
-!!! success "Step 17 — Download the private key"
+!!! success "Step 15 — Download the private key"
     A dialog appears: **"Generate new key pair."** Click **"Download private key and create resource."**
 
-    Your browser downloads `ubuntu-demo-vm01_key.pem`. **Move this file to a safe location on your laptop** — you'll need it to SSH into your VM. On Linux/macOS, move it to `~/.ssh/`. On Windows, move it to `C:\Users\YourName\.ssh\`.
+    Your browser downloads `ubuntu-demo-vm01_key.pem`. **Move this file somewhere safe.** On Linux/macOS: `~/.ssh/`. On Windows: `C:\Users\YourName\.ssh\`.
 
     Deployment takes 1–3 minutes. When complete, click **"Go to resource."**
 
 ---
 
-### Part C — Explore Your VM in the Portal
+### Hands-On: Explore Your VM in the Portal
 
-!!! success "Step 18 — Overview page"
-    The VM Overview page shows:
+**✅ Free Tier**
+
+!!! success "Step 16 — Overview page"
+    The VM Overview shows:
     - **Status:** Running
-    - **Public IP address:** Note this down — you'll use it to SSH in
-    - **Private IP address:** The VM's internal network address (10.0.0.x)
+    - **Public IP address:** Note this — you'll SSH to it shortly
+    - **Private IP address:** The VM's internal address (10.0.0.x)
     - **Operating system:** Linux (Ubuntu 24.04)
     - **Size:** Standard_B1s
-    - **Subscription**, **Resource group**, **Location**
 
-!!! success "Step 19 — Explore the Disks section"
-    In the left-hand menu, click **"Disks."** You'll see:
-    - The **OS disk** (`ubuntu-demo-vm01_disk1_...`) — 30 GiB Standard SSD
-    - The **Data disk** (`ubuntu-demo-vm01-data01`) — 4 GiB Standard HDD
+!!! success "Step 17 — Explore the Disks section"
+    In the left-hand menu, click **"Disks."** You'll see the OS disk (30 GiB Standard SSD) and the data disk (4 GiB Standard HDD). Click on the OS disk — notice disks are first-class Azure resources with their own Overview, Snapshots, and access control.
 
-    Click on the OS disk to open its own blade. Notice it has its own Overview, Snapshots, Access control, and more — disks are first-class Azure resources.
-
-    Click the back arrow to return to your VM.
-
-!!! success "Step 20 — Explore the Networking section"
-    In the left-hand menu, click **"Networking."** You'll see:
-    - The **Network Interface Card (NIC)** — your VM's network adapter
-    - The **NSG rules** — the one SSH rule you configured is listed here
-    - The **Inbound port rules** and **Outbound port rules** tabs
-
-    Click **"ubuntu-demo-vm01-nsg"** to open the NSG blade directly. You can see the full list of inbound rules — your port 22 rule at priority 300, and the three Azure default rules at 65000, 65001, and 65500.
+!!! success "Step 18 — Explore Networking and the NSG"
+    In the left-hand menu, click **"Networking."** You can see your NIC and the NSG rules. Click **"ubuntu-demo-vm01-nsg"** to open the NSG blade directly — you'll see your port 22 rule and the three Azure default rules.
 
 ---
 
-### Part D — Connect to the VM via SSH
+## Connecting to Your VM
 
-!!! success "Step 21 — Open a terminal"
-    On **Windows:** Open Windows Terminal or PowerShell. On **macOS/Linux:** Open Terminal.
+SSH (Secure Shell) is the standard way to connect to a Linux VM. You authenticate with the private key you downloaded during creation — no password needed.
 
-    Alternatively, use **Azure Cloud Shell** (click the `>_` icon in the Azure Portal) — it already has SSH installed and you can upload your key file.
+---
 
-!!! success "Step 22 — Set permissions on the private key (macOS/Linux only)"
-    SSH requires that your private key file is readable only by you:
+### Hands-On: SSH Into Your VM
+
+**✅ Free Tier**
+
+!!! success "Step 19 — Open a terminal"
+    On **Windows:** Open Windows Terminal or PowerShell.
+    On **macOS/Linux:** Open Terminal.
+    Or use **Azure Cloud Shell** (click `>_` in the portal) — SSH is pre-installed.
+
+!!! success "Step 20 — Set permissions on the private key (macOS/Linux only)"
+    SSH requires the key file is readable only by you:
 
     ```bash
     chmod 400 ~/.ssh/ubuntu-demo-vm01_key.pem
     ```
 
-    On Windows, the .pem file permissions are managed differently — Windows Terminal and PowerShell handle this automatically.
-
-!!! success "Step 23 — Connect via SSH"
-    Replace `YOUR_PUBLIC_IP` with the IP address from your VM's Overview page:
+!!! success "Step 21 — Connect via SSH"
+    Replace `YOUR_PUBLIC_IP` with the IP from your VM's Overview page:
 
     ```bash
     ssh -i ~/.ssh/ubuntu-demo-vm01_key.pem azureuser@YOUR_PUBLIC_IP
     ```
 
-    On Windows with PowerShell:
+    On Windows PowerShell:
     ```powershell
     ssh -i C:\Users\YourName\.ssh\ubuntu-demo-vm01_key.pem azureuser@YOUR_PUBLIC_IP
     ```
 
-    When prompted "Are you sure you want to continue connecting (yes/no)?" type **yes** and press Enter.
+    Type **yes** when prompted about the host fingerprint. You're now inside your Ubuntu VM.
 
-    You're now inside your Ubuntu VM in Microsoft's data center.
-
-!!! success "Step 24 — Explore the VM from inside"
-    Run these commands to confirm what you're running:
-
+!!! success "Step 22 — Explore the VM from inside"
     ```bash
     # Check the OS version
     lsb_release -a
@@ -586,129 +532,100 @@ Click **"Next: Tags >"**
     lsblk
     ```
     ```bash
-    # Check your public internet address (should match the VM's public IP)
+    # Confirm your public internet address
     curl ifconfig.me
     ```
-    ```bash
-    # Check uptime
-    uptime
-    ```
 
-    You're looking at a real Ubuntu server, running live in Azure. One vCPU, 1 GB RAM — small, but fully functional.
-
-!!! success "Step 25 — Format and mount the data disk"
-    The data disk is attached but not yet formatted or mounted. Let's make it usable:
+!!! success "Step 23 — Format and mount the data disk"
+    The data disk is attached but not yet usable:
 
     ```bash
-    # List block devices — find the data disk (usually /dev/sdc)
-    lsblk
-    ```
-    ```bash
-    # Format the data disk with ext4 filesystem
+    # Format with ext4 filesystem
     sudo mkfs.ext4 /dev/sdc
     ```
     ```bash
-    # Create a mount point
-    sudo mkdir /data
-    ```
-    ```bash
-    # Mount the disk
-    sudo mount /dev/sdc /data
+    # Create mount point and mount
+    sudo mkdir /data && sudo mount /dev/sdc /data
     ```
     ```bash
     # Verify it's mounted
     df -h /data
     ```
 
-    You now have a second disk mounted at `/data`. In a real workload, this is where you'd store your application data, database files, or logs — keeping them separate from the OS disk.
+    In a real workload, `/data` is where your application data, database files, or logs would live.
 
-!!! success "Step 26 — Exit the SSH session"
+!!! success "Step 24 — Exit the SSH session"
     ```bash
     exit
     ```
 
-    You're back on your local machine. The VM continues running in Azure.
+    The VM continues running in Azure.
 
 ---
 
-### Part E — The Critical Difference: Stop vs Deallocate
+## VM Lifecycle — Stop vs Deallocate
 
-This is one of the most important cost concepts for VMs — and one of the most common mistakes beginners make.
+This is one of the most important cost concepts for VMs and one of the most common mistakes beginners make.
 
-!!! success "Step 27 — Understand the VM states"
+```mermaid
+graph LR
+    RUNNING["▶️ Running\n─────────────────────\nCompute: ✅ Billed\nOS disk: ✅ Billed\nPublic IP: ✅ Billed\nData in memory: ✅ Preserved"]
 
-    ```mermaid
-    graph LR
-        RUNNING["▶️ Running\n─────────────────────\nCompute: ✅ Billed\nOS disk: ✅ Billed\nPublic IP: ✅ Billed\nData in memory: ✅ Preserved"]
+    STOPPED["⏹️ Stopped (OS-level)\n─────────────────────\nTriggered by shutdown inside\nthe OS or Stop in portal\n─────────────────────\nCompute: ✅ STILL BILLED\nOS disk: ✅ Billed\nPublic IP: ✅ Billed\nData in memory: ❌ Lost"]
 
-        STOPPED["⏹️ Stopped (OS-level)\n─────────────────────\nTriggered by: shutdown inside the OS\nor Stop button in portal\n─────────────────────\nCompute: ✅ STILL BILLED\nOS disk: ✅ Billed\nPublic IP: ✅ Billed\nData in memory: ❌ Lost"]
+    DEALLOCATED["💤 Deallocated\n─────────────────────\nTriggered by Stop (Deallocate)\nin portal or auto-shutdown\n─────────────────────\nCompute: ❌ NOT BILLED\nOS disk: ✅ Billed (storage only)\nPublic IP: ✅ if static\nData in memory: ❌ Lost"]
 
-        DEALLOCATED["💤 Deallocated\n─────────────────────\nTriggered by: Stop (Deallocate) in portal\nor auto-shutdown\n─────────────────────\nCompute: ❌ NOT BILLED\nOS disk: ✅ Billed (storage only)\nPublic IP: ✅ Billed if static\nData in memory: ❌ Lost"]
+    RUNNING -->|"Shut down from inside\nor Stop in portal"| STOPPED
+    RUNNING -->|"Stop (Deallocate)\nor auto-shutdown"| DEALLOCATED
+    DEALLOCATED -->|"Start button"| RUNNING
+```
 
-        RUNNING -->|"Shut down from inside OS\nor Stop in portal"| STOPPED
-        RUNNING -->|"Stop (Deallocate) in portal\nor auto-shutdown"| DEALLOCATED
-        STOPPED -->|"Azure still holds compute\nresources reserved for you"| STOPPED
-        DEALLOCATED -->|"Start button"| RUNNING
-    ```
+**The key insight:** When you shut down from inside the VM (`sudo shutdown now`) or press Stop in the portal, Azure keeps the compute capacity **reserved** for you. You're still paying for the vCPU and RAM.
 
-    **The key insight:** When you shut down the OS from inside the VM (`sudo shutdown now`), or press "Stop" in the portal, Azure keeps the compute capacity **reserved** for you. You're still paying for the vCPU and RAM even though the VM isn't running.
+**Deallocating** releases that reserved compute back to Azure's pool. You pay only for disk storage — a few cents per GB per month — until you start the VM again.
 
-    **Deallocating** releases that reserved compute back to Azure's pool. You stop paying for compute. You pay only for disk storage (a few cents per GB per month) until you start the VM again.
+---
 
-!!! success "Step 28 — Deallocate your VM"
+### Hands-On: Deallocate and Inspect the NSG
+
+**✅ Free Tier**
+
+!!! success "Step 25 — Deallocate the VM"
     In the Azure Portal on your VM's Overview page, click the **"Stop"** button in the top toolbar.
 
-    A dialog appears with a checkbox: **"Do you want to reserve the public IP address?"** — leave it unchecked (we're using a dynamic IP, so it doesn't matter).
+    A dialog appears: **"Do you want to reserve the public IP address?"** — leave it unchecked (we're using a dynamic IP).
 
     Click **"OK."**
 
-    The VM status changes from **Running** → **Stopping** → **Stopped (deallocated).**
+    The VM status changes: **Running → Stopping → Stopped (deallocated).** The Public IP disappears from the Overview — it's been released. The compute charge has now stopped.
 
-    Notice the Public IP address disappears from the Overview. If you had a dynamic IP, it's been released. When you start the VM again, it will get a new IP.
+!!! success "Step 26 — Start the VM again (optional)"
+    Click **"Start."** The VM goes Running in about 30–60 seconds. Notice the Public IP has changed — that's the tradeoff of a dynamic IP.
 
-!!! success "Step 29 — Confirm the state change"
-    In the left-hand menu, click **"Overview."** The status reads **"Stopped (deallocated)."** The Start button is now available.
+!!! success "Step 27 — Navigate to the NSG and review rules"
+    In the Azure Portal search bar, type **"Network security groups"** and click **"ubuntu-demo-vm01-nsg."** Click **"Inbound security rules"** and confirm:
 
-    The compute charge for this VM has stopped. You're now only paying for the two managed disks — a few cents per month for the Standard HDD and Standard SSD.
+    | Priority | Name | Port | Action |
+    |----------|------|------|--------|
+    | 300 | SSH | 22 | Allow |
+    | 65000 | AllowVnetInBound | Any | Allow |
+    | 65001 | AllowAzureLoadBalancerInBound | Any | Allow |
+    | 65500 | DenyAllInBound | Any | Deny |
 
-!!! success "Step 30 — Start the VM again (optional)"
-    Click the **"Start"** button. The VM goes from Stopped → Starting → Running in about 30–60 seconds. Note that the Public IP address has changed (if dynamic) — this is the tradeoff of not using a static IP.
-
----
-
-### Part F — Inspect the NSG Rules
-
-!!! success "Step 31 — Navigate to the NSG"
-    In the Azure Portal search bar, type **"Network security groups"** and click the result. Click **"ubuntu-demo-vm01-nsg."**
-
-!!! success "Step 32 — Review inbound rules"
-    Click **"Inbound security rules"** in the left menu. You'll see:
-
-    | Priority | Name | Port | Protocol | Source | Destination | Action |
-    |----------|------|------|---------|--------|-------------|--------|
-    | 300 | SSH | 22 | TCP | Any | Any | Allow |
-    | 65000 | AllowVnetInBound | Any | Any | VirtualNetwork | VirtualNetwork | Allow |
-    | 65001 | AllowAzureLoadBalancerInBound | Any | Any | AzureLoadBalancer | Any | Allow |
-    | 65500 | DenyAllInBound | Any | Any | Any | Any | Deny |
-
-!!! success "Step 33 — Add a rule to allow HTTP (optional)"
-    Click **"+ Add"** to add a new inbound rule:
+!!! success "Step 28 — Add an HTTP rule"
+    Click **"+ Add"** and configure:
 
     | Field | Value |
     |-------|-------|
-    | Source | **Any** |
-    | Source port ranges | `*` |
-    | Destination | **Any** |
-    | Service | **HTTP** |
-    | Destination port ranges | `80` (auto-filled) |
-    | Protocol | **TCP** (auto-filled) |
+    | Destination port | `80` |
+    | Protocol | **TCP** |
     | Action | **Allow** |
     | Priority | `310` |
     | Name | `HTTP` |
 
     Click **"Add."**
 
-    > We're not running a web server on this VM yet — but this is exactly how you'd open port 80 when you install one. Add the NSG rule first, then install the software.
+    > We're not running a web server yet — but this is exactly how you'd open port 80 when you install one. Add the NSG rule first, then install the software.
 
 ---
 
@@ -727,7 +644,7 @@ graph TD
 
 You've gone from zero to a live Ubuntu server in Microsoft's data center — created, configured, connected to over SSH, explored from the inside, and shut down correctly. These are the fundamental mechanics you'll use for every VM in this course.
 
-**What's next on Day 3:** We go deeper into VMs — Availability Sets, Availability Zones, VM Scale Sets, VM backups, Azure Bastion, and custom script extensions. Same service, much more power.
+**What's next on Day 3:** Availability Sets, Availability Zones, VM Scale Sets, VM backups, Azure Bastion, and custom script extensions. Same service, much more power.
 
 ---
 
@@ -735,21 +652,21 @@ You've gone from zero to a live Ubuntu server in Microsoft's data center — cre
 
 | Concept | What to remember |
 |---------|-----------------|
-| Virtual Machines | Software-defined computers in Microsoft's data centers — you control the OS and software; Azure controls the hardware |
-| B-series (B1s) | Burstable, cheapest series — perfect for dev/test; Free Tier includes 750 hrs/month |
+| Virtual Machines | Software-defined computers in Microsoft's data centers — you control the OS; Azure controls the hardware |
+| B-series (B1s) | Burstable, cheapest series — Free Tier includes 750 hrs/month |
 | D-series | General purpose — balanced CPU/memory — most common choice for production |
-| Pay-as-you-go | Default pricing — charged per second, no commitment, most expensive per hour |
-| Reserved Instances | 1-year saves ~37%; 3-year saves ~57% — commit when workloads are stable and predictable |
+| Pay-as-you-go | Charged per second, no commitment, most expensive per hour |
+| Reserved Instances | 1-year saves ~37%; 3-year saves ~57% — commit when workloads are stable |
 | Spot VMs | Up to 90% cheaper — evicted with 30s notice — batch and fault-tolerant workloads only |
 | OS Disk | Where the OS lives — never store app data here |
 | Data Disks | Separate storage for app data, databases, logs — survives VM recreation if detached first |
-| Standard SSD vs Premium SSD | Standard SSD for dev/test; Premium SSD for production databases (required for highest SLA) |
-| Public IP | Dynamic (changes on deallocate) or Static (fixed, slightly higher cost) — use DNS labels to abstract IP changes |
-| NSG | Layer 4 firewall — lower priority number = higher precedence — default deny-all protects your VM unless you explicitly allow traffic |
-| Stopped ≠ Deallocated | Stopped VM still bills for compute — always use Stop (Deallocate) or auto-shutdown to truly stop the charge |
+| Standard SSD vs Premium SSD | Standard SSD for dev/test; Premium SSD for production databases |
+| Public IP | Dynamic (changes on deallocate) or Static (fixed) — use DNS labels to abstract IP changes |
+| NSG | Layer 4 firewall — lower priority number = higher precedence — default deny-all protects your VM |
+| Stopped ≠ Deallocated | Stopped VM still bills for compute — always use Stop (Deallocate) or auto-shutdown |
 | Boot diagnostics | Enable it — your only way to see what a headless VM is doing if it fails to boot |
-| Auto-shutdown | Enable it on every learning VM — automatically deallocates nightly so you're never accidentally billed overnight |
-| SSH key auth | More secure than passwords — download and safeguard your .pem file; it cannot be recovered after creation |
+| Auto-shutdown | Enable on every learning VM — automatically deallocates nightly so you're never accidentally billed overnight |
+| SSH key auth | More secure than passwords — download and safeguard your .pem file; it cannot be recovered |
 
 ---
 

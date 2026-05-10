@@ -25,6 +25,43 @@
 
 ---
 
+## Before We Begin — Set Your $1 Budget Alert
+
+Before creating a single resource, we set a budget alert. This is your financial safety net for everything you build in this course. Do this first, every time you start a new Azure account.
+
+All steps below are **✅ Free Tier**.
+
+!!! success "Step 1 — Open Cost Management"
+    In the Azure Portal top search bar, type **"Cost Management"** and click **Cost Management + Billing**.
+
+!!! success "Step 2 — Navigate to Budgets"
+    In the left-hand menu, click **"Cost Management"** (the sub-section), then click **"Budgets."**
+
+!!! success "Step 3 — Create a new budget"
+    Click **"+ Add"** and fill in the form:
+
+    | Field | Value |
+    |-------|-------|
+    | Name | `LearningBudget` |
+    | Reset period | Monthly |
+    | Amount | `1` (one dollar) |
+
+    Click **Next.**
+
+!!! success "Step 4 — Set the alert threshold"
+    | Field | Value |
+    |-------|-------|
+    | Alert type | Actual |
+    | % of budget | `80` |
+    | Alert email | *your email address* |
+
+    Click **Create.**
+
+!!! success "Step 5 — Confirm it's active"
+    You'll be taken back to the Budgets list. `LearningBudget` should appear with a $1 limit. Azure will now email you if you're about to spend anything — your safety net is live for the rest of this course.
+
+---
+
 ## Azure's Global Infrastructure
 
 ### Regions
@@ -68,6 +105,9 @@ graph TD
 
 !!! tip "For this course"
     Pick the region closest to where you live. East US and West Europe have the broadest service availability. Australia East is ideal if you're in the Asia-Pacific region.
+
+!!! tip "Explore the full global infrastructure map"
+    Microsoft maintains an interactive map of every Azure region, Availability Zone, and data center: **[azure.microsoft.com/en-us/explore/global-infrastructure](https://azure.microsoft.com/en-us/explore/global-infrastructure)**. Open it now — click your region and see the zones inside it.
 
 ---
 
@@ -338,6 +378,96 @@ graph LR
 
 ---
 
+## Resource Locks
+
+**Resource locks** are a safety mechanism that prevents accidental modification or deletion of critical resources.
+
+```mermaid
+graph TD
+    LOCK["🔒 Resource Lock"]
+
+    LOCK --> CNT["CanNotDelete\n─────────────\nYou CAN read and modify.\nYou CANNOT delete.\n\nUse for: production resources\nyou want to protect from\naccidental deletion"]
+
+    LOCK --> RO["ReadOnly\n─────────────\nYou CAN read.\nYou CANNOT modify or delete.\n\nUse for: resources that\nshould never change\n(audit configurations, etc.)"]
+```
+
+**Lock inheritance:**
+
+```mermaid
+graph TD
+    RG["📁 Resource Group\n🔒 CanNotDelete lock"]
+    VM["⚙️ Virtual Machine\n🔒 Inherits lock"]
+    DB["⚙️ Database\n🔒 Inherits lock"]
+    SA["⚙️ Storage Account\n🔒 Inherits lock"]
+
+    RG --> VM
+    RG --> DB
+    RG --> SA
+```
+
+A lock applied to a resource group automatically protects every resource inside it. You don't need to lock each resource individually.
+
+**Lock management rules:**
+- Only **Owner** and **User Access Administrator** roles can create or delete locks
+- A lock overrides permissions — even an Owner cannot delete a locked resource without first removing the lock
+- Locks don't affect read operations — resources function normally under a lock
+
+!!! warning "Locks can cause unexpected failures"
+    Some Azure operations require modifying or deleting sub-resources internally. A ReadOnly lock on a storage account can break operations that need to rotate keys. Use CanNotDelete for most cases and ReadOnly only when truly needed.
+
+---
+
+### Hands-On: Create a Tagged, Protected Resource Group
+
+Now we put naming conventions, tagging, and resource locks into practice — all in one go.
+
+All steps below are **✅ Free Tier**.
+
+!!! success "Step 1 — Open Resource Groups"
+    In the Azure Portal search bar, type **"Resource groups"** and click the result.
+
+!!! success "Step 2 — Create a new Resource Group"
+    Click **"+ Create"** and fill in:
+
+    | Field | Value |
+    |-------|-------|
+    | Subscription | *(your subscription)* |
+    | Resource group name | `learning-dev-rg` |
+    | Region | *(closest to you)* |
+
+    Click **"Review + create"** → **"Create"** → **"Go to resource group."**
+
+!!! success "Step 3 — Apply tags"
+    In the left menu, click **"Tags."** Add:
+
+    | Name | Value |
+    |------|-------|
+    | Environment | Learning |
+    | Owner | *(your name)* |
+    | Project | AzureCourse |
+    | CostCenter | Training |
+
+    Click **"Apply."**
+
+!!! success "Step 4 — Apply a Resource Lock"
+    In the left menu, click **"Locks."** Click **"+ Add"** and fill in:
+
+    | Field | Value |
+    |-------|-------|
+    | Lock name | `prevent-delete` |
+    | Lock type | **CanNotDelete** |
+    | Notes | Protects course resources from accidental deletion |
+
+    Click **"OK."**
+
+!!! success "Step 5 — Test the lock (so you can see it working)"
+    Click **"Delete resource group"** in the toolbar, type the name to confirm, and click **"Delete."** It will fail with a lock error. **Good — that's exactly what we want.**
+
+!!! success "Step 6 — Remove the lock"
+    Go back to **Locks**, select `prevent-delete`, and click **"Delete."** You can delete the resource group normally again when needed.
+
+---
+
 ## Azure Cloud Shell
 
 **Azure Cloud Shell** is a browser-based terminal built directly into the Azure Portal. It's pre-authenticated with your Azure identity — no login, no installation, no configuration needed.
@@ -364,6 +494,46 @@ graph LR
 
 !!! tip "Cloud Shell doesn't require a local terminal"
     If you're on a locked-down corporate laptop or a Chromebook, Cloud Shell gives you a full Azure CLI environment through nothing but a browser. It's the equalizer.
+
+---
+
+### Hands-On: Cloud Shell
+
+All steps below are **✅ Free Tier**.
+
+!!! success "Step 1 — Open Cloud Shell"
+    In the Azure Portal top bar, click the **>_** icon (between the search bar and notifications). A panel opens at the bottom of the screen.
+
+!!! success "Step 2 — First-time setup"
+    If this is your first time, Azure will prompt you to create a storage account for your Cloud Drive. Select your subscription, click **"Create storage."** This takes about 30 seconds.
+
+!!! success "Step 3 — Switch between Bash and PowerShell"
+    At the top-left of the Cloud Shell panel, click the **Bash** dropdown and switch to **PowerShell** — then switch back to **Bash.** Both are available; this course primarily uses the Portal GUI, but knowing how to switch matters.
+
+!!! success "Step 4 — Run your first commands"
+    In Bash mode, run the following:
+
+    ```bash
+    az account show
+    ```
+    This shows your current subscription details — you're already authenticated.
+
+    ```bash
+    az group list --output table
+    ```
+    This lists all your resource groups. You'll see `learning-dev-rg` in the output.
+
+    ```bash
+    az group show --name learning-dev-rg
+    ```
+    This shows the full details of your resource group in JSON format.
+
+!!! success "Step 5 — Use the Cloud Shell editor"
+    Run:
+    ```bash
+    code hello.txt
+    ```
+    A VS Code-style editor opens in the browser. Type `Hello from Cloud Shell!`, save with `Ctrl+S`, and close. Run `cat hello.txt` to confirm it's there. This file persists in your Cloud Drive across sessions.
 
 ---
 
@@ -397,6 +567,34 @@ graph LR
     Habit: before creating any resource in this course, open the Pricing Calculator and estimate the cost first. This builds real-world intuition and prevents surprises.
 
 **Azure TCO Calculator** (`azure.microsoft.com/en-us/pricing/tco/calculator/`): A separate tool specifically for estimating the cost savings of migrating on-premise workloads to Azure. Used in enterprise sales and migration planning.
+
+---
+
+### Hands-On: Estimate a VM Cost
+
+All steps below are **✅ Free Tier**.
+
+!!! success "Step 1 — Open the Pricing Calculator"
+    Open a new browser tab and go to **azure.microsoft.com/en-us/pricing/calculator/**
+
+!!! success "Step 2 — Estimate a Virtual Machine"
+    Click **"Virtual Machines"** to add it to your estimate. Configure:
+
+    | Setting | Value |
+    |---------|-------|
+    | Region | *(your region)* |
+    | Operating System | Windows |
+    | VM Size | B2s (2 vCPUs, 4 GB RAM) |
+    | Hours | 730 (one full month) |
+    | Payment option | Pay as you go |
+
+    Note the monthly estimate. Now change **Payment option** to **1-year reserved** and see how the price drops by approximately 30–40%.
+
+!!! success "Step 3 — Add Storage to the estimate"
+    Click **"+ Add to estimate"** → search for **"Managed Disks."** Add a 128 GB Premium SSD P10 disk. Watch the monthly total update. This is how a real VM cost estimate works — compute + storage + networking all add up.
+
+!!! success "Step 4 — Save the estimate"
+    Click **"Export"** to download the estimate as an Excel file. Click **"Share"** to get a shareable URL. In real projects, you send this URL to stakeholders for approval before deploying.
 
 ---
 
@@ -483,6 +681,24 @@ Advisor gives each pillar a score (0–100). Fixing recommendations improves the
 
 ---
 
+### Hands-On: Explore Azure Advisor
+
+All steps below are **✅ Free Tier**.
+
+!!! success "Step 1 — Open Azure Advisor"
+    In the Azure Portal search bar, type **"Advisor"** and click the result.
+
+!!! success "Step 2 — Review the overview"
+    You'll see the Advisor Score dashboard — scores for each of the 5 pillars. Since your account is new and has minimal resources, scores may be high. As you build more resources throughout this course, Advisor will generate more recommendations here.
+
+!!! success "Step 3 — Explore each pillar"
+    Click through **Cost**, **Security**, **Reliability**, **Performance**, and **Operational Excellence**. Read any recommendations present. Even on a fresh account, you may see security recommendations like "Enable MFA" or "Set up a budget alert" (which we already did).
+
+!!! success "Step 4 — Configure Advisor alerts (optional)"
+    Click **"Alerts"** → **"New Advisor Alert."** You can configure Advisor to email you when a new recommendation appears. This is useful in production environments.
+
+---
+
 ## Azure Service Health
 
 **Azure Service Health** tells you the current and historical health of Azure services and your specific resources. It has three components:
@@ -506,46 +722,64 @@ graph TD
 
 **Resource Health**: Drills down to a specific resource. Is *your* virtual machine healthy right now? If not, is it a platform issue or something you caused?
 
-**Service Health Alerts:** You can configure Service Health to email or page you when an incident affects your services. This is a best practice even for learning environments.
+---
+
+### Hands-On: Set a Service Health Alert
+
+All steps below are **✅ Free Tier**.
+
+!!! success "Step 1 — Open Service Health"
+    In the Azure Portal search bar, type **"Service Health"** and click the result.
+
+!!! success "Step 2 — Review the Service Issues tab"
+    This shows any active Azure service incidents in your selected regions. If everything is green, there are no current incidents. Click the **"History"** tab to see past incidents — even large cloud platforms have occasional outages.
+
+!!! success "Step 3 — Check Health Advisories"
+    Click the **"Health Advisories"** tab. These are non-incident announcements — things like service retirements, feature changes, and required migrations. This is where you'd find out if a service you're using is being deprecated.
+
+!!! success "Step 4 — Set up a Service Health Alert"
+    Click **"Health Alerts"** → **"+ Add service health alert."** Configure:
+
+    | Field | Value |
+    |-------|-------|
+    | Subscription | *(your subscription)* |
+    | Services | Select **Virtual Machines** and **SQL databases** |
+    | Regions | *(your region)* |
+    | Event types | ✅ Service issue, ✅ Planned maintenance, ✅ Health advisories |
+    | Action group | Create new → name it `course-alerts` → add your email |
+
+    Click **"Create alert rule."** You'll now receive an email if any of those services have an issue in your region.
 
 ---
 
-## Resource Locks
+## Azure Marketplace
 
-**Resource locks** are a safety mechanism that prevents accidental modification or deletion of critical resources.
+The **Azure Marketplace** is a catalog of thousands of pre-built images, applications, and services — from Microsoft and third-party publishers. Instead of installing a web server or database from scratch, you can deploy a pre-configured image in minutes.
 
-```mermaid
-graph TD
-    LOCK["🔒 Resource Lock"]
+**What's in the Marketplace:**
 
-    LOCK --> CNT["CanNotDelete\n─────────────\nYou CAN read and modify.\nYou CANNOT delete.\n\nUse for: production resources\nyou want to protect from\naccidental deletion"]
+| Category | Examples |
+|---------|---------|
+| **OS Images** | Ubuntu, Windows Server, RHEL, Debian — the images you'll pick when creating VMs |
+| **Pre-configured stacks** | LAMP, WordPress, MEAN, Node.js — full application stacks, one click to deploy |
+| **Enterprise software** | SAP, Oracle, SQL Server on Linux — licensed software ready to run |
+| **Security appliances** | Palo Alto firewalls, Cisco ASA, Fortinet — network virtual appliances |
+| **Developer tools** | Jenkins, TeamCity, GitLab — CI/CD servers ready to deploy |
 
-    LOCK --> RO["ReadOnly\n─────────────\nYou CAN read.\nYou CANNOT modify or delete.\n\nUse for: resources that\nshould never change\n(audit configurations, etc.)"]
-```
+---
 
-**Lock inheritance:**
+### Hands-On: Browse the Marketplace
 
-```mermaid
-graph TD
-    RG["📁 Resource Group\n🔒 CanNotDelete lock"]
-    VM["⚙️ Virtual Machine\n🔒 Inherits lock"]
-    DB["⚙️ Database\n🔒 Inherits lock"]
-    SA["⚙️ Storage Account\n🔒 Inherits lock"]
+All steps below are **✅ Free Tier** (browsing is free — you only pay when you deploy).
 
-    RG --> VM
-    RG --> DB
-    RG --> SA
-```
+!!! success "Step 1 — Open Azure Marketplace"
+    In the top search bar, type **"Marketplace"** and click the result. Browse the categories on the left: Compute, Networking, Databases, Developer Tools, Security.
 
-A lock applied to a resource group automatically protects every resource inside it. You don't need to lock each resource individually.
+!!! success "Step 2 — Explore VM images"
+    Click **"Compute"** → click **"Ubuntu Server 24.04 LTS"**. Note the publisher (Canonical), pricing model, and the Create button. This is the image you'll use on Day 2 to create your first Linux VM.
 
-**Lock management rules:**
-- Only **Owner** and **User Access Administrator** roles can create or delete locks
-- A lock overrides permissions — even an Owner cannot delete a locked resource without first removing the lock
-- Locks don't affect read operations — resources function normally under a lock
-
-!!! warning "Locks can cause unexpected failures"
-    Some Azure operations require modifying or deleting sub-resources internally. A ReadOnly lock on a storage account can break operations that need to rotate keys. Use CanNotDelete for most cases and ReadOnly only when truly needed.
+!!! success "Step 3 — Explore third-party solutions"
+    Search for **"WordPress"** in the Marketplace. You'll see pre-configured WordPress images from various publishers — ready to deploy in minutes. Marketplace images can save hours of manual configuration.
 
 ---
 
@@ -571,224 +805,20 @@ Dashboards can be **shared** with other users in your organization (published as
 
 ---
 
-## Demo: Deep Dive into Day 1 Tools
+### Hands-On: Build Your Custom Dashboard
 
-All steps below are **✅ Free Tier** — you can follow every one.
+All steps below are **✅ Free Tier**.
 
----
-
-### Part A — Set a $1 Budget Alert
-
-Before we create a single resource, we set a budget alert. This is your financial safety net for everything you build in this course.
-
-!!! success "Step 1 — Open Cost Management"
-    In the Azure Portal top search bar, type **"Cost Management"** and click **Cost Management + Billing**.
-
-!!! success "Step 2 — Navigate to Budgets"
-    In the left-hand menu, click **"Cost Management"** (the sub-section), then click **"Budgets."**
-
-!!! success "Step 3 — Create a new budget"
-    Click **"+ Add"** and fill in the form:
-
-    | Field | Value |
-    |-------|-------|
-    | Name | `LearningBudget` |
-    | Reset period | Monthly |
-    | Amount | `1` (one dollar) |
-
-    Click **Next.**
-
-!!! success "Step 4 — Set the alert threshold"
-    | Field | Value |
-    |-------|-------|
-    | Alert type | Actual |
-    | % of budget | `80` |
-    | Alert email | *your email address* |
-
-    Click **Create.**
-
-!!! success "Step 5 — Confirm it's active"
-    You'll be taken back to the Budgets list. `LearningBudget` should appear with a $1 limit. Azure will now email you if you're about to spend anything — your safety net is live for the rest of this course.
-
----
-
-### Part B — Create and Tag a Resource Group
-
-!!! success "Step 1 — Open Resource Groups"
-    In the Azure Portal search bar, type **"Resource groups"** and click the result.
-
-!!! success "Step 2 — Create a new Resource Group"
-    Click **"+ Create"** and fill in:
-
-    | Field | Value |
-    |-------|-------|
-    | Subscription | *(your subscription)* |
-    | Resource group name | `learning-dev-rg` |
-    | Region | *(closest to you)* |
-
-    Click **"Review + create"** → **"Create"** → **"Go to resource group."**
-
-!!! success "Step 3 — Apply tags"
-    In the left menu, click **"Tags."** Add:
-
-    | Name | Value |
-    |------|-------|
-    | Environment | Learning |
-    | Owner | *(your name)* |
-    | Project | AzureCourse |
-    | CostCenter | Training |
-
-    Click **"Apply."**
-
-!!! success "Step 4 — Apply a Resource Lock"
-    In the left menu, click **"Locks."** Click **"+ Add"** and fill in:
-
-    | Field | Value |
-    |-------|-------|
-    | Lock name | `prevent-delete` |
-    | Lock type | **CanNotDelete** |
-    | Notes | Protects course resources from accidental deletion |
-
-    Click **"OK."**
-
-    Now try to delete the resource group: click **"Delete resource group"** in the toolbar, type the name to confirm, and click **"Delete."** It will fail with a lock error. **Good — that's exactly what we want.** The lock works.
-
-!!! success "Step 5 — Remove the lock (so you can clean up later)"
-    Go back to **Locks**, select `prevent-delete`, and click **"Delete."** You can delete the resource group normally again when you need to.
-
----
-
-### Part C — Azure Cloud Shell
-
-!!! success "Step 6 — Open Cloud Shell"
-    In the Azure Portal top bar, click the **>_** icon (between the search bar and notifications). A panel opens at the bottom of the screen.
-
-!!! success "Step 7 — First-time setup"
-    If this is your first time, Azure will prompt you to create a storage account for your Cloud Drive. Select your subscription, click **"Create storage."** This takes about 30 seconds.
-
-!!! success "Step 8 — Switch between Bash and PowerShell"
-    At the top-left of the Cloud Shell panel, click the **Bash** dropdown and switch to **PowerShell** — then switch back to **Bash.** Both are available; this course primarily uses the Portal GUI, but knowing how to switch matters.
-
-!!! success "Step 9 — Run your first commands"
-    In Bash mode, run the following:
-
-    ```bash
-    az account show
-    ```
-    This shows your current subscription details — you're already authenticated.
-
-    ```bash
-    az group list --output table
-    ```
-    This lists all your resource groups. You'll see `learning-dev-rg` in the output.
-
-    ```bash
-    az group show --name learning-dev-rg
-    ```
-    This shows the full details of your resource group in JSON format.
-
-!!! success "Step 10 — Use the Cloud Shell editor"
-    Run:
-    ```bash
-    code hello.txt
-    ```
-    A VS Code-style editor opens in the browser. Type `Hello from Cloud Shell!`, save with `Ctrl+S`, and close. Run `cat hello.txt` to confirm it's there. This file persists in your Cloud Drive across sessions.
-
----
-
-### Part D — Azure Pricing Calculator
-
-!!! success "Step 11 — Open the Pricing Calculator"
-    Open a new browser tab and go to **azure.microsoft.com/en-us/pricing/calculator/**
-
-!!! success "Step 12 — Estimate a Virtual Machine"
-    Click **"Virtual Machines"** to add it to your estimate. Configure:
-
-    | Setting | Value |
-    |---------|-------|
-    | Region | *(your region)* |
-    | Operating System | Windows |
-    | VM Size | B2s (2 vCPUs, 4 GB RAM) |
-    | Hours | 730 (one full month) |
-    | Payment option | Pay as you go |
-
-    Note the monthly estimate. Now change **Payment option** to **1-year reserved** and see how the price drops by approximately 30–40%.
-
-!!! success "Step 13 — Add Storage to the estimate"
-    Click **"+ Add to estimate"** → search for **"Managed Disks."** Add a 128 GB Premium SSD P10 disk. Watch the monthly total update. This is how a real VM cost estimate works — compute + storage + networking all add up.
-
-!!! success "Step 14 — Save the estimate"
-    Click **"Export"** to download the estimate as an Excel file. Click **"Share"** to get a shareable URL. In real projects, you send this URL to stakeholders for approval before deploying.
-
----
-
-### Part E — Azure Advisor
-
-!!! success "Step 15 — Open Azure Advisor"
-    In the Azure Portal search bar, type **"Advisor"** and click the result.
-
-!!! success "Step 16 — Review the overview"
-    You'll see the Advisor Score dashboard — scores for each of the 5 pillars. Since your account is new and has minimal resources, scores may be high. As you build more resources throughout this course, Advisor will generate more recommendations here.
-
-!!! success "Step 17 — Explore each pillar"
-    Click through **Cost**, **Security**, **Reliability**, **Performance**, and **Operational Excellence**. Read any recommendations present. Even on a fresh account, you may see security recommendations like "Enable MFA" or "Set up a budget alert" (which we already did on Day 0).
-
-!!! success "Step 18 — Configure Advisor alerts (optional)"
-    Click **"Alerts"** → **"New Advisor Alert."** You can configure Advisor to email you when a new recommendation appears. This is useful in production environments.
-
----
-
-### Part F — Azure Service Health
-
-!!! success "Step 19 — Open Service Health"
-    In the Azure Portal search bar, type **"Service Health"** and click the result.
-
-!!! success "Step 20 — Review the Service Issues tab"
-    This shows any active Azure service incidents in your selected regions. If everything is green, there are no current incidents. Click the **"History"** tab to see past incidents — even large cloud platforms have occasional outages.
-
-!!! success "Step 21 — Check Health Advisories"
-    Click the **"Health Advisories"** tab. These are non-incident announcements — things like service retirements, feature changes, and required migrations. This is where you'd find out if a service you're using is being deprecated.
-
-!!! success "Step 22 — Set up a Service Health Alert"
-    Click **"Health Alerts"** → **"+ Add service health alert."** Configure:
-
-    | Field | Value |
-    |-------|-------|
-    | Subscription | *(your subscription)* |
-    | Services | Select **Virtual Machines** and **SQL databases** |
-    | Regions | *(your region)* |
-    | Event types | ✅ Service issue, ✅ Planned maintenance, ✅ Health advisories |
-    | Action group | Create new → name it `course-alerts` → add your email |
-
-    Click **"Create alert rule."** You'll now receive an email if any of those services have an issue in your region.
-
----
-
-### Part G — Azure Marketplace
-
-!!! success "Step 23 — Open Azure Marketplace"
-    In the top search bar, type **"Marketplace"** and click the result. Browse the categories on the left: Compute, Networking, Databases, Developer Tools, Security.
-
-!!! success "Step 24 — Explore VM images"
-    Click **"Compute"** → click **"Ubuntu Server 24.04 LTS"**. Note the publisher (Canonical), pricing model, and the Create button. This is the image you'll use on Day 2 to create your first Linux VM.
-
-!!! success "Step 25 — Explore third-party solutions"
-    Search for **"WordPress"** in the Marketplace. You'll see pre-configured WordPress images from various publishers — ready to deploy in minutes. Marketplace images can save hours of manual configuration.
-
----
-
-### Part H — Create a Custom Dashboard
-
-!!! success "Step 26 — Create a new dashboard"
+!!! success "Step 1 — Create a new dashboard"
     Click the portal home icon (☰ menu → Dashboard). Click **"+ New dashboard"** → **"Blank dashboard."** Name it `AzureCourse Overview`.
 
-!!! success "Step 27 — Pin your resource group"
+!!! success "Step 2 — Pin your resource group"
     Navigate to your `learning-dev-rg` resource group. In the top toolbar, click **"📌 Pin to dashboard."** Select `AzureCourse Overview`. Click **"Pin."**
 
-!!! success "Step 28 — Add a Cost Management tile"
+!!! success "Step 3 — Add a Cost Management tile"
     Search for **"Cost Management"** in the portal. In Cost Management, find the **"Cost by resource"** chart. Click the **📌 pin icon** on the chart → pin it to `AzureCourse Overview`.
 
-!!! success "Step 29 — View and arrange your dashboard"
+!!! success "Step 4 — View and arrange your dashboard"
     Click the portal home icon → select `AzureCourse Overview`. You'll see your pinned tiles. Click **"Edit"** to drag and resize them. Click **"Done customizing"** when satisfied.
 
 ---
@@ -830,12 +860,12 @@ graph TD
 | Resource Groups | Shared lifecycle, access control, cost visibility — group things that belong together |
 | Naming | `[workload]-[env]-[type]` — permanent, so get it right the first time |
 | Tags | Up to 50 per resource — use Environment, Owner, Project, CostCenter from Day 1 |
+| Resource Locks | CanNotDelete on production resource groups — saves you from accidents |
 | Cloud Shell | Browser terminal at the >_ icon — pre-authenticated, persistent 5 GB drive |
 | Pricing Calculator | Always estimate costs before creating — azure.microsoft.com/en-us/pricing/calculator/ |
 | SLAs | 99.9% = 8.76 hrs downtime/year; composite SLAs multiply — redundancy improves them |
 | Azure Advisor | Free 5-pillar recommendations — check weekly as you build |
 | Service Health | 3 layers: Azure Status (global) · Service Health (your services) · Resource Health (your resources) |
-| Resource Locks | CanNotDelete on production resource groups — saves you from accidents |
 | Dashboards | Pin resources and charts to custom views — shareable with your team |
 
 ---
