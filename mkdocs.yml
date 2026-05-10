@@ -54,7 +54,7 @@ nav:
       - "Day 1 — Core Concepts & Portal": day01_fundamentals.md
   - "Phase 1 — Compute":
       - "Day 2 — Virtual Machines Part 1": day02_vms_part1.md
-      - "Day 3 — Virtual Machines Part 2": day03_vms_part2.md
+      - "Day 3 — Virtual Machines Part 2: Management, VMSS & Backups": day03_vms_part2.md
       - "Day 4 — Azure App Service": day04_app_service.md
       - "Day 5 — Azure Functions": day05_functions.md
   - "Phase 2 — Networking":
