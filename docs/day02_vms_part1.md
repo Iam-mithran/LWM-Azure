@@ -18,6 +18,7 @@
 - Full walkthrough: creating an Ubuntu VM from zero in the Azure Portal
 - Connecting to your VM over SSH
 - The critical difference between stopping and deallocating a VM
+- Windows VMs — creating a Windows Server VM and connecting via RDP from your Windows machine
 
 ---
 
@@ -629,6 +630,127 @@ graph LR
 
 ---
 
+## Windows VMs and Connecting via RDP
+
+So far today we've been working with Linux. But Azure supports Windows VMs just as fully — Windows Server is the standard OS for .NET applications, IIS web servers, Active Directory domain controllers, and any workload that requires a Windows environment.
+
+Connecting to a Windows VM uses a completely different protocol: **RDP (Remote Desktop Protocol)** — you get a full graphical desktop in a window on your machine.
+
+### Key Concepts
+
+**RDP — Remote Desktop Protocol:**
+- Microsoft's protocol for remote graphical desktop access
+- Runs on **TCP port 3389** (you must open this in the NSG — same as SSH on port 22)
+- Built into every version of Windows — you connect using the **Remote Desktop Connection** app (`mstsc`) on your local machine
+- Gives you a full Windows Server desktop in a window — mouse, keyboard, file explorer, everything
+
+**Windows VM vs Linux VM:**
+
+| | Linux VM (Ubuntu) | Windows VM (Windows Server) |
+|--|------------------|---------------------------|
+| Connection | SSH — terminal only | RDP — full graphical desktop |
+| Port to open | 22 | 3389 |
+| Authentication | SSH key (recommended) or password | Username + password |
+| OS license cost | Included free | Windows Server license added (~$0.02–$0.10/hr extra) |
+| Use case | Web servers, containers, DevOps, APIs | .NET apps, IIS, Active Directory, SQL Server on VM |
+| Minimum size | B1s (1 vCPU, 1 GB RAM) | **B2s (2 vCPU, 4 GB RAM)** — Windows Server needs RAM |
+
+!!! warning "Windows VMs are not Free Tier"
+    Linux VMs on B1s are fully covered by the Azure Free Tier (750 hours/month). Windows VMs carry an additional Windows Server license fee on top of compute — even on the same B1s size. For this demo we use **B2s** which is a paid instance. Instructor demonstrates; students watch or use trial credits.
+
+---
+
+### Hands-On: Create a Windows Server VM and Connect via RDP
+
+**💳 Paid — Instructor Demo.** B2s Windows Server costs approximately $0.10/hr. Deallocate immediately after the demo.
+
+!!! success "Step 29 — Start the VM creation wizard"
+    In the Azure Portal, search **"Virtual machines"** → **"+ Create"** → **"Azure virtual machine."**
+
+!!! success "Step 30 — Configure the Basics tab"
+    | Field | Value |
+    |-------|-------|
+    | Resource group | `vm-demo-rg` |
+    | Virtual machine name | `windows-demo-vm01` |
+    | Region | *(your region)* |
+    | Availability options | **No infrastructure redundancy required** |
+    | Image | **Windows Server 2022 Datacenter — x64 Gen2** |
+    | Size | Click **"See all sizes"** → select **B2s (2 vCPU, 4 GiB RAM)** |
+    | Authentication type | **Password** |
+    | Username | `azureuser` |
+    | Password | *(create a strong password — min 12 chars, uppercase, number, symbol)* |
+    | Public inbound ports | **Allow selected ports** |
+    | Select inbound ports | **RDP (3389)** |
+
+    > **Why password instead of SSH key?** Windows VMs use password authentication for RDP by default. You can add SSH key auth later for PowerShell remoting, but for RDP the username + password is the standard method.
+
+    Click **"Next: Disks >"**
+
+!!! success "Step 31 — Disks tab"
+    | Field | Value |
+    |-------|-------|
+    | OS disk type | **Standard SSD** |
+    | Delete with VM | ✅ Checked |
+
+    Click **"Next: Networking >"**
+
+!!! success "Step 32 — Networking tab"
+    | Field | Value |
+    |-------|-------|
+    | Virtual network | *(same VNet as ubuntu-demo-vm01, or auto-create)* |
+    | Public IP | *(auto-generated)* |
+    | NIC NSG | **Basic** |
+    | Inbound ports | **RDP (3389)** |
+
+    Click **"Next: Management >"** → enable **Auto-shutdown** at 11 PM → click through to **Review + create** → **Create.**
+
+    Deployment takes 3–5 minutes for Windows Server (longer than Linux due to the larger image).
+
+!!! success "Step 33 — Connect via RDP"
+    Once the VM status shows **Running**, click **"Connect"** in the top toolbar → **"RDP."**
+
+    Azure shows the **Connect** panel on the right. Click **"Download RDP File."** A `.rdp` file downloads to your machine.
+
+    > The `.rdp` file contains the VM's public IP, port, and connection settings pre-configured. Double-clicking it opens Remote Desktop Connection automatically.
+
+!!! success "Step 34 — Open the RDP file"
+    On your Windows machine, **double-click** the downloaded `.rdp` file.
+
+    A security dialog appears — click **"Connect."**
+
+    Enter the credentials you set during VM creation:
+
+    | Field | Value |
+    |-------|-------|
+    | Username | `azureuser` |
+    | Password | *(the password you created)* |
+
+    Click **"OK."** Another dialog may appear about the certificate — click **"Yes."**
+
+    The **Windows Server 2022 desktop** opens in your Remote Desktop window. You are now inside your Windows VM running in Microsoft's data center.
+
+!!! success "Step 35 — Explore the Windows Server desktop"
+    Look around the desktop:
+    - Open **Server Manager** (opens automatically) — this is the main admin tool for Windows Server
+    - Open **Task Manager** (`Ctrl + Shift + Esc`) — see the 2 vCPUs and ~4 GB RAM
+    - Open **PowerShell** and run `ipconfig` — you'll see the private IP address (10.0.x.x)
+    - Open **Internet Explorer** or **Edge** and visit `http://whatismyip.com` — it shows your VM's public IP, confirming your browser traffic exits from Azure, not your local machine
+
+!!! success "Step 36 — Disconnect and deallocate"
+    To disconnect from RDP without shutting down: click the **X** on the Remote Desktop window title bar, or press **`Win + D`** then close. The VM keeps running.
+
+    To deallocate: in the Azure Portal, open `windows-demo-vm01` → click **"Stop"** → confirm deallocation.
+
+    > Always deallocate Windows VMs immediately after practice — the Windows Server license fee keeps accruing while the VM is in a stopped (not deallocated) state.
+
+!!! info "Connecting from macOS or Linux"
+    Windows Remote Desktop is not built into macOS or Linux. Options:
+    - **macOS:** Download **Microsoft Remote Desktop** (free) from the Mac App Store — opens `.rdp` files natively
+    - **Linux:** Use **Remmina** (open source RDP client) or `xfreerdp` from the terminal
+    - **Any OS:** Use **Azure Bastion** (covered on Day 3) — browser-based RDP with no client software needed
+
+---
+
 ## Summary
 
 ```mermaid
@@ -667,6 +789,10 @@ You've gone from zero to a live Ubuntu server in Microsoft's data center — cre
 | Boot diagnostics | Enable it — your only way to see what a headless VM is doing if it fails to boot |
 | Auto-shutdown | Enable on every learning VM — automatically deallocates nightly so you're never accidentally billed overnight |
 | SSH key auth | More secure than passwords — download and safeguard your .pem file; it cannot be recovered |
+| Windows VMs | Use Windows Server for .NET, IIS, AD workloads — carry an OS license fee even on Free Tier |
+| RDP | Remote Desktop Protocol on port 3389 — gives a full graphical desktop — open in NSG before connecting |
+| RDP file | Download from the portal Connect blade — double-click to launch Remote Desktop Connection on Windows |
+| macOS/Linux RDP | Use Microsoft Remote Desktop (Mac App Store) or Remmina (Linux) — or use Azure Bastion from any browser |
 
 ---
 

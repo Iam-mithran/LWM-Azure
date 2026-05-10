@@ -50,6 +50,24 @@ Once you have a VM running, you can host a website on it in minutes. This segmen
 - ✅ Replace the default Nginx page with a custom `index.html`
 - ✅ Visit `http://YOUR_PUBLIC_IP` in a browser and confirm the page loads
 
+## Windows VMs and Connecting via RDP
+
+### Key Topics
+
+- Windows Server VM vs Linux VM: OS license cost, minimum recommended size (B2s), use cases (.NET, IIS, Active Directory)
+- RDP (Remote Desktop Protocol): port 3389, full graphical desktop access
+- Downloading the `.rdp` file from the Azure Portal and opening it on Windows
+- Connecting from macOS (Microsoft Remote Desktop app) and Linux (Remmina)
+
+### Hands-On Demo
+
+**Account Requirements:** Windows Server VMs carry an OS license fee — not Free Tier. B2s Windows Server (~$0.10/hr). Instructor demo — students should watch.
+
+- 💳 Create a Windows Server 2022 VM (B2s, password auth, open RDP port 3389)
+- 💳 Download the `.rdp` file from the portal and connect via Remote Desktop from Windows
+- 💳 Explore Server Manager, Task Manager, and PowerShell inside the Windows Server VM
+- 💳 Disconnect and deallocate the VM immediately to stop billing
+
 ---
 
 ## Summary
