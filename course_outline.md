@@ -7,8 +7,8 @@
 
 - **Channel:** LearnWithMithran (YouTube)
 - **Course:** Azure Cloud + Azure DevOps — A Complete Beginner's Guide
-- **Total Videos:** 29 (Day 0 through Day 28)
-- **Total Phases:** 9 (Phase 0 through Phase 8)
+- **Total Videos:** 29 (Day 0 through Day 28) + 1 Optional Bonus (Day 29 — Cosmos DB)
+- **Total Phases:** 9 (Phase 0 through Phase 8) + Optional Bonus
 - **Max Video Length:** 2 hours per video
 - **Target Audience:** Complete beginners to cloud — no prior AWS, GCP, or on-premise experience assumed. Also suitable for viewers with some prior cloud background.
 - **Instructor Account:** Paid Azure account (used during teaching to demonstrate all features including paid-only ones)
@@ -28,10 +28,10 @@
    - 💳 **Paid (Instructor Demo)** — instructor demonstrates; students should watch, skip, or activate a free trial to practice
 7. **Script Structure Per Video:**
    - Hook (what problem does this solve?) — ~2 min
-   - Core concept explanation — ~10–15 min
-   - Portal demo / hands-on — **no time cap**; cover every important feature completely. Can run 40–120 min depending on the day's scope. The goal is completeness, not speed.
+   - Core concept explanation — ~10–15 min per section
+   - Portal demo / hands-on — immediately after each section; **no time cap**; cover every important feature completely
    - Summary + what's next — ~2–3 min
-8. **Deep Dive, Not High Level** — This is a technical hands-on course. Cover all key features, configuration options, and real-world use cases for each service. Do not skip steps or features for brevity. Students prefer more technical content and longer hands-on sessions over shorter, surface-level overviews.
+8. **Deep Dive, Not High Level** — This is a technical hands-on course. Cover all key features, configuration options, and real-world use cases for each service. Do not skip steps or features for brevity.
 
 ---
 
@@ -42,14 +42,128 @@
 | Phase 0 | Day 0 – Day 1 | Foundations + Account Setup |
 | Phase 1 | Day 2 – Day 5 | Compute |
 | Phase 2 | Day 6 – Day 8 | Networking |
-| Phase 3 | Day 9 – Day 12 | Storage + Databases |
+| Phase 3 | Day 9 – Day 12 | Storage, Databases & Global Delivery |
 | Phase 4 | Day 13 – Day 16 | Identity, Security + Monitoring |
 | Phase 5 | Day 17 – Day 21 | Azure DevOps |
 | Phase 6 | Day 22 – Day 23 | Infrastructure as Code (IaC) |
 | Phase 7 | Day 24 – Day 26 | Containers + AKS |
 | Phase 8 | Day 27 – Day 28 | Capstone Project |
+| Optional | Day 29 | Cosmos DB (Bonus — Optional) |
 
-Individual day content lives in the `days/` folder — e.g., `days/day05_functions.md`.
+---
+
+## Full Day-by-Day Breakdown
+
+### Phase 0 — Foundations + Account Setup
+
+| Day | Title | Key Services | Tier |
+|-----|-------|-------------|------|
+| Day 0 | Account Setup & Azure Free Tier | Azure Portal, Subscriptions, Free Tier | ✅ Free |
+| Day 1 | Core Concepts & Portal Deep Dive | ARM, Resource Groups, Cloud Shell, Pricing Calculator, SLAs, Advisor, Service Health, Locks, Dashboards | ✅ Free |
+
+### Phase 1 — Compute
+
+| Day | Title | Key Services | Tier |
+|-----|-------|-------------|------|
+| Day 2 | Virtual Machines Part 1 — Create + Host a Static Website | Azure VMs, NSG, Managed Disks, Public IP, SSH, **Nginx static site** | ✅ Free |
+| Day 3 | Virtual Machines Part 2 — Management, VMSS & Backups | Availability Sets/Zones, **VM Scale Sets**, Snapshots, Custom Images, Bastion, **Azure Backup**, Recovery Services Vault | ✅ / 💳 |
+| Day 4 | Azure App Service & Web Apps | App Service Plans, Web Apps, Deployment slots, Custom domains, Auto-scaling | ✅ / 💳 |
+| Day 5 | Azure Functions & Serverless | Function App, Triggers, Bindings, Consumption plan, Durable Functions | ✅ |
+
+### Phase 2 — Networking
+
+| Day | Title | Key Services | Tier |
+|-----|-------|-------------|------|
+| Day 6 | Virtual Network + Azure DNS | VNet, Subnets, NSG, VNet Peering, Service Endpoints, Private Endpoints, **Azure DNS Public & Private Zones** | ✅ |
+| Day 7 | Load Balancer & VM Scale Sets | **Azure Load Balancer** (Standard), VMSS, Health Probes, Autoscale Rules | 💳 |
+| Day 8 | VPN Gateway & ExpressRoute | VPN Gateway, Site-to-Site VPN, Point-to-Site VPN, ExpressRoute | 💳 |
+
+### Phase 3 — Storage, Databases & Global Delivery
+
+| Day | Title | Key Services | Tier |
+|-----|-------|-------------|------|
+| Day 9 | Azure Storage Account | Blob Storage, File Storage, Queue Storage, Table Storage, Access Tiers, SAS tokens, Storage Explorer | ✅ |
+| Day 10 | Azure SQL Database + Other Databases | Azure SQL (Serverless), Elastic Pools, Managed Instance, **PostgreSQL & MySQL Flexible Server (overview)** | ✅ |
+| Day 11 | Application Gateway & WAF | **Application Gateway v2**, Path-based routing, Multi-site hosting, SSL termination, **WAF**, OWASP CRS | 💳 |
+| Day 12 | Traffic Manager, Front Door & CDN | **Azure Traffic Manager**, **Azure Front Door**, **Azure CDN**, global routing methods, edge caching | 💳 |
+
+### Phase 4 — Identity, Security + Monitoring
+
+| Day | Title | Key Services | Tier |
+|-----|-------|-------------|------|
+| Day 13 | Microsoft Entra ID | Users, Groups, MFA, Conditional Access, App Registrations, Managed Identities | ✅ |
+| Day 14 | Azure RBAC | Roles, Assignments, Custom Roles, Privileged Identity Management (PIM) | ✅ |
+| Day 15 | Azure Key Vault | Secrets, Keys, Certificates, Access Policies, RBAC, Soft Delete, Private Endpoints | ✅ |
+| Day 16 | Azure Monitor & Alerts | Log Analytics, Metrics, Alerts, Action Groups, Application Insights, Workbooks | ✅ |
+
+### Phase 5 — Azure DevOps
+
+| Day | Title | Key Services | Tier |
+|-----|-------|-------------|------|
+| Day 17 | Azure DevOps Introduction | Organizations, Projects, Boards, Agile workflow | ✅ |
+| Day 18 | Azure Repos | Git repos, Branches, Pull Requests, Branch policies | ✅ |
+| Day 19 | Azure Pipelines — CI | Build pipelines, YAML, triggers, agents, artifacts | ✅ |
+| Day 20 | Azure Pipelines — CD | Release pipelines, deployment gates, environments, approvals | ✅ |
+| Day 21 | Azure Artifacts | Feed creation, npm/NuGet packages, upstream sources | ✅ |
+
+### Phase 6 — Infrastructure as Code
+
+| Day | Title | Key Services | Tier |
+|-----|-------|-------------|------|
+| Day 22 | ARM Templates & Bicep | ARM JSON templates, Bicep language, parameters, modules, what-if deployments | ✅ |
+| Day 23 | Terraform on Azure | Terraform CLI, AzureRM provider, state management, plan/apply/destroy | ✅ |
+
+### Phase 7 — Containers + AKS
+
+| Day | Title | Key Services | Tier |
+|-----|-------|-------------|------|
+| Day 24 | Azure Container Registry & Docker | ACR, Docker images, push/pull, tasks, geo-replication | ✅ / 💳 |
+| Day 25 | AKS Setup | Azure Kubernetes Service, node pools, kubectl, deployments, services | 💳 |
+| Day 26 | AKS Advanced | Ingress, HPA, cluster autoscaler, Azure Monitor for containers, RBAC | 💳 |
+
+### Phase 8 — Capstone Project
+
+| Day | Title | Key Services | Tier |
+|-----|-------|-------------|------|
+| Day 27 | Capstone Part 1 — Architecture & Build | Multi-tier app: VNet + VM/App Service + SQL Database + Key Vault + Blob Storage | 💳 |
+| Day 28 | Capstone Part 2 — DevOps + IaC | CI/CD pipeline, Bicep/Terraform deployment, monitoring, alerts, cleanup | 💳 |
+
+### Optional Bonus
+
+| Day | Title | Key Services | Tier |
+|-----|-------|-------------|------|
+| Day 29 | Cosmos DB — NoSQL at Global Scale (Optional) | Cosmos DB Core (SQL) API, Free Tier, global replication, RUs, partitioning | ✅ |
+
+---
+
+## Topic Coverage Checklist
+
+All required topics and where they appear:
+
+| Topic | Covered In |
+|-------|-----------|
+| App Service / Web Apps | Day 4 |
+| Storage Account | Day 9 |
+| Microsoft Entra ID | Day 13 |
+| Virtual Network (VNet) | Day 6 |
+| Azure Monitor | Day 16 |
+| Application Gateway + WAF | Day 11 |
+| Load Balancer | Day 7 |
+| VM Scale Sets (VMSS) | Day 3 + Day 7 |
+| Traffic Manager | Day 12 |
+| Azure Front Door | Day 12 |
+| Azure SQL Database | Day 10 |
+| Azure CDN | Day 12 |
+| Key Vault | Day 15 |
+| Backup Service (Azure Backup) | Day 3 |
+| Function App | Day 5 |
+| ARM Templates | Day 22 |
+| Azure DNS | Day 6 |
+| VPN Gateway / ExpressRoute | Day 8 |
+| Azure Kubernetes Service | Day 25–26 |
+| Containers / ACR | Day 24 |
+| Azure DevOps | Day 17–21 |
+| Bicep / Terraform | Day 22–23 |
 
 ---
 
@@ -60,13 +174,12 @@ When starting a new session to write course content:
 1. **Read this file first** to load course context.
 2. **Read the specific day file** from `days/` for the day you are working on (e.g., `days/day05_functions.md`).
 3. **Output format for each day's script:**
-   - File name: `dayXX_topic_name.md` (e.g., `day05_azure_functions.md`)
-   - Sections: Hook → Core Concepts → Portal Demo Steps → Summary → Key Takeaways
+   - File name: `dayXX_topic_name.md` (e.g., `day05_azure_functions.md`) saved to `docs/`
+   - Sections: Hook → Core Concepts (with Hands-On after each section) → Summary → Key Takeaways
    - All Portal Demo steps must carry ✅ or 💳 tier labels
 4. **No AWS, GCP, or on-premise comparisons** — Azure-native explanations only.
 5. **Scope per session:** Write ONE day at a time.
-6. **Length target:** 1,500–3,000 words per day (maps to ~30–60 min of narration; demos fill remaining video time).
-7. **Tone:** Conversational, enthusiastic, instructor-speaking-to-camera. Not dry documentation.
+6. **Tone:** Conversational, enthusiastic, instructor-speaking-to-camera. Not dry documentation.
 
 ---
 

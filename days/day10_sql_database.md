@@ -32,6 +32,24 @@ Deploy and connect to a fully managed SQL database on Azure — no server patchi
 - ✅ Connect using the Query Editor in the Azure portal
 - ✅ Run basic SQL queries (CREATE TABLE, INSERT, SELECT)
 
+## Other Azure Relational Databases — High Level Overview
+
+Azure offers fully managed services for other popular open-source database engines. You won't need these for most of the course, but knowing they exist matters when you're designing real-world architectures.
+
+| Service | Engine | Best for |
+|---------|--------|---------|
+| **Azure Database for PostgreSQL — Flexible Server** | PostgreSQL 14/15/16 | Open-source apps, PostGIS (geospatial), analytics workloads |
+| **Azure Database for MySQL — Flexible Server** | MySQL 8.0 | Web apps, WordPress, Laravel, traditional LAMP stacks |
+| **Azure SQL Managed Instance** | SQL Server (full) | Lift-and-shift of on-premises SQL Server — near 100% compatibility |
+
+**Key points for all managed database services:**
+- Microsoft handles: patching, backups, high availability, OS management
+- You handle: schema, queries, application connection strings, firewall rules
+- All support: Private Endpoints (for VNet-private access), geo-redundant backups, and point-in-time restore
+- All are billed on a compute + storage model — similar to Azure SQL Database
+
+**Not covered in this course:** Azure Cache for Redis (in-memory caching — advanced topic), Azure Cosmos DB (covered as an optional bonus day).
+
 ## Summary
 
-Azure SQL Database removes the burden of managing SQL Server infrastructure. Pick the Serverless tier to start — it auto-pauses when idle so you pay almost nothing during learning. Use Managed Instance when you need full SQL Server feature parity.
+Azure SQL Database removes the burden of managing SQL Server infrastructure. Pick the Serverless tier to start — it auto-pauses when idle so you pay almost nothing during learning. Use Managed Instance when you need full SQL Server feature parity. For PostgreSQL or MySQL workloads, Azure offers equivalent fully managed Flexible Server options with the same operational simplicity.

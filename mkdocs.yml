@@ -58,14 +58,14 @@ nav:
       - "Day 4 — Azure App Service": day04_app_service.md
       - "Day 5 — Azure Functions": day05_functions.md
   - "Phase 2 — Networking":
-      - "Day 6 — Virtual Network": day06_virtual_network.md
-      - "Day 7 — Load Balancer": day07_load_balancer.md
+      - "Day 6 — Virtual Network + DNS": day06_virtual_network.md
+      - "Day 7 — Load Balancer & VMSS": day07_load_balancer.md
       - "Day 8 — VPN & ExpressRoute": day08_vpn_expressroute.md
-  - "Phase 3 — Storage & Databases":
+  - "Phase 3 — Storage, Databases & Global Delivery":
       - "Day 9 — Storage Accounts": day09_storage_account.md
-      - "Day 10 — Azure SQL Database": day10_sql_database.md
-      - "Day 11 — Cosmos DB": day11_cosmos_db.md
-      - "Day 12 — Other Databases": day12_other_databases.md
+      - "Day 10 — Azure SQL + Other Databases": day10_sql_database.md
+      - "Day 11 — Application Gateway & WAF": day11_application_gateway.md
+      - "Day 12 — Traffic Manager, Front Door & CDN": day12_traffic_frontdoor_cdn.md
   - "Phase 4 — Identity, Security & Monitoring":
       - "Day 13 — Microsoft Entra ID": day13_entra_id.md
       - "Day 14 — RBAC": day14_rbac.md
@@ -87,3 +87,5 @@ nav:
   - "Phase 8 — Capstone Project":
       - "Day 27 — Capstone Part 1": day27_capstone_part1.md
       - "Day 28 — Capstone Part 2": day28_capstone_part2.md
+  - "Optional Bonus":
+      - "Day 29 — Cosmos DB (Optional)": day29_cosmos_db_optional.md

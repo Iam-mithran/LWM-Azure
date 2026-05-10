@@ -17,7 +17,10 @@ Understand Azure networking from scratch and create a working VNet with subnets.
 - VNet Peering: connect two VNets so resources in each can communicate privately — no internet, no gateway needed
 - Service Endpoints: extend your VNet's private address space to reach Azure services (like Storage or SQL) directly
 - Private Endpoints: give an Azure service a private IP address inside your VNet — the most secure way to access Azure services
-- Azure DNS basics: how name resolution works inside a VNet
+- Azure DNS — Public Zones: host your domain's DNS records in Azure (A, CNAME, MX, TXT, NS) — Azure manages the DNS infrastructure at global scale
+- Azure DNS — Private Zones: private name resolution inside a VNet — resources resolve each other by name (e.g., `db.internal`) without needing custom DNS servers; link private zones to VNets for automatic registration
+- Custom DNS on a VNet: point a VNet to your own DNS server (on-premises or a VM-based DNS) instead of Azure's default resolver
+- Azure-provided DNS vs custom DNS: Azure gives every VNet a built-in resolver at `168.63.129.16` — sufficient for most scenarios; bring your own DNS only when you need split-horizon or conditional forwarding
 
 ## Hands-On Demo
 
@@ -27,6 +30,8 @@ Understand Azure networking from scratch and create a working VNet with subnets.
 - ✅ Attach an NSG to the subnet
 - ✅ Create NSG inbound rules to allow SSH (port 22) and HTTP (port 80)
 - ✅ Deploy a VM into the private subnet
+- ✅ Create an Azure DNS Public Zone (use a test domain or subdomain) and add an A record pointing to a VM's public IP
+- ✅ Create an Azure DNS Private Zone, link it to the VNet, and verify private name resolution from inside a VM
 
 ## Summary
 
