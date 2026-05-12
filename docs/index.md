@@ -17,15 +17,16 @@ Starting from absolute zero, this course takes you through every major area of A
 
 | Phase | Days | Topic |
 |-------|------|-------|
-| **Phase 0** | Day 0 – 1 | Foundations + Account Setup |
-| **Phase 1** | Day 2 – 5 | Compute (VMs, App Service, Functions) |
-| **Phase 2** | Day 6 – 8 | Networking (VNet, Load Balancers, VPN) |
-| **Phase 3** | Day 9 – 12 | Storage + Databases |
-| **Phase 4** | Day 13 – 16 | Identity, Security + Monitoring |
-| **Phase 5** | Day 17 – 21 | Azure DevOps |
-| **Phase 6** | Day 22 – 23 | Infrastructure as Code (Bicep + Terraform) |
-| **Phase 7** | Day 24 – 26 | Containers + AKS |
-| **Phase 8** | Day 27 – 28 | Capstone Project |
+| **Phase 0** | Day 1 – 2 | Foundations + Account Setup |
+| **Phase 1** | Day 3 – 6 | Compute (VMs, App Service, Functions) |
+| **Phase 2** | Day 7 – 9 | Networking (VNet, Load Balancers, VPN) |
+| **Phase 3** | Day 10 – 13 | Storage, Databases & Global Delivery |
+| **Phase 4** | Day 14 – 17 | Identity, Security + Monitoring |
+| **Phase 5** | Day 18 – 22 | Azure DevOps |
+| **Phase 6** | Day 23 – 24 | Infrastructure as Code (Bicep + Terraform) |
+| **Phase 7** | Day 25 – 27 | Containers + AKS |
+| **Phase 8** | Day 28 – 29 | Capstone Project |
+| **Optional** | Day 30 | Cosmos DB (Bonus) |
 
 ---
 
@@ -46,4 +47,4 @@ Every portal demo step is labeled:
 
 ## Start here
 
-[:material-arrow-right: Day 0 — Account Setup & Free Tier Walkthrough](day00_account_setup.md)
+[:material-arrow-right: Day 1 — Account Setup & Free Tier Walkthrough](day01_account_setup.md)
