@@ -50,42 +50,42 @@ markdown_extensions:
 nav:
   - Home: index.md
   - "Phase 0 — Foundations":
-      - "Day 0 — Account Setup & Free Tier": day00_account_setup.md
-      - "Day 1 — Core Concepts & Portal": day01_fundamentals.md
+      - "Day 1 — Account Setup & Free Tier": day01_account_setup.md
+      - "Day 2 — Core Concepts & Portal": day02_fundamentals.md
   - "Phase 1 — Compute":
-      - "Day 2 — Virtual Machines Part 1": day02_vms_part1.md
-      - "Day 3 — Virtual Machines Part 2: Management, VMSS & Backups": day03_vms_part2.md
-      - "Day 4 — Azure App Service": day04_app_service.md
-      - "Day 5 — Azure Functions": day05_functions.md
+      - "Day 3 — Virtual Machines Part 1": day03_vms_part1.md
+      - "Day 4 — Virtual Machines Part 2: Management, VMSS & Backups": day04_vms_part2.md
+      - "Day 5 — Azure App Service": day05_app_service.md
+      - "Day 6 — Azure Functions": day06_functions.md
   - "Phase 2 — Networking":
-      - "Day 6 — Virtual Network + DNS": day06_virtual_network.md
-      - "Day 7 — Load Balancer & VMSS": day07_load_balancer.md
-      - "Day 8 — VPN & ExpressRoute": day08_vpn_expressroute.md
+      - "Day 7 — Virtual Network + DNS": day07_virtual_network.md
+      - "Day 8 — Load Balancer & VMSS": day08_load_balancer.md
+      - "Day 9 — VPN & ExpressRoute": day09_vpn_expressroute.md
   - "Phase 3 — Storage, Databases & Global Delivery":
-      - "Day 9 — Storage Accounts": day09_storage_account.md
-      - "Day 10 — Azure SQL + Other Databases": day10_sql_database.md
-      - "Day 11 — Application Gateway & WAF": day11_application_gateway.md
-      - "Day 12 — Traffic Manager, Front Door & CDN": day12_traffic_frontdoor_cdn.md
+      - "Day 10 — Storage Accounts": day10_storage_account.md
+      - "Day 11 — Azure SQL + Other Databases": day11_sql_database.md
+      - "Day 12 — Application Gateway & WAF": day12_application_gateway.md
+      - "Day 13 — Traffic Manager, Front Door & CDN": day13_traffic_frontdoor_cdn.md
   - "Phase 4 — Identity, Security & Monitoring":
-      - "Day 13 — Microsoft Entra ID": day13_entra_id.md
-      - "Day 14 — RBAC": day14_rbac.md
-      - "Day 15 — Key Vault": day15_key_vault.md
-      - "Day 16 — Azure Monitor": day16_azure_monitor.md
+      - "Day 14 — Microsoft Entra ID": day14_entra_id.md
+      - "Day 15 — RBAC": day15_rbac.md
+      - "Day 16 — Key Vault": day16_key_vault.md
+      - "Day 17 — Azure Monitor": day17_azure_monitor.md
   - "Phase 5 — Azure DevOps":
-      - "Day 17 — DevOps Intro": day17_devops_intro.md
-      - "Day 18 — Azure Repos": day18_azure_repos.md
-      - "Day 19 — Pipelines: CI": day19_pipelines_ci.md
-      - "Day 20 — Pipelines: CD": day20_pipelines_cd.md
-      - "Day 21 — Artifacts": day21_artifacts.md
+      - "Day 18 — DevOps Intro": day18_devops_intro.md
+      - "Day 19 — Azure Repos": day19_azure_repos.md
+      - "Day 20 — Pipelines: CI": day20_pipelines_ci.md
+      - "Day 21 — Pipelines: CD": day21_pipelines_cd.md
+      - "Day 22 — Artifacts": day22_artifacts.md
   - "Phase 6 — Infrastructure as Code":
-      - "Day 22 — ARM & Bicep": day22_arm_bicep.md
-      - "Day 23 — Terraform": day23_terraform.md
+      - "Day 23 — ARM & Bicep": day23_arm_bicep.md
+      - "Day 24 — Terraform": day24_terraform.md
   - "Phase 7 — Containers & AKS":
-      - "Day 24 — ACR & Docker": day24_acr_docker.md
-      - "Day 25 — AKS Setup": day25_aks_setup.md
-      - "Day 26 — AKS Advanced": day26_aks_advanced.md
+      - "Day 25 — ACR & Docker": day25_acr_docker.md
+      - "Day 26 — AKS Setup": day26_aks_setup.md
+      - "Day 27 — AKS Advanced": day27_aks_advanced.md
   - "Phase 8 — Capstone Project":
-      - "Day 27 — Capstone Part 1": day27_capstone_part1.md
-      - "Day 28 — Capstone Part 2": day28_capstone_part2.md
+      - "Day 28 — Capstone Part 1": day28_capstone_part1.md
+      - "Day 29 — Capstone Part 2": day29_capstone_part2.md
   - "Optional Bonus":
-      - "Day 29 — Cosmos DB (Optional)": day29_cosmos_db_optional.md
+      - "Day 30 — Cosmos DB (Optional)": day30_cosmos_db_optional.md

@@ -1,32 +1,32 @@
-# Day 1 — YouTube Metadata
+# Day 0 — YouTube Metadata
 
 ---
 
 ## Video Title
 
-Azure Core Concepts: Regions, Resource Groups, ARM & More | Azure Fundamentals Day 1 | LearnWithMithran
+What is Cloud Computing? + Create Your FREE Azure Account | Azure for Beginners Day 0
 
 ---
 
 ## Thumbnail
 
-**Main text (large, bold):** `Azure Core Concepts`
-**Sub text:** `Day 1 — Regions, ARM & Resource Groups`
+**Main text (large, bold):** `What is Cloud? + FREE Azure Account`
+**Sub text:** `Day 0 — Azure Beginner's Guide`
 **Suggested visual elements:**
 - Azure blue background (#0078D4)
-- A diagram or portal screenshot showing the resource hierarchy (MG → Sub → RG → Resources)
-- A ✅ Free badge — all demos in this session are free
+- Microsoft Azure logo or portal screenshot on the right
+- A ✅ Free badge / green tick prominent on screen
 - Channel name: LearnWithMithran (bottom corner)
 
-**Key message to convey at a glance:** The foundation every Azure engineer needs — explained from scratch.
+**Key message to convey at a glance:** Free account + cloud explained — perfect for a complete beginner.
 
 ---
 
 ## Description
 
-*Welcome back to Learn With Mithran! Today we go deep on how Azure is actually organized — the infrastructure, the hierarchy, the tools, and the safeguards every Azure user needs to understand before building anything in the cloud.*
+*Welcome back to Learn With Mithran! In today's session, we'll see what cloud computing really is, why every IT company is moving to it, and how to create your FREE Microsoft Azure account step by step.*
 
-In this session we cover Azure's global infrastructure (Regions, Availability Zones, Region Pairs), the full resource hierarchy from Management Groups down to individual resources, Azure Resource Manager, naming conventions, tagging, resource locks, Cloud Shell, the Pricing Calculator, SLAs, Azure Advisor, Service Health, the Marketplace, and Portal Dashboards — all with live hands-on demos in the Azure Portal. 🚀
+In this video, we explore cloud computing from the ground up — covering on-premise vs cloud, IaaS, PaaS & SaaS, where Microsoft Azure fits in the enterprise world, and the complete 29-day course roadmap. You'll walk away with a working Azure free account and full confidence navigating the Azure Portal. 🚀
 
 📂 *Get the course notes and diagrams from GitHub:*
 - https://github.com/Iam-mithran/LWM-Azure
@@ -50,71 +50,44 @@ Greens Technologys, Perumbakkam (https://maps.app.goo.gl/u34U3rXu8zPFfQh5A)
 
 🎯 *Topics Covered*:
 
-🔹 How to set a $1 budget alert — your financial safety net for the entire course
-🔹 Azure Regions — what they are, how to choose the right one, and why it matters
-🔹 Availability Zones — physically separate data centers within a region for 99.99% SLA
-🔹 Region Pairs — staggered maintenance and disaster recovery between paired regions
-🔹 The Azure Resource Hierarchy — Management Groups → Subscriptions → Resource Groups → Resources
-🔹 Azure Resource Manager (ARM) — the control plane behind every portal click, CLI command, and template
-🔹 Naming conventions — the permanent naming rules you must get right before creating anything
-🔹 Tagging — key-value metadata for cost allocation, filtering, and governance
-🔹 Resource Locks — CanNotDelete and ReadOnly locks to protect critical resources from accidents
-🔹 Hands-On: Create a resource group with tags and a lock — and test that the lock works
-🔹 Azure Cloud Shell — the browser-based terminal pre-authenticated with your Azure identity
-🔹 Hands-On: Run Azure CLI commands directly from the portal
-🔹 Azure Pricing Calculator — estimate costs before creating any resource
-🔹 Hands-On: Build a VM cost estimate and export it
-🔹 Service Level Agreements (SLAs) — what 99.9% vs 99.99% means in real downtime hours
-🔹 Composite SLAs — why adding more services lowers your combined availability
-🔹 Azure Advisor — free 5-pillar recommendations across Cost, Security, Reliability, Performance, and Operations
-🔹 Azure Service Health — 3 layers: Azure Status, Service Health, and Resource Health
-🔹 Hands-On: Set a Service Health alert to email you during outages
-🔹 Azure Marketplace — pre-built OS images and third-party solutions
-🔹 Portal Dashboards — pin resources and charts to a custom view
+🔹 What cloud computing is and why every IT company is adopting it
+🔹 On-Premise vs Cloud — the key differences and business reasons for the shift
+🔹 IaaS, PaaS, and SaaS explained with real Azure examples
+🔹 Where Microsoft Azure fits in the enterprise world
+🔹 Full 29-day course roadmap across 9 phases
+🔹 Azure certifications covered — AZ-900, AZ-104, AZ-400, AZ-305
+🔹 Azure vs Azure DevOps — what this series covers and what doesn't
+🔹 Creating a FREE Azure account live (with credit card reassurance)
+🔹 Azure Portal walkthrough — subscriptions, resource groups, search bar
 
 📌 *Who Is This Video For:*
 
-💻 Complete beginners who just created their Azure account on Day 0
-🧑‍🎓 Students and freshers preparing for AZ-900 or AZ-104 certification
-☁️ Developers wanting to understand how Azure is organized under the hood
-📚 IT professionals who use the portal every day but want to understand the architecture behind it
-🚀 Anyone who wants to build in Azure the right way — naming conventions, tags, locks, and budgets from Day 1
+💻 Complete beginners with zero cloud or IT experience
+🧑‍🎓 Students and freshers preparing for cloud job roles
+☁️ Aspiring cloud engineers and Azure administrators
+📚 Learners aiming for Azure certifications (AZ-900, AZ-104, AZ-400)
+🚀 Developers and DevOps engineers moving from on-premise to cloud
+🏢 IT professionals whose companies are migrating to Microsoft Azure
 
 🔍 *Chapters:*
-0:00 Intro & What You'll Learn Today
-1:00 Set a $1 Budget Alert — Do This Before Anything Else
-4:30 Azure Regions — Geography, Latency & Data Residency
-9:00 Availability Zones — Physically Separate DCs Within a Region
-13:30 Region Pairs — Staggered Maintenance & Disaster Recovery
-17:00 The Azure Resource Hierarchy Overview
-19:00 Resources — The Building Blocks
-21:00 Resource Groups — Lifecycle, Access & Cost Visibility
-26:00 Subscriptions — The Billing Boundary
-30:00 Management Groups — Enterprise-Wide Policy
-33:30 Azure Resource Manager (ARM) — The Control Plane
-39:00 Naming Conventions — Getting It Right the First Time
-43:00 Tagging — Metadata for Cost, Compliance & Governance
-47:00 Resource Locks — CanNotDelete vs ReadOnly
-50:00 Hands-On: Create a Tagged, Protected Resource Group
-62:00 Azure Cloud Shell — Browser Terminal, Zero Setup
-66:00 Hands-On: Run Your First Azure CLI Commands
-72:00 Azure Pricing Calculator — Estimate Before You Create
-76:00 Hands-On: Build a VM Cost Estimate
-82:00 Service Level Agreements (SLAs) & Composite SLAs
-88:00 Azure Advisor — Free 5-Pillar Recommendations
-92:00 Hands-On: Explore Azure Advisor
-96:00 Azure Service Health — Status, Health Advisories, Resource Health
-100:00 Hands-On: Set a Service Health Alert
-105:00 Azure Marketplace — Images & Third-Party Solutions
-109:00 Portal Dashboards — Build Your Own Custom View
-114:00 Summary & What's Next (Day 2 — Your First Azure VM)
+0:00 Intro
+0:45 What is Cloud Computing?
+4:30 On-Premise vs Cloud
+9:00 IaaS, PaaS & SaaS Explained with Azure Examples
+14:00 Where Does Microsoft Azure Fit?
+18:30 Course Roadmap — 29 Days, 9 Phases
+23:00 Certifications This Course Covers (AZ-900, AZ-104, AZ-400, AZ-305)
+27:00 Azure vs Azure DevOps — Scope of This Series
+30:30 Create Your Free Azure Account (Live Demo)
+38:00 Azure Portal Tour
+44:00 Summary & What's Next (Day 1 Preview)
 
 👍 If this video helps you, like, subscribe, and turn on notifications for more hands-on content on Azure, DevOps, AWS, Linux, and Python.
 
-#Azure #MicrosoftAzure #AzureFundamentals #AzureForBeginners #AZ900 #AZ104 #LearnAzure #AzurePortal #AzureRegions #AzureResourceManager #ARM #ResourceGroups #AzureCloudShell #AzurePricingCalculator #AzureSLA #AzureAdvisor #AzureServiceHealth #ResourceLocks #AzureTagging #AzureMarketplace #LearnWithMithran #CloudComputing #CloudForBeginners #AzureCertification #MicrosoftLearn #AzureTraining #GreenstTechnologies #AzureTutorial #AzureArchitecture #AzureInfrastructure
+#Azure #CloudComputing #MicrosoftAzure #AzureForBeginners #AZ900 #LearnAzure #CloudForBeginners #IaaS #PaaS #SaaS #AzureFree #AzureTutorial #AzurePortal #LearnWithMithran #CloudTutorial #AzureDevOps #AzureCertification #MicrosoftLearn #OnPremiseVsCloud #AzureAccount #FreeAzure #AzureFundamentals #GreenstTechnologies #AzureTraining #CloudForBeginners #ITTraining #CareerGuidance
 
 ---
 
 ## Tags
 
-azure fundamentals, azure core concepts, azure regions explained, azure resource groups, azure resource manager ARM, azure for beginners, microsoft azure tutorial, azure portal tutorial, az-900 exam prep, az-104 tutorial, azure availability zones, azure SLA explained, azure pricing calculator, azure cloud shell, azure advisor, azure service health, azure resource locks, azure tagging best practices, azure naming conventions, azure subscriptions, azure management groups, azure marketplace, azure dashboard, azure cost management, azure budget alert, learnwithmithran, greens technologies, azure training, cloud computing fundamentals, microsoft azure 2024, azure beginner guide, azure hierarchy explained, azure architecture, free azure tutorial
+azure for beginners, microsoft azure tutorial, azure account setup, azure free tier, create azure account, what is cloud computing, cloud computing for beginners, iaas paas saas explained, azure portal tutorial, azure free account 2024, az-900 azure fundamentals, azure certification, azure tutorial, cloud computing tutorial, on premise vs cloud, microsoft azure for beginners, azure devops, learn azure from scratch, learnwithmithran, azure course, azure beginner guide, cloud for beginners, what is microsoft azure, azure pricing, azure portal, azure subscription, free cloud account, azure students, greens technologies, azure training

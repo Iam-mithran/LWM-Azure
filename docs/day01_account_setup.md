@@ -1,4 +1,4 @@
-# Day 0 — Cloud Fundamentals, Course Roadmap & Azure Account Setup
+# Day 1 — Cloud Fundamentals, Course Roadmap & Azure Account Setup
 
 **Phase 0 — Foundations + Account Setup**
 
@@ -418,4 +418,4 @@ You now understand what cloud is and why it matters, where Azure fits in the ent
 
 ---
 
-[:material-arrow-right: Next: Day 1 — Core Concepts & Portal Deep Dive](day01_fundamentals.md)
+[:material-arrow-right: Next: Day 2 — Core Concepts & Portal Deep Dive](day02_fundamentals.md)

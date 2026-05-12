@@ -1,4 +1,4 @@
-# Day 3 — Azure Virtual Machines Part 2: Management, VMSS & Backups
+# Day 4 — Azure Virtual Machines Part 2: Management, VMSS & Backups
 
 **Phase 1 — Compute**
 
@@ -614,4 +614,4 @@ You now have the full toolkit for running VMs in production: protect them with z
 
 ---
 
-[:material-arrow-left: Previous: Day 2 — Virtual Machines Part 1](day02_vms_part1.md) &nbsp;&nbsp; [:material-arrow-right: Next: Day 4 — Azure App Service](day04_app_service.md)
+[:material-arrow-left: Previous: Day 3 — Virtual Machines Part 1](day03_vms_part1.md) &nbsp;&nbsp; [:material-arrow-right: Next: Day 4 — Azure App Service](day05_app_service.md)

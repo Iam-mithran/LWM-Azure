@@ -1,4 +1,4 @@
-# Day 1 — Azure Fundamentals: Core Concepts & Portal Deep Dive
+# Day 2 — Azure Fundamentals: Core Concepts & Portal Deep Dive
 
 **Phase 0 — Foundations + Account Setup**
 
@@ -870,4 +870,4 @@ graph TD
 
 ---
 
-[:material-arrow-left: Previous: Day 0 — Account Setup](day00_account_setup.md) &nbsp;&nbsp; [:material-arrow-right: Next: Day 2 — Virtual Machines Part 1](day02_vms_part1.md)
+[:material-arrow-left: Previous: Day 1 — Account Setup](day01_account_setup.md) &nbsp;&nbsp; [:material-arrow-right: Next: Day 3 — Virtual Machines Part 1](day03_vms_part1.md)

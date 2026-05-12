@@ -1,4 +1,4 @@
-# Day 2 — Azure Virtual Machines Part 1: Creating Your First VM
+# Day 3 — Azure Virtual Machines Part 1: Creating Your First VM
 
 **Phase 1 — Compute**
 
@@ -796,4 +796,4 @@ You've gone from zero to a live Ubuntu server in Microsoft's data center — cre
 
 ---
 
-[:material-arrow-left: Previous: Day 1 — Azure Fundamentals](day01_fundamentals.md) &nbsp;&nbsp; [:material-arrow-right: Next: Day 3 — Virtual Machines Part 2](day03_vms_part2.md)
+[:material-arrow-left: Previous: Day 2 — Azure Fundamentals](day02_fundamentals.md) &nbsp;&nbsp; [:material-arrow-right: Next: Day 4 — Virtual Machines Part 2](day04_vms_part2.md)
