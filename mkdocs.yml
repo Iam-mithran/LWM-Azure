@@ -1,8 +1,8 @@
 site_name: LearnWithMithran — Azure Complete Beginner's Guide
 site_description: A complete beginner's guide to Azure Cloud and Azure DevOps — 29 days, zero assumed cloud knowledge.
-site_url: https://learnwithmithran.github.io/LWM-Azure/
-repo_url: https://github.com/learnwithmithran/LWM-Azure
-repo_name: learnwithmithran/LWM-Azure
+site_url: https://iam-mithran.github.io/LWM-Azure/
+repo_url: https://github.com/Iam-mithran/LWM-Azure
+repo_name: Iam-mithran/LWM-Azure
 
 theme:
   name: material
