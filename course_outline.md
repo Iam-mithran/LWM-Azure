@@ -65,7 +65,7 @@
 
 | Day | Title | Key Services | Tier |
 |-----|-------|-------------|------|
-| Day 3 | Virtual Machines Part 1 — Create + Host a Static Website | Azure VMs, NSG, Managed Disks, Public IP, SSH, **Nginx static site**, Windows VM + RDP | ✅ Free |
+| Day 3 | Virtual Machines Part 1 — Linux & Windows VMs | Azure VMs, NSG, Managed Disks, Public IP, SSH, Windows VM + RDP | ✅ Free |
 | Day 4 | Virtual Machines Part 2 — Management, VMSS & Backups | Availability Sets/Zones, **VM Scale Sets**, Snapshots, Custom Images, Bastion, **Azure Backup**, Recovery Services Vault | ✅ / 💳 |
 | Day 5 | Azure App Service & Web Apps | App Service Plans, Web Apps, Deployment slots, Custom domains, Auto-scaling | ✅ / 💳 |
 | Day 6 | Azure Functions & Serverless | Function App, Triggers, Bindings, Consumption plan, Durable Functions | ✅ |

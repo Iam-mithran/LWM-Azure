@@ -4,21 +4,20 @@
 
 ## Video Title
 
-Create Your First Azure VM, Host a Website & Connect via RDP | Azure Virtual Machines Day 3 | LearnWithMithran
+Create Your First Azure VM + Connect via SSH & RDP | Azure Virtual Machines Day 3 | LearnWithMithran
 
 ---
 
 ## Thumbnail
 
 **Main text (large, bold):** `Your First Azure VM`
-**Sub text:** `Day 3 — SSH + RDP + Host a Website`
+**Sub text:** `Day 3 — Linux SSH + Windows RDP`
 **Suggested visual elements:**
 - Azure blue background (#0078D4)
 - Split screen: Ubuntu terminal (SSH) on the left, Windows Server RDP desktop on the right
-- A browser showing a live webpage served from the VM
 - Channel name: LearnWithMithran (bottom corner)
 
-**Key message to convey at a glance:** Real VM running in the cloud — Linux + Windows, live website, zero experience needed.
+**Key message to convey at a glance:** Real VM running in the cloud — Linux + Windows, zero experience needed.
 
 ---
 
@@ -26,7 +25,7 @@ Create Your First Azure VM, Host a Website & Connect via RDP | Azure Virtual Mac
 
 *Welcome back to Learn With Mithran! Today we create our first Azure Virtual Machine from scratch — configure it, connect to it, host a live website on it, and learn the number one cost mistake beginners make.*
 
-In this session we cover everything about Azure VMs: VM series and sizes (B, D, F, E), pricing models (Pay-as-you-go, Reserved, Spot), managed disks, Network Security Groups, public IP addresses, and a complete portal walkthrough to deploy an Ubuntu VM. Then we SSH in, install Nginx, and host a live static website. We also create a Windows Server VM and connect to it via Remote Desktop (RDP) directly from a Windows machine. 🚀
+In this session we cover everything about Azure VMs: VM series and sizes (B, D, F, E), pricing models (Pay-as-you-go, Reserved, Spot), managed disks, Network Security Groups, public IP addresses, and a complete portal walkthrough to deploy an Ubuntu VM. Then we SSH in and explore it from the inside. We also create a Windows Server VM and connect to it via Remote Desktop (RDP) directly from a Windows machine. 🚀
 
 📂 *Get the course notes and diagrams from GitHub:*
 - https://github.com/Iam-mithran/LWM-Azure
@@ -94,11 +93,10 @@ Greens Technologys, Perumbakkam (https://maps.app.goo.gl/u34U3rXu8zPFfQh5A)
 67:00 Explore the VM in the Portal (Disks, Networking, NSG)
 73:00 Hands-On: Connect via SSH & Explore from Inside
 80:00 Format & Mount the Data Disk
-85:00 Host a Static Website — Install Nginx & Serve Custom HTML
-93:00 Stop vs Deallocate — Never Make This Billing Mistake
-98:00 Hands-On: Deallocate Your VM
-102:00 Windows Server VM — Create & Connect via RDP
-112:00 Summary & What's Next (Day 4 — VM Management, VMSS & Backups)
+85:00 Stop vs Deallocate — Never Make This Billing Mistake
+90:00 Hands-On: Deallocate Your VM
+94:00 Windows Server VM — Create & Connect via RDP
+104:00 Summary & What's Next (Day 4 — VM Management, VMSS & Backups)
 
 👍 If this video helps you, like, subscribe, and turn on notifications for more hands-on content on Azure, DevOps, AWS, Linux, and Python.
 
