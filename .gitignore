@@ -1,8 +1,9 @@
 # MkDocs build output
 site/
 
-# Claude Code session data
-.claude/
+# Claude Code session data (exclude settings/cache, but keep memory)
+.claude/*
+!.claude/memory/
 
 # Environment / secrets
 .env
