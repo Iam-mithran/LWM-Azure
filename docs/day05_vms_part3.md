@@ -14,373 +14,197 @@
 - Custom Images — turn a configured VM into a reusable template for deploying identical VMs
 - Azure Bastion — connect to VMs securely without exposing SSH or RDP to the internet
 - Azure Backup — fully managed backup service: Recovery Services Vault, backup policies, recovery points, and all four restore options
-- VM Monitoring — view CPU, memory, and disk metrics and set up an alert in the portal
+- VM Monitoring — set up a CPU alert that emails you when your VM is under load
 
 ---
 
 ## Before We Begin — Set Up a VM
 
-All the demos today require an existing VM. If you have your VM from Day 3 still running (or deallocated), start it up. If not, create a quick Ubuntu B1s VM in a new resource group called `vm-mgmt-rg` — the steps are in Day 3.
+All the demos today require an existing VM. If you still have your VM from Day 3 deallocated, start it up. If not, quickly create an Ubuntu B1s VM in a new resource group called `vm-mgmt-rg` — the creation steps are in Day 3.
 
 **✅ Free Tier**
 
-> For the backup demos, a Linux VM is fine. For Bastion, you can watch the instructor demo — Bastion is a paid service (~$0.19/hr).
-
 ---
 
-## Part 1 — Availability: Protecting VMs from Failure
+## Part 1 — Availability Sets
 
-### The Problem — What Can Go Wrong?
+### The Problem
 
-When your VM runs on a physical server in a Microsoft data center, that server has hardware inside it — CPUs, RAM, hard drives, network cards. Any of that hardware can fail. Rarely, but it happens.
-
-There are two types of failures you need to plan for:
+When your VM runs on a physical server in a Microsoft data center, that server has hardware inside it — CPUs, RAM, hard drives, network cards. Any of that hardware can fail. There are two types of failure to plan for:
 
 | Failure type | What it means |
 |---|---|
 | **Unplanned hardware failure** | A physical component dies — your VM goes down until Azure migrates it |
-| **Planned maintenance** | Microsoft needs to update the hypervisor or hardware — your VM may restart |
+| **Planned maintenance** | Microsoft updates the hypervisor — your VM may restart |
 
-If you run your application on a single VM, either of those events takes your app offline. For production workloads, that's not acceptable.
+If you run your application on a single VM, either event takes your app offline.
 
-Azure gives you two tools to solve this: **Availability Sets** and **Availability Zones**.
-
----
-
-### Availability Sets
+### What Is an Availability Set?
 
 An **Availability Set** is a logical grouping of VMs that tells Azure to spread them across different physical hardware within the same data center.
 
 When you put two or more VMs in an Availability Set, Azure guarantees they will never be on the same:
-- **Fault Domain** — a rack of servers sharing power and network switches. If a rack loses power, only VMs on that rack are affected.
-- **Update Domain** — a group of servers that are rebooted together during planned maintenance. Azure reboots update domains one at a time — so your other VMs stay running.
+- **Fault Domain** — a rack of servers sharing power and network. If one rack loses power, only VMs on that rack go down.
+- **Update Domain** — a group of servers rebooted together during maintenance. Azure reboots domains one at a time — other VMs stay up.
 
 ```mermaid
 graph TD
     subgraph AS["Availability Set — my-app-avset"]
-        subgraph FD0["Fault Domain 0\n(Rack A)"]
-            subgraph UD0["Update Domain 0"]
-                VM1["VM 1"]
-            end
+        subgraph FD0["Fault Domain 0 — Rack A"]
+            VM1["VM 1\n(Update Domain 0)"]
         end
-        subgraph FD1["Fault Domain 1\n(Rack B)"]
-            subgraph UD1["Update Domain 1"]
-                VM2["VM 2"]
-            end
+        subgraph FD1["Fault Domain 1 — Rack B"]
+            VM2["VM 2\n(Update Domain 1)"]
         end
-        subgraph FD2["Fault Domain 2\n(Rack C)"]
-            subgraph UD2["Update Domain 2"]
-                VM3["VM 3"]
-            end
+        subgraph FD2["Fault Domain 2 — Rack C"]
+            VM3["VM 3\n(Update Domain 2)"]
         end
     end
-    LB["Load Balancer"] --> VM1
-    LB --> VM2
-    LB --> VM3
+    LB["Load Balancer"] --> VM1 & VM2 & VM3
 ```
 
-**The guarantee:** Azure's SLA for two or more VMs in an Availability Set is **99.95% uptime**.
+**SLA:** Two or more VMs in an Availability Set = **99.95% uptime**.
 
-**The catch:** Availability Sets protect against hardware failure within a single data center. They do NOT protect against the entire data center going down (flood, power outage, network issue).
-
-**When to use:** When you need high availability within a single region and you want the lowest cost (VMs in Availability Sets use standard managed disks).
+**Important:** You set the Availability Set at VM creation time. You cannot add a running VM to one after deployment.
 
 ---
 
-### Availability Zones
+### Demo — Create a VM with an Availability Set
 
-An **Availability Zone** is a physically separate data center within the same Azure region. Each zone has its own independent power, cooling, and networking.
+**✅ Free Tier**
 
-Every major Azure region has at least three zones — Zone 1, Zone 2, and Zone 3. They are connected by a high-speed private network but are physically kilometres apart.
+!!! success "Step 1 — Start creating a VM"
+    Search **"Virtual machines"** → **"+ Create"** → **"Azure virtual machine."**
+
+!!! success "Step 2 — Availability options"
+    On the **Basics** tab, find the **"Availability options"** dropdown. Change it from *"No infrastructure redundancy required"* to **"Availability set."**
+
+!!! success "Step 3 — Create a new Availability Set"
+    Click **"Create new"** next to the Availability Set field.
+
+    | Field | Value |
+    |-------|-------|
+    | Name | `my-app-avset` |
+    | Fault domains | **3** *(Azure spreads VMs across 3 racks)* |
+    | Update domains | **5** *(Azure staggers reboots across 5 groups)* |
+
+    Click **"OK."**
+
+!!! success "Step 4 — Observe the placement"
+    Notice the VM creation wizard now shows your Availability Set name. Any second VM you create and assign to the same set will automatically land on a different fault domain and update domain.
+
+    > You don't need to finish creating this VM for the demo — you've seen where the setting lives. Click **"Cancel"** if you don't want to deploy it.
+
+---
+
+## Part 2 — Availability Zones
+
+### What Are Availability Zones?
+
+An **Availability Zone** is a physically separate data center within the same Azure region. Each zone has its own independent power, cooling, and networking — and they are connected by a high-speed private network kilometres apart.
+
+Every major Azure region has at least three zones — Zone 1, Zone 2, and Zone 3.
 
 ```mermaid
 graph TD
     subgraph Region["Azure Region — East US"]
-        subgraph Z1["Zone 1\n(Data Center A)"]
+        subgraph Z1["Zone 1 — Data Center A"]
             VM1["VM 1"]
         end
-        subgraph Z2["Zone 2\n(Data Center B)"]
+        subgraph Z2["Zone 2 — Data Center B"]
             VM2["VM 2"]
         end
-        subgraph Z3["Zone 3\n(Data Center C)"]
+        subgraph Z3["Zone 3 — Data Center C"]
             VM3["VM 3"]
         end
     end
-    LB["Zone-Redundant Load Balancer"] --> VM1
-    LB --> VM2
-    LB --> VM3
+    LB["Zone-Redundant Load Balancer"] --> VM1 & VM2 & VM3
 ```
 
-**The guarantee:** VMs spread across Availability Zones have a **99.99% uptime SLA** — the highest available for individual VMs.
+**SLA:** VMs spread across Availability Zones = **99.99% uptime** — the highest SLA for VMs.
 
-**Why higher than Availability Sets?** Because even if an entire data center goes dark, your other zones keep serving traffic.
-
-**When to use:** Any production workload that cannot afford downtime. Most enterprise deployments today target Availability Zones.
-
----
-
-### Availability Sets vs Availability Zones — Side by Side
+### Availability Sets vs Availability Zones
 
 | | Availability Sets | Availability Zones |
 |---|---|---|
-| Protection scope | Rack/hardware failure within one data center | Full data center failure |
+| Protects against | Rack / hardware failure in one DC | Full data center failure |
 | SLA | 99.95% | 99.99% |
-| Cost | No extra charge | Small inter-zone data transfer cost |
-| Disk requirement | Managed disks required | Managed disks required |
-| When to use | Lower-cost HA within a single DC | Maximum resilience, production workloads |
-
-> **Important:** You choose Availability Set or Availability Zone at VM creation time. You cannot add a running VM to an Availability Set or change its zone after it is deployed.
+| Cost | No extra charge | Minor inter-zone data transfer |
+| When to use | Lower-cost HA | Production workloads, maximum resilience |
 
 ---
 
-## Part 2 — VM Scale Sets (VMSS)
+### Demo — Create a VM with an Availability Zone
 
-### The Problem — What Happens When Traffic Spikes?
+**✅ Free Tier**
 
-Imagine you run an e-commerce site on a single VM. On a normal day, one VM handles the load fine. But on a sale day, traffic goes 10x. Your single VM is overwhelmed — slow responses, errors, lost revenue.
+!!! success "Step 1 — Start creating a VM"
+    Search **"Virtual machines"** → **"+ Create"** → **"Azure virtual machine."**
 
-You could provision a large VM to handle peak traffic. But then you're paying for maximum capacity 24/7, even at 2 AM when nobody's shopping.
+!!! success "Step 2 — Select Availability Zone"
+    On the **Basics** tab, change **"Availability options"** to **"Availability zone."**
 
-**VM Scale Sets solve this.**
+    A **"Availability zone"** dropdown appears — select **Zone 1**. For a second VM you'd select Zone 2, and a third VM Zone 3.
+
+!!! success "Step 3 — Observe zone selection"
+    Notice the region stays the same (e.g., East US) but the VM will be physically deployed to the data center for Zone 1 within that region.
+
+    > Again, you don't need to fully deploy — you've seen where the setting lives. Click **"Cancel"** to exit without creating.
+
+---
+
+## Part 3 — VM Scale Sets (VMSS)
+
+### The Problem
+
+Your web app runs on one VM. Normal traffic — fine. Sale day — 10x traffic — VM is overwhelmed. You could provision a large VM to handle peak load, but you'd pay for maximum capacity 24/7 even at 2 AM when no one is online.
 
 ### What Is a VM Scale Set?
 
-A **VM Scale Set (VMSS)** is a group of identical VMs managed as a single unit. You define one configuration (OS image, size, startup script), and Azure creates as many copies as you need — automatically.
-
-Key capabilities:
-
-| Capability | What it means |
-|---|---|
-| **Auto-scale** | Add VMs when CPU is above 70%, remove them when it drops below 30% |
-| **Identical instances** | Every VM in the set is cloned from the same image — consistent configuration |
-| **Load balancer integration** | Traffic is automatically distributed across all healthy instances |
-| **Rolling upgrades** | Update VMs one batch at a time — no full downtime during deployments |
-| **Spot instance support** | Run the scale set on Spot VMs for massive cost savings on fault-tolerant workloads |
+A **VM Scale Set (VMSS)** is a group of identical VMs managed as a single unit. You define one configuration — OS image, size, startup script — and Azure clones it into as many instances as demand requires, automatically.
 
 ```mermaid
 graph TD
-    User["User Traffic"] --> LB["Azure Load Balancer"]
-    LB --> VM1["VM Instance 1"]
-    LB --> VM2["VM Instance 2"]
-    LB --> VM3["VM Instance 3"]
-    LB -.->|"Auto-scale adds"| VM4["VM Instance 4 (new)"]
-
-    AM["Azure Monitor\n(CPU > 70% for 5 min)"] -->|"Scale-out trigger"| VMSS["VM Scale Set\nOrchestrator"]
+    LB["Azure Load Balancer"] --> VM1["Instance 1"] & VM2["Instance 2"] & VM3["Instance 3"]
+    LB -.->|"Auto-scale adds"| VM4["Instance 4 (new)"]
+    AM["Azure Monitor\nCPU > 70% for 5 min"] -->|"Scale-out trigger"| VMSS["VMSS Orchestrator"]
     VMSS --> VM4
 ```
 
-### Orchestration Modes
+**Auto-scale rules:**
+- **Scale-out:** if average CPU > 70% for 5 minutes, add 2 instances
+- **Scale-in:** if average CPU < 30% for 10 minutes, remove 1 instance
+- Set a **minimum** (e.g., 2 for availability) and **maximum** (e.g., 20 to cap cost)
 
-When creating a VMSS, you choose an orchestration mode:
+**Orchestration modes:**
+- **Flexible** — recommended; full control over individual instances, works with Availability Zones
+- **Uniform** — all instances truly identical, better for fully stateless batch workloads
 
-- **Flexible orchestration** — Microsoft's recommended mode. You get full control over individual VM instances. Works with Availability Zones. Better for most modern workloads.
-- **Uniform orchestration** — all instances are truly identical and managed as one unit. Better for stateless workloads like web servers or batch processing where instances are interchangeable.
-
-### Auto-Scale Rules
-
-An auto-scale rule has two parts:
-
-1. **Scale-out rule** — when to add VMs. Example: if average CPU > 70% for 5 minutes, add 2 VMs.
-2. **Scale-in rule** — when to remove VMs. Example: if average CPU < 30% for 10 minutes, remove 1 VM.
-
-You also set minimum and maximum instance counts so auto-scale never goes below 2 (for availability) or above 20 (to control cost).
-
-> **VMSS is not for today's demo** — it requires a Load Balancer in front of it to distribute traffic, which we cover in Day 8. We'll build a full VMSS + Load Balancer setup there. Today we understand the concept so Day 8 makes sense immediately.
+> **VMSS demo is in Day 8** alongside Load Balancer — a VMSS without a Load Balancer in front of it has nowhere to distribute traffic. Understanding the concept now means Day 8 clicks immediately.
 
 ---
 
-## Part 3 — Snapshots and Custom Images
+## Part 4 — VM Snapshots
 
-### VM Snapshots
+### What Is a Snapshot?
 
-A **snapshot** is a read-only copy of a managed disk taken at a specific point in time. It captures everything on that disk at that exact moment.
+A **snapshot** is a read-only, point-in-time copy of a managed disk. It freezes the disk's contents at that exact moment.
 
-**What snapshots are for:**
-- **Before a risky operation** — about to install a major OS update or a new application? Take a snapshot first. If something breaks, you restore from the snapshot.
-- **Quick backup** — snapshots are faster than a full Azure Backup for a one-time point-in-time capture.
-- **Cloning a disk** — create a new managed disk from a snapshot to spin up a copy of a VM.
+**Use snapshots for:**
+- Before a risky OS update or application install — if it breaks, restore from the snapshot
+- A quick one-time backup before decommissioning a VM
+- Cloning a disk — create a new managed disk from a snapshot and attach it to another VM
 
-**What snapshots are NOT for:**
-- Long-term backup with scheduling and retention policies — use Azure Backup for that.
-- Application-consistent backups where you need the database to be in a clean state — Azure Backup handles VSS quiescing on Windows and the freeze/thaw scripts on Linux.
-
-Snapshots are stored as managed disks and billed by the size of the snapshot.
-
-### Custom Images
-
-A **custom image** (also called a **Managed Image** or **Azure Compute Gallery image**) is a snapshot of an entire VM — OS disk and optionally data disks — turned into a reusable template.
-
-**Use case:** You've set up a VM exactly how you want it — installed your web server, configured your application, applied security hardening. Instead of repeating that setup on every new VM, you capture the image and use it as the base for all future VMs.
-
-**The process:**
-1. Configure your VM exactly as you want it.
-2. Generalize it (`sysprep` on Windows, `waagent -deprovision` on Linux) — this removes machine-specific identifiers so clones don't conflict.
-3. Capture the VM as an image in Azure.
-4. Deploy new VMs from that image instead of a marketplace base image.
-
-VM Scale Sets use custom images heavily — every instance in a VMSS is deployed from the same image for consistency.
+**Snapshots are NOT** a replacement for Azure Backup — they have no scheduling, no retention management, and no application consistency guarantees built in.
 
 ---
 
-## Part 4 — Azure Bastion
-
-### The Problem with Public SSH and RDP
-
-When you expose port 22 (SSH) or port 3389 (RDP) directly to the internet via an NSG rule, you're giving the entire internet a door to knock on. Automated scanners constantly probe those ports for weak passwords or unpatched vulnerabilities. Every exposed SSH or RDP port is an attack surface.
-
-The common solution used to be a **jump server** (also called a bastion host) — a hardened VM in a public subnet that you SSH into first, and then from there you SSH into your private VMs. You're only exposing one machine to the internet.
-
-Azure Bastion is Microsoft's managed version of that pattern — and it's significantly better.
-
-### What Is Azure Bastion?
-
-**Azure Bastion** is a fully managed PaaS service that lets you connect to your VMs directly from the Azure Portal, over HTTPS (port 443), without exposing port 22 or 3389 to the internet at all.
-
-```mermaid
-graph LR
-    U["You\n(browser)"] -->|"HTTPS port 443"| B["Azure Bastion\n(managed service in your VNet)"]
-    B -->|"SSH / RDP\n(private network only)"| VM["Your VM\n(no public IP needed)"]
-    Internet["Internet\n🚫 port 22/3389 blocked"] -.->|"blocked by NSG"| VM
-```
-
-**Key benefits:**
-
-| | Traditional SSH/RDP | Azure Bastion |
-|---|---|---|
-| Port exposure | 22 / 3389 open to internet | No VM ports exposed |
-| Access method | SSH client / RDP client | Browser only (HTTPS) |
-| VM needs public IP | Yes | No |
-| Management | You manage jump server | Fully managed by Microsoft |
-| Cost | Jump server compute | ~$0.19/hr (Bastion host) |
-
-**How it works:** You deploy Bastion into a special subnet called `AzureBastionSubnet` inside your VNet. It connects to your VMs over the private network — no public IP or open ports required on the VM.
-
-**💳 Paid — Instructor Demo:** Azure Bastion costs approximately $0.19/hr for the Basic SKU. We'll demonstrate it in the portal — students can follow along without deploying to avoid the charge.
-
----
-
-## Part 5 — Azure Backup
-
-This is the most important section of today's session. If you run a VM with important data and it gets deleted or corrupted, you need a way to get it back. Azure Backup is how you do that.
-
-### What Is Azure Backup?
-
-**Azure Backup** is Microsoft's native, fully managed backup-as-a-service. You don't need to manage backup infrastructure, backup agents, or storage accounts manually. You tell Azure what to back up and when — Azure handles everything else.
-
-**What Azure Backup can protect:**
-- Azure VMs (the whole VM — OS + data disks)
-- SQL Server running inside Azure VMs
-- Azure Files (file shares)
-- Azure Blobs
-- Azure Managed Disks
-- On-premise servers (via Microsoft Azure Recovery Services agent)
-
-Today we focus on **VM backup**.
-
----
-
-### Recovery Services Vault
-
-Before you can back anything up, you need a **Recovery Services Vault**.
-
-A **Recovery Services Vault** is the storage container that holds all your backup data. Think of it as a bank vault — your backups are the valuables inside.
-
-Key things to know:
-
-| Property | Detail |
-|---|---|
-| **Region** | A vault must be in the same region as the VMs it protects |
-| **One vault, many VMs** | A single vault can protect multiple VMs |
-| **Redundancy** | Your vault's storage is replicated — LRS (3 copies in one data center) or GRS (6 copies across two regions) |
-| **Soft delete** | Deleted backup data is retained for 14 additional days before permanent removal — protection against ransomware or accidental deletion |
-
----
-
-### Backup Policy
-
-A **backup policy** defines two things:
-1. **Schedule** — when to take backups (daily at 2:00 AM, or weekly on Sunday)
-2. **Retention** — how long to keep each recovery point
-
-Example policy:
-- Daily backup at 2:00 AM
-- Keep daily backups for 7 days
-- Keep weekly backups (taken on Sunday) for 4 weeks
-- Keep monthly backups for 12 months
-
-This means you can recover from any point in the last week, any Sunday in the last month, or any month in the last year.
-
-```mermaid
-graph LR
-    Schedule["Backup Schedule\n(Daily 2:00 AM)"] --> RP["Recovery Points\n(each backup = one point)"]
-    Retention["Retention Policy\n(7 days daily\n4 weeks weekly\n12 months monthly)"] --> RP
-    RP --> Vault["Recovery Services Vault\n(stores all recovery points)"]
-```
-
----
-
-### Recovery Points
-
-Every time a backup job runs successfully, it creates a **recovery point** — a snapshot of your VM's state at that moment.
-
-In the Azure Portal, you can browse all recovery points for a VM and see exactly which points are available to restore from. Recovery points are labelled with their date and time.
-
-**Application-consistent vs Crash-consistent:**
-
-| Type | What it means | When it happens |
-|---|---|---|
-| **Application-consistent** | VSS (Windows) or freeze/thaw scripts (Linux) ensure the app is in a clean state before the snapshot | When app-consistent settings are configured |
-| **Crash-consistent** | Snapshot taken as-is — like pulling the power cord and snapshotting the disk | Fallback when app-consistent isn't possible |
-
-Application-consistent is always preferred for databases — it ensures no transaction is half-written when the backup is taken.
-
----
-
-### Restore Options
-
-When you need to restore from a backup, Azure gives you four options:
-
-**1. Replace Existing VM**
-Overwrites your running VM with the backed-up state. The current VM's disks are replaced. Use this when your VM is corrupted and you want to restore it in-place.
-
-**2. Create New VM**
-Restores the backup as a brand-new VM — the original VM is left completely untouched. Use this when you want to test a restore, or when you need the original and the restored version to co-exist.
-
-**3. Restore Disks Only**
-Restores the managed disk from the backup without creating a VM. You then attach the disk manually to a VM. Use this for surgical restores where you need to inspect the disk contents first.
-
-**4. File-Level Recovery**
-Mounts the backup as a temporary drive on a running VM. You can then browse the backed-up file system and copy individual files back. Use this when you just need to recover one file, not the entire VM.
-
-```mermaid
-graph TD
-    RP["Recovery Point"] --> OPT{"Restore Option"}
-    OPT -->|"VM corrupted in-place"| R1["Replace Existing VM"]
-    OPT -->|"Need original + restored"| R2["Create New VM"]
-    OPT -->|"Need the disk only"| R3["Restore Disks"]
-    OPT -->|"Need one file"| R4["File-Level Recovery"]
-```
-
----
-
-### Backup Pricing
-
-Azure Backup charges for two things:
-1. **Protected instance fee** — a small per-VM monthly fee based on the VM size
-2. **Storage fee** — charged for the storage space used by your recovery points in the vault
-
-GRS vaults cost more than LRS because your backup data is replicated to a second region, giving you protection even if the primary region has an outage.
-
----
-
-## Part 6 — Portal Demo
-
-### Demo 1 — Create a VM Snapshot
+### Demo — Create a VM Snapshot
 
 **✅ Free Tier**
 
 !!! success "Step 1 — Open your VM's Disks"
-    Go to your VM in the Azure Portal. In the left menu, click **"Disks."** You'll see your OS disk listed.
+    Go to your VM in the portal → left menu → **"Disks."** You'll see your OS disk listed.
 
 !!! success "Step 2 — Open the OS disk"
     Click the name of your OS disk to open the disk resource.
@@ -388,220 +212,354 @@ GRS vaults cost more than LRS because your backup data is replicated to a second
 !!! success "Step 3 — Create a snapshot"
     In the disk's left menu, click **"Create snapshot."**
 
-    Fill in:
-
     | Field | Value |
     |-------|-------|
     | Resource group | *(same as your VM)* |
     | Name | `my-vm-os-snapshot-01` |
     | Snapshot type | **Full** |
-    | Storage type | **Standard HDD** *(cheapest for a snapshot you don't need frequently)* |
+    | Storage type | **Standard HDD** *(cheapest for a snapshot you won't access frequently)* |
 
     Click **"Review + create"** → **"Create."**
 
 !!! success "Step 4 — Verify the snapshot"
-    Search for **"Snapshots"** in the portal search bar. Your snapshot appears with its size and creation time. This is a frozen copy of your OS disk at this exact moment.
+    Search for **"Snapshots"** in the portal. Your snapshot appears with its size and creation timestamp. This is a frozen copy of your disk at this exact moment.
 
-    > To restore from this snapshot later: go to the snapshot → **"Create disk"** → attach the new disk to a VM. The VM will boot from the restored disk.
+    > To restore later: go to the snapshot → **"Create disk"** → attach the new disk to a VM and boot from it.
 
 ---
 
-### Demo 2 — Enable Azure Backup
+## Part 5 — Custom Images
+
+### What Is a Custom Image?
+
+A **custom image** is an entire VM — OS disk and optionally data disks — captured and turned into a reusable deployment template.
+
+**Use case:** You've set up a VM exactly how you want it — web server installed, app configured, security hardening applied. Instead of repeating that work on every new VM (or every VMSS instance), you capture the image and deploy from it.
+
+**The process:**
+1. Configure your VM exactly as needed.
+2. **Generalize** it — run `sysprep` on Windows or `waagent -deprovision` on Linux. This removes machine-specific identifiers so clones don't conflict with each other.
+3. **Capture** the image in Azure (via Azure Compute Gallery or as a Managed Image).
+4. Deploy new VMs using that image instead of the marketplace base image.
+
+VM Scale Sets use custom images heavily — every instance is deployed from the same image for consistency.
+
+> Custom image capture requires generalizing and deallocating the source VM first — the source VM is no longer usable after generalization. For this reason, we use a spare VM or test VM when demonstrating, not a VM with live data. We'll use custom images properly when we build the VMSS in Day 8.
+
+---
+
+## Part 6 — Azure Bastion
+
+### The Problem with Exposed SSH and RDP
+
+When you open port 22 (SSH) or port 3389 (RDP) in an NSG inbound rule, you're giving the entire internet a door to knock on. Automated scanners probe those ports constantly. Every exposed SSH or RDP port is an attack surface.
+
+### What Is Azure Bastion?
+
+**Azure Bastion** is a fully managed PaaS service that lets you connect to VMs directly from the Azure Portal, over HTTPS (port 443), without exposing port 22 or 3389 at all.
+
+```mermaid
+graph LR
+    U["You\n(browser)"] -->|"HTTPS 443"| B["Azure Bastion\n(in your VNet)"]
+    B -->|"SSH / RDP\nover private network"| VM["Your VM\n(no public IP needed)"]
+    Internet["Internet 🚫"] -.->|"port 22/3389 blocked"| VM
+```
+
+| | Traditional SSH/RDP | Azure Bastion |
+|---|---|---|
+| Ports exposed | 22 / 3389 open to internet | None |
+| Access | SSH client / RDP client | Browser only |
+| VM needs public IP | Yes | No |
+| Cost | Jump server compute | ~$0.19/hr (Basic SKU) |
+
+Bastion is deployed into a dedicated subnet called `AzureBastionSubnet` inside your VNet. It connects to your VMs over the private network.
+
+---
+
+### Demo — Deploy and Use Azure Bastion
+
+**💳 Paid — Instructor Demo (~$0.19/hr)**
+
+> Bastion is a paid service. This is an instructor demo — students watch and understand the flow. Do not deploy unless you want to incur the hourly charge.
+
+!!! info "Step 1 — Start Bastion deployment from the VM"
+    Go to your VM → **"Connect"** → **"Bastion."**
+
+    Azure detects that no Bastion host exists in the VNet and prompts you to create one.
+
+!!! info "Step 2 — Create the required subnet"
+    Azure requires a subnet named exactly `AzureBastionSubnet` with a `/26` or larger address range. Click **"Create subnet"** — Azure creates it automatically.
+
+!!! info "Step 3 — Deploy Bastion"
+    Click **"Deploy Bastion."** Provisioning takes 5–10 minutes.
+
+!!! info "Step 4 — Connect via browser"
+    Once deployed, enter your VM's username and password (or upload your SSH private key) directly in the Azure Portal. Click **"Connect."**
+
+    A terminal session (Linux) or Remote Desktop (Windows) opens right inside your browser tab — no client software needed, no port 22 or 3389 open anywhere.
+
+!!! warning "Clean up after the demo"
+    Bastion charges ~$0.19/hr while provisioned. After demonstrating, delete the Bastion resource from the portal to stop billing. The `AzureBastionSubnet` can stay — it has no cost by itself.
+
+---
+
+## Part 7 — Azure Backup
+
+This is the most important section of today's session. If a VM holding important data gets deleted, corrupted, or encrypted by ransomware, you need a way to get it back. Azure Backup is how you do that.
+
+### What Is Azure Backup?
+
+**Azure Backup** is Microsoft's native, fully managed backup-as-a-service. You don't manage backup agents, storage accounts, or schedules manually — you tell Azure what to back up and when, and Azure handles everything else.
+
+What Azure Backup can protect: Azure VMs, SQL Server in VMs, Azure Files, Azure Blobs, on-premise servers via the MARS agent.
+
+Today we focus entirely on **VM backup**.
+
+---
+
+### Recovery Services Vault
+
+Before backing up anything, you need a **Recovery Services Vault** — the container that stores all your backup data.
+
+| Property | Detail |
+|---|---|
+| **Region** | Must be in the same region as the VMs it protects |
+| **One vault, many VMs** | A single vault can protect multiple VMs |
+| **Storage redundancy** | LRS (3 copies, one data center) or GRS (6 copies across two regions) |
+| **Soft delete** | Deleted backups are retained 14 extra days before permanent removal |
+
+---
+
+### Demo — Create a Recovery Services Vault
 
 **✅ Free Tier**
 
-!!! success "Step 1 — Create a Recovery Services Vault"
-    Search for **"Recovery Services vaults"** in the portal → click **"+ Create."**
+!!! success "Step 1 — Search for Recovery Services vaults"
+    In the portal search bar, type **"Recovery Services vaults"** → click **"+ Create."**
 
     | Field | Value |
     |-------|-------|
     | Resource group | `vm-mgmt-rg` |
     | Vault name | `my-backup-vault` |
-    | Region | *(same region as your VM — this is required)* |
+    | Region | *(same region as your VM — required)* |
 
     Click **"Review + create"** → **"Create."**
 
-!!! success "Step 2 — Open the vault"
-    Once deployed, click **"Go to resource."** You're now inside the Recovery Services Vault.
+!!! success "Step 2 — Explore vault properties"
+    Once deployed, click **"Go to resource."** In the left menu, click **"Properties."**
 
-!!! success "Step 3 — Enable backup for your VM"
-    In the vault's left menu, under **Getting started**, click **"Backup."**
+    Notice **Backup Storage Redundancy** — by default it's set to **GRS** (geo-redundant). This means your backup data is replicated to a paired Azure region. You can change it to LRS to reduce cost if cross-region recovery isn't required.
+
+---
+
+### Backup Policy
+
+A **backup policy** defines two things: **schedule** (when to take backups) and **retention** (how long to keep each recovery point).
+
+```mermaid
+graph LR
+    Schedule["Schedule\nDaily 2:00 AM"] --> RP["Recovery Points"]
+    Retention["Retention\n7 days daily\n4 weeks weekly\n12 months monthly"] --> RP
+    RP --> Vault["Recovery Services Vault"]
+```
+
+This means you can restore from any point in the last 7 days, any Sunday in the last month, or any month in the last year — from a single policy.
+
+---
+
+### Demo — Enable Backup for Your VM
+
+**✅ Free Tier**
+
+!!! success "Step 1 — Open Backup from the vault"
+    Inside your vault → left menu under **Getting started** → **"Backup."**
 
     - **Where is your workload running?** → **Azure**
     - **What do you want to back up?** → **Virtual machine**
 
     Click **"Backup."**
 
-!!! success "Step 4 — Review the default backup policy"
-    You'll see the **DefaultPolicy** pre-selected:
+!!! success "Step 2 — Review the default policy"
+    The **DefaultPolicy** is pre-selected:
     - Daily backup at 2:30 AM UTC
     - 30-day retention for daily recovery points
     - 12-week retention for weekly recovery points
 
-    This is fine for our demo. In production, you'd create a custom policy with your specific retention requirements.
+    This is fine for the demo. In production you'd create a custom policy with your specific retention requirements.
 
-!!! success "Step 5 — Select your VM"
-    Click **"Add"** under Virtual Machines. Your VM appears in the list. Select it and click **"OK."**
+!!! success "Step 3 — Select your VM"
+    Click **"Add"** under Virtual Machines. Your VM appears. Select it → **"OK."**
 
-!!! success "Step 6 — Enable backup"
-    Click **"Enable Backup."** Azure will configure the backup extension on your VM. This takes about 1–2 minutes.
+!!! success "Step 4 — Enable backup"
+    Click **"Enable Backup."** Azure installs the backup extension on your VM. This takes 1–2 minutes.
 
 ---
 
-### Demo 3 — Trigger an On-Demand Backup
+### Recovery Points
+
+Every time a backup job runs, it creates a **recovery point** — a snapshot of your VM's state at that moment. Each point is labelled with its date, time, and consistency type.
+
+| Consistency type | What it means |
+|---|---|
+| **Application-consistent** | VSS (Windows) or freeze/thaw (Linux) ensures the OS and apps are in a clean state before snapshot |
+| **Crash-consistent** | Taken as-is — like pulling the power cord and snapshotting the disk immediately |
+
+Application-consistent is always preferred for databases — no transaction is half-written at backup time.
+
+---
+
+### Demo — Trigger an On-Demand Backup and View Recovery Points
 
 **✅ Free Tier**
-
-The scheduled backup runs at 2:30 AM, but you can trigger one manually right now.
 
 !!! success "Step 1 — Go to Backup Items"
-    Inside your Recovery Services Vault, click **"Backup items"** in the left menu → **"Azure Virtual Machine."** Your VM appears in the list.
+    Inside your vault → **"Backup items"** → **"Azure Virtual Machine."** Your VM appears.
 
-!!! success "Step 2 — Trigger a backup now"
-    Click on your VM → **"Backup now."**
+!!! success "Step 2 — Trigger a manual backup"
+    Click your VM → **"Backup now."**
 
-    Set the **Retain Backup Till** date to one week from today (this is how long this specific recovery point will be kept regardless of policy).
+    Set **"Retain Backup Till"** to one week from today → **"OK."**
 
-    Click **"OK."**
+!!! success "Step 3 — Watch the backup job"
+    In the vault left menu → **"Backup jobs."** Your job shows **"In progress."** Click it to see each step: taking the snapshot, transferring data to the vault, completing.
 
-!!! success "Step 3 — Monitor the backup job"
-    In the vault left menu, click **"Backup jobs."** You'll see your job in progress with status **"In progress."**
+    An initial backup of a B1s VM typically takes 15–30 minutes.
 
-    Click the job to see details — the individual steps: taking the snapshot, transferring data to the vault, completing. A full initial backup of a B1s VM typically takes 15–30 minutes.
-
----
-
-### Demo 4 — Explore Recovery Points and Restore Options
-
-**✅ Free Tier** *(explore only — we won't actually restore)*
-
-!!! success "Step 1 — View recovery points"
-    Go to **Backup items** → **Azure Virtual Machine** → click your VM.
-
-    You'll see all available recovery points listed with their date, time, and consistency type (application-consistent or crash-consistent). Each row is a point in time you can restore from.
-
-!!! success "Step 2 — Explore the restore wizard"
-    Click **"Restore VM."** Azure opens the restore wizard. Browse through the options:
-
-    - **Restore type** — you can see all four options: Create new VM, Replace existing, Restore disks, File recovery.
-    - **Restore point** — select any available recovery point.
-
-    > We're just exploring — click **"Cancel"** when done. No restore is needed for this demo.
-
-!!! success "Step 3 — File-level recovery"
-    Back on the VM backup page, click **"File Recovery."** This shows you how to mount a recovery point as a temporary drive on a running VM. Azure gives you a script to run on the VM — it mounts the backup disk so you can copy individual files.
-
-    Again, just explore the wizard — click **"Cancel."**
+!!! success "Step 4 — Browse recovery points"
+    Once complete, go back to **Backup items** → your VM. You'll see recovery points listed with date, time, and consistency type. Each row is a point in time you can restore from.
 
 ---
 
-### Demo 5 — Azure Bastion (Instructor Demo)
+### Restore Options
 
-**💳 Paid — Instructor Demo (~$0.19/hr)**
+When you need to restore, Azure gives you four options:
 
-> Azure Bastion is paid. This demo is instructor-only. Students should watch and understand the concept — you do not need to deploy this for the course.
+```mermaid
+graph TD
+    RP["Recovery Point"] --> OPT{"What do you need?"}
+    OPT -->|"VM corrupted, restore in-place"| R1["Replace Existing VM"]
+    OPT -->|"Need original + restored copy"| R2["Create New VM"]
+    OPT -->|"Just the disk"| R3["Restore Disks Only"]
+    OPT -->|"Recover one file"| R4["File-Level Recovery"]
+```
 
-!!! info "How to deploy Azure Bastion"
-    1. Go to your VM → **"Connect"** → **"Bastion."**
-    2. Azure will prompt you to create a `AzureBastionSubnet` in your VNet — click **"Create subnet."**
-    3. Click **"Deploy Bastion"** — this takes 5–10 minutes to provision.
-    4. Once deployed, you connect by entering your VM's username and password (or SSH key) directly in the browser — no SSH client or RDP file needed.
-    5. A terminal or desktop session opens right inside the Azure Portal tab.
-
-    **To avoid ongoing charges:** After demonstrating, go to the `AzureBastionSubnet` → delete the Bastion host, or simply delete it from the Bastion resource itself.
+| Option | What it does | When to use |
+|---|---|---|
+| **Replace Existing VM** | Overwrites the running VM's disks with the backup | VM is corrupted, restore in-place |
+| **Create New VM** | Restores as a brand-new VM — original untouched | Test a restore, or need both VMs side-by-side |
+| **Restore Disks Only** | Restores the managed disk; you attach it manually | Inspect disk before attaching, surgical restore |
+| **File-Level Recovery** | Mounts the backup as a temporary drive; copy individual files | Recovering one file, not the whole VM |
 
 ---
 
-### Demo 6 — Set Up a CPU Alert
+### Demo — Explore Restore Options
+
+**✅ Free Tier** *(explore only — no actual restore needed)*
+
+!!! success "Step 1 — Open the restore wizard"
+    Go to **Backup items** → your VM → **"Restore VM."**
+
+    Browse the **Restore type** dropdown — you can see all four options. Select a recovery point and notice how the options change based on your selection.
+
+    > Click **"Cancel"** — we're just exploring the wizard.
+
+!!! success "Step 2 — File-level recovery"
+    Back on the VM backup page → **"File Recovery."**
+
+    Azure shows you a downloadable script. Running this script on any VM mounts the backup disk as a temporary drive so you can browse the file system and copy individual files.
+
+    > Click **"Cancel"** — no action needed.
+
+---
+
+## Part 8 — VM Monitoring and Alerts
+
+Azure Monitor collects CPU, memory, disk, and network metrics from every VM automatically. You can view them in the portal and set up alerts that notify you when something crosses a threshold.
+
+---
+
+### Demo — Set Up a CPU Alert
 
 **✅ Free Tier**
 
-This is a preview of Azure Monitor — we'll go deep on monitoring in Day 17. But setting up a basic alert now means you get notified if your VM is under heavy load.
-
 !!! success "Step 1 — Open Alerts for your VM"
-    Go to your VM → in the left menu under **Monitoring**, click **"Alerts"** → **"+ Create"** → **"Alert rule."**
+    Go to your VM → left menu under **Monitoring** → **"Alerts"** → **"+ Create"** → **"Alert rule."**
 
-!!! success "Step 2 — Configure the signal"
-    Under **Condition**, click **"Add condition."**
+!!! success "Step 2 — Configure the condition"
+    Under **Condition** → **"Add condition."** Search for and select **"Percentage CPU."**
 
-    Search for and select **"Percentage CPU."**
-
-    Configure the threshold:
-    - **Operator:** Greater than
-    - **Aggregation type:** Average
-    - **Threshold value:** 80
-    - **Check every:** 1 minute
-    - **Lookback period:** 5 minutes
+    | Setting | Value |
+    |---|---|
+    | Operator | Greater than |
+    | Aggregation type | Average |
+    | Threshold value | **80** |
+    | Check every | 1 minute |
+    | Lookback period | 5 minutes |
 
     Click **"Next: Actions."**
 
 !!! success "Step 3 — Create an Action Group"
-    An Action Group defines what happens when the alert fires — send an email, trigger a webhook, etc.
-
-    Click **"+ Create action group"** and fill in:
+    Click **"+ Create action group."**
 
     | Field | Value |
-    |-------|-------|
+    |---|---|
     | Action group name | `vm-alerts-ag` |
     | Display name | `VM Alerts` |
 
-    Under **Notifications**, add:
-    - Notification type: **Email/SMS/Push/Voice**
+    Under **Notifications** → add:
+    - Type: **Email/SMS/Push/Voice**
     - Name: `Email me`
     - Email: *(your email address)*
 
     Click **"Review + create"** → **"Create."**
 
-!!! success "Step 4 — Name the alert rule and save"
-    Back in the alert rule wizard:
+!!! success "Step 4 — Name the alert and save"
     - **Alert rule name:** `VM CPU above 80%`
     - **Severity:** 2 — Warning
 
     Click **"Review + create"** → **"Create."**
 
-    You'll now receive an email whenever your VM's CPU averages above 80% for 5 minutes.
+    You'll now receive an email whenever your VM's CPU averages above 80% for 5 minutes. We go deep on Azure Monitor in Day 17.
 
 ---
 
-### Cleaning Up
+## Cleaning Up
 
 **✅ Free Tier**
 
 !!! warning "Stop backup before deleting"
-    If you want to delete your VM or resource group, stop the backup first. Go to the vault → **Backup items** → your VM → **"Stop backup"** → choose **"Delete backup data."** If you delete the VM without stopping backup, the vault still holds recovery points and charges for storage.
+    If you delete your VM or resource group without stopping backup first, the vault continues to hold recovery points and charges for storage.
 
-To clean up everything: delete `vm-mgmt-rg`. This removes the VM, disks, and snapshot. Then delete `my-backup-vault` from whatever resource group it's in.
+    **Before deleting:** go to the vault → **Backup items** → your VM → **"Stop backup"** → select **"Delete backup data"** → confirm.
+
+Then delete `vm-mgmt-rg` to remove the VM, disks, snapshot, and NSG in one step. Delete `my-backup-vault` separately.
 
 ---
 
 ## Summary and What's Next
 
-Today you went from knowing how to create a VM to knowing how to keep it reliable, scalable, and protected.
+Today you covered the full VM management picture.
 
-**Availability Sets and Zones** ensure your application stays up even when hardware fails — Availability Sets protect against rack-level failures (99.95% SLA), Availability Zones protect against full data center failures (99.99% SLA).
+**Availability Sets** spread VMs across fault and update domains for 99.95% uptime. **Availability Zones** spread them across separate data centers for 99.99% uptime — the production standard. **VM Scale Sets** let you define one VM config and have Azure auto-scale instances up and down based on demand — full VMSS + Load Balancer demo is in Day 8.
 
-**VM Scale Sets** let you define one configuration and have Azure automatically add or remove VM instances based on demand — you pay for what you use, and traffic spikes don't take your app down.
+**Snapshots** give you a quick point-in-time disk capture before risky changes. **Custom Images** let you clone a fully configured VM into a reusable template for consistent deployments. **Azure Bastion** eliminates exposed SSH/RDP ports by routing connections through the Azure Portal over HTTPS.
 
-**Snapshots** give you a quick point-in-time capture of a disk — great before risky changes. **Custom Images** let you clone a fully configured VM into a reusable template.
+**Azure Backup** is the proper production solution: create a Recovery Services Vault, attach a backup policy with a schedule and retention rules, and Azure handles everything. Four restore options cover every scenario — from a full in-place VM restore to recovering a single file.
 
-**Azure Bastion** eliminates the need to expose SSH or RDP to the internet — you connect through the browser over HTTPS, with no public IP required on the VM.
-
-**Azure Backup** is the proper production solution for VM protection — Recovery Services Vault, scheduled backup policies, retention rules, and four restore options covering every scenario from a full VM restore to recovering a single file.
-
-**Coming up next:** Day 6 moves to **Azure App Service** — Microsoft's managed platform for hosting web applications. Instead of managing the OS, web server, and patches yourself (as you did in Day 4 with IIS and Nginx), App Service handles all of that. You deploy your code, Azure runs it.
+**Coming up next:** Day 6 moves to **Azure App Service** — Microsoft's fully managed platform for hosting web apps. Instead of managing the OS, web server, and patches yourself (as you did in Day 4), App Service handles all of that. You deploy your code, Azure runs it.
 
 ---
 
 ## Key Takeaways
 
-- **Availability Sets** spread VMs across fault and update domains within one data center — 99.95% SLA. Set at creation time, cannot change later.
-- **Availability Zones** spread VMs across physically separate data centers in the same region — 99.99% SLA. The standard for production workloads.
-- **VM Scale Sets** deploy identical VM instances with auto-scale rules — adds capacity when load increases, removes it when load drops. Covered in depth with Load Balancer in Day 8.
-- **Snapshots** are point-in-time captures of a disk — fast, but not a replacement for scheduled backup.
-- **Custom Images** let you bake your configuration into a template and deploy identical VMs from it.
-- **Azure Bastion** provides browser-based SSH/RDP access without exposing ports 22 or 3389 to the internet. Paid service.
-- **Recovery Services Vault** is the container that stores all your backup data — must be in the same region as the protected VMs.
-- **Backup Policy** defines schedule + retention. You set it once; Azure handles the rest.
+- **Availability Sets:** 99.95% SLA — protects against rack-level hardware failure within one data center. Must be set at VM creation.
+- **Availability Zones:** 99.99% SLA — protects against full data center failure. The standard for production workloads.
+- **VM Scale Sets:** identical VM instances with auto-scale rules — adds capacity on load, removes it when idle. Full demo in Day 8 with Load Balancer.
+- **Snapshots:** fast point-in-time disk capture — great before risky changes, not a replacement for scheduled backup.
+- **Custom Images:** bake your configuration into a template; deploy identical VMs (and VMSS instances) from it.
+- **Azure Bastion:** browser-based SSH/RDP over HTTPS with no public ports exposed. Paid ~$0.19/hr.
+- **Recovery Services Vault:** must be in the same region as protected VMs. One vault can protect many VMs.
+- **Backup Policy:** schedule + retention rules — set once, Azure runs it.
 - **Four restore options:** Replace existing VM, Create new VM, Restore disks, File-level recovery — each for a different scenario.
-- **Soft delete** on the vault keeps deleted backup data for 14 days — protection against accidental or malicious deletion.
-- Always **stop backup before deleting a VM** to avoid orphaned recovery points continuing to accrue storage charges.
+- **Soft delete:** deleted backup data is retained for 14 days — protection against accidental or malicious deletion.
+- **Always stop backup before deleting a VM** — otherwise recovery points keep charging for storage.
