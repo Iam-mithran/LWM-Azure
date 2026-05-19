@@ -14,7 +14,6 @@
 - Adding a data disk to a VM and initialising it on both Windows and Linux
 - VM Snapshots — capture a disk's exact state at a point in time
 - Custom Images — build a configured Ubuntu + Nginx VM, capture it as an image, and deploy a clone from it
-- Azure Bastion — connect to VMs securely without exposing SSH or RDP to the internet
 - Azure Backup — fully managed backup service: Recovery Services Vault, backup policies, recovery points, and all four restore options
 - VM Monitoring — set up a CPU alert that emails you when your VM is under load
 
@@ -611,62 +610,7 @@ We're going to build an Ubuntu VM with Nginx and a custom HTML page, capture it 
 
 ---
 
-## Part 7 — Azure Bastion
-
-### The Problem with Exposed SSH and RDP
-
-When you open port 22 (SSH) or port 3389 (RDP) in an NSG inbound rule, you're giving the entire internet a door to knock on. Automated scanners probe those ports constantly. Every exposed SSH or RDP port is an attack surface.
-
-### What Is Azure Bastion?
-
-**Azure Bastion** is a fully managed PaaS service that lets you connect to VMs directly from the Azure Portal, over HTTPS (port 443), without exposing port 22 or 3389 at all.
-
-```mermaid
-graph LR
-    U["You\n(browser)"] -->|"HTTPS 443"| B["Azure Bastion\n(in your VNet)"]
-    B -->|"SSH / RDP\nover private network"| VM["Your VM\n(no public IP needed)"]
-    Internet["Internet 🚫"] -.->|"port 22/3389 blocked"| VM
-```
-
-| | Traditional SSH/RDP | Azure Bastion |
-|---|---|---|
-| Ports exposed | 22 / 3389 open to internet | None |
-| Access | SSH client / RDP client | Browser only |
-| VM needs public IP | Yes | No |
-| Cost | Jump server compute | ~$0.19/hr (Basic SKU) |
-
-Bastion is deployed into a dedicated subnet called `AzureBastionSubnet` inside your VNet. It connects to your VMs over the private network.
-
----
-
-### Demo — Deploy and Use Azure Bastion
-
-**💳 Paid — Instructor Demo (~$0.19/hr)**
-
-> Bastion is a paid service. This is an instructor demo — students watch and understand the flow. Do not deploy unless you want to incur the hourly charge.
-
-!!! info "Step 1 — Start Bastion deployment from the VM"
-    Go to your VM → **"Connect"** → **"Bastion."**
-
-    Azure detects no Bastion host exists in the VNet and prompts you to create one.
-
-!!! info "Step 2 — Create the required subnet"
-    Azure requires a subnet named exactly `AzureBastionSubnet` with a `/26` or larger address range. Click **"Create subnet"** — Azure creates it automatically.
-
-!!! info "Step 3 — Deploy Bastion"
-    Click **"Deploy Bastion."** Provisioning takes 5–10 minutes.
-
-!!! info "Step 4 — Connect via browser"
-    Once deployed, enter your VM's username and password (or upload your SSH private key) directly in the Azure Portal → **"Connect."**
-
-    A terminal (Linux) or Remote Desktop (Windows) session opens inside your browser tab — no client software, no port 22 or 3389 open anywhere.
-
-!!! warning "Clean up after the demo"
-    Bastion charges ~$0.19/hr while provisioned. After demonstrating, delete the Bastion resource to stop billing. The `AzureBastionSubnet` can stay — it has no cost by itself.
-
----
-
-## Part 8 — Azure Backup
+## Part 7 — Azure Backup
 
 This is the most important section of today's session. If a VM holding important data gets deleted, corrupted, or encrypted by ransomware, you need a way to get it back. Azure Backup is how you do that.
 
@@ -823,7 +767,7 @@ graph TD
 
 ---
 
-## Part 9 — VM Monitoring and Alerts
+## Part 8 — VM Monitoring and Alerts
 
 Azure Monitor collects CPU, memory, disk, and network metrics from every VM automatically. You can set up alerts that notify you when a metric crosses a threshold.
 
@@ -892,7 +836,7 @@ Today you covered the full VM management picture.
 
 **Snapshots** give you a fast point-in-time disk capture. **Custom Images** go further — you built an Ubuntu + Nginx VM, deployed a custom HTML page, generalised it with `waagent`, captured it as an Azure image, and deployed a clone from it that was already running Nginx with zero setup.
 
-**Azure Bastion** eliminates exposed SSH/RDP ports. **Azure Backup** with Recovery Services Vault provides scheduled, managed backup with four restore options.
+**Azure Backup** with Recovery Services Vault provides scheduled, managed backup with four restore options.
 
 **Coming up next:** Day 6 moves to **Azure App Service** — Microsoft's fully managed platform for hosting web applications. Instead of managing the OS, web server, and patches yourself, App Service handles all of that. You deploy your code, Azure runs it.
 
@@ -909,7 +853,6 @@ Today you covered the full VM management picture.
 - **Linux disk initialisation:** `fdisk` to partition → `mkfs.ext4` to format → `mount` to attach → `/etc/fstab` to persist.
 - **Snapshots:** fast point-in-time disk captures — good before risky changes, not a replacement for backup.
 - **Custom Images:** generalise with `waagent -deprovision` → deallocate → capture → deploy clones. Source VM is no longer usable after generalisation.
-- **Azure Bastion:** browser-based SSH/RDP over HTTPS — no public ports exposed. Paid ~$0.19/hr.
 - **Recovery Services Vault:** must be in the same region as protected VMs.
 - **Four restore options:** Replace existing VM, Create new VM, Restore disks, File-level recovery.
 - **Always stop backup before deleting a VM** — orphaned recovery points continue charging.

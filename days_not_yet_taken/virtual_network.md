@@ -21,6 +21,7 @@ Understand Azure networking from scratch and create a working VNet with subnets.
 - Azure DNS — Private Zones: private name resolution inside a VNet — resources resolve each other by name (e.g., `db.internal`) without needing custom DNS servers; link private zones to VNets for automatic registration
 - Custom DNS on a VNet: point a VNet to your own DNS server (on-premises or a VM-based DNS) instead of Azure's default resolver
 - Azure-provided DNS vs custom DNS: Azure gives every VNet a built-in resolver at `168.63.129.16` — sufficient for most scenarios; bring your own DNS only when you need split-horizon or conditional forwarding
+- Azure Bastion: a fully managed PaaS service that lives inside a dedicated `AzureBastionSubnet` in your VNet and lets you connect to VMs over HTTPS (port 443) from the browser — no public IP on the VM, no exposed port 22 or 3389; paid service (~$0.19/hr Basic SKU)
 
 ## Hands-On Demo
 
@@ -32,6 +33,7 @@ Understand Azure networking from scratch and create a working VNet with subnets.
 - ✅ Deploy a VM into the private subnet
 - ✅ Create an Azure DNS Public Zone (use a test domain or subdomain) and add an A record pointing to a VM's public IP
 - ✅ Create an Azure DNS Private Zone, link it to the VNet, and verify private name resolution from inside a VM
+- 💳 Deploy Azure Bastion into an `AzureBastionSubnet` and connect to a VM via the browser (Instructor Demo — ~$0.19/hr)
 
 ## Summary
 
