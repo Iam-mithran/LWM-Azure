@@ -14,8 +14,7 @@
 - Adding a data disk to a VM and initialising it on both Windows and Linux
 - VM Snapshots — capture a disk's exact state at a point in time
 - Custom Images — build a configured Ubuntu + Nginx VM, capture it as an image, and deploy a clone from it
-- Azure Backup — fully managed backup service: Recovery Services Vault, backup policies, recovery points, and all four restore options
-- VM Monitoring — set up a CPU alert that emails you when your VM is under load
+- Azure Backup — fully managed backup service: Recovery Services Vault, backup policies, tiered retention, recovery points, and all four restore options
 
 ---
 
@@ -686,6 +685,126 @@ This means you can restore from any point in the last 7 days, any Sunday in the 
 
 ---
 
+### Understanding Daily, Weekly, and Monthly Retention
+
+When you configure a backup policy in Azure, you aren't just setting one timer — you're stacking three independent retention tiers on top of each other. Each tier answers a different question.
+
+| Tier | Question it answers | Recovery points kept |
+|---|---|---|
+| **Daily** | "What did my VM look like this week?" | One per day, kept for N days |
+| **Weekly** | "What did my VM look like this month?" | One per week, kept for N weeks |
+| **Monthly** | "What did my VM look like this year?" | One per month, kept for N months |
+
+Let's say your policy is: **daily backup at 2:00 AM, retain 7 days daily, 4 weeks weekly, 12 months monthly.**
+
+Here's what Azure keeps at any given moment:
+
+```
+TODAY: Tuesday, May 19, 2026
+
+DAILY RECOVERY POINTS (last 7 days — granular undo):
+  May 19 02:00 AM  ← yesterday's backup
+  May 18 02:00 AM
+  May 17 02:00 AM
+  May 16 02:00 AM
+  May 15 02:00 AM
+  May 14 02:00 AM
+  May 13 02:00 AM  ← oldest daily point, expires tomorrow
+
+WEEKLY RECOVERY POINTS (last 4 Sundays — broader undo):
+  Sunday May 18  ← this week's weekly snapshot
+  Sunday May 11
+  Sunday May 04
+  Sunday Apr 27  ← oldest weekly point, expires next Sunday
+
+MONTHLY RECOVERY POINTS (last 12 months — long-term archive):
+  May 1, 2026    ← first of this month
+  Apr 1, 2026
+  Mar 1, 2026
+  ...all the way back to...
+  Jun 1, 2025    ← oldest monthly point, expires June 1
+```
+
+**Why three tiers instead of just keeping every backup forever?**
+
+Because storage costs money. If you kept every daily backup for a year, you'd store 365 recovery points per VM. Instead, the layered system gives you:
+- **Daily tier** → precise, short-term recovery (deleted a file yesterday, corrupted an app today)
+- **Weekly tier** → broader recovery without the storage cost of 30 daily snapshots
+- **Monthly tier** → long-term compliance and disaster recovery at minimal cost (12 snapshots per year, not 365)
+
+#### How the Tiers Actually Overlap
+
+Here's the key detail people miss: **the same backup job feeds all three tiers simultaneously.**
+
+When Azure runs the 2:00 AM backup on Sunday May 18:
+- It creates **one snapshot**
+- That snapshot is tagged as a **daily** recovery point (expires in 7 days)
+- Because it's a Sunday, it's also tagged as a **weekly** recovery point (expires in 4 weeks)
+- If it's the first Sunday of a month, it's also tagged as a **monthly** recovery point (expires in 12 months)
+
+Azure doesn't run three separate backups — it runs one and applies the right retention label based on which day it falls on.
+
+```mermaid
+graph TD
+    JOB["Backup Job — 2:00 AM Sunday May 18"] --> SNAP["One Snapshot Created"]
+    SNAP -->|"Always"| D["Daily tag — expires May 25"]
+    SNAP -->|"It's a Sunday"| W["Weekly tag — expires June 15"]
+    SNAP -->|"First of the month?"| M["Monthly tag — expires May 2027"]
+```
+
+#### What Happens When a Daily Point Ages Out
+
+On May 20, the May 13 daily recovery point expires. But if May 13 was also the designated weekly snapshot day (say, a Sunday), it does **not** get deleted — the weekly tag is still valid for another 3 weeks. The daily tag expires, the weekly tag keeps it alive. This is how Azure avoids gaps in your recovery history.
+
+#### Example: If You Configure All Three Together
+
+Let's say you configure this policy in the portal:
+
+| Setting | Value |
+|---|---|
+| Backup schedule | Daily at 2:00 AM |
+| Daily retention | 30 days |
+| Weekly retention | 12 weeks (every Sunday) |
+| Monthly retention | 12 months (first Sunday of month) |
+
+One year from now, your vault holds:
+- **30 daily points** — one per day for the last 30 days
+- **12 weekly points** — one per week for the last 12 Sundays (minus those covered by daily)
+- **12 monthly points** — one per month going back a full year
+
+Total: roughly **54 recovery points per VM**, covering everything from yesterday to 12 months ago. Without tiered retention, covering the same range daily would cost 365 recovery points' worth of storage.
+
+#### Configuring Retention in the Portal
+
+When you create a custom backup policy, the portal exposes all three tiers under **"Edit policy"**:
+
+```
+Backup schedule:     Daily at 2:00 AM (UTC)
+
+Retention of instant recovery snapshot:  2 days
+
+Daily backup point:
+  Retain for: [30] days
+
+Weekly backup point:
+  On: [Sunday]
+  Retain for: [12] weeks
+
+Monthly backup point:
+  On: [First Sunday of month]
+  Retain for: [12] months
+
+Yearly backup point (optional):
+  On: [January — first Sunday]
+  Retain for: [3] years
+```
+
+Each tier is independent — you can set weekly to 8 weeks and monthly to 6 months without touching the daily setting. And you can disable any tier entirely if it doesn't match your retention requirements.
+
+> **Instant recovery snapshot** is a separate, short-lived snapshot (1–5 days) stored locally on the VM's disk for ultra-fast restores — no waiting for Azure to pull data back from the vault. Beyond that window, restores pull from the vault tiers above.
+
+---
+
 ### Demo — Enable Backup for Your VM
 
 **✅ Free Tier**
@@ -779,52 +898,6 @@ graph TD
 
 ---
 
-## Part 8 — VM Monitoring and Alerts
-
-Azure Monitor collects CPU, memory, disk, and network metrics from every VM automatically. You can set up alerts that notify you when a metric crosses a threshold.
-
----
-
-### Demo — Set Up a CPU Alert
-
-**✅ Free Tier**
-
-!!! success "Step 1 — Open Alerts for your VM"
-    Your VM → **Monitoring** → **"Alerts"** → **"+ Create"** → **"Alert rule."**
-
-!!! success "Step 2 — Configure the condition"
-    **Condition** → **"Add condition"** → select **"Percentage CPU."**
-
-    | Setting | Value |
-    |---|---|
-    | Operator | Greater than |
-    | Aggregation type | Average |
-    | Threshold value | **80** |
-    | Check every | 1 minute |
-    | Lookback period | 5 minutes |
-
-    Click **"Next: Actions."**
-
-!!! success "Step 3 — Create an Action Group"
-    Click **"+ Create action group."**
-
-    | Field | Value |
-    |---|---|
-    | Action group name | `vm-alerts-ag` |
-    | Display name | `VM Alerts` |
-
-    Under **Notifications** → type: **Email/SMS/Push/Voice** → name: `Email me` → enter your email → **"Review + create"** → **"Create."**
-
-!!! success "Step 4 — Name the alert and save"
-    - **Alert rule name:** `VM CPU above 80%`
-    - **Severity:** 2 — Warning
-
-    Click **"Review + create"** → **"Create."**
-
-    You'll now receive an email whenever your VM's CPU averages above 80% for 5 minutes. Deep dive on Azure Monitor is in Day 17.
-
----
-
 ## Cleaning Up
 
 **✅ Free Tier**
@@ -848,7 +921,9 @@ Today you covered the full VM management picture.
 
 **Snapshots** give you a fast point-in-time disk capture. **Custom Images** go further — you built an Ubuntu + Nginx VM, deployed a custom HTML page, generalised it with `waagent`, captured it as an Azure image, and deployed a clone from it that was already running Nginx with zero setup.
 
-**Azure Backup** with Recovery Services Vault provides scheduled, managed backup with four restore options.
+**Azure Backup** with Recovery Services Vault provides scheduled, managed backup with tiered daily, weekly, and monthly retention and four restore options.
+
+> **Monitoring and alerts** are covered in full on Day 17 — Azure Monitor, metrics, dashboards, and alert rules all using a VM as the example resource.
 
 **Coming up next:** Day 6 moves to **Azure App Service** — Microsoft's fully managed platform for hosting web applications. Instead of managing the OS, web server, and patches yourself, App Service handles all of that. You deploy your code, Azure runs it.
 
@@ -866,5 +941,8 @@ Today you covered the full VM management picture.
 - **Snapshots:** fast point-in-time disk captures — good before risky changes, not a replacement for backup.
 - **Custom Images:** generalise with `waagent -deprovision` → deallocate → capture → deploy clones. Source VM is no longer usable after generalisation.
 - **Recovery Services Vault:** must be in the same region as protected VMs.
+- **Tiered retention:** daily (granular short-term), weekly (broader mid-term), monthly (long-term compliance) — one backup job feeds all three tiers simultaneously based on which day it falls on.
+- **A Sunday backup tagged as weekly is not deleted when its daily tag expires** — the weekly tag keeps it alive until its own retention window closes.
 - **Four restore options:** Replace existing VM, Create new VM, Restore disks, File-level recovery.
 - **Always stop backup before deleting a VM** — orphaned recovery points continue charging.
+- **VM alerts and monitoring** — covered in Day 17 with the full Azure Monitor deep dive.
