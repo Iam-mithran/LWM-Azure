@@ -49,6 +49,18 @@ When you put two or more VMs in an Availability Set, Azure guarantees they will 
 - **Fault Domain** — a rack of servers sharing power and network. If one rack loses power, only VMs on that rack go down.
 - **Update Domain** — a group of servers rebooted together during maintenance. Azure reboots domains one at a time — other VMs stay up.
 
+**Example — 3 web servers in an Availability Set:**
+
+| VM | Fault Domain | Update Domain |
+|----|-------------|---------------|
+| web-vm-1 | FD 0 — Rack A | UD 0 |
+| web-vm-2 | FD 1 — Rack B | UD 1 |
+| web-vm-3 | FD 2 — Rack C | UD 2 |
+
+**Hardware failure (Fault Domain in action):** A power supply fails on Rack B — `web-vm-2` goes down. `web-vm-1` and `web-vm-3` are on separate racks with their own power, so they keep serving traffic. Your site stays up.
+
+**Azure planned maintenance (Update Domain in action):** Azure needs to patch the hypervisor. It reboots UD 0 first — `web-vm-1` is briefly offline. `web-vm-2` and `web-vm-3` keep running. Once `web-vm-1` is back, Azure reboots UD 1, then UD 2. At no point are all three VMs down at the same time.
+
 ```mermaid
 graph TD
     subgraph AS["Availability Set — my-app-avset"]
