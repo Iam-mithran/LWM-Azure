@@ -15,6 +15,7 @@
 | Day 3 | Virtual Machines Part 1 | `days_taken/day03_vms_part1.md` |
 | Day 4 | Web Servers on Azure VMs: Architecture + IIS & Nginx | `days_taken/day04_web_hosting_architecture.md` |
 | Day 5 | VM Management, Availability, Bastion & Backup | `days_taken/day05_vms_part3.md` |
+| Day 6 | Azure App Service | `days_taken/day06_app_service.md` |
 
 ---
 
@@ -26,7 +27,7 @@
 | Priority | Topic | File | Depends On |
 |----------|-------|------|------------|
 | ~~Done~~ | ~~VM Management, VMSS & Backups~~ | ~~`vms_part3.md`~~ | ~~Day 3 ✅~~ |
-| | Azure App Service | `app_service.md` | Day 3 ✅ |
+| ~~Done~~ | ~~Azure App Service~~ | ~~`app_service.md`~~ | ~~Day 3 ✅~~ |
 | | Azure Functions & Serverless | `functions.md` | App Service (recommended) |
 
 ---
