@@ -1,0 +1,1867 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A complete beginner's guide to Azure Cloud and Azure DevOps — 29 days, zero assumed cloud knowledge.">
+      
+      
+      
+        <link rel="canonical" href="https://iam-mithran.github.io/LWM-Azure/day01_account_setup/">
+      
+      
+        <link rel="prev" href="..">
+      
+      
+        <link rel="next" href="../day02_fundamentals/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Day 1 — Account Setup & Free Tier - LearnWithMithran — Azure Complete Beginner's Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#day-1-cloud-fundamentals-course-roadmap-azure-account-setup" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-header__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LearnWithMithran — Azure Complete Beginner's Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Day 1 — Account Setup & Free Tier
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  
+  Phase 0 — Foundations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../day03_vms_part1/" class="md-tabs__link">
+          
+  
+  
+  Phase 1 — Compute
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-nav__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LearnWithMithran — Azure Complete Beginner's Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 0 — Foundations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 0 — Foundations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-cloud-fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Cloud Fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Cloud Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-cloud-computing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Cloud Computing?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on-premise-vs-cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        On-Premise vs Cloud
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloud-service-models-iaas-paas-saas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cloud Service Models — IaaS, PaaS, SaaS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-does-microsoft-azure-fit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where Does Microsoft Azure Fit?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-course-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Course Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Course Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#certifications-this-course-prepares-you-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Certifications This Course Prepares You For
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#your-learning-roadmap-29-days-9-phases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Your Learning Roadmap — 29 Days, 9 Phases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-this-course-covers-and-what-it-doesnt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What This Course Covers — and What It Doesn't
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-azure-account-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Azure Account Setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Azure Account Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-youll-learn-in-this-section" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn in This Section
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-azure-free-account-whats-actually-free" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Azure Free Account — What's Actually Free
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-region" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Region?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-azure-portal-at-a-glance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Azure Portal at a Glance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#demo-getting-set-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo: Getting Set Up
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Demo: Getting Set Up">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#part-a-create-your-free-azure-account" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part A — Create Your Free Azure Account
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-b-portal-orientation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part B — Portal Orientation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day02_fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 1 — Compute
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 1 — Compute
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day03_vms_part1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day04_web_hosting_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day05_vms_part3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day06_app_service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-cloud-fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Cloud Fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Cloud Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-cloud-computing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Cloud Computing?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on-premise-vs-cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        On-Premise vs Cloud
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloud-service-models-iaas-paas-saas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cloud Service Models — IaaS, PaaS, SaaS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-does-microsoft-azure-fit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where Does Microsoft Azure Fit?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-course-overview" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Course Overview
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Course Overview">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#certifications-this-course-prepares-you-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Certifications This Course Prepares You For
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#your-learning-roadmap-29-days-9-phases" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Your Learning Roadmap — 29 Days, 9 Phases
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-this-course-covers-and-what-it-doesnt" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What This Course Covers — and What It Doesn't
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-azure-account-setup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Azure Account Setup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Azure Account Setup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-youll-learn-in-this-section" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn in This Section
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-azure-free-account-whats-actually-free" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Azure Free Account — What's Actually Free
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-region" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Region?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-azure-portal-at-a-glance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Azure Portal at a Glance
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#demo-getting-set-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo: Getting Set Up
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Demo: Getting Set Up">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#part-a-create-your-free-azure-account" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part A — Create Your Free Azure Account
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-b-portal-orientation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part B — Portal Orientation
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="day-1-cloud-fundamentals-course-roadmap-azure-account-setup">Day 1 — Cloud Fundamentals, Course Roadmap &amp; Azure Account Setup</h1>
+<p><strong>Phase 0 — Foundations + Account Setup</strong></p>
+<blockquote>
+<p>Every journey starts somewhere. Before we touch Azure, we answer the question every beginner has: <em>what even is cloud, and why does everyone keep talking about it?</em> Then we map out everything you'll build in this course — and get your Azure account ready to go.</p>
+</blockquote>
+<hr />
+<h2 id="part-1-cloud-fundamentals">Part 1 — Cloud Fundamentals</h2>
+<h3 id="what-is-cloud-computing">What Is Cloud Computing?</h3>
+<p>Think about electricity. You don't build a power station to turn the lights on in your house — you plug into the grid and pay for what you use. The infrastructure exists somewhere; it's just not your problem.</p>
+<p><strong>Cloud computing works the same way for IT.</strong></p>
+<p>Before cloud existed, companies had to buy and run their own servers. That meant:</p>
+<ul>
+<li>Purchasing physical hardware (expensive, upfront cost)</li>
+<li>Finding space to put it — a server room or a rented data center</li>
+<li>Running power and cooling to keep it alive</li>
+<li>Hiring people to maintain and upgrade it</li>
+<li>Waiting <strong>weeks or months</strong> to get new capacity when demand grew</li>
+<li>Paying for full servers even when only using 10% of their capacity</li>
+</ul>
+<p>This model is called <strong>on-premise</strong> (or "on-prem") — your infrastructure, your building, your problem.</p>
+<p><strong>Cloud flips this model.</strong> Microsoft builds and operates massive data centers around the world. You rent the computing, storage, and networking you need — over the internet, on demand, paying only for what you actually use. When you need more capacity, you get it in minutes. When you need less, you scale back and stop paying.</p>
+<hr />
+<h3 id="on-premise-vs-cloud">On-Premise vs Cloud</h3>
+<pre class="mermaid"><code>graph LR
+    subgraph OnPrem["🏢 On-Premise"]
+        direction TB
+        HW["Physical Servers\n(you buy them)"]
+        DC["Your Data Center\n(you rent/own the space)"]
+        IT["Your IT Team\n(patches, hardware, cables)"]
+        HW --- DC --- IT
+    end
+
+    subgraph Cloud["☁️ Cloud (Azure)"]
+        direction TB
+        MDC["Microsoft's Data Centers\n(60+ regions worldwide)"]
+        MTEAM["Microsoft's Teams\n(hardware, patching, power)"]
+        YOU["You\n(manage your workloads via browser)"]
+        MDC --- MTEAM --- YOU
+    end
+
+    OnPrem --&gt;|"The shift"| Cloud</code></pre>
+<table>
+<thead>
+<tr>
+<th>Dimension</th>
+<th>On-Premise</th>
+<th>Cloud (Azure)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cost model</strong></td>
+<td>CapEx — large upfront purchase</td>
+<td>OpEx — monthly pay-as-you-go</td>
+</tr>
+<tr>
+<td><strong>Scaling</strong></td>
+<td>Weeks/months (order, rack, configure)</td>
+<td>Minutes (click a button)</td>
+</tr>
+<tr>
+<td><strong>Maintenance</strong></td>
+<td>Your IT team handles hardware</td>
+<td>Microsoft handles it</td>
+</tr>
+<tr>
+<td><strong>Reliability</strong></td>
+<td>Risk is concentrated in one location</td>
+<td>Built-in redundancy across zones</td>
+</tr>
+<tr>
+<td><strong>Global reach</strong></td>
+<td>Only where you have offices</td>
+<td>60+ regions, every major continent</td>
+</tr>
+<tr>
+<td><strong>Getting started</strong></td>
+<td>High barrier — hardware, space, power</td>
+<td>Low barrier — just a browser</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">Why IT companies are moving to cloud</p>
+<p>The business case is straightforward: lower upfront cost, faster time-to-market, and the ability to scale with demand instead of guessing capacity 3 years in advance. Most enterprises today run a <strong>hybrid model</strong> — some workloads in their own data centers, the rest on cloud. The trend is consistently toward more cloud, not less.</p>
+</div>
+<hr />
+<h3 id="cloud-service-models-iaas-paas-saas">Cloud Service Models — IaaS, PaaS, SaaS</h3>
+<p>Cloud doesn't mean one thing. There are three layers, each hiding more complexity from you:</p>
+<pre class="mermaid"><code>graph TD
+    SAAS["☁️ SaaS — Software as a Service
+    ─────────────────────────────────
+    You use the app.
+    Microsoft manages everything beneath it.
+
+    Azure examples: Microsoft 365, Teams, Outlook"]
+
+    PAAS["🔧 PaaS — Platform as a Service
+    ─────────────────────────────────
+    You deploy your code.
+    Microsoft manages the runtime, OS, and hardware.
+
+    Azure examples: App Service, Azure Functions, Azure SQL"]
+
+    IAAS["🖥️ IaaS — Infrastructure as a Service
+    ─────────────────────────────────
+    You manage the OS and everything above it.
+    Microsoft manages the physical hardware and networking.
+
+    Azure examples: Virtual Machines, Virtual Networks"]
+
+    IAAS --&gt;|"More managed →"| PAAS --&gt;|"More managed →"| SAAS</code></pre>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>You manage</th>
+<th>Microsoft manages</th>
+<th>Best for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>IaaS</strong></td>
+<td>OS, runtime, app, data</td>
+<td>Hardware, network, storage</td>
+<td>Max control, e.g. lift-and-shift migrations</td>
+</tr>
+<tr>
+<td><strong>PaaS</strong></td>
+<td>App code, data</td>
+<td>Everything below the app</td>
+<td>Developers who want to focus on code</td>
+</tr>
+<tr>
+<td><strong>SaaS</strong></td>
+<td>Just your data/settings</td>
+<td>The entire product</td>
+<td>End users, not builders</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">This course covers all three</p>
+<p>Virtual Machines (IaaS) → App Service &amp; Functions (PaaS) → and we'll use SaaS products like Azure DevOps throughout. You'll understand each model from hands-on experience, not just theory.</p>
+</div>
+<hr />
+<h3 id="where-does-microsoft-azure-fit">Where Does Microsoft Azure Fit?</h3>
+<p>Azure is <strong>Microsoft's cloud platform</strong> — and Microsoft's history is why Azure matters in enterprise IT.</p>
+<p>Most companies already run Microsoft products: Windows servers, Office 365, Active Directory for identity management, SQL Server for databases. Azure is the natural cloud extension of that ecosystem:</p>
+<table>
+<thead>
+<tr>
+<th>On-Premise Microsoft</th>
+<th>Azure Equivalent</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Active Directory</td>
+<td>Microsoft Entra ID (formerly Azure AD)</td>
+</tr>
+<tr>
+<td>Windows Server</td>
+<td>Azure Virtual Machines (Windows)</td>
+</tr>
+<tr>
+<td>SQL Server</td>
+<td>Azure SQL Database</td>
+</tr>
+<tr>
+<td>Team Foundation Server</td>
+<td>Azure DevOps</td>
+</tr>
+<tr>
+<td>On-prem file shares</td>
+<td>Azure Files / Blob Storage</td>
+</tr>
+</tbody>
+</table>
+<p>This deep integration with existing enterprise infrastructure is a major reason Azure is widely adopted in corporate environments. And for you as someone learning cloud — Azure skills are directly applicable to the IT landscape at most mid-to-large companies.</p>
+<div class="admonition info">
+<p class="admonition-title">Enterprise scale</p>
+<p>Azure operates in <strong>60+ regions</strong> across every major continent. It holds compliance certifications for healthcare (HIPAA), government (FedRAMP), financial services, and more. This isn't a startup product — it's infrastructure trusted by governments, banks, and hospitals worldwide.</p>
+</div>
+<hr />
+<h2 id="part-2-course-overview">Part 2 — Course Overview</h2>
+<h3 id="certifications-this-course-prepares-you-for">Certifications This Course Prepares You For</h3>
+<p>This course is structured to build toward four Microsoft Azure certifications, in order of difficulty:</p>
+<pre class="mermaid"><code>graph LR
+    AZ900["🎓 AZ-900
+    Azure Fundamentals
+    ───────────────
+    Beginner
+    Cloud concepts + Azure overview
+    → Phases 0–1"]
+
+    AZ104["🎓 AZ-104
+    Azure Administrator
+    ───────────────
+    Intermediate
+    VMs, Networking, Storage,
+    Identity, Monitoring
+    → Phases 1–4"]
+
+    AZ400["🎓 AZ-400
+    DevOps Engineer Expert
+    ───────────────
+    Advanced
+    Azure Repos, Pipelines,
+    Artifacts, Release strategy
+    → Phase 5"]
+
+    AZ305["🎓 AZ-305
+    Solutions Architect Expert
+    ───────────────
+    Advanced
+    Architecture, IaC,
+    Containers, AKS
+    → Phases 6–7"]
+
+    AZ900 --&gt; AZ104
+    AZ104 --&gt; AZ400
+    AZ104 --&gt; AZ305</code></pre>
+<table>
+<thead>
+<tr>
+<th>Certification</th>
+<th>Level</th>
+<th>Course phases</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>AZ-900</strong> — Azure Fundamentals</td>
+<td>Beginner</td>
+<td>Phase 0–1</td>
+</tr>
+<tr>
+<td><strong>AZ-104</strong> — Azure Administrator Associate</td>
+<td>Intermediate</td>
+<td>Phase 1–4</td>
+</tr>
+<tr>
+<td><strong>AZ-400</strong> — DevOps Engineer Expert</td>
+<td>Advanced</td>
+<td>Phase 5</td>
+</tr>
+<tr>
+<td><strong>AZ-305</strong> — Solutions Architect Expert</td>
+<td>Advanced</td>
+<td>Phase 6–7</td>
+</tr>
+</tbody>
+</table>
+<p>You don't need to sit any exam to follow this course. But if you do, the content maps directly to the exam objectives for all four.</p>
+<hr />
+<h3 id="your-learning-roadmap-29-days-9-phases">Your Learning Roadmap — 29 Days, 9 Phases</h3>
+<pre class="mermaid"><code>graph TD
+    P0["📌 Phase 0 — Days 0–1
+    Foundations + Account Setup
+    Cloud concepts · Azure account · Portal tour"]
+
+    P1["⚙️ Phase 1 — Days 2–5
+    Compute
+    Virtual Machines · App Service · Azure Functions"]
+
+    P2["🌐 Phase 2 — Days 6–8
+    Networking
+    Virtual Networks · Load Balancers · VPN &amp; ExpressRoute"]
+
+    P3["💾 Phase 3 — Days 9–12
+    Storage + Databases
+    Blob Storage · Azure SQL · Cosmos DB"]
+
+    P4["🔐 Phase 4 — Days 13–16
+    Identity, Security + Monitoring
+    Entra ID · RBAC · Key Vault · Azure Monitor"]
+
+    P5["🚀 Phase 5 — Days 17–21
+    Azure DevOps
+    Repos · CI Pipelines · CD Pipelines · Artifacts"]
+
+    P6["📄 Phase 6 — Days 22–23
+    Infrastructure as Code
+    ARM Templates · Bicep · Terraform on Azure"]
+
+    P7["🐳 Phase 7 — Days 24–26
+    Containers + AKS
+    Docker on Azure · Azure Kubernetes Service"]
+
+    P8["🏆 Phase 8 — Days 27–28
+    Capstone Project
+    Build + deploy a full solution end-to-end"]
+
+    P0 --&gt; P1 --&gt; P2 --&gt; P3 --&gt; P4 --&gt; P5 --&gt; P6 --&gt; P7 --&gt; P8</code></pre>
+<p>By the end of Day 28, you'll have built and deployed a real multi-component application on Azure — using every major service category in this roadmap.</p>
+<hr />
+<h3 id="what-this-course-covers-and-what-it-doesnt">What This Course Covers — and What It Doesn't</h3>
+<div class="admonition info">
+<p class="admonition-title">This series: Azure + Azure DevOps (Azure-native tools only)</p>
+<p>Every tool and service in this course is <strong>Azure-native</strong>:</p>
+<ul>
+<li><strong>Azure Repos</strong> — source control inside Azure DevOps</li>
+<li><strong>Azure Pipelines</strong> — CI/CD automation</li>
+<li><strong>Azure Artifacts</strong> — package management</li>
+<li><strong>Azure Bicep / ARM</strong> — infrastructure as code, Azure-specific</li>
+<li><strong>Azure Kubernetes Service</strong> — managed Kubernetes on Azure</li>
+</ul>
+<p>The goal is to make you proficient in the Azure platform end-to-end.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">What this course does NOT cover (by design)</p>
+<p>The following tools are <strong>not covered in this series</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Tool</th>
+<th>Why it's excluded</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Git (advanced)</td>
+<td>Covered in the separate LearnWithMithran DevOps series</td>
+</tr>
+<tr>
+<td>Jenkins</td>
+<td>Not Azure-native; separate DevOps series</td>
+</tr>
+<tr>
+<td>Docker (standalone)</td>
+<td>Covered in the separate DevOps series</td>
+</tr>
+<tr>
+<td>Kubernetes (standalone)</td>
+<td>Covered in the separate DevOps series</td>
+</tr>
+<tr>
+<td>General CI/CD theory</td>
+<td>Separate DevOps series</td>
+</tr>
+</tbody>
+</table>
+<p>These tools have their own dedicated LearnWithMithran series. <strong>This course and that series are designed to complement each other</strong> — together they give you the full picture of modern cloud + DevOps. But they are separate learning tracks.</p>
+</div>
+<hr />
+<h2 id="part-3-azure-account-setup">Part 3 — Azure Account Setup</h2>
+<h3 id="what-youll-learn-in-this-section">What You'll Learn in This Section</h3>
+<ul>
+<li>What the Azure Free Account actually includes (no surprises)</li>
+<li>Why the credit card is identity verification — not a billing trigger</li>
+<li>How to navigate the Azure Portal confidently</li>
+</ul>
+<hr />
+<h3 id="the-azure-free-account-whats-actually-free">The Azure Free Account — What's Actually Free</h3>
+<div class="admonition info">
+<p class="admonition-title">Three layers of free</p>
+<p>The Azure Free Account has three distinct tiers. Understanding these upfront prevents confusion later.</p>
+<p><strong>Layer 1 — $200 credit for 30 days</strong>
+Dropped into your account the moment you sign up. Use it to try almost anything in Azure. Expires after 30 days regardless of how much you've used.</p>
+<p><strong>Layer 2 — 12 months of popular free services</strong>
+After the 30-day credit expires, a specific set of services stays free for 12 months:</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Free limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Linux Virtual Machine (B1s)</td>
+<td>750 hours/month</td>
+</tr>
+<tr>
+<td>Windows Virtual Machine (B1s)</td>
+<td>750 hours/month</td>
+</tr>
+<tr>
+<td>Azure SQL Database</td>
+<td>250 GB</td>
+</tr>
+<tr>
+<td>Azure Blob Storage</td>
+<td>5 GB</td>
+</tr>
+<tr>
+<td>Azure Files</td>
+<td>5 GB</td>
+</tr>
+<tr>
+<td>Bandwidth (outbound)</td>
+<td>15 GB</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Layer 3 — 25+ always-free services</strong>
+These never expire, no matter how long you've had your account:</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>Always-free limit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Azure Functions</td>
+<td>1 million requests/month</td>
+</tr>
+<tr>
+<td>Azure App Service</td>
+<td>10 web apps (F1 plan)</td>
+</tr>
+<tr>
+<td>Azure Cosmos DB</td>
+<td>1,000 RU/s + 25 GB storage</td>
+</tr>
+<tr>
+<td>Azure DevOps</td>
+<td>5 users, unlimited private repos</td>
+</tr>
+<tr>
+<td>Azure Container Registry</td>
+<td>1 registry (Basic)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Credit card: identity only</p>
+<p>Azure requires a credit card to verify you're a real person — not to bill you. <strong>When the $200 credit expires, Azure suspends your non-free resources. It does not automatically charge your card.</strong> You must explicitly upgrade to Pay-As-You-Go for charges to begin.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">No credit card? Use Azure for Students</p>
+<p>If you have a school or university email address (.edu or your institution's domain), you qualify for <strong>Azure for Students</strong>: $100 credit, no credit card required. Sign up at <code>azure.microsoft.com/en-us/free/students</code>.</p>
+</div>
+<hr />
+<h3 id="what-is-a-region">What Is a Region?</h3>
+<p>When you create any resource in Azure, you choose a <strong>region</strong> — a geographic location where Microsoft's data centers are physically located.</p>
+<pre class="mermaid"><code>graph LR
+    A["🌏 Azure Global Network"] --&gt; B["East US\n(Virginia)"]
+    A --&gt; C["West Europe\n(Netherlands)"]
+    A --&gt; D["Southeast Asia\n(Singapore)"]
+    A --&gt; E["Australia East\n(Sydney)"]
+    A --&gt; F["60+ more regions..."]</code></pre>
+<p><strong>How to pick your region:</strong> Choose the one closest to where you live. Closer = lower latency = snappier portal and faster demos. For personal learning, that's all that matters.</p>
+<hr />
+<h3 id="the-azure-portal-at-a-glance">The Azure Portal at a Glance</h3>
+<p>The Azure Portal (<code>portal.azure.com</code>) is the web dashboard you'll use for this entire course. Everything is GUI-based — no command line required.</p>
+<pre class="mermaid"><code>graph TD
+    P["Azure Portal\nportal.azure.com"] --&gt; SB["🔍 Search Bar\nFastest way to navigate"]
+    P --&gt; FAV["⭐ Favorites Sidebar\nYour pinned services"]
+    P --&gt; HOME["🏠 Home Screen\nRecent resources + quick actions"]
+    P --&gt; NOTIF["🔔 Notifications\nDeployment status &amp; alerts"]
+
+    HOME --&gt; SUB["Subscriptions\n(billing container)"]
+    HOME --&gt; RG["Resource Groups\n(logical folders)"]
+    HOME --&gt; CM["Cost Management\n(spending + budgets)"]</code></pre>
+<hr />
+<h2 id="demo-getting-set-up">Demo: Getting Set Up</h2>
+<p>All steps below are <strong>✅ Free Tier</strong> — you can follow every one.</p>
+<hr />
+<h3 id="part-a-create-your-free-azure-account">Part A — Create Your Free Azure Account</h3>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Go to the sign-up page</p>
+<p>Open your browser and navigate to <strong>azure.microsoft.com/free</strong>. Click the blue <strong>"Start free"</strong> button.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Sign in with a Microsoft account</p>
+<p>Use an existing Outlook, Hotmail, or Xbox account — or click <strong>"Create one"</strong> to make a new Microsoft account. Use an email address you actually check; billing alerts and notifications go here.</p>
+<p><em>Azure for Students users: go to <code>azure.microsoft.com/en-us/free/students</code> and verify with your school email instead.</em></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Fill in the sign-up form</p>
+<ul>
+<li><strong>Country/region:</strong> Select your actual country. This affects pricing and legal terms.</li>
+<li><strong>Phone verification:</strong> Enter your mobile number. Azure texts you a code — type it in. This is a real-person check, nothing more.</li>
+<li><strong>Credit card:</strong> Enter your card details for identity verification. You will not be charged.</li>
+</ul>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Agree and sign up</p>
+<p>Accept the subscription agreement and click <strong>"Sign up."</strong> Azure takes 30–60 seconds to provision your account. When it's done, you'll land directly in the Azure Portal.</p>
+<p><strong>You're in.</strong> You now have a working Azure account.</p>
+</div>
+<hr />
+<h3 id="part-b-portal-orientation">Part B — Portal Orientation</h3>
+<div class="admonition success">
+<p class="admonition-title">Step 5 — Find your Subscription</p>
+<p>In the top search bar, type <strong>"Subscriptions"</strong> and click the result. You'll see one subscription — likely named <strong>"Azure subscription 1"</strong> or <strong>"Free Trial."</strong> Click on it. This is your billing container — everything you create will live here.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 6 — Find Resource Groups</p>
+<p>Go back (browser back button) and search for <strong>"Resource Groups."</strong> The list will be empty — that's expected. A resource group is a logical folder. We'll create our first one on Day 1.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 7 — Explore the search bar</p>
+<p>Type anything into the top search bar — "virtual machine," "storage," "functions." Notice how it instantly shows both services and your resources. This search bar is the fastest way to navigate Azure; get comfortable using it.</p>
+</div>
+<hr />
+<h2 id="summary">Summary</h2>
+<pre class="mermaid"><code>graph LR
+    A["✅ Cloud fundamentals understood"] --&gt; B["✅ Course roadmap clear"]
+    B --&gt; C["✅ Account created"]
+    C --&gt; D["✅ Portal explored"]
+    D --&gt; E["Ready for Day 1"]</code></pre>
+<p>You now understand what cloud is and why it matters, where Azure fits in the enterprise world, what certifications and skills this course builds toward, and you have a working Azure account ready to go. Budget alert setup is the very first thing we do on Day 1.</p>
+<p><strong>No money spent. No surprises. Let's build.</strong></p>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>What to remember</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cloud vs on-premise</td>
+<td>Cloud = rent on demand (OpEx); on-prem = buy upfront (CapEx)</td>
+</tr>
+<tr>
+<td>IaaS / PaaS / SaaS</td>
+<td>Three layers — VMs, App Service, and SaaS products like DevOps</td>
+</tr>
+<tr>
+<td>Azure's position</td>
+<td>Microsoft's cloud — deep integration with enterprise Microsoft ecosystem</td>
+</tr>
+<tr>
+<td>Certifications</td>
+<td>AZ-900 → AZ-104 → AZ-400 / AZ-305 (all mapped to this course)</td>
+</tr>
+<tr>
+<td>Free Account layers</td>
+<td>$200 credit (30 days) → 12 months free services → 25+ always-free</td>
+</tr>
+<tr>
+<td>Credit card</td>
+<td>Identity verification only — Azure suspends, never auto-charges</td>
+</tr>
+<tr>
+<td>Azure for Students</td>
+<td>No credit card, $100 credit, .edu email required</td>
+</tr>
+<tr>
+<td>Azure Portal</td>
+<td><code>portal.azure.com</code> — your home for this entire course</td>
+</tr>
+<tr>
+<td>Course scope</td>
+<td>Azure-native tools only — separate series covers standalone DevOps tools</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><a href="../day02_fundamentals/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg></span> Next: Day 2 — Core Concepts &amp; Portal Deep Dive</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: Home">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Home
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../day02_fundamentals/" class="md-footer__link md-footer__link--next" aria-label="Next: Day 2 — Core Concepts &amp; Portal">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Day 2 — Core Concepts & Portal
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

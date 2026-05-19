@@ -1,0 +1,2831 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A complete beginner's guide to Azure Cloud and Azure DevOps — 29 days, zero assumed cloud knowledge.">
+      
+      
+      
+        <link rel="canonical" href="https://iam-mithran.github.io/LWM-Azure/day02_fundamentals/">
+      
+      
+        <link rel="prev" href="../day01_account_setup/">
+      
+      
+        <link rel="next" href="../day03_vms_part1/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Day 2 — Core Concepts & Portal - LearnWithMithran — Azure Complete Beginner's Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#day-2-azure-fundamentals-core-concepts-portal-deep-dive" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-header__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LearnWithMithran — Azure Complete Beginner's Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Day 2 — Core Concepts & Portal
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../day01_account_setup/" class="md-tabs__link">
+          
+  
+  
+  Phase 0 — Foundations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../day03_vms_part1/" class="md-tabs__link">
+          
+  
+  
+  Phase 1 — Compute
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-nav__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LearnWithMithran — Azure Complete Beginner's Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 0 — Foundations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 0 — Foundations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day01_account_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin-set-your-1-budget-alert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin — Set Your $1 Budget Alert
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#azures-global-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure's Global Infrastructure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Azure&#39;s Global Infrastructure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#regions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#availability-zones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Availability Zones
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#region-pairs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Region Pairs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-azure-resource-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Azure Resource Hierarchy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Azure Resource Hierarchy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resources
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resource-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Groups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subscriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subscriptions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#management-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Management Groups
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#azure-resource-manager-arm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Resource Manager (ARM)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#naming-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Naming Conventions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tagging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tagging
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-locks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Locks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resource Locks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-a-tagged-protected-resource-group" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create a Tagged, Protected Resource Group
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#azure-cloud-shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Cloud Shell
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Azure Cloud Shell">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-cloud-shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Cloud Shell
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#azure-pricing-calculator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Pricing Calculator
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Azure Pricing Calculator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-estimate-a-vm-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Estimate a VM Cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#service-level-agreements-slas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Service Level Agreements (SLAs)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#azure-advisor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Advisor
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Azure Advisor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-explore-azure-advisor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Explore Azure Advisor
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#azure-service-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Service Health
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Azure Service Health">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-set-a-service-health-alert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Set a Service Health Alert
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#azure-marketplace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Marketplace
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Azure Marketplace">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-browse-the-marketplace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Browse the Marketplace
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#portal-dashboards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Portal Dashboards
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Portal Dashboards">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-build-your-custom-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Build Your Custom Dashboard
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" >
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 1 — Compute
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 1 — Compute
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day03_vms_part1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day04_web_hosting_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day05_vms_part3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day06_app_service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin-set-your-1-budget-alert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin — Set Your $1 Budget Alert
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#azures-global-infrastructure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure's Global Infrastructure
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Azure&#39;s Global Infrastructure">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#regions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Regions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#availability-zones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Availability Zones
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#region-pairs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Region Pairs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#the-azure-resource-hierarchy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Azure Resource Hierarchy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="The Azure Resource Hierarchy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#resources" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resources
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#resource-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Groups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subscriptions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Subscriptions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#management-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Management Groups
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#azure-resource-manager-arm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Resource Manager (ARM)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#naming-conventions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Naming Conventions
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#tagging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Tagging
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#resource-locks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Resource Locks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Resource Locks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-a-tagged-protected-resource-group" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create a Tagged, Protected Resource Group
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#azure-cloud-shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Cloud Shell
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Azure Cloud Shell">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-cloud-shell" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Cloud Shell
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#azure-pricing-calculator" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Pricing Calculator
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Azure Pricing Calculator">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-estimate-a-vm-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Estimate a VM Cost
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#service-level-agreements-slas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Service Level Agreements (SLAs)
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#azure-advisor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Advisor
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Azure Advisor">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-explore-azure-advisor" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Explore Azure Advisor
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#azure-service-health" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Service Health
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Azure Service Health">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-set-a-service-health-alert" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Set a Service Health Alert
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#azure-marketplace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Marketplace
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Azure Marketplace">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-browse-the-marketplace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Browse the Marketplace
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#portal-dashboards" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Portal Dashboards
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Portal Dashboards">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-build-your-custom-dashboard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Build Your Custom Dashboard
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="day-2-azure-fundamentals-core-concepts-portal-deep-dive">Day 2 — Azure Fundamentals: Core Concepts &amp; Portal Deep Dive</h1>
+<p><strong>Phase 0 — Foundations + Account Setup</strong></p>
+<blockquote>
+<p>Today we go deep on how Azure is actually organized — the infrastructure, the hierarchy, the tools, and the safeguards every Azure user needs to know. By the end of this session, you'll be comfortable with the portal and have a solid foundation for every technical day ahead.</p>
+</blockquote>
+<hr />
+<h2 id="what-youll-learn">What You'll Learn</h2>
+<ul>
+<li>Setting up a $1 budget alert — your financial safety net for the entire course</li>
+<li>How Azure's global infrastructure is organized: Regions, Availability Zones, Region Pairs</li>
+<li>The full resource hierarchy: Management Groups → Subscriptions → Resource Groups → Resources</li>
+<li>Azure Resource Manager (ARM) — the control plane behind everything</li>
+<li>Subscription types and when they apply</li>
+<li>Naming conventions and tagging best practices</li>
+<li>Azure Cloud Shell — the browser-based terminal you'll use throughout this course</li>
+<li>Azure Pricing Calculator — estimate costs before creating anything</li>
+<li>Service Level Agreements (SLAs) — what the numbers mean, and composite SLAs</li>
+<li>Azure Advisor — free optimization recommendations across 5 pillars</li>
+<li>Azure Service Health — how to track outages and set health alerts</li>
+<li>Resource Locks — preventing accidental deletion</li>
+<li>Portal Dashboards — building your own custom views</li>
+<li>Azure Marketplace and Microsoft Learn</li>
+</ul>
+<hr />
+<h2 id="before-we-begin-set-your-1-budget-alert">Before We Begin — Set Your $1 Budget Alert</h2>
+<p>Before creating a single resource, we set a budget alert. This is your financial safety net for everything you build in this course. Do this first, every time you start a new Azure account.</p>
+<p>All steps below are <strong>✅ Free Tier</strong>.</p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open Cost Management</p>
+<p>In the Azure Portal top search bar, type <strong>"Cost Management"</strong> and click <strong>Cost Management + Billing</strong>.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Navigate to Budgets</p>
+<p>In the left-hand menu, click <strong>"Cost Management"</strong> (the sub-section), then click <strong>"Budgets."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Create a new budget</p>
+<p>Click <strong>"+ Add"</strong> and fill in the form:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td><code>LearningBudget</code></td>
+</tr>
+<tr>
+<td>Reset period</td>
+<td>Monthly</td>
+</tr>
+<tr>
+<td>Amount</td>
+<td><code>1</code> (one dollar)</td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>Next.</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Set the alert threshold</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Alert type</td>
+<td>Actual</td>
+</tr>
+<tr>
+<td>% of budget</td>
+<td><code>80</code></td>
+</tr>
+<tr>
+<td>Alert email</td>
+<td><em>your email address</em></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>Create.</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 5 — Confirm it's active</p>
+<p>You'll be taken back to the Budgets list. <code>LearningBudget</code> should appear with a $1 limit. Azure will now email you if you're about to spend anything — your safety net is live for the rest of this course.</p>
+</div>
+<hr />
+<h2 id="azures-global-infrastructure">Azure's Global Infrastructure</h2>
+<h3 id="regions">Regions</h3>
+<p>A <strong>region</strong> is a geographic location that contains one or more Azure data centers. Every resource you create in Azure lives in a specific region.</p>
+<pre class="mermaid"><code>graph TD
+    AZURE["☁️ Azure Global Network\n60+ regions worldwide"]
+
+    AZURE --&gt; US["🇺🇸 United States"]
+    AZURE --&gt; EU["🇪🇺 Europe"]
+    AZURE --&gt; APAC["🌏 Asia Pacific"]
+    AZURE --&gt; AUS["🇦🇺 Australia"]
+
+    US --&gt; EUS["East US\nVirginia"]
+    US --&gt; WUS["West US\nCalifornia"]
+    US --&gt; CUS["Central US\nIowa"]
+
+    EU --&gt; NEU["North Europe\nIreland"]
+    EU --&gt; WEU["West Europe\nNetherlands"]
+    EU --&gt; GER["Germany West Central\nFrankfurt"]
+
+    APAC --&gt; SEA["Southeast Asia\nSingapore"]
+    APAC --&gt; EAS["East Asia\nHong Kong"]
+    APAC --&gt; JE["Japan East\nTokyo"]
+
+    AUS --&gt; AE["Australia East\nNew South Wales"]
+    AUS --&gt; ASE["Australia Southeast\nVictoria"]</code></pre>
+<p><strong>Why region choice matters:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Reason</th>
+<th>What it means for you</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Latency</strong></td>
+<td>Closer region = faster response times for your app's users</td>
+</tr>
+<tr>
+<td><strong>Data residency</strong></td>
+<td>Some regulations require data to stay in a specific country</td>
+</tr>
+<tr>
+<td><strong>Service availability</strong></td>
+<td>New Azure services roll out to major regions first</td>
+</tr>
+<tr>
+<td><strong>Pricing</strong></td>
+<td>Costs vary slightly between regions</td>
+</tr>
+<tr>
+<td><strong>Compliance</strong></td>
+<td>Certain regions have specific certifications (government, healthcare)</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">For this course</p>
+<p>Pick the region closest to where you live. East US and West Europe have the broadest service availability. Australia East is ideal if you're in the Asia-Pacific region.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Explore the full global infrastructure map</p>
+<p>Microsoft maintains an interactive map of every Azure region, Availability Zone, and data center: <strong><a href="https://azure.microsoft.com/en-us/explore/global-infrastructure">azure.microsoft.com/en-us/explore/global-infrastructure</a></strong>. Open it now — click your region and see the zones inside it.</p>
+</div>
+<hr />
+<h3 id="availability-zones">Availability Zones</h3>
+<p>Inside many regions, Azure has multiple <strong>Availability Zones</strong> — physically separate data centers within the same region, each with independent power, cooling, and networking.</p>
+<pre class="mermaid"><code>graph TD
+    subgraph Region["Region: East US (Virginia)"]
+        subgraph Z1["Zone 1 — Data Center A"]
+            P1["🔌 Independent Power"]
+            C1["❄️ Independent Cooling"]
+            N1["🌐 Independent Networking"]
+        end
+        subgraph Z2["Zone 2 — Data Center B"]
+            P2["🔌 Independent Power"]
+            C2["❄️ Independent Cooling"]
+            N2["🌐 Independent Networking"]
+        end
+        subgraph Z3["Zone 3 — Data Center C"]
+            P3["🔌 Independent Power"]
+            C3["❄️ Independent Cooling"]
+            N3["🌐 Independent Networking"]
+        end
+    end
+
+    Z1 -.-&gt;|"High-speed private fiber\n&lt; 2ms latency"| Z2
+    Z2 -.-&gt;|"High-speed private fiber\n&lt; 2ms latency"| Z3
+    Z1 -.-&gt;|"High-speed private fiber\n&lt; 2ms latency"| Z3</code></pre>
+<p><strong>Zone-redundant deployment:</strong> When you deploy a resource across multiple zones, Azure automatically spreads it. If Zone 1 loses power, Zones 2 and 3 keep running — your application survives without intervention.</p>
+<div class="admonition info">
+<p class="admonition-title">Not all regions have Availability Zones</p>
+<p>Availability Zones exist in major regions (East US, West Europe, Australia East, etc.). Smaller or newer regions may only have one zone. Always check the Azure documentation for your region if redundancy matters.</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">When you'll configure this</p>
+<p>From Day 2 onward, when creating VMs and databases, you'll see an Availability Zone dropdown. Zone-redundant storage and zone-redundant databases are also options you'll choose. Understanding this now means you'll know exactly what you're selecting later.</p>
+</div>
+<hr />
+<h3 id="region-pairs">Region Pairs</h3>
+<p>Every Azure region is <strong>paired</strong> with another region in the same geography. This pairing has two purposes: staggered maintenance and disaster recovery.</p>
+<pre class="mermaid"><code>graph LR
+    EUS["🇺🇸 East US\n(Virginia)"] &lt;--&gt;|"Paired"| WUS["🇺🇸 West US\n(California)"]
+    NEU["🇮🇪 North Europe\n(Ireland)"] &lt;--&gt;|"Paired"| WEU["🇳🇱 West Europe\n(Netherlands)"]
+    AE["🇦🇺 Australia East\n(NSW)"] &lt;--&gt;|"Paired"| ASE["🇦🇺 Australia SE\n(Victoria)"]
+    SEA["🇸🇬 Southeast Asia\n(Singapore)"] &lt;--&gt;|"Paired"| EAS["🇭🇰 East Asia\n(Hong Kong)"]</code></pre>
+<p><strong>Key guarantees from region pairing:</strong>
+- Microsoft never updates both paired regions at the same time — planned maintenance is staggered
+- In a region-wide outage, Azure prioritizes recovery of the paired region first
+- Azure geo-redundant storage (GRS) automatically replicates data to the paired region</p>
+<hr />
+<h2 id="the-azure-resource-hierarchy">The Azure Resource Hierarchy</h2>
+<p>Everything you create in Azure lives inside a structured four-level hierarchy.</p>
+<pre class="mermaid"><code>graph TD
+    MG["🏢 Management Groups\nOrg-wide policy enforcement across subscriptions"]
+    S["💳 Subscriptions\nBilling boundary — every charge attaches here"]
+    RG["📁 Resource Groups\nLogical containers — group by lifecycle"]
+    R["⚙️ Resources\nThe actual things: VMs, databases, storage..."]
+
+    MG --&gt;|"contains one or more"| S
+    S --&gt;|"contains one or more"| RG
+    RG --&gt;|"contains one or more"| R
+
+    style MG fill:#1565C0,color:#fff
+    style S fill:#1976D2,color:#fff
+    style RG fill:#1E88E5,color:#fff
+    style R fill:#42A5F5,color:#fff</code></pre>
+<h3 id="resources">Resources</h3>
+<p>A <strong>resource</strong> is any individual Azure object you create: a virtual machine, a storage account, a database, a web app, a virtual network, a key vault. Everything visible in the portal is a resource.</p>
+<p><strong>Key resource properties:</strong>
+- Every resource belongs to exactly one resource group
+- Every resource has a type (e.g., <code>Microsoft.Compute/virtualMachines</code>)
+- Every resource lives in one region
+- Every resource has a unique resource ID</p>
+<h3 id="resource-groups">Resource Groups</h3>
+<p>A <strong>resource group</strong> is a logical container — a folder — that holds related resources.</p>
+<pre class="mermaid"><code>graph TD
+    subgraph RG["📁 Resource Group: ecommerce-prod-rg"]
+        VM["⚙️ Virtual Machine\necommerce-prod-vm01"]
+        DB["⚙️ SQL Database\necommerce-prod-db"]
+        STORE["⚙️ Storage Account\necommerceprodstore"]
+        VNET["⚙️ Virtual Network\necommerce-prod-vnet"]
+        KV["⚙️ Key Vault\necommerce-prod-kv"]
+    end</code></pre>
+<p><strong>Five reasons resource groups matter:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Reason</th>
+<th>Practical benefit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Lifecycle</strong></td>
+<td>Delete the group → everything inside is deleted. Clean up entire projects with one click.</td>
+</tr>
+<tr>
+<td><strong>Access control</strong></td>
+<td>Grant access to one RG without touching others.</td>
+</tr>
+<tr>
+<td><strong>Cost visibility</strong></td>
+<td>Filter Cost Management by RG to see exactly what a project costs.</td>
+</tr>
+<tr>
+<td><strong>Tagging scope</strong></td>
+<td>Tags on a RG appear on all resources inside for cost allocation.</td>
+</tr>
+<tr>
+<td><strong>Policy scope</strong></td>
+<td>Governance policies can be applied at the RG level.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">How to group resources</p>
+<p>Group resources that live and die together. A web app, its database, its storage, and its key vault — all created together, all deleted together — belong in the same resource group.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Resource groups are regional but resources inside can span regions</p>
+<p>The resource group itself is created in a region (this is where its metadata is stored), but the resources inside it can be in any region. You can have an East US resource group containing a West Europe VM.</p>
+</div>
+<h3 id="subscriptions">Subscriptions</h3>
+<p>A <strong>subscription</strong> is the billing boundary. Every charge in Azure attaches to a subscription. Subscriptions also act as a trust boundary — they trust exactly one Microsoft Entra ID tenant.</p>
+<p><strong>Subscription types:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Who uses it</th>
+<th>Credit card?</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Free Trial</strong></td>
+<td>Beginners</td>
+<td>Required (identity only)</td>
+<td>$200 credit, 30 days</td>
+</tr>
+<tr>
+<td><strong>Pay-As-You-Go (PAYG)</strong></td>
+<td>Individuals, small teams</td>
+<td>Required</td>
+<td>Charged monthly for usage</td>
+</tr>
+<tr>
+<td><strong>Enterprise Agreement (EA)</strong></td>
+<td>Large enterprises</td>
+<td>Invoice</td>
+<td>Bulk discount, annual commitment</td>
+</tr>
+<tr>
+<td><strong>Cloud Solution Provider (CSP)</strong></td>
+<td>Businesses via partners</td>
+<td>Via partner</td>
+<td>Managed by Microsoft partner</td>
+</tr>
+<tr>
+<td><strong>Azure for Students</strong></td>
+<td>Students with .edu email</td>
+<td>Not required</td>
+<td>$100 credit</td>
+</tr>
+<tr>
+<td><strong>Dev/Test</strong></td>
+<td>Dev and test workloads</td>
+<td>Required</td>
+<td>Discounted rates for non-prod</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">For this course</p>
+<p>You're on a Free Trial or Pay-As-You-Go subscription. Enterprise Agreement and CSP subscriptions are managed by organizations — you'll encounter them in real jobs, so it's worth knowing they exist.</p>
+</div>
+<h3 id="management-groups">Management Groups</h3>
+<p><strong>Management groups</strong> sit above subscriptions and let organizations apply policies and permissions across many subscriptions simultaneously.</p>
+<pre class="mermaid"><code>graph TD
+    ROOT["Root Management Group\n(Tenant-level)"]
+    CORP["Corporate MG"]
+    DIV1["Division A MG"]
+    DIV2["Division B MG"]
+    SUB1["Subscription: Prod-A"]
+    SUB2["Subscription: Dev-A"]
+    SUB3["Subscription: Prod-B"]
+    SUB4["Subscription: Dev-B"]
+
+    ROOT --&gt; CORP
+    CORP --&gt; DIV1
+    CORP --&gt; DIV2
+    DIV1 --&gt; SUB1
+    DIV1 --&gt; SUB2
+    DIV2 --&gt; SUB3
+    DIV2 --&gt; SUB4</code></pre>
+<p><strong>What you can do with management groups:</strong>
+- Apply Azure Policy across all subscriptions (e.g., "no resources outside approved regions")
+- Assign RBAC roles that inherit down to all subscriptions and resource groups
+- Organize subscriptions into a hierarchy that mirrors your org structure</p>
+<hr />
+<h2 id="azure-resource-manager-arm">Azure Resource Manager (ARM)</h2>
+<p>Every action in Azure — portal click, CLI command, API call, Bicep template — goes through <strong>Azure Resource Manager</strong>.</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant You
+    participant Portal as Azure Portal
+    participant ARM as Azure Resource Manager
+    participant Service as Azure Service (e.g. Compute)
+
+    You-&gt;&gt;Portal: Click "Create VM"
+    Portal-&gt;&gt;ARM: Send API request
+    ARM-&gt;&gt;ARM: ① Authenticate your identity (Entra ID)
+    ARM-&gt;&gt;ARM: ② Check RBAC permissions
+    ARM-&gt;&gt;ARM: ③ Validate request against Azure Policy
+    ARM-&gt;&gt;ARM: ④ Check subscription quotas
+    ARM-&gt;&gt;Service: Provision the resource
+    Service--&gt;&gt;ARM: Resource created
+    ARM--&gt;&gt;Portal: Success response
+    Portal--&gt;&gt;You: "Your VM is ready ✅"</code></pre>
+<p>ARM provides a consistent layer that means:
+- <strong>Every interface works the same way</strong> — portal, CLI, PowerShell, Terraform, Bicep all call the same ARM API
+- <strong>Declarative deployments</strong> — you can describe the desired state and ARM figures out the steps
+- <strong>Template exports</strong> — any resource you create manually can be exported as a JSON template for reuse
+- <strong>Locks and policies are enforced here</strong> — you can't bypass ARM, so governance applies everywhere</p>
+<p><strong>Why this matters throughout the course:</strong> In Phase 6 (IaC), you'll write Bicep templates that describe resources. ARM reads them and creates everything. Understanding that Bicep → ARM → resource is the whole flow makes IaC click immediately.</p>
+<hr />
+<h2 id="naming-conventions">Naming Conventions</h2>
+<p>Azure resource names are <strong>permanent</strong> — you cannot rename most resources after creation.</p>
+<p><strong>Recommended convention for this course:</strong></p>
+<div class="highlight"><pre><span></span><code>[workload]-[environment]-[resource-type](-[instance])
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Resource</th>
+<th>Naming example</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resource Group</td>
+<td><code>learning-dev-rg</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Virtual Machine</td>
+<td><code>webapp-dev-vm01</code></td>
+<td>Number suffix for multiple instances</td>
+</tr>
+<tr>
+<td>Storage Account</td>
+<td><code>learndevstore01</code></td>
+<td>No hyphens allowed, max 24 chars, lowercase only</td>
+</tr>
+<tr>
+<td>Virtual Network</td>
+<td><code>learning-dev-vnet</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Key Vault</td>
+<td><code>learning-dev-kv</code></td>
+<td>Globally unique, 3–24 chars</td>
+</tr>
+<tr>
+<td>SQL Server</td>
+<td><code>learning-dev-sql</code></td>
+<td>Globally unique, lowercase</td>
+</tr>
+<tr>
+<td>App Service Plan</td>
+<td><code>learning-dev-asp</code></td>
+<td></td>
+</tr>
+<tr>
+<td>Web App</td>
+<td><code>learning-dev-app01</code></td>
+<td>Globally unique (part of URL)</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Naming rules vary by resource type</p>
+<p>Some resources have strict rules: storage accounts can't have hyphens or uppercase; key vaults must be globally unique; web app names become part of the URL (<code>appname.azurewebsites.net</code>). The portal validates names in real time — watch for the red error under the field.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Microsoft abbreviation guide</p>
+<p>Microsoft publishes official abbreviations for all resource types: <code>rg</code> for resource group, <code>vm</code> for virtual machine, <code>st</code> for storage, <code>kv</code> for key vault, etc. Using standard abbreviations makes your resources recognizable to anyone familiar with Azure.</p>
+</div>
+<hr />
+<h2 id="tagging">Tagging</h2>
+<p><strong>Tags</strong> are key-value metadata pairs attached to any resource or resource group. They don't affect behaviour — they affect visibility, filtering, and cost allocation.</p>
+<pre class="mermaid"><code>graph LR
+    RG["📁 learning-dev-rg"]
+    T1["🏷️ Environment: Dev"]
+    T2["🏷️ Owner: Mithran"]
+    T3["🏷️ Project: AzureCourse"]
+    T4["🏷️ CostCenter: Training"]
+
+    RG --- T1
+    RG --- T2
+    RG --- T3
+    RG --- T4</code></pre>
+<p><strong>Practical uses for tags:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Tag key</th>
+<th>Example value</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Environment</code></td>
+<td><code>Dev</code> / <code>Staging</code> / <code>Prod</code></td>
+<td>Filter cost by environment</td>
+</tr>
+<tr>
+<td><code>Owner</code></td>
+<td><code>mithran@company.com</code></td>
+<td>Know who to contact</td>
+</tr>
+<tr>
+<td><code>Project</code></td>
+<td><code>AzureCourse</code></td>
+<td>Group costs by project</td>
+</tr>
+<tr>
+<td><code>CostCenter</code></td>
+<td><code>CC-1042</code></td>
+<td>Chargeback to internal teams</td>
+</tr>
+<tr>
+<td><code>ShutdownSchedule</code></td>
+<td><code>18:00-08:00</code></td>
+<td>Auto-shutdown scripts</td>
+</tr>
+<tr>
+<td><code>DataClassification</code></td>
+<td><code>Public</code> / <code>Confidential</code></td>
+<td>Compliance tracking</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">Tags inherit downward in billing — but not automatically in the portal</p>
+<p>If you tag a resource group, the tag appears in Cost Management for billing — but resources inside the group don't automatically inherit the tag in the portal. Use Azure Policy to enforce tag inheritance if needed.</p>
+</div>
+<p><strong>Tag limits:</strong> 50 tags per resource, key max 512 characters, value max 256 characters. Not all resource types support tags (classic resources don't).</p>
+<hr />
+<h2 id="resource-locks">Resource Locks</h2>
+<p><strong>Resource locks</strong> are a safety mechanism that prevents accidental modification or deletion of critical resources.</p>
+<pre class="mermaid"><code>graph TD
+    LOCK["🔒 Resource Lock"]
+
+    LOCK --&gt; CNT["CanNotDelete\n─────────────\nYou CAN read and modify.\nYou CANNOT delete.\n\nUse for: production resources\nyou want to protect from\naccidental deletion"]
+
+    LOCK --&gt; RO["ReadOnly\n─────────────\nYou CAN read.\nYou CANNOT modify or delete.\n\nUse for: resources that\nshould never change\n(audit configurations, etc.)"]</code></pre>
+<p><strong>Lock inheritance:</strong></p>
+<pre class="mermaid"><code>graph TD
+    RG["📁 Resource Group\n🔒 CanNotDelete lock"]
+    VM["⚙️ Virtual Machine\n🔒 Inherits lock"]
+    DB["⚙️ Database\n🔒 Inherits lock"]
+    SA["⚙️ Storage Account\n🔒 Inherits lock"]
+
+    RG --&gt; VM
+    RG --&gt; DB
+    RG --&gt; SA</code></pre>
+<p>A lock applied to a resource group automatically protects every resource inside it. You don't need to lock each resource individually.</p>
+<p><strong>Lock management rules:</strong>
+- Only <strong>Owner</strong> and <strong>User Access Administrator</strong> roles can create or delete locks
+- A lock overrides permissions — even an Owner cannot delete a locked resource without first removing the lock
+- Locks don't affect read operations — resources function normally under a lock</p>
+<div class="admonition warning">
+<p class="admonition-title">Locks can cause unexpected failures</p>
+<p>Some Azure operations require modifying or deleting sub-resources internally. A ReadOnly lock on a storage account can break operations that need to rotate keys. Use CanNotDelete for most cases and ReadOnly only when truly needed.</p>
+</div>
+<hr />
+<h3 id="hands-on-create-a-tagged-protected-resource-group">Hands-On: Create a Tagged, Protected Resource Group</h3>
+<p>Now we put naming conventions, tagging, and resource locks into practice — all in one go.</p>
+<p>All steps below are <strong>✅ Free Tier</strong>.</p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open Resource Groups</p>
+<p>In the Azure Portal search bar, type <strong>"Resource groups"</strong> and click the result.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Create a new Resource Group</p>
+<p>Click <strong>"+ Create"</strong> and fill in:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Subscription</td>
+<td><em>(your subscription)</em></td>
+</tr>
+<tr>
+<td>Resource group name</td>
+<td><code>learning-dev-rg</code></td>
+</tr>
+<tr>
+<td>Region</td>
+<td><em>(closest to you)</em></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Review + create"</strong> → <strong>"Create"</strong> → <strong>"Go to resource group."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Apply tags</p>
+<p>In the left menu, click <strong>"Tags."</strong> Add:</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Environment</td>
+<td>Learning</td>
+</tr>
+<tr>
+<td>Owner</td>
+<td><em>(your name)</em></td>
+</tr>
+<tr>
+<td>Project</td>
+<td>AzureCourse</td>
+</tr>
+<tr>
+<td>CostCenter</td>
+<td>Training</td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Apply."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Apply a Resource Lock</p>
+<p>In the left menu, click <strong>"Locks."</strong> Click <strong>"+ Add"</strong> and fill in:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lock name</td>
+<td><code>prevent-delete</code></td>
+</tr>
+<tr>
+<td>Lock type</td>
+<td><strong>CanNotDelete</strong></td>
+</tr>
+<tr>
+<td>Notes</td>
+<td>Protects course resources from accidental deletion</td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"OK."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 5 — Test the lock (so you can see it working)</p>
+<p>Click <strong>"Delete resource group"</strong> in the toolbar, type the name to confirm, and click <strong>"Delete."</strong> It will fail with a lock error. <strong>Good — that's exactly what we want.</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 6 — Remove the lock</p>
+<p>Go back to <strong>Locks</strong>, select <code>prevent-delete</code>, and click <strong>"Delete."</strong> You can delete the resource group normally again when needed.</p>
+</div>
+<hr />
+<h2 id="azure-cloud-shell">Azure Cloud Shell</h2>
+<p><strong>Azure Cloud Shell</strong> is a browser-based terminal built directly into the Azure Portal. It's pre-authenticated with your Azure identity — no login, no installation, no configuration needed.</p>
+<pre class="mermaid"><code>graph LR
+    Portal["Azure Portal\nportal.azure.com"] --&gt;|"Click the &gt;_ icon"| CS["Cloud Shell"]
+    CS --&gt; BASH["Bash mode\n(Azure CLI)"]
+    CS --&gt; PS["PowerShell mode\n(Az PowerShell)"]
+    CS --&gt; DRIVE["📁 Cloud Drive\n5 GB persistent storage\n(Azure Files)"]</code></pre>
+<p><strong>What Cloud Shell gives you:</strong>
+- <strong>Azure CLI</strong> pre-installed and pre-authenticated
+- <strong>Azure PowerShell</strong> module pre-installed
+- <strong>Common tools</strong>: git, terraform, kubectl, helm, python, node, .NET SDK — all ready to use
+- <strong>Persistent storage</strong>: a 5 GB Azure Files share is automatically created and mounted as your home directory — files survive between sessions
+- <strong>Editor</strong>: a built-in Monaco editor (same as VS Code) accessible via <code>code filename</code></p>
+<p><strong>When to use Cloud Shell vs the portal:</strong>
+- Portal GUI for creating and exploring resources interactively
+- Cloud Shell for running scripts, batch operations, or commands that are faster to type than click
+- Cloud Shell when you're following documentation that provides CLI commands</p>
+<div class="admonition tip">
+<p class="admonition-title">Cloud Shell doesn't require a local terminal</p>
+<p>If you're on a locked-down corporate laptop or a Chromebook, Cloud Shell gives you a full Azure CLI environment through nothing but a browser. It's the equalizer.</p>
+</div>
+<hr />
+<h3 id="hands-on-cloud-shell">Hands-On: Cloud Shell</h3>
+<p>All steps below are <strong>✅ Free Tier</strong>.</p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open Cloud Shell</p>
+<p>In the Azure Portal top bar, click the <strong>&gt;_</strong> icon (between the search bar and notifications). A panel opens at the bottom of the screen.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — First-time setup</p>
+<p>If this is your first time, Azure will prompt you to create a storage account for your Cloud Drive. Select your subscription, click <strong>"Create storage."</strong> This takes about 30 seconds.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Switch between Bash and PowerShell</p>
+<p>At the top-left of the Cloud Shell panel, click the <strong>Bash</strong> dropdown and switch to <strong>PowerShell</strong> — then switch back to <strong>Bash.</strong> Both are available; this course primarily uses the Portal GUI, but knowing how to switch matters.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Run your first commands</p>
+<p>In Bash mode, run the following:</p>
+<p><div class="highlight"><pre><span></span><code>az<span class="w"> </span>account<span class="w"> </span>show
+</code></pre></div>
+This shows your current subscription details — you're already authenticated.</p>
+<p><div class="highlight"><pre><span></span><code>az<span class="w"> </span>group<span class="w"> </span>list<span class="w"> </span>--output<span class="w"> </span>table
+</code></pre></div>
+This lists all your resource groups. You'll see <code>learning-dev-rg</code> in the output.</p>
+<p><div class="highlight"><pre><span></span><code>az<span class="w"> </span>group<span class="w"> </span>show<span class="w"> </span>--name<span class="w"> </span>learning-dev-rg
+</code></pre></div>
+This shows the full details of your resource group in JSON format.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 5 — Use the Cloud Shell editor</p>
+<p>Run:
+<div class="highlight"><pre><span></span><code>code<span class="w"> </span>hello.txt
+</code></pre></div>
+A VS Code-style editor opens in the browser. Type <code>Hello from Cloud Shell!</code>, save with <code>Ctrl+S</code>, and close. Run <code>cat hello.txt</code> to confirm it's there. This file persists in your Cloud Drive across sessions.</p>
+</div>
+<hr />
+<h2 id="azure-pricing-calculator">Azure Pricing Calculator</h2>
+<p>Before creating any resource, you should know what it will cost. The <strong>Azure Pricing Calculator</strong> lets you estimate costs for any combination of Azure services.</p>
+<p>Found at: <code>azure.microsoft.com/en-us/pricing/calculator/</code></p>
+<p><strong>How the pricing calculator works:</strong></p>
+<pre class="mermaid"><code>graph LR
+    A["Select service\n(e.g. Virtual Machines)"] --&gt; B["Configure options\n(region, size, OS, hours)"]
+    B --&gt; C["Add more services\n(storage, networking, etc.)"]
+    C --&gt; D["View monthly estimate"]
+    D --&gt; E["Save / Export / Share"]</code></pre>
+<p><strong>Key options to understand:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Pay-as-you-go</strong></td>
+<td>Default rate, no commitment, most expensive per hour</td>
+</tr>
+<tr>
+<td><strong>1-year Reserved</strong></td>
+<td>Pre-commit to 1 year, ~30–40% cheaper than PAYG</td>
+</tr>
+<tr>
+<td><strong>3-year Reserved</strong></td>
+<td>Pre-commit to 3 years, ~50–60% cheaper than PAYG</td>
+</tr>
+<tr>
+<td><strong>Spot pricing</strong></td>
+<td>Up to 90% cheaper — but Azure can evict your VM with 30s notice (for batch workloads only)</td>
+</tr>
+<tr>
+<td><strong>Azure Hybrid Benefit</strong></td>
+<td>Bring your own Windows Server / SQL Server license, significant discount</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">Always calculate before you create</p>
+<p>Habit: before creating any resource in this course, open the Pricing Calculator and estimate the cost first. This builds real-world intuition and prevents surprises.</p>
+</div>
+<p><strong>Azure TCO Calculator</strong> (<code>azure.microsoft.com/en-us/pricing/tco/calculator/</code>): A separate tool specifically for estimating the cost savings of migrating on-premise workloads to Azure. Used in enterprise sales and migration planning.</p>
+<hr />
+<h3 id="hands-on-estimate-a-vm-cost">Hands-On: Estimate a VM Cost</h3>
+<p>All steps below are <strong>✅ Free Tier</strong>.</p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open the Pricing Calculator</p>
+<p>Open a new browser tab and go to <strong>azure.microsoft.com/en-us/pricing/calculator/</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Estimate a Virtual Machine</p>
+<p>Click <strong>"Virtual Machines"</strong> to add it to your estimate. Configure:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Region</td>
+<td><em>(your region)</em></td>
+</tr>
+<tr>
+<td>Operating System</td>
+<td>Windows</td>
+</tr>
+<tr>
+<td>VM Size</td>
+<td>B2s (2 vCPUs, 4 GB RAM)</td>
+</tr>
+<tr>
+<td>Hours</td>
+<td>730 (one full month)</td>
+</tr>
+<tr>
+<td>Payment option</td>
+<td>Pay as you go</td>
+</tr>
+</tbody>
+</table>
+<p>Note the monthly estimate. Now change <strong>Payment option</strong> to <strong>1-year reserved</strong> and see how the price drops by approximately 30–40%.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Add Storage to the estimate</p>
+<p>Click <strong>"+ Add to estimate"</strong> → search for <strong>"Managed Disks."</strong> Add a 128 GB Premium SSD P10 disk. Watch the monthly total update. This is how a real VM cost estimate works — compute + storage + networking all add up.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Save the estimate</p>
+<p>Click <strong>"Export"</strong> to download the estimate as an Excel file. Click <strong>"Share"</strong> to get a shareable URL. In real projects, you send this URL to stakeholders for approval before deploying.</p>
+</div>
+<hr />
+<h2 id="service-level-agreements-slas">Service Level Agreements (SLAs)</h2>
+<p>An <strong>SLA</strong> is Microsoft's guarantee about the availability of a service — expressed as an uptime percentage. If Microsoft fails to meet the SLA, you receive service credits.</p>
+<p><strong>What the percentages mean in real downtime:</strong></p>
+<table>
+<thead>
+<tr>
+<th>SLA</th>
+<th>Max downtime per year</th>
+<th>Max downtime per month</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>99%</td>
+<td>87.6 hours</td>
+<td>7.2 hours</td>
+</tr>
+<tr>
+<td>99.9%</td>
+<td>8.76 hours</td>
+<td>43.8 minutes</td>
+</tr>
+<tr>
+<td>99.95%</td>
+<td>4.38 hours</td>
+<td>21.9 minutes</td>
+</tr>
+<tr>
+<td>99.99%</td>
+<td>52.6 minutes</td>
+<td>4.4 minutes</td>
+</tr>
+<tr>
+<td>99.999%</td>
+<td>5.26 minutes</td>
+<td>26.3 seconds</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Examples of Azure service SLAs:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>SLA</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Virtual Machine (single instance, premium SSD)</td>
+<td>99.9%</td>
+<td>Single VM only</td>
+</tr>
+<tr>
+<td>Virtual Machine (2+ instances in Availability Set)</td>
+<td>99.95%</td>
+<td>Must use Availability Set</td>
+</tr>
+<tr>
+<td>Virtual Machine (2+ instances across Availability Zones)</td>
+<td>99.99%</td>
+<td>Best VM SLA</td>
+</tr>
+<tr>
+<td>Azure SQL Database</td>
+<td>99.99%</td>
+<td>Built-in HA</td>
+</tr>
+<tr>
+<td>Azure Blob Storage (GRS)</td>
+<td>99.9% read / 99.9% write</td>
+<td></td>
+</tr>
+<tr>
+<td>Azure App Service</td>
+<td>99.95%</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Composite SLAs — the multiplier effect:</strong></p>
+<p>When your application depends on multiple services, the combined SLA is the <em>product</em> of individual SLAs:</p>
+<pre class="mermaid"><code>graph LR
+    User["User"] --&gt; VM["Virtual Machine\nSLA: 99.9%"]
+    VM --&gt; SQL["Azure SQL Database\nSLA: 99.99%"]
+    SQL --&gt; BLOB["Blob Storage\nSLA: 99.9%"]
+
+    NOTE["Combined SLA:\n99.9% × 99.99% × 99.9%\n= 99.79%\n~17.5 hours downtime/year"]</code></pre>
+<div class="admonition warning">
+<p class="admonition-title">The composite SLA is always lower than the lowest individual SLA</p>
+<p>This is why architecture matters. More dependencies = lower combined SLA. The solution is redundancy: multiple VMs across zones, geo-redundant storage, etc.</p>
+</div>
+<p><strong>How to improve your SLA:</strong>
+- Use Availability Zones for VMs (99.9% → 99.99%)
+- Use geo-redundant storage (adds a second copy in the paired region)
+- Use managed services like Azure SQL instead of SQL on a VM (Microsoft manages the HA)
+- Use Traffic Manager or Front Door to route across multiple regions</p>
+<p><strong>Where to find SLAs:</strong> Search "Azure SLA" in your browser → Microsoft's official SLA page lists every service.</p>
+<hr />
+<h2 id="azure-advisor">Azure Advisor</h2>
+<p><strong>Azure Advisor</strong> is a free personalized recommendation engine built into Azure. It continuously analyzes your resources and makes recommendations across five pillars.</p>
+<pre class="mermaid"><code>graph TD
+    ADVISOR["🔍 Azure Advisor\nFree · Always-on · Personalized"]
+
+    ADVISOR --&gt; COST["💰 Cost\nSave money by right-sizing\nor shutting down idle resources"]
+    ADVISOR --&gt; SEC["🔐 Security\nFix security vulnerabilities\n(integrates with Defender for Cloud)"]
+    ADVISOR --&gt; REL["🛡️ Reliability\nImprove availability and\nbusiness continuity"]
+    ADVISOR --&gt; PERF["⚡ Performance\nImprove speed and\nresponsiveness"]
+    ADVISOR --&gt; OE["⚙️ Operational Excellence\nImprove deployment, management,\nand monitoring practices"]</code></pre>
+<p><strong>What each pillar covers:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Pillar</th>
+<th>Example recommendations</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Cost</strong></td>
+<td>"Resize this underutilized VM and save $45/month"; "Delete unused public IP addresses"</td>
+</tr>
+<tr>
+<td><strong>Security</strong></td>
+<td>"Enable MFA for admin accounts"; "Apply disk encryption"</td>
+</tr>
+<tr>
+<td><strong>Reliability</strong></td>
+<td>"Add a second instance to this App Service Plan"; "Enable backup for this VM"</td>
+</tr>
+<tr>
+<td><strong>Performance</strong></td>
+<td>"Enable caching for this storage account"; "Use Premium SSD for high I/O"</td>
+</tr>
+<tr>
+<td><strong>Operational Excellence</strong></td>
+<td>"Set up monitoring alerts"; "Use managed identities instead of stored credentials"</td>
+</tr>
+</tbody>
+</table>
+<p>Advisor gives each pillar a score (0–100). Fixing recommendations improves the score.</p>
+<div class="admonition tip">
+<p class="admonition-title">Check Advisor weekly</p>
+<p>As you build resources throughout this course, Advisor will start generating recommendations. It's a free, real-time code review for your Azure environment — always worth checking before the end of a session.</p>
+</div>
+<hr />
+<h3 id="hands-on-explore-azure-advisor">Hands-On: Explore Azure Advisor</h3>
+<p>All steps below are <strong>✅ Free Tier</strong>.</p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open Azure Advisor</p>
+<p>In the Azure Portal search bar, type <strong>"Advisor"</strong> and click the result.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Review the overview</p>
+<p>You'll see the Advisor Score dashboard — scores for each of the 5 pillars. Since your account is new and has minimal resources, scores may be high. As you build more resources throughout this course, Advisor will generate more recommendations here.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Explore each pillar</p>
+<p>Click through <strong>Cost</strong>, <strong>Security</strong>, <strong>Reliability</strong>, <strong>Performance</strong>, and <strong>Operational Excellence</strong>. Read any recommendations present. Even on a fresh account, you may see security recommendations like "Enable MFA" or "Set up a budget alert" (which we already did).</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Configure Advisor alerts (optional)</p>
+<p>Click <strong>"Alerts"</strong> → <strong>"New Advisor Alert."</strong> You can configure Advisor to email you when a new recommendation appears. This is useful in production environments.</p>
+</div>
+<hr />
+<h2 id="azure-service-health">Azure Service Health</h2>
+<p><strong>Azure Service Health</strong> tells you the current and historical health of Azure services and your specific resources. It has three components:</p>
+<pre class="mermaid"><code>graph TD
+    SH["Azure Service Health"]
+
+    SH --&gt; AS["🌐 Azure Status\nstatus.azure.com\nGlobal view of all Azure services\nAnyone can access — no login needed"]
+    SH --&gt; PSH["🔔 Service Health\n(in the portal)\nPersonalized view filtered to\nservices + regions YOU use"]
+    SH --&gt; RH["🖥️ Resource Health\nHealth of your specific\nindividual resources"]</code></pre>
+<p><strong>Azure Status</strong> (<code>status.azure.com</code>): A public page showing the current status of every Azure service in every region. Green = healthy. Orange = degraded. Red = service disruption.</p>
+<p><strong>Service Health</strong> (in portal): Personalized alerts filtered to the Azure services and regions you actually use. Shows:
+- Active incidents affecting your services
+- Planned maintenance windows
+- Health advisories (non-incident announcements)
+- History of past incidents</p>
+<p><strong>Resource Health</strong>: Drills down to a specific resource. Is <em>your</em> virtual machine healthy right now? If not, is it a platform issue or something you caused?</p>
+<hr />
+<h3 id="hands-on-set-a-service-health-alert">Hands-On: Set a Service Health Alert</h3>
+<p>All steps below are <strong>✅ Free Tier</strong>.</p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open Service Health</p>
+<p>In the Azure Portal search bar, type <strong>"Service Health"</strong> and click the result.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Review the Service Issues tab</p>
+<p>This shows any active Azure service incidents in your selected regions. If everything is green, there are no current incidents. Click the <strong>"History"</strong> tab to see past incidents — even large cloud platforms have occasional outages.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Check Health Advisories</p>
+<p>Click the <strong>"Health Advisories"</strong> tab. These are non-incident announcements — things like service retirements, feature changes, and required migrations. This is where you'd find out if a service you're using is being deprecated.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Set up a Service Health Alert</p>
+<p>Click <strong>"Health Alerts"</strong> → <strong>"+ Add service health alert."</strong> Configure:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Subscription</td>
+<td><em>(your subscription)</em></td>
+</tr>
+<tr>
+<td>Services</td>
+<td>Select <strong>Virtual Machines</strong> and <strong>SQL databases</strong></td>
+</tr>
+<tr>
+<td>Regions</td>
+<td><em>(your region)</em></td>
+</tr>
+<tr>
+<td>Event types</td>
+<td>✅ Service issue, ✅ Planned maintenance, ✅ Health advisories</td>
+</tr>
+<tr>
+<td>Action group</td>
+<td>Create new → name it <code>course-alerts</code> → add your email</td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Create alert rule."</strong> You'll now receive an email if any of those services have an issue in your region.</p>
+</div>
+<hr />
+<h2 id="azure-marketplace">Azure Marketplace</h2>
+<p>The <strong>Azure Marketplace</strong> is a catalog of thousands of pre-built images, applications, and services — from Microsoft and third-party publishers. Instead of installing a web server or database from scratch, you can deploy a pre-configured image in minutes.</p>
+<p><strong>What's in the Marketplace:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Examples</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OS Images</strong></td>
+<td>Ubuntu, Windows Server, RHEL, Debian — the images you'll pick when creating VMs</td>
+</tr>
+<tr>
+<td><strong>Pre-configured stacks</strong></td>
+<td>LAMP, WordPress, MEAN, Node.js — full application stacks, one click to deploy</td>
+</tr>
+<tr>
+<td><strong>Enterprise software</strong></td>
+<td>SAP, Oracle, SQL Server on Linux — licensed software ready to run</td>
+</tr>
+<tr>
+<td><strong>Security appliances</strong></td>
+<td>Palo Alto firewalls, Cisco ASA, Fortinet — network virtual appliances</td>
+</tr>
+<tr>
+<td><strong>Developer tools</strong></td>
+<td>Jenkins, TeamCity, GitLab — CI/CD servers ready to deploy</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="hands-on-browse-the-marketplace">Hands-On: Browse the Marketplace</h3>
+<p>All steps below are <strong>✅ Free Tier</strong> (browsing is free — you only pay when you deploy).</p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open Azure Marketplace</p>
+<p>In the top search bar, type <strong>"Marketplace"</strong> and click the result. Browse the categories on the left: Compute, Networking, Databases, Developer Tools, Security.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Explore VM images</p>
+<p>Click <strong>"Compute"</strong> → click <strong>"Ubuntu Server 24.04 LTS"</strong>. Note the publisher (Canonical), pricing model, and the Create button. This is the image you'll use on Day 2 to create your first Linux VM.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Explore third-party solutions</p>
+<p>Search for <strong>"WordPress"</strong> in the Marketplace. You'll see pre-configured WordPress images from various publishers — ready to deploy in minutes. Marketplace images can save hours of manual configuration.</p>
+</div>
+<hr />
+<h2 id="portal-dashboards">Portal Dashboards</h2>
+<p>The Azure Portal home screen is a <strong>dashboard</strong> — and you can fully customize it, create multiple dashboards, and share them with teammates.</p>
+<p><strong>What you can pin to a dashboard:</strong>
+- Any resource (VM, storage account, database)
+- Metrics charts (CPU usage, request rate, error rate)
+- Cost Management charts (spending trends by resource group)
+- Azure Advisor score
+- Service Health widget
+- Markdown tiles (notes, links, documentation)
+- Azure Monitor alert summaries</p>
+<p><strong>Multiple dashboards:</strong> Create separate dashboards for different purposes:
+- "Daily Operations" — health and alerts for running workloads
+- "Cost Overview" — spending by resource group and tag
+- "Project Alpha" — all resources for a specific project</p>
+<p>Dashboards can be <strong>shared</strong> with other users in your organization (published as Azure resources in a resource group) or <strong>exported</strong> as JSON files for version control.</p>
+<hr />
+<h3 id="hands-on-build-your-custom-dashboard">Hands-On: Build Your Custom Dashboard</h3>
+<p>All steps below are <strong>✅ Free Tier</strong>.</p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Create a new dashboard</p>
+<p>Click the portal home icon (☰ menu → Dashboard). Click <strong>"+ New dashboard"</strong> → <strong>"Blank dashboard."</strong> Name it <code>AzureCourse Overview</code>.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Pin your resource group</p>
+<p>Navigate to your <code>learning-dev-rg</code> resource group. In the top toolbar, click <strong>"📌 Pin to dashboard."</strong> Select <code>AzureCourse Overview</code>. Click <strong>"Pin."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Add a Cost Management tile</p>
+<p>Search for <strong>"Cost Management"</strong> in the portal. In Cost Management, find the <strong>"Cost by resource"</strong> chart. Click the <strong>📌 pin icon</strong> on the chart → pin it to <code>AzureCourse Overview</code>.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — View and arrange your dashboard</p>
+<p>Click the portal home icon → select <code>AzureCourse Overview</code>. You'll see your pinned tiles. Click <strong>"Edit"</strong> to drag and resize them. Click <strong>"Done customizing"</strong> when satisfied.</p>
+</div>
+<hr />
+<h2 id="summary">Summary</h2>
+<pre class="mermaid"><code>graph TD
+    A["Global Infrastructure\nRegions · Zones · Pairs"]
+    B["Resource Hierarchy\nMG → Sub → RG → Resources"]
+    C["ARM Control Plane\nUnified API for everything"]
+    D["Subscription Types\nFree · PAYG · EA · CSP"]
+    E["Naming + Tagging\nStandards that scale"]
+    F["Cloud Shell\nBrowser terminal · Pre-authenticated"]
+    G["Pricing Calculator\nEstimate before you create"]
+    H["SLAs + Composite SLAs\n99.9% vs 99.99% in real minutes"]
+    I["Azure Advisor\n5 pillars · Free · Always-on"]
+    J["Service Health\nStatus · Health alerts"]
+    K["Resource Locks\nCanNotDelete · ReadOnly"]
+    L["Portal Dashboards\nCustom views · Shareable"]
+
+    A --&gt; B --&gt; C --&gt; D --&gt; E
+    E --&gt; F --&gt; G --&gt; H --&gt; I
+    I --&gt; J --&gt; K --&gt; L</code></pre>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>What to remember</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Regions</td>
+<td>Geographic locations — pick the closest; check service availability</td>
+</tr>
+<tr>
+<td>Availability Zones</td>
+<td>Physically separate DCs within a region — spread workloads for 99.99% SLA</td>
+</tr>
+<tr>
+<td>Region Pairs</td>
+<td>Paired geographies — staggered maintenance, disaster recovery</td>
+</tr>
+<tr>
+<td>Resource hierarchy</td>
+<td>Management Groups → Subscriptions → Resource Groups → Resources</td>
+</tr>
+<tr>
+<td>Subscription types</td>
+<td>Free Trial, PAYG, EA, CSP, Dev/Test — know which you're on</td>
+</tr>
+<tr>
+<td>ARM</td>
+<td>Every portal click, CLI command, and template calls the same ARM API</td>
+</tr>
+<tr>
+<td>Resource Groups</td>
+<td>Shared lifecycle, access control, cost visibility — group things that belong together</td>
+</tr>
+<tr>
+<td>Naming</td>
+<td><code>[workload]-[env]-[type]</code> — permanent, so get it right the first time</td>
+</tr>
+<tr>
+<td>Tags</td>
+<td>Up to 50 per resource — use Environment, Owner, Project, CostCenter from Day 1</td>
+</tr>
+<tr>
+<td>Resource Locks</td>
+<td>CanNotDelete on production resource groups — saves you from accidents</td>
+</tr>
+<tr>
+<td>Cloud Shell</td>
+<td>Browser terminal at the &gt;_ icon — pre-authenticated, persistent 5 GB drive</td>
+</tr>
+<tr>
+<td>Pricing Calculator</td>
+<td>Always estimate costs before creating — azure.microsoft.com/en-us/pricing/calculator/</td>
+</tr>
+<tr>
+<td>SLAs</td>
+<td>99.9% = 8.76 hrs downtime/year; composite SLAs multiply — redundancy improves them</td>
+</tr>
+<tr>
+<td>Azure Advisor</td>
+<td>Free 5-pillar recommendations — check weekly as you build</td>
+</tr>
+<tr>
+<td>Service Health</td>
+<td>3 layers: Azure Status (global) · Service Health (your services) · Resource Health (your resources)</td>
+</tr>
+<tr>
+<td>Dashboards</td>
+<td>Pin resources and charts to custom views — shareable with your team</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><a href="../day01_account_setup/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg></span> Previous: Day 1 — Account Setup</a> &nbsp;&nbsp; <a href="../day03_vms_part1/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg></span> Next: Day 3 — Virtual Machines Part 1</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../day01_account_setup/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Day 1 — Account Setup &amp; Free Tier">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Day 1 — Account Setup & Free Tier
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../day03_vms_part1/" class="md-footer__link md-footer__link--next" aria-label="Next: Day 3 — Virtual Machines Part 1">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Day 3 — Virtual Machines Part 1
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+         <loc>https://iam-mithran.github.io/LWM-Azure/</loc>
+         <lastmod>2026-05-19</lastmod>
+    </url>
+    <url>
+         <loc>https://iam-mithran.github.io/LWM-Azure/day01_account_setup/</loc>
+         <lastmod>2026-05-19</lastmod>
+    </url>
+    <url>
+         <loc>https://iam-mithran.github.io/LWM-Azure/day02_fundamentals/</loc>
+         <lastmod>2026-05-19</lastmod>
+    </url>
+    <url>
+         <loc>https://iam-mithran.github.io/LWM-Azure/day03_vms_part1/</loc>
+         <lastmod>2026-05-19</lastmod>
+    </url>
+    <url>
+         <loc>https://iam-mithran.github.io/LWM-Azure/day04_web_hosting_architecture/</loc>
+         <lastmod>2026-05-19</lastmod>
+    </url>
+    <url>
+         <loc>https://iam-mithran.github.io/LWM-Azure/day05_vms_part3/</loc>
+         <lastmod>2026-05-19</lastmod>
+    </url>
+    <url>
+         <loc>https://iam-mithran.github.io/LWM-Azure/day06_app_service/</loc>
+         <lastmod>2026-05-19</lastmod>
+    </url>
+</urlset>

@@ -1,0 +1,2346 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A complete beginner's guide to Azure Cloud and Azure DevOps — 29 days, zero assumed cloud knowledge.">
+      
+      
+      
+        <link rel="canonical" href="https://iam-mithran.github.io/LWM-Azure/day04_web_hosting_architecture/">
+      
+      
+        <link rel="prev" href="../day03_vms_part1/">
+      
+      
+        <link rel="next" href="../day05_vms_part3/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx - LearnWithMithran — Azure Complete Beginner's Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#day-4-web-servers-on-azure-vms-architecture-concepts-iis-nginx" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-header__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LearnWithMithran — Azure Complete Beginner's Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+            
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href=".." class="md-tabs__link">
+        
+  
+  
+    
+  
+  Home
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../day01_account_setup/" class="md-tabs__link">
+          
+  
+  
+  Phase 0 — Foundations
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="../day03_vms_part1/" class="md-tabs__link">
+          
+  
+  
+  Phase 1 — Compute
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+  
+
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-nav__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LearnWithMithran — Azure Complete Beginner's Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    
+    
+    
+    
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 0 — Foundations
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 0 — Foundations
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day01_account_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day02_fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    
+    
+    
+    
+      
+        
+        
+      
+      
+        
+      
+    
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_3" checked>
+        
+          
+          <label class="md-nav__link" for="__nav_3" id="__nav_3_label" tabindex="">
+            
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Phase 1 — Compute
+  
+
+    
+  </span>
+  
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_3_label" aria-expanded="true">
+          <label class="md-nav__title" for="__nav_3">
+            <span class="md-nav__icon md-icon"></span>
+            
+  
+    Phase 1 — Compute
+  
+
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day03_vms_part1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-core-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Core Concepts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Core Concepts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#static-vs-dynamic-websites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static vs Dynamic Websites
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Static vs Dynamic Websites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#static-website" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static Website
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamic-website" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic Website
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frontend-backend-and-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend, Backend, and Database
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frontend, Backend, and Database">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#frontend-what-the-user-sees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend — What the User Sees
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backend-the-logic-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backend — The Logic Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-where-the-data-lives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database — Where the Data Lives
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architecture-tiers-how-applications-are-structured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture Tiers — How Applications Are Structured
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture Tiers — How Applications Are Structured">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-tier-architecture-monolithic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-Tier Architecture (Monolithic)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-tier-architecture-client-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-Tier Architecture (Client-Server)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-tier-architecture-the-industry-standard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-Tier Architecture (The Industry Standard)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-web-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Web Server?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-portal-demo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Portal Demo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Portal Demo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setup-create-a-resource-group" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup — Create a Resource Group
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-1-windows-vm-with-iis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo 1 — Windows VM with IIS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Demo 1 — Windows VM with IIS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating-the-windows-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating the Windows VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opening-port-80-for-http" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opening Port 80 for HTTP
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installing-iis-on-the-windows-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing IIS on the Windows VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hosting-your-html-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hosting Your HTML Page
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-2-ubuntu-vm-with-nginx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo 2 — Ubuntu VM with Nginx
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Demo 2 — Ubuntu VM with Nginx">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating-the-ubuntu-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating the Ubuntu VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opening-port-80-on-the-ubuntu-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opening Port 80 on the Ubuntu VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installing-nginx-and-hosting-the-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing Nginx and Hosting the Page
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#replacing-the-default-page-with-your-html" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Replacing the Default Page with Your HTML
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparing-iis-vs-nginx-side-by-side" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparing IIS vs Nginx Side by Side
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleaning-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning Up
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-and-whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary and What's Next
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day05_vms_part3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day06_app_service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-core-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Core Concepts
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Core Concepts">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#static-vs-dynamic-websites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static vs Dynamic Websites
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Static vs Dynamic Websites">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#static-website" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Static Website
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamic-website" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic Website
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#frontend-backend-and-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend, Backend, and Database
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Frontend, Backend, and Database">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#frontend-what-the-user-sees" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Frontend — What the User Sees
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backend-the-logic-layer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backend — The Logic Layer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#database-where-the-data-lives" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Database — Where the Data Lives
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#architecture-tiers-how-applications-are-structured" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Architecture Tiers — How Applications Are Structured
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Architecture Tiers — How Applications Are Structured">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-tier-architecture-monolithic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1-Tier Architecture (Monolithic)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-tier-architecture-client-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2-Tier Architecture (Client-Server)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-tier-architecture-the-industry-standard" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3-Tier Architecture (The Industry Standard)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-web-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Web Server?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-portal-demo" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Portal Demo
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Portal Demo">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setup-create-a-resource-group" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setup — Create a Resource Group
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-1-windows-vm-with-iis" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo 1 — Windows VM with IIS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Demo 1 — Windows VM with IIS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating-the-windows-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating the Windows VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opening-port-80-for-http" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opening Port 80 for HTTP
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installing-iis-on-the-windows-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing IIS on the Windows VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hosting-your-html-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hosting Your HTML Page
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-2-ubuntu-vm-with-nginx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo 2 — Ubuntu VM with Nginx
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Demo 2 — Ubuntu VM with Nginx">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#creating-the-ubuntu-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Creating the Ubuntu VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#opening-port-80-on-the-ubuntu-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Opening Port 80 on the Ubuntu VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#installing-nginx-and-hosting-the-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Installing Nginx and Hosting the Page
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#replacing-the-default-page-with-your-html" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Replacing the Default Page with Your HTML
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#comparing-iis-vs-nginx-side-by-side" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Comparing IIS vs Nginx Side by Side
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cleaning-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning Up
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-and-whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary and What's Next
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="day-4-web-servers-on-azure-vms-architecture-concepts-iis-nginx">Day 4 — Web Servers on Azure VMs: Architecture Concepts + IIS &amp; Nginx</h1>
+<p><strong>Phase 1 — Compute</strong></p>
+<blockquote>
+<p>You've created a VM. You've connected to it. Now let's answer the real question — why do companies rent thousands of VMs in the cloud? Because every website, every app, every API you've ever used is running on a server somewhere. Today you're going to understand how websites actually work from the ground up, and then you're going to host one yourself — on both Windows and Linux — right inside Azure.</p>
+</blockquote>
+<hr />
+<h2 id="what-youll-learn">What You'll Learn</h2>
+<ul>
+<li>What a static website is and what a dynamic website is — and why the difference matters</li>
+<li>What Frontend, Backend, and Database mean in plain English</li>
+<li>What 1-Tier, 2-Tier, and 3-Tier architecture means — and why the industry chose 3-Tier</li>
+<li>What a web server is and what it actually does</li>
+<li>Full walkthrough: hosting a website on a Windows VM using IIS</li>
+<li>Full walkthrough: hosting a website on an Ubuntu VM using Nginx</li>
+<li>How to open port 80 on an Azure VM so the world can reach your site</li>
+</ul>
+<hr />
+<h2 id="part-1-core-concepts">Part 1 — Core Concepts</h2>
+<h3 id="static-vs-dynamic-websites">Static vs Dynamic Websites</h3>
+<p>Before we touch a single server, you need to understand what kind of content a website can serve.</p>
+<h4 id="static-website">Static Website</h4>
+<p>A <strong>static website</strong> sends the exact same files to every single visitor.</p>
+<p>When you visit a static site, the server does one thing: it finds the file you asked for and sends it. No processing, no database query, no logic. Just: <em>"you asked for index.html, here it is."</em></p>
+<ul>
+<li>Built with: HTML, CSS, JavaScript files</li>
+<li>Stored as: plain files on disk</li>
+<li>Examples: a portfolio page, a documentation site, a product landing page</li>
+</ul>
+<p>This is exactly what we're going to build today. A simple HTML file sitting on a server, served to anyone who visits the IP address.</p>
+<h4 id="dynamic-website">Dynamic Website</h4>
+<p>A <strong>dynamic website</strong> generates its content on the fly, based on who you are and what you're doing.</p>
+<p>When you log into YouTube, the homepage you see is different from what your friend sees. YouTube's server doesn't have a pre-made HTML file for you — it builds that page in real time by:</p>
+<ol>
+<li>Checking who you are (your account)</li>
+<li>Querying the database for your watch history and recommendations</li>
+<li>
+<p>Assembling a custom HTML page and sending it back</p>
+</li>
+<li>
+<p>Built with: server-side languages (Python, Node.js, Java, C#, PHP) + HTML/CSS/JS</p>
+</li>
+<li>Needs: a running server process, a database</li>
+<li>Examples: YouTube, Gmail, online banking, e-commerce</li>
+</ol>
+<pre class="mermaid"><code>graph LR
+    subgraph Static["Static Website"]
+        U1["User's Browser"] --&gt;|"GET /index.html"| S1["Web Server"]
+        S1 --&gt;|"Here is index.html"| U1
+    end
+
+    subgraph Dynamic["Dynamic Website"]
+        U2["User's Browser"] --&gt;|"GET /home (with session)"| S2["Web Server"]
+        S2 --&gt;|"Who is this user? Get their data"| DB["Database"]
+        DB --&gt;|"Here is their data"| S2
+        S2 --&gt;|"Built custom HTML page"| U2
+    end</code></pre>
+<blockquote>
+<p><strong>Where are we today?</strong> Static. One HTML file, one web server, no database. By the time we reach the capstone project, you'll build the full dynamic, 3-tier version.</p>
+</blockquote>
+<hr />
+<h3 id="frontend-backend-and-database">Frontend, Backend, and Database</h3>
+<p>These three words come up in every tech job description, every architecture diagram, and every developer conversation. Let's define them clearly once and never confuse them again.</p>
+<h4 id="frontend-what-the-user-sees">Frontend — What the User Sees</h4>
+<p>The frontend is everything that runs inside the user's browser.</p>
+<p>When a page loads, the browser downloads three types of files:</p>
+<table>
+<thead>
+<tr>
+<th>File type</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>HTML</td>
+<td>Structure — headings, paragraphs, buttons, forms</td>
+</tr>
+<tr>
+<td>CSS</td>
+<td>Style — colors, fonts, layout, spacing</td>
+</tr>
+<tr>
+<td>JavaScript</td>
+<td>Behavior — clicking buttons, animations, sending data without refreshing</td>
+</tr>
+</tbody>
+</table>
+<p>The browser reads these files and renders what you see on screen. The user's machine does this work — not the server.</p>
+<p><strong>Frontend = runs in the browser = the user's computer does the work.</strong></p>
+<h4 id="backend-the-logic-layer">Backend — The Logic Layer</h4>
+<p>The backend is the server-side code that the user never sees.</p>
+<p>When you click "Place Order" on an e-commerce site, something has to:</p>
+<ul>
+<li>Verify you're logged in</li>
+<li>Check if the item is in stock</li>
+<li>Charge your card</li>
+<li>Update the inventory</li>
+<li>Send a confirmation email</li>
+</ul>
+<p>None of that happens in your browser. It happens on a server running backend code. The user just sees the result: <em>"Your order has been placed."</em></p>
+<p>Common backend languages: Python, Node.js (JavaScript), Java, C#, PHP, Go, Ruby.</p>
+<p><strong>Backend = runs on a server = business logic, authentication, processing.</strong></p>
+<h4 id="database-where-the-data-lives">Database — Where the Data Lives</h4>
+<p>The database is the long-term memory of your application.</p>
+<p>Every user account, every product listing, every order, every message — it all needs to be stored somewhere and retrieved later. That's the database's job.</p>
+<p>The backend talks to the database. The user never talks to the database directly.</p>
+<p>Common databases: Azure SQL, PostgreSQL, MySQL (relational) and Cosmos DB, MongoDB (non-relational).</p>
+<p><strong>Database = stores and retrieves data = the application's memory.</strong></p>
+<pre class="mermaid"><code>graph TD
+    Browser["User's Browser\n(Frontend: HTML + CSS + JS)"]
+    Server["Web Server\n(Backend: Python / Node / Java)"]
+    DB["Database\n(Azure SQL / Cosmos DB)"]
+
+    Browser &lt;--&gt;|"HTTP requests &amp; responses"| Server
+    Server &lt;--&gt;|"Queries &amp; results"| DB</code></pre>
+<hr />
+<h3 id="architecture-tiers-how-applications-are-structured">Architecture Tiers — How Applications Are Structured</h3>
+<p>Now that you understand the three components, let's talk about how you physically organise them. This is called <strong>application architecture</strong>, and the number of tiers describes how many separate layers your app is split across.</p>
+<h4 id="1-tier-architecture-monolithic">1-Tier Architecture (Monolithic)</h4>
+<p>Everything — frontend, backend, and database — runs on a single machine.</p>
+<pre class="mermaid"><code>graph TD
+    subgraph VM1["Single VM"]
+        FE["Frontend"]
+        BE["Backend"]
+        DB["Database"]
+    end
+    User["User"] --&gt; VM1</code></pre>
+<p><strong>When you'd use it:</strong> Local development, a tiny personal project, a proof of concept.</p>
+<p><strong>The problem:</strong> That one machine is a single point of failure. If it goes down, everything goes down. You also can't scale one layer without scaling all of them — if your database is fine but your backend is under load, you can't add more backend capacity without duplicating everything.</p>
+<h4 id="2-tier-architecture-client-server">2-Tier Architecture (Client-Server)</h4>
+<p>The frontend (client) is separated from the backend and database (server).</p>
+<pre class="mermaid"><code>graph TD
+    subgraph Client["User's Machine"]
+        FE["Frontend\n(Browser / Desktop App)"]
+    end
+    subgraph Server["Server VM"]
+        BE["Backend"]
+        DB["Database"]
+    end
+    Client &lt;--&gt;|"HTTP / TCP"| Server</code></pre>
+<p><strong>Better than 1-tier:</strong> Multiple clients can connect to one server. The frontend is decoupled.</p>
+<p><strong>Still a problem:</strong> Backend and database are on the same machine. A slow database query blocks your backend. You can't scale them independently.</p>
+<h4 id="3-tier-architecture-the-industry-standard">3-Tier Architecture (The Industry Standard)</h4>
+<p>Frontend, backend, and database each run on their own separate layer — independently scalable, independently deployable.</p>
+<pre class="mermaid"><code>graph TD
+    subgraph Tier1["Tier 1 — Presentation"]
+        FE["Web Server\n(IIS / Nginx)\nServes HTML, CSS, JS"]
+    end
+    subgraph Tier2["Tier 2 — Application / Logic"]
+        BE["App Server\n(Python / Node / Java)\nBusiness logic, APIs"]
+    end
+    subgraph Tier3["Tier 3 — Data"]
+        DB["Database Server\n(Azure SQL / Cosmos DB)\nStores all data"]
+    end
+
+    User["User's Browser"] --&gt;|"HTTP"| Tier1
+    Tier1 --&gt;|"API calls"| Tier2
+    Tier2 --&gt;|"SQL queries"| Tier3</code></pre>
+<p><strong>Why every serious company uses 3-tier:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Benefit</th>
+<th>What it means in practice</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Independent scaling</td>
+<td>Your app layer is under load? Add more app servers without touching the database</td>
+</tr>
+<tr>
+<td>Fault isolation</td>
+<td>A bug in the backend doesn't crash the database</td>
+</tr>
+<tr>
+<td>Security</td>
+<td>Database is never directly exposed to the internet</td>
+</tr>
+<tr>
+<td>Team separation</td>
+<td>Frontend team, backend team, and DBA team each own their layer</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>What we build in the capstone:</strong> A real 3-tier app on Azure — Azure Load Balancer in front, App Service or VM for the backend, and Azure SQL for the database. Everything you're learning in these early days is a building block for that.</p>
+</blockquote>
+<hr />
+<h3 id="what-is-a-web-server">What Is a Web Server?</h3>
+<p>We've been saying "web server" — let's define it precisely.</p>
+<p>A <strong>web server</strong> is software that listens for HTTP requests on port 80 (or HTTPS on port 443) and responds by sending files or data back to the browser.</p>
+<p>When you type <code>http://20.40.100.200</code> into your browser, your browser sends an HTTP GET request to that IP address on port 80. The web server software running on that machine receives the request, finds the appropriate file (usually <code>index.html</code>), and sends it back.</p>
+<p><strong>Today we'll use two of the most popular web servers in the world:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Web Server</th>
+<th>Platform</th>
+<th>Market share</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>IIS (Internet Information Services)</td>
+<td>Windows</td>
+<td>Dominant in enterprise Windows stacks</td>
+</tr>
+<tr>
+<td>Nginx</td>
+<td>Linux</td>
+<td>Used by Netflix, Cloudflare, Dropbox — extremely fast</td>
+</tr>
+</tbody>
+</table>
+<p>Both do the same fundamental job. The choice usually comes down to your OS and your team's expertise.</p>
+<hr />
+<h2 id="part-2-portal-demo">Part 2 — Portal Demo</h2>
+<p>We're going to create two separate Azure VMs — one Windows, one Ubuntu — install a web server on each, and host a simple HTML page that anyone with the public IP can view.</p>
+<hr />
+<h3 id="setup-create-a-resource-group">Setup — Create a Resource Group</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open Resource Groups</p>
+<p>In the Azure Portal search bar, type <strong>"Resource groups"</strong> and click the result.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Create the resource group</p>
+<p>Click <strong>"+ Create"</strong> and fill in:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Subscription</td>
+<td><em>(your subscription)</em></td>
+</tr>
+<tr>
+<td>Resource group name</td>
+<td><code>web-demo-rg</code></td>
+</tr>
+<tr>
+<td>Region</td>
+<td><em>(same region you've been using)</em></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Review + create"</strong> → <strong>"Create."</strong></p>
+</div>
+<hr />
+<h3 id="demo-1-windows-vm-with-iis">Demo 1 — Windows VM with IIS</h3>
+<h4 id="creating-the-windows-vm">Creating the Windows VM</h4>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Start creating a VM</p>
+<p>Search for <strong>"Virtual machines"</strong> in the portal, click <strong>"+ Create"</strong> → <strong>"Azure virtual machine."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Fill in the Basics tab</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resource group</td>
+<td><code>web-demo-rg</code></td>
+</tr>
+<tr>
+<td>Virtual machine name</td>
+<td><code>windows-web-vm</code></td>
+</tr>
+<tr>
+<td>Region</td>
+<td><em>(same as your resource group)</em></td>
+</tr>
+<tr>
+<td>Image</td>
+<td><strong>Windows Server 2022 Datacenter</strong></td>
+</tr>
+<tr>
+<td>Size</td>
+<td><strong>Standard_B1s</strong> <em>(Free Tier eligible — 1 vCPU, 1 GB RAM)</em></td>
+</tr>
+<tr>
+<td>Username</td>
+<td><code>azureuser</code></td>
+</tr>
+<tr>
+<td>Password</td>
+<td><em>(create a strong password — you'll need it for RDP)</em></td>
+</tr>
+<tr>
+<td>Public inbound ports</td>
+<td><strong>Allow selected ports</strong></td>
+</tr>
+<tr>
+<td>Select inbound ports</td>
+<td><strong>RDP (3389)</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>We'll open port 80 for HTTP after the VM is created.</p>
+</blockquote>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Disks tab</p>
+<p>Leave defaults — Standard SSD is fine for this demo.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Networking tab</p>
+<p>Leave all defaults. Azure automatically creates a VNet, subnet, and NSG for you.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 5 — Review + Create</p>
+<p>Click <strong>"Review + create"</strong> → <strong>"Create."</strong> Deployment takes 2–3 minutes.</p>
+</div>
+<hr />
+<h4 id="opening-port-80-for-http">Opening Port 80 for HTTP</h4>
+<p><strong>✅ Free Tier</strong></p>
+<p>The VM is running, but its firewall (Network Security Group) only allows RDP right now. We need to add a rule to allow HTTP traffic on port 80.</p>
+<div class="admonition success">
+<p class="admonition-title">Step 6 — Go to your VM</p>
+<p>Once deployment is complete, click <strong>"Go to resource."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 7 — Open the NSG settings</p>
+<p>In the left menu under <strong>Settings</strong>, click <strong>"Networking."</strong> You'll see the inbound port rules — currently only RDP (3389) is allowed.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 8 — Add an inbound rule for HTTP</p>
+<p>Click <strong>"Add inbound port rule"</strong> and fill in:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Source</td>
+<td>Any</td>
+</tr>
+<tr>
+<td>Source port ranges</td>
+<td>*</td>
+</tr>
+<tr>
+<td>Destination</td>
+<td>Any</td>
+</tr>
+<tr>
+<td>Destination port ranges</td>
+<td><strong>80</strong></td>
+</tr>
+<tr>
+<td>Protocol</td>
+<td>TCP</td>
+</tr>
+<tr>
+<td>Action</td>
+<td>Allow</td>
+</tr>
+<tr>
+<td>Priority</td>
+<td>310</td>
+</tr>
+<tr>
+<td>Name</td>
+<td><code>Allow-HTTP-80</code></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Add."</strong></p>
+</div>
+<hr />
+<h4 id="installing-iis-on-the-windows-vm">Installing IIS on the Windows VM</h4>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 9 — Copy the public IP</p>
+<p>On your VM overview page, copy the <strong>Public IP address</strong>.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 10 — Connect via RDP</p>
+<p>Click <strong>"Connect"</strong> → <strong>"RDP"</strong> → <strong>"Download RDP file."</strong> Open it, enter your username and password when prompted. You're now inside the Windows Server desktop.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 11 — Open Server Manager</p>
+<p>Server Manager should open automatically when you log in. If not, click the Windows Start button and search for <strong>"Server Manager."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 12 — Add the Web Server (IIS) role</p>
+<ol>
+<li>In Server Manager, click <strong>"Add roles and features."</strong></li>
+<li>Click <strong>"Next"</strong> on the Before You Begin page.</li>
+<li>Select <strong>"Role-based or feature-based installation"</strong> → <strong>"Next."</strong></li>
+<li>Your server should already be selected → <strong>"Next."</strong></li>
+<li>In the <strong>Server Roles</strong> list, check the box next to <strong>"Web Server (IIS)."</strong></li>
+<li>A popup will ask to add required features — click <strong>"Add Features."</strong></li>
+<li>Click <strong>"Next"</strong> through the remaining pages → <strong>"Install."</strong></li>
+<li>Wait for installation to complete (about 1–2 minutes) → <strong>"Close."</strong></li>
+</ol>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 13 — Verify IIS is running</p>
+<p>Open <strong>Internet Explorer</strong> or <strong>Edge</strong> on the Windows Server desktop and go to <code>http://localhost</code>. You should see the default IIS welcome page — a blue and white page that says <em>"Internet Information Services."</em> IIS is running.</p>
+</div>
+<hr />
+<h4 id="hosting-your-html-page">Hosting Your HTML Page</h4>
+<p><strong>✅ Free Tier</strong></p>
+<p>IIS serves files from a folder called <code>wwwroot</code>. We're going to replace the default page with our own.</p>
+<div class="admonition success">
+<p class="admonition-title">Step 14 — Open File Explorer and navigate to wwwroot</p>
+<p>Open <strong>File Explorer</strong> and go to:
+<div class="highlight"><pre><span></span><code>C:\inetpub\wwwroot
+</code></pre></div>
+You'll see <code>iisstart.htm</code> and a few other files — this is what generated the IIS welcome page.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 15 — Create your HTML file</p>
+<p>Right-click inside the folder → <strong>"New"</strong> → <strong>"Text Document."</strong> Name it <code>index.html</code> (make sure to remove the <code>.txt</code> extension).</p>
+<p>Open it with Notepad and paste in this HTML:</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&quot;en&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;UTF-8&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;viewport&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;width=device-width, initial-scale=1.0&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>My Azure Web Server<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">style</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="nt">body</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">font-family</span><span class="p">:</span><span class="w"> </span><span class="n">Arial</span><span class="p">,</span><span class="w"> </span><span class="kc">sans-serif</span><span class="p">;</span>
+<span class="w">            </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">flex</span><span class="p">;</span>
+<span class="w">            </span><span class="k">justify-content</span><span class="p">:</span><span class="w"> </span><span class="kc">center</span><span class="p">;</span>
+<span class="w">            </span><span class="k">align-items</span><span class="p">:</span><span class="w"> </span><span class="kc">center</span><span class="p">;</span>
+<span class="w">            </span><span class="k">height</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="kt">vh</span><span class="p">;</span>
+<span class="w">            </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">            </span><span class="k">background-color</span><span class="p">:</span><span class="w"> </span><span class="mh">#0078d4</span><span class="p">;</span>
+<span class="w">            </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="kc">white</span><span class="p">;</span>
+<span class="w">            </span><span class="k">text-align</span><span class="p">:</span><span class="w"> </span><span class="kc">center</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="p">.</span><span class="nc">card</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">background</span><span class="p">:</span><span class="w"> </span><span class="nb">rgba</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mf">0.15</span><span class="p">);</span>
+<span class="w">            </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mi">40</span><span class="kt">px</span><span class="w"> </span><span class="mi">60</span><span class="kt">px</span><span class="p">;</span>
+<span class="w">            </span><span class="k">border-radius</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="kt">px</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="nt">h1</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="mf">2.5</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="k">margin-bottom</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="kt">px</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="nt">p</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="mf">1.2</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="k">opacity</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">style</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;card&quot;</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello from Azure!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>This page is hosted on a Windows Server VM using IIS.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Web Server: <span class="p">&lt;</span><span class="nt">strong</span><span class="p">&gt;</span>Internet Information Services (IIS)<span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div>
+<p>Save the file.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 16 — View your website from outside the VM</p>
+<p>On your own laptop, open a browser and go to:
+<div class="highlight"><pre><span></span><code>http://&lt;your-vm-public-ip&gt;
+</code></pre></div>
+You should see your page. You just hosted a website on an Azure VM.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">If you see a connection timeout</p>
+<p>Double-check that the NSG inbound rule for port 80 was saved correctly (Step 8). Also confirm IIS is running — go back to the VM and check Server Manager → <strong>Tools</strong> → <strong>Internet Information Services (IIS) Manager.</strong></p>
+</div>
+<hr />
+<h3 id="demo-2-ubuntu-vm-with-nginx">Demo 2 — Ubuntu VM with Nginx</h3>
+<h4 id="creating-the-ubuntu-vm">Creating the Ubuntu VM</h4>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Start creating a second VM</p>
+<p>Search for <strong>"Virtual machines"</strong> → <strong>"+ Create"</strong> → <strong>"Azure virtual machine."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Fill in the Basics tab</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resource group</td>
+<td><code>web-demo-rg</code></td>
+</tr>
+<tr>
+<td>Virtual machine name</td>
+<td><code>ubuntu-web-vm</code></td>
+</tr>
+<tr>
+<td>Region</td>
+<td><em>(same region)</em></td>
+</tr>
+<tr>
+<td>Image</td>
+<td><strong>Ubuntu Server 22.04 LTS</strong></td>
+</tr>
+<tr>
+<td>Size</td>
+<td><strong>Standard_B1s</strong> <em>(Free Tier eligible)</em></td>
+</tr>
+<tr>
+<td>Authentication type</td>
+<td><strong>SSH public key</strong></td>
+</tr>
+<tr>
+<td>Username</td>
+<td><code>azureuser</code></td>
+</tr>
+<tr>
+<td>SSH public key source</td>
+<td><strong>Generate new key pair</strong></td>
+</tr>
+<tr>
+<td>Key pair name</td>
+<td><code>ubuntu-web-vm-key</code></td>
+</tr>
+<tr>
+<td>Public inbound ports</td>
+<td><strong>Allow selected ports</strong></td>
+</tr>
+<tr>
+<td>Select inbound ports</td>
+<td><strong>SSH (22)</strong></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Networking tab</p>
+<p>Leave all defaults.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Review + Create</p>
+<p>Click <strong>"Review + create"</strong> → <strong>"Create."</strong></p>
+<p>When prompted to <strong>"Download private key and create resource"</strong>, click it. This downloads your <code>.pem</code> file — save it somewhere you can find it.</p>
+</div>
+<hr />
+<h4 id="opening-port-80-on-the-ubuntu-vm">Opening Port 80 on the Ubuntu VM</h4>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 5 — Add HTTP inbound rule</p>
+<p>Once deployment is complete, go to your Ubuntu VM → <strong>"Networking"</strong> → <strong>"Add inbound port rule."</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Destination port ranges</td>
+<td><strong>80</strong></td>
+</tr>
+<tr>
+<td>Protocol</td>
+<td>TCP</td>
+</tr>
+<tr>
+<td>Action</td>
+<td>Allow</td>
+</tr>
+<tr>
+<td>Priority</td>
+<td>310</td>
+</tr>
+<tr>
+<td>Name</td>
+<td><code>Allow-HTTP-80</code></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Add."</strong></p>
+</div>
+<hr />
+<h4 id="installing-nginx-and-hosting-the-page">Installing Nginx and Hosting the Page</h4>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 6 — Get the public IP</p>
+<p>Copy the <strong>Public IP address</strong> from your Ubuntu VM overview page.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 7 — SSH into the VM</p>
+<p>Open your terminal (PowerShell, Command Prompt, or macOS/Linux Terminal) and run:</p>
+<div class="highlight"><pre><span></span><code>ssh<span class="w"> </span>-i<span class="w"> </span>~/Downloads/ubuntu-web-vm-key.pem<span class="w"> </span>azureuser@&lt;your-ubuntu-vm-ip&gt;
+</code></pre></div>
+<blockquote>
+<p>If you get a permissions error on the <code>.pem</code> file, run:
+<div class="highlight"><pre><span></span><code>chmod<span class="w"> </span><span class="m">400</span><span class="w"> </span>~/Downloads/ubuntu-web-vm-key.pem
+</code></pre></div>
+Then try the SSH command again.</p>
+</blockquote>
+<p>Type <code>yes</code> when asked to confirm the host fingerprint. You're now inside the Ubuntu VM.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 8 — Update packages</p>
+<p><div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update
+</code></pre></div>
+This refreshes the list of available packages. It takes about 20–30 seconds.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 9 — Install Nginx</p>
+<p><div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>nginx<span class="w"> </span>-y
+</code></pre></div>
+The <code>-y</code> flag automatically answers "yes" to the installation prompt. Nginx installs and <strong>starts automatically</strong>.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 10 — Confirm Nginx is running</p>
+<p><div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>nginx
+</code></pre></div>
+You should see <code>active (running)</code> in green. Press <code>q</code> to exit.</p>
+<p>You can also verify it immediately: on your own laptop, open a browser and go to <code>http://&lt;your-ubuntu-vm-ip&gt;</code>. You'll see the Nginx default welcome page — <strong>"Welcome to nginx!"</strong></p>
+</div>
+<hr />
+<h4 id="replacing-the-default-page-with-your-html">Replacing the Default Page with Your HTML</h4>
+<p><strong>✅ Free Tier</strong></p>
+<p>Nginx serves files from <code>/var/www/html/</code>. We're going to replace the default page.</p>
+<div class="admonition success">
+<p class="admonition-title">Step 11 — Navigate to the web root</p>
+<p><div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>/var/www/html
+ls
+</code></pre></div>
+You'll see <code>index.nginx-debian.html</code> — the default welcome page.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 12 — Write your HTML file</p>
+<p><div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>index.html
+</code></pre></div>
+Paste in this HTML (you can use the same page as before, just update the description):</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&quot;en&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;UTF-8&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;viewport&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;width=device-width, initial-scale=1.0&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>My Azure Web Server<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">style</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="nt">body</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">font-family</span><span class="p">:</span><span class="w"> </span><span class="n">Arial</span><span class="p">,</span><span class="w"> </span><span class="kc">sans-serif</span><span class="p">;</span>
+<span class="w">            </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">flex</span><span class="p">;</span>
+<span class="w">            </span><span class="k">justify-content</span><span class="p">:</span><span class="w"> </span><span class="kc">center</span><span class="p">;</span>
+<span class="w">            </span><span class="k">align-items</span><span class="p">:</span><span class="w"> </span><span class="kc">center</span><span class="p">;</span>
+<span class="w">            </span><span class="k">height</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="kt">vh</span><span class="p">;</span>
+<span class="w">            </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">            </span><span class="k">background-color</span><span class="p">:</span><span class="w"> </span><span class="mh">#e95420</span><span class="p">;</span>
+<span class="w">            </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="kc">white</span><span class="p">;</span>
+<span class="w">            </span><span class="k">text-align</span><span class="p">:</span><span class="w"> </span><span class="kc">center</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="p">.</span><span class="nc">card</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">background</span><span class="p">:</span><span class="w"> </span><span class="nb">rgba</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mf">0.15</span><span class="p">);</span>
+<span class="w">            </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mi">40</span><span class="kt">px</span><span class="w"> </span><span class="mi">60</span><span class="kt">px</span><span class="p">;</span>
+<span class="w">            </span><span class="k">border-radius</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="kt">px</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="nt">h1</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="mf">2.5</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="k">margin-bottom</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="kt">px</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="nt">p</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="mf">1.2</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="k">opacity</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">style</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;card&quot;</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello from Azure!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>This page is hosted on an Ubuntu Server VM using Nginx.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Web Server: <span class="p">&lt;</span><span class="nt">strong</span><span class="p">&gt;</span>Nginx on Ubuntu 22.04<span class="p">&lt;/</span><span class="nt">strong</span><span class="p">&gt;&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div>
+<p>Press <code>Ctrl + X</code> → <code>Y</code> → <code>Enter</code> to save and exit nano.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 13 — View your website</p>
+<p>On your own laptop, refresh <code>http://&lt;your-ubuntu-vm-ip&gt;</code> in the browser. Your custom page appears. You're now hosting a website on a Linux VM in Azure.</p>
+</div>
+<hr />
+<h3 id="comparing-iis-vs-nginx-side-by-side">Comparing IIS vs Nginx Side by Side</h3>
+<p>Now that you've used both, here's how they compare:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>IIS</th>
+<th>Nginx</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Platform</td>
+<td>Windows only</td>
+<td>Linux (primarily), also Windows</td>
+</tr>
+<tr>
+<td>Configuration</td>
+<td>GUI in Server Manager + IIS Manager</td>
+<td>Config files (<code>/etc/nginx/nginx.conf</code>)</td>
+</tr>
+<tr>
+<td>Setup</td>
+<td>Click through a wizard</td>
+<td>Two commands: <code>apt install nginx</code></td>
+</tr>
+<tr>
+<td>Performance</td>
+<td>Excellent on Windows workloads</td>
+<td>Extremely fast, handles high concurrency well</td>
+</tr>
+<tr>
+<td>Typical use</td>
+<td>Enterprise .NET apps, Windows-based stacks</td>
+<td>Modern web apps, reverse proxy, static sites</td>
+</tr>
+<tr>
+<td>Market share</td>
+<td>Large in enterprise</td>
+<td>Dominant in modern cloud deployments</td>
+</tr>
+</tbody>
+</table>
+<p>Both are production-grade. The choice comes down to what your application is built on.</p>
+<hr />
+<h3 id="cleaning-up">Cleaning Up</h3>
+<p><strong>✅ Free Tier</strong></p>
+<p>To avoid accruing compute charges, deallocate both VMs when you're done practising.</p>
+<div class="admonition warning">
+<p class="admonition-title">Deallocate, don't just stop</p>
+<p>In Azure, "stopping" a VM from inside the OS does NOT stop billing for compute. You must <strong>deallocate</strong> the VM from the Azure Portal.</p>
+<p>Go to each VM → click <strong>"Stop"</strong> in the portal toolbar. This deallocates the VM and stops compute charges.</p>
+<p>Alternatively, delete the entire <code>web-demo-rg</code> resource group to remove everything at once.</p>
+</div>
+<hr />
+<h2 id="summary-and-whats-next">Summary and What's Next</h2>
+<p>Today you covered a lot of ground.</p>
+<p>On the theory side: you now understand the difference between static and dynamic websites, what frontend, backend, and database mean, and how 1-Tier, 2-Tier, and 3-Tier architectures differ. That 3-Tier diagram you saw today is the foundation of every serious cloud application — and it's what you're building toward.</p>
+<p>On the practical side: you stood up two VMs, installed two of the world's most widely-used web servers, and hosted an actual web page that's publicly accessible on the internet.</p>
+<p><strong>Coming up next:</strong> Day 5 goes back to Azure compute — specifically <strong>Azure App Service</strong>, Microsoft's managed platform for hosting web applications. Instead of managing a VM and installing IIS yourself, App Service handles all of that for you. You deploy your code, Azure handles the rest.</p>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<ul>
+<li>A <strong>static website</strong> sends the same files to every visitor. A <strong>dynamic website</strong> generates content on the fly based on user data.</li>
+<li><strong>Frontend</strong> runs in the browser. <strong>Backend</strong> runs on a server. <strong>Database</strong> stores data.</li>
+<li><strong>3-Tier architecture</strong> separates presentation, logic, and data onto independent layers — enabling independent scaling, fault isolation, and team separation.</li>
+<li>A <strong>web server</strong> (IIS or Nginx) listens on port 80/443 and responds to HTTP requests with files or data.</li>
+<li>Every Azure VM blocks inbound traffic by default. You must explicitly open ports in the <strong>Network Security Group (NSG)</strong>.</li>
+<li><strong>IIS</strong> is the standard on Windows. <strong>Nginx</strong> is dominant on Linux and in modern cloud deployments.</li>
+<li>The capstone project will build a full <strong>3-Tier application on Azure</strong> — everything from Day 1 onwards is a building block for that.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../day03_vms_part1/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Day 3 — Virtual Machines Part 1">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Day 3 — Virtual Machines Part 1
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../day05_vms_part3/" class="md-footer__link md-footer__link--next" aria-label="Next: Day 5 — VM Management, Availability, Bastion &amp; Backup">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Day 5 — VM Management, Availability, Bastion & Backup
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.tabs", "navigation.sections", "navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
