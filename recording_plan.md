@@ -16,7 +16,7 @@
 | Day 4 | Web Servers on Azure VMs: Architecture + IIS & Nginx | `days_taken/day04_web_hosting_architecture.md` |
 | Day 5 | VM Management, Availability, Bastion & Backup | `days_taken/day05_vms_part3.md` |
 | Day 6 | Azure App Service | `days_taken/day06_app_service.md` |
-| Day 10 | Azure Storage Account | `days_taken/day10_storage_account.md` |
+| Day 7 | Azure Storage Account | `days_taken/day07_storage_account.md` |
 
 ---
 

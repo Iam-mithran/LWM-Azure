@@ -1,4 +1,4 @@
-# Day 10 — Azure Storage Account: Blob, Files, Queues & Tables
+# Day 7 — Azure Storage Account: Blob, Files, Queues & Tables
 
 **Phase 3 — Storage, Databases & Global Delivery**
 
