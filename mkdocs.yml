@@ -57,3 +57,5 @@ nav:
       - "Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx": day04_web_hosting_architecture.md
       - "Day 5 — VM Management, Availability, Bastion & Backup": day05_vms_part3.md
       - "Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers": day06_app_service.md
+  - "Phase 3 — Storage, Databases & Global Delivery":
+      - "Day 10 — Azure Storage Account: Blob, Files, Queues & Tables": day10_storage_account.md
