@@ -16,7 +16,7 @@
 | Day 4 | Web Servers on Azure VMs: Architecture + IIS & Nginx | `days_taken/day04_web_hosting_architecture.md` |
 | Day 5 | VM Management, Availability, Bastion & Backup | `days_taken/day05_vms_part3.md` |
 | Day 6 | Azure App Service | `days_taken/day06_app_service.md` |
-| Day 7 | Azure Storage Account | `days_taken/day07_storage_account.md` |
+| Day 7 | Azure Storage Account: Blob Storage, Static Websites & Versioning | `days_taken/day07_storage_account.md` |
 
 ---
 
@@ -51,7 +51,8 @@
 
 | Priority | Topic | File | Depends On |
 |----------|-------|------|------------|
-| ~~Done~~ | ~~Storage Accounts~~ | ~~`storage_account.md`~~ | ~~None~~ |
+| ~~Done~~ | ~~Storage Accounts — Blob, Static Website, Versioning~~ | ~~`storage_account.md`~~ | ~~None~~ |
+| Next | Azure Storage — Files, Queue, Tables & Storage Explorer | `storage_files_queue_tables.md` | Day 7 ✅ |
 | Anytime | Azure SQL + Other Databases | `sql_database.md` | None |
 
 ---

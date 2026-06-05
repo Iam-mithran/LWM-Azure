@@ -1,8 +1,8 @@
-# Day 7 — Azure Storage Account: Blob, Files, Queues & Tables
+# Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
 
 **Phase 3 — Storage, Databases & Global Delivery**
 
-> Every application needs somewhere to store data — user profile pictures, log files, database backups, configuration files, messages between services, invoices. In Azure, the answer to almost all of those is a single service: the Azure Storage Account. One account, four completely different storage services, one bill. Today you'll learn all four — what they are, when to use each, and how to work with them in the portal.
+> Every application needs somewhere to put its data — user profile pictures, log files, database backups, configuration files, static website assets. In Azure, the answer to almost all of those is a single service: the Azure Storage Account. One account, four completely different storage services, one bill. Today we focus on Blob Storage — the most widely used of the four — plus two powerful Blob features you'll use in real projects: Static Website Hosting and Blob Versioning.
 
 ---
 
@@ -15,16 +15,14 @@
 - Access tiers — Hot, Cool, Cold, and Archive — how cost shifts as data ages
 - Shared Access Signatures (SAS) — generate a time-limited URL for secure file sharing
 - Lifecycle management policies — automatically move blobs between tiers as they age
-- Azure Files — fully managed file shares you can mount on any VM or laptop
-- Queue Storage — how to decouple services using messages
-- Table Storage — simple NoSQL key-value storage for structured data
-- Azure Storage Explorer — the desktop tool for browsing and managing storage visually
+- Static Website Hosting — serve HTML, CSS, and JavaScript directly from a blob container with no server
+- Blob Versioning — automatically save every version of a file and restore previous versions
 
 ---
 
 ## Before We Begin
 
-All demos today use the **Azure Free Tier**. Microsoft gives you 5 GB of Blob Storage (LRS, Hot tier) free for 12 months. Azure Files, Queue Storage, and Table Storage are pay-per-use at fractions of a cent — the demo volumes are effectively free.
+All demos today use the **Azure Free Tier**. Microsoft gives you 5 GB of Blob Storage (LRS, Hot tier) free for 12 months — more than enough for everything we'll do today.
 
 **✅ Free Tier** — all demos today.
 
@@ -357,220 +355,152 @@ If someone modifies any part of the URL, the signature check fails and access is
 
 ---
 
-## Part 5 — Azure Files
+## Part 5 — Static Website Hosting
 
-### What Is Azure Files?
+### Serving a Website Directly From Blob Storage
 
-**Azure Files** is a fully managed file share service in the cloud. Unlike Blob Storage (which is object storage — you access files via URL), Azure Files behaves like a traditional network drive.
+Blob Storage isn't just for storing files your application downloads — you can serve an entire website from it. Azure Storage has a built-in **Static Website Hosting** feature that turns a blob container into a web host for HTML, CSS, JavaScript, and image files.
 
-- Accessible via **SMB (Server Message Block)** — the same protocol Windows uses for shared drives. Mount it as `Z:\` on any Windows machine or VM.
-- Accessible via **NFS (Network File System)** — for Linux VMs. Mount it like any network filesystem.
-- Accessible via **HTTPS/REST** — from any application without mounting.
+When you enable static website hosting, Azure:
+- Creates a special container called `$web` in your storage account
+- Gives you a public endpoint URL — e.g., `https://lwmstoragedemo.z13.web.core.windows.net`
+- Serves files from `$web` at that URL — no VM, no App Service, no compute charge
 
-**Use cases:**
-- **Lift and shift:** move on-premise file servers to Azure without changing how applications access files
-- **Shared config:** multiple VMs read from the same file share — update the config once, all VMs see the change
-- **Log aggregation:** all VMs write logs to a central file share instead of their own local disks
+**When to use it:**
 
-```mermaid
-graph LR
-    FS["Azure File Share\nmyfiles.file.core.windows.net"] -->|"SMB (port 445)"| WIN["Windows VM\nMounted as Z:\\"]
-    FS -->|"NFS"| LIN["Linux VM\nMounted at /mnt/share"]
-    FS -->|"HTTPS REST"| APP["Application\nvia SDK"]
-```
+| Scenario | Good fit? |
+|---|---|
+| Marketing or landing page | ✅ Yes |
+| Documentation site | ✅ Yes |
+| React / Vue / Angular app (build output is static files) | ✅ Yes |
+| Any site that needs server-side code or database calls from the server | ❌ No — use App Service or Azure Functions |
+
+**Cost:** You pay only for the storage (fractions of a cent per GB) and bandwidth. There is no compute charge — no server is running. For a small site with modest traffic, monthly cost is effectively zero.
+
+**Static Website vs App Service:**
+- **App Service** runs server-side code — .NET, Node.js, Python — and handles the request on the server before sending a response
+- **Static Website Hosting** just serves files. The browser downloads the HTML, CSS, and JS and runs everything client-side
+- A common pattern: host your React frontend on Static Website, and have it call an Azure Functions backend API. Best of both — no servers for the frontend, pay-per-execution for the backend
 
 ---
 
-### Demo — Create an Azure File Share
+### Demo — Enable Static Website Hosting
 
 **✅ Free Tier**
 
-!!! success "Step 1 — Open File shares"
-    In your storage account → left menu → **"File shares"** → **"+ File share."**
+!!! success "Step 1 — Enable Static Website"
+    In your storage account → left menu → **"Data management"** → **"Static website."**
 
-    | Field | Value |
-    |-------|-------|
-    | Name | `my-file-share` |
-    | Tier | **Transaction optimized** *(default — best for general use)* |
+    Toggle **Static website** to **Enabled.**
 
-    Click **"Create."**
+    Fill in:
+    - **Index document name:** `index.html`
+    - **Error document path:** `404.html`
 
-!!! success "Step 2 — Upload a file via the portal"
-    Click on `my-file-share` → **"Upload."** Upload any file from your laptop. The file appears inside the share — just like a folder on your computer.
+    Click **"Save."**
 
-!!! success "Step 3 — View the mount instructions"
-    Click **"Connect"** at the top.
+    Azure shows you two important URLs:
+    - **Primary endpoint:** `https://<accountname>.z13.web.core.windows.net` — this is your site's public address
+    - A `$web` container has been created automatically in your storage account
 
-    Azure shows you the exact PowerShell command to mount this share on a Windows machine, and the exact Linux command to mount it on Ubuntu. Copy the Windows command — it contains your account name, share name, and a storage key already embedded.
+!!! success "Step 2 — Create a simple HTML page"
+    On your laptop, create a file called `index.html` with this content:
 
-    ```powershell
-    $connectTestResult = Test-NetConnection -ComputerName lwmstoragedemo.file.core.windows.net -Port 445
-    if ($connectTestResult.TcpTestSucceeded) {
-        net use Z: \\lwmstoragedemo.file.core.windows.net\my-file-share /user:Azure\lwmstoragedemo <key>
-    }
+    ```html
+    <!DOCTYPE html>
+    <html>
+      <head><title>My Azure Site</title></head>
+      <body>
+        <h1>Hello from Azure Blob Storage!</h1>
+        <p>This page is hosted entirely in a Storage Account — no server running anywhere.</p>
+      </body>
+    </html>
     ```
 
-    > **Port 445 note:** SMB uses port 445. Some ISPs block outbound port 445 for residential customers. If the `Test-NetConnection` shows `TcpTestSucceeded: False`, your ISP is blocking it. Use Azure Cloud Shell or a VM inside Azure to mount the share instead — the port is always open within Azure.
+!!! success "Step 3 — Upload to the $web container"
+    In the portal → **Containers** → click the **`$web`** container.
 
-!!! success "Step 4 — Explore the file share in the portal"
-    Back in the share, you can create folders, upload files, and browse the directory structure — all from the portal without mounting anything.
+    Click **"Upload"** → select your `index.html` → click **"Upload."**
 
----
+!!! success "Step 4 — Visit your site"
+    Go back to **Static website** settings and copy the **Primary endpoint** URL.
 
-## Part 6 — Queue Storage
+    Open it in your browser. Your page loads — no VM, no App Service, no server running anywhere.
 
-### What Is Queue Storage?
+    > **Custom domain:** The default URL looks like `https://<accountname>.z13.web.core.windows.net`. For a real domain (e.g., `www.yoursite.com`), create a CNAME DNS record at your registrar pointing to this URL, then configure it under **Networking → Custom domain** in the storage account. Azure also integrates with Azure CDN to add HTTPS to custom domains on static sites.
 
-**Queue Storage** is a message queue — a service that holds messages that one application component sends and another component reads.
+!!! success "Step 5 — Test the error page"
+    In your browser, navigate to a page that doesn't exist under your site URL — e.g., `https://<accountname>.z13.web.core.windows.net/nonexistent`.
 
-**Why queues?** Without a queue, if Component A calls Component B directly and B is slow or offline, A fails. With a queue, A puts a message in the queue and moves on. B picks up the message when it's ready. They're **decoupled** — neither depends on the other being available at the same moment.
-
-```mermaid
-graph LR
-    PROD["Web App\n(Producer)\nUser places order"] -->|"Add message"| Q["Queue\norder-queue\n---\nOrder #1001\nOrder #1002\nOrder #1003"]
-    Q -->|"Peek + Delete message"| CONS["Order Processor\n(Consumer)\nProcesses when ready"]
-```
-
-**Real-world example:** A user uploads a video. The web app puts a message in a queue: *"Process video: user123/upload.mp4."* The video processing service reads from the queue when it has capacity and transcodes the video. The web app doesn't wait — it already told the user "your video is being processed."
-
-**Key properties:**
-- Messages can be up to **64 KB** in size
-- A queue can hold up to **500 TB** of messages
-- Messages can have a **visibility timeout** — while one consumer is processing it, other consumers can't see it
-- Messages expire after **7 days** by default (configurable up to 7 days)
+    You'll get a 404 response. Azure serves your `404.html` if you created one and uploaded it to `$web`, otherwise a generic error. This is where you'd upload a branded error page for a real site.
 
 ---
 
-### Demo — Create a Queue and Send a Message
+## Part 6 — Blob Versioning
+
+### Protecting Against Overwrites
+
+SAS tokens control who can access blobs. Lifecycle policies manage cost. But what protects you from accidentally overwriting a critical file with corrupted or incorrect data?
+
+**Blob Versioning** is a data protection feature that automatically creates and stores a copy of every blob each time it is overwritten or deleted. Each version has the same blob name but a different **version ID** — a timestamp-based identifier. You can view the full history of a blob, restore any previous version, or download a specific version.
+
+**How it differs from Soft Delete:**
+
+| Feature | Protects against | How it works |
+|---|---|---|
+| **Soft Delete** | Accidental *deletion* | Keeps deleted blobs in a hidden state for a retention period |
+| **Versioning** | Accidental *overwrite* | Saves a copy automatically every time a blob is modified |
+
+You can — and should — enable both together for maximum protection.
+
+**Cost consideration:** Every version is billed as its own blob. If a 10 MB file is overwritten 20 times, you're storing 200 MB total. Use lifecycle management rules to auto-delete old versions after a set number of days.
+
+---
+
+### Demo — Enable Versioning and Restore a Previous Version
 
 **✅ Free Tier**
 
-!!! success "Step 1 — Open Queues"
-    In your storage account → left menu → **"Queues"** → **"+ Queue."**
+!!! success "Step 1 — Enable Blob Versioning"
+    In your storage account → left menu → **"Data management"** → **"Data protection."**
 
-    | Field | Value |
-    |-------|-------|
-    | Queue name | `order-queue` *(lowercase, hyphens allowed)* |
+    Under **Recovery**, check **"Enable versioning for blobs."**
 
-    Click **"OK."**
+    Click **"Save."**
 
-!!! success "Step 2 — Add a message"
-    Click on `order-queue` → **"Add message."**
+!!! success "Step 2 — Upload Version 1"
+    Create a plain text file on your laptop called `notes.txt` with the content:
+    ```
+    Version 1 — original content
+    ```
 
-    | Field | Value |
-    |-------|-------|
-    | Message text | `{"orderId": "1001", "product": "Azure Course", "qty": 1}` |
-    | Expires in | **7 days** |
-    | Encode the message body in Base64 | Leave unchecked |
+    Go to **Containers** → `my-uploads` → **"Upload"** → select `notes.txt` → **"Upload."**
 
-    Click **"OK."** The message appears in the queue with its insertion time and expiry.
+!!! success "Step 3 — Overwrite with Version 2"
+    Edit your `notes.txt` locally. Change the content to:
+    ```
+    Version 2 — updated content
+    ```
 
-!!! success "Step 3 — Peek at the message"
-    Click **"Peek"** at the top. You can see the message content — this is what a consumer would read. Peeking does not remove the message from the queue.
+    Upload the file again — **same filename** `notes.txt` → **"Upload."**
 
-!!! success "Step 4 — Dequeue the message"
-    Click **"Dequeue."** The message is removed — simulating a consumer picking it up and deleting it after successful processing.
+    Azure keeps both copies. The current blob is now Version 2. Version 1 is stored as a historical version with a different version ID.
 
-    > In a real application, the consumer reads the message via SDK, processes it, then deletes it. If processing fails, the message reappears after the visibility timeout for another consumer to retry.
+!!! success "Step 4 — View the versions"
+    Click on `notes.txt` in the container.
 
----
+    On the blob's overview page, look for the **"Versions"** tab or click **"Show versions"** in the container list toolbar.
 
-## Part 7 — Table Storage
+    You'll see two entries: the current version and the original, each showing its version ID (a timestamp string) and when it was created.
 
-### What Is Table Storage?
+!!! success "Step 5 — Restore Version 1"
+    Click the older version in the list.
 
-**Table Storage** is Azure's simple, schemaless NoSQL key-value store. Think of it as a massive spreadsheet in the cloud — rows of data, each row has a unique key, and different rows can have different columns.
+    Click **"Make current version"** (or copy this version over the current blob).
 
-**Structure:**
-- **Table** — the top-level container (like a database table)
-- **Entity** — a single row of data (like a record)
-- **Property** — a field on an entity (like a column, but not all entities need the same properties)
-- **PartitionKey + RowKey** — the unique identifier for every entity (like a composite primary key)
+    Download `notes.txt` — it now contains `Version 1 — original content`. The accidental overwrite is reversed.
 
-**When to use Table Storage:**
-- Simple lookup data: user settings, session data, small config tables
-- Time-series data with a known key pattern: sensor readings, event logs
-- When you need cheap, fast NoSQL reads without the cost of Cosmos DB
-
-**When NOT to use Table Storage:**
-- Complex queries, joins, or aggregations — use Azure SQL or Cosmos DB instead
-- More than 20 GB per partition — performance degrades
-
----
-
-### Demo — Create a Table and Add Entities
-
-**✅ Free Tier**
-
-!!! success "Step 1 — Open Tables"
-    In your storage account → left menu → **"Tables"** → **"+ Table."**
-
-    | Field | Value |
-    |-------|-------|
-    | Table name | `courseprogress` |
-
-    Click **"OK."**
-
-!!! success "Step 2 — Open Storage Browser"
-    To add data easily, we'll use the built-in Storage Browser. In the left menu → **"Storage browser"** → expand **Tables** → click `courseprogress` → **"Add entity."**
-
-    | Property | Value |
-    |---|---|
-    | PartitionKey | `student-001` |
-    | RowKey | `day-10` |
-    | Add property → Name: `completed` / Type: Boolean / Value: `true` | |
-    | Add property → Name: `score` / Type: Int32 / Value: `95` | |
-
-    Click **"Insert."** The entity appears in the table.
-
-!!! success "Step 3 — Add a second entity"
-    Click **"Add entity"** again:
-
-    | Property | Value |
-    |---|---|
-    | PartitionKey | `student-001` |
-    | RowKey | `day-11` |
-    | completed | Boolean → `false` |
-
-    Click **"Insert."**
-
-    Notice the second entity doesn't have a `score` property — Table Storage is schemaless. Each entity can have different properties.
-
----
-
-## Part 8 — Azure Storage Explorer
-
-### What Is Storage Explorer?
-
-**Azure Storage Explorer** is a free desktop application from Microsoft that gives you a visual, file-explorer-like interface for browsing and managing all your storage accounts across subscriptions — without opening the Azure Portal.
-
-**Why use it:**
-- Upload/download thousands of files via drag-and-drop
-- Copy data between storage accounts or containers
-- Generate SAS tokens
-- Browse Table Storage entities
-- View Queue messages
-- Works on Windows, macOS, and Linux
-
----
-
-### Demo — Download and Connect Storage Explorer
-
-**✅ Free Tier**
-
-!!! success "Step 1 — Download Storage Explorer"
-    Go to `https://azure.microsoft.com/en-us/products/storage/storage-explorer/` and download the installer for your OS. Install it.
-
-!!! success "Step 2 — Sign in with your Azure account"
-    Open Storage Explorer → click the plug icon (**"Connect to Azure Resources"**) → **"Add an Azure Account"** → sign in with your Azure credentials.
-
-    Your subscriptions load automatically. Expand **Storage Accounts** → expand your `lwmstoragedemo` account — you'll see Blob Containers, File Shares, Queues, and Tables all in a tree.
-
-!!! success "Step 3 — Browse your container"
-    Expand **Blob Containers** → `my-uploads`. Your uploaded file appears exactly as it would in a local file explorer. Drag another file from your desktop directly into the Storage Explorer window — it uploads instantly.
-
-!!! success "Step 4 — Copy a blob URL"
-    Right-click your blob → **"Copy URL."** Paste it somewhere — this is the direct URL (no SAS). Now right-click again → **"Get Shared Access Signature"** — Storage Explorer lets you generate SAS tokens without going to the portal at all.
+    > **Production tip:** Enable versioning at account creation time. It only protects blobs created or modified *after* it is enabled — retroactive enabling does not version-stamp existing blobs. Also create a lifecycle rule to delete versions older than 90 days to keep storage costs under control.
 
 ---
 
@@ -581,45 +511,39 @@ graph LR
 !!! warning "Delete the resource group"
     Go to **Resource groups** → `storage-demo-rg` → **"Delete resource group"** → type the name to confirm → **"Delete."**
 
-    This removes the storage account and all data inside it — blobs, files, queues, and tables — in one step.
+    This removes the storage account and all data inside it — blobs, the `$web` container, all versions — in one step.
 
-    > The Free Tier gives you 5 GB of Blob Storage free for 12 months, so there's no charge for the demo. Still good practice to clean up.
+    > The Free Tier gives you 5 GB of Blob Storage free for 12 months, so there is no charge from this demo.
 
 ---
 
 ## Summary and What's Next
 
-Today you built a complete picture of Azure's unified storage layer.
+Today you built a solid foundation in Azure Blob Storage.
 
-**The Storage Account** is the single namespace that gives you access to four different storage engines — each designed for a different shape of data.
+**The Storage Account** is the unified namespace for four different storage engines. Today's focus was on the one you'll use most: **Blob Storage**.
 
-**Blob Storage** is the workhorse — every application stores unstructured files here. Block Blobs for general files, Append Blobs for logs, Page Blobs for VM disks. The four access tiers (Hot, Cool, Cold, Archive) let you cut costs as data ages, and lifecycle management policies automate those transitions so you never have to think about it.
+**Blob Storage** is where unstructured data lives — images, backups, log files, anything that's a file. Block Blobs for general files, Append Blobs for logs, Page Blobs for VM disks. The four access tiers (Hot, Cool, Cold, Archive) let you cut costs as data ages, and lifecycle management policies automate those transitions.
 
-**SAS tokens** give you surgical control over who can access what and for how long — without sharing your account key.
+**SAS tokens** give you surgical access control — a time-limited, permission-scoped URL you can share with anyone without exposing your account key. Tamper with the URL and the cryptographic signature check fails instantly.
 
-**Azure Files** turns your storage account into a network drive — mount it on any VM or laptop via SMB, and all machines share the same folder.
+**Static Website Hosting** turns your storage account into a zero-server web host. HTML, CSS, and JavaScript files in the `$web` container are served at a public URL — no compute charge, no infrastructure to maintain. Perfect for frontend apps, landing pages, and documentation sites.
 
-**Queue Storage** decouples application components — producers write messages, consumers read them independently, and your system stays resilient even when individual parts are slow or offline.
+**Blob Versioning** is your safety net for overwrites. Every time a blob is modified, Azure silently saves the previous copy. One click to restore. Combine it with Soft Delete and lifecycle policies for a complete data protection strategy.
 
-**Table Storage** is the simplest NoSQL option in Azure — fast, cheap key-value lookups with no schema required.
-
-**Storage Explorer** is the tool you'll actually use day-to-day — drag, drop, browse, and generate SAS tokens without touching the portal.
-
-**Coming up next:** Day 11 moves to **Azure SQL Database** — Microsoft's fully managed relational database. You'll create a serverless SQL database, connect to it with Azure Data Studio, and learn how Elastic Pools and Managed Instances fit into the picture.
+**Coming up next — Day 8:** We finish the storage picture with **Azure Files** (mount a cloud file share on any VM or laptop), **Queue Storage** (decouple your application components with messages), and **Table Storage** (simple schemaless NoSQL for structured data), plus **Azure Storage Explorer** for managing everything from your desktop.
 
 ---
 
 ## Key Takeaways
 
-- **Storage Account = one account, four services** — Blob, Files, Queue, Table all share one account name and one bill.
-- **Account name is globally unique** — it becomes the DNS name for all four service endpoints.
-- **Standard vs Premium** — Standard covers almost every use case. Premium is for sub-millisecond latency requirements.
-- **LRS** — 3 copies in one data center. **ZRS** — 3 copies across zones. **GRS** — 6 copies across two regions. **GZRS** — maximum durability.
-- **Block Blob** — general files. **Append Blob** — logs only. **Page Blob** — VM disks.
-- **Hot → Cool → Cold → Archive** — storage cost drops, access cost rises, retrieval time increases. Archive takes up to 15 hours to rehydrate.
-- **SAS tokens** — time-limited, permission-scoped URLs. Tampering with any part of the URL breaks the signature.
-- **Lifecycle management** — rules evaluated daily that automatically move or delete blobs based on age. Set once, forget.
-- **Azure Files** — SMB/NFS file share. Uses port 445 for SMB — some home ISPs block it; use a VM inside Azure if needed.
-- **Queue Storage** — messages up to 64 KB, expire in up to 7 days. Visibility timeout prevents double-processing.
-- **Table Storage** — schemaless NoSQL. PartitionKey + RowKey = unique identity. Use when Cosmos DB is overkill.
-- **Storage Explorer** — free desktop tool for Windows, macOS, Linux. The fastest way to manage storage outside the portal.
+- **Storage Account = one account, four services** — Blob, Files, Queue, Table all share one account name and one bill
+- **Account name is globally unique** — it becomes the DNS name for all four service endpoints
+- **Standard vs Premium** — Standard covers almost every use case. Premium is for sub-millisecond latency requirements
+- **LRS** — 3 copies in one data center. **ZRS** — 3 copies across zones. **GRS** — 6 copies across two regions. **GZRS** — maximum durability
+- **Block Blob** — general files. **Append Blob** — logs only. **Page Blob** — VM disks
+- **Hot → Cool → Cold → Archive** — storage cost drops, access cost rises, retrieval time increases. Archive takes up to 15 hours to rehydrate
+- **SAS tokens** — time-limited, permission-scoped URLs. Tampering with any part of the URL breaks the signature and returns AuthenticationFailed
+- **Lifecycle management** — rules evaluated daily that automatically move or delete blobs based on age. Set once, forget
+- **Static Website Hosting** — enable on the storage account, upload files to `$web`, get a public URL — no server, no compute charge
+- **Blob Versioning** — every overwrite creates a stored version with a unique version ID. Enable at account creation; add a lifecycle rule to delete old versions to control cost

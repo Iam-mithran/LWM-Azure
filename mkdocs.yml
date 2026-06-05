@@ -58,6 +58,7 @@ nav:
       - "Day 5 — VM Management, Availability, Bastion & Backup": day05_vms_part3.md
       - "Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers": day06_app_service.md
   - "Phase 2 — Networking":
-      - "Day 8 — Azure Virtual Network: Subnets, NSGs, DNS & Bastion": day08_virtual_network.md
+      - "Day 9 — Azure Virtual Network: Subnets, NSGs, DNS & Bastion": day09_virtual_network.md
   - "Phase 3 — Storage, Databases & Global Delivery":
-      - "Day 7 — Azure Storage Account: Blob, Files, Queues & Tables": day07_storage_account.md
+      - "Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning": day07_storage_account.md
+      - "Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer": day08_storage_files_queue_tables.md
