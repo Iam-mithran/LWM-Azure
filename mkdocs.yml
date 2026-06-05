@@ -20,8 +20,6 @@ theme:
         icon: material/brightness-4
         name: Switch to light mode
   features:
-    - navigation.tabs
-    - navigation.sections
     - navigation.top
     - navigation.footer
     - search.highlight
@@ -49,16 +47,12 @@ markdown_extensions:
 
 nav:
   - Home: index.md
-  - "Phase 0 — Foundations":
-      - "Day 1 — Account Setup & Free Tier": day01_account_setup.md
-      - "Day 2 — Core Concepts & Portal": day02_fundamentals.md
-  - "Phase 1 — Compute":
-      - "Day 3 — Virtual Machines Part 1": day03_vms_part1.md
-      - "Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx": day04_web_hosting_architecture.md
-      - "Day 5 — VM Management, Availability, Bastion & Backup": day05_vms_part3.md
-      - "Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers": day06_app_service.md
-  - "Phase 2 — Networking":
-      - "Day 9 — Azure Virtual Network: Subnets, NSGs, DNS & Bastion": day09_virtual_network.md
-  - "Phase 3 — Storage, Databases & Global Delivery":
-      - "Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning": day07_storage_account.md
-      - "Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer": day08_storage_files_queue_tables.md
+  - "Day 1 — Account Setup & Free Tier": day01_account_setup.md
+  - "Day 2 — Core Concepts & Portal": day02_fundamentals.md
+  - "Day 3 — Virtual Machines Part 1": day03_vms_part1.md
+  - "Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx": day04_web_hosting_architecture.md
+  - "Day 5 — VM Management, Availability, Bastion & Backup": day05_vms_part3.md
+  - "Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers": day06_app_service.md
+  - "Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning": day07_storage_account.md
+  - "Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer": day08_storage_files_queue_tables.md
+  - "Day 9 — Azure Virtual Network: Subnets, NSGs, DNS & Bastion": day09_virtual_network.md
