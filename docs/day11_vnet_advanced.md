@@ -14,6 +14,9 @@
 - Hands-on: enable a Service Endpoint and lock a storage account down to your VNet
 - Hands-on: create a Private Endpoint for a storage account (small cost — instructor demo)
 - **Azure Bastion** — browser-based VM access with no public IP and no exposed SSH or RDP port (💳 Paid)
+- **Route Tables & User-Defined Routes (UDR)** — overriding Azure's default routing to send traffic through a firewall or network appliance instead
+- Hands-on: building a custom route table and associating it with a subnet
+- **NAT Gateway** — giving private-subnet resources a stable, scalable outbound path to the internet without ever giving them a public IP (💳 Paid)
 
 ---
 
@@ -25,6 +28,8 @@ A mix of tiers today:
 - **Service Endpoints** are **✅ free** — no additional charge at all.
 - **Private Endpoints** cost roughly **$0.01/hour** (~$7.30/month if left running) plus a small data processing charge. We'll mark this **💳** and walk through deleting it immediately after.
 - **Azure Bastion** Basic SKU runs approximately **$0.19/hr** — **💳 instructor demo**, delete immediately after.
+- **Route Tables** are **✅ free** — no charge for the route table resource itself.
+- **NAT Gateway** runs approximately **$0.045/hr** plus a small per-GB data processing charge — **💳 instructor demo**, delete immediately after.
 
 ---
 
@@ -345,6 +350,179 @@ Bastion charges by the hour. Delete it when you're done:
 
 ---
 
+## Part 4 — Route Tables & User-Defined Routes (UDR)
+
+### Azure's Hidden Default Routes
+
+Every subnet you create already has routing happening behind the scenes, even though you've never configured a single route. Azure automatically populates each subnet with a set of **system routes**:
+
+| Destination | Next Hop | What It Does |
+|---|---|---|
+| Traffic to another address inside the same VNet | **Local VNet** | Delivers it directly — this is why your `public-subnet` and `private-subnet` VMs can already reach each other |
+| Traffic to a peered VNet's address space | **VNet Peering** | Routes it across the peering connection — this is what made Day 11 Part 1's peering work without you configuring any routes yourself |
+| Everything else (`0.0.0.0/0`) | **Internet** | Sends it out to the public internet |
+
+These system routes are invisible — you never see them in a "Route Tables" blade unless you go looking — but they're exactly what's been making your VMs reachable (or not) this entire course.
+
+### When the Default Isn't Good Enough
+
+Sometimes you need traffic to take a different path than Azure's default. The classic example: you've deployed a firewall or network virtual appliance (NVA) into your VNet, and you want **all** outbound traffic from a subnet to pass through that appliance for inspection first, instead of going straight to the internet. Azure has no way of knowing you want this unless you tell it explicitly.
+
+A **Route Table** is a resource you create and populate with your own routes — **User-Defined Routes (UDR)** — then associate with one or more subnets. Once associated, your custom routes take priority over Azure's system routes for any destination they cover.
+
+Each route has:
+
+| Property | What it does |
+|---|---|
+| **Address prefix** | The destination CIDR block this route applies to (e.g. `0.0.0.0/0` for "everything") |
+| **Next hop type** | Where to actually send matching traffic |
+
+**Next hop types you can choose:**
+
+| Next Hop Type | What It Means |
+|---|---|
+| **Virtual appliance** | Send traffic to a specific private IP — typically a firewall/NVA VM |
+| **Virtual network gateway** | Send traffic to a VPN or ExpressRoute gateway |
+| **Virtual network** | Force traffic to stay within the VNet's routing, even for ranges that might otherwise go elsewhere |
+| **Internet** | Send straight to the internet (the default for `0.0.0.0/0` unless you override it) |
+| **None** | Drop the traffic entirely — a deliberate black hole, useful for blocking a specific range |
+
+```mermaid
+graph LR
+    PrivVM["vm-private-linux\n10.0.2.4"]
+    Default["Default route\n0.0.0.0/0 -> Internet"]
+    Custom["UDR override\n0.0.0.0/0 -> Virtual appliance\n10.0.1.10"]
+    NVA["Firewall / NVA\n10.0.1.10"]
+    Internet["🌐 Internet"]
+
+    PrivVM -.->|"Without a route table"| Default --> Internet
+    PrivVM -->|"With rt-private-subnet associated"| Custom --> NVA --> Internet
+```
+
+### Hands-On: Build a Route Table and Override the Default Path
+
+**✅ Free Tier — the route table resource itself is free; we're not deploying a real firewall appliance, just demonstrating the override mechanism**
+
+**Step 1 — Create the route table:**
+
+1. Search for **Route tables** → **+ Create**.
+2. Fill in:
+   - **Resource group:** `rg-networking-demo`
+   - **Region:** East US
+   - **Name:** `rt-private-subnet`
+   - **Propagate gateway routes:** No (leave default)
+3. **Review + create** → **Create**.
+
+**Step 2 — Add a custom route:**
+
+1. Go to `rt-private-subnet` → **Routes** → **+ Add**.
+2. Fill in:
+   - **Route name:** `force-via-appliance`
+   - **Destination type:** IP Addresses
+   - **Destination IP addresses/CIDR ranges:** `0.0.0.0/0` (every destination)
+   - **Next hop type:** Virtual appliance
+   - **Next hop address:** `10.0.1.4` (use the private IP of `vm-public-linux` from Day 10 as a stand-in "appliance" — purely to demonstrate the mechanic; it isn't actually configured to forward traffic)
+3. Click **Add**.
+
+**Step 3 — Associate the route table with `private-subnet`:**
+
+1. Go to `rt-private-subnet` → **Subnets** → **Associate**.
+2. **Virtual network:** `vnet-demo`, **Subnet:** `private-subnet`.
+3. Click **OK**.
+
+From this point on, any resource in `private-subnet` that tries to reach the internet has its traffic directed toward `10.0.1.4` first, instead of going straight out — exactly what you'd want if `10.0.1.4` were a real firewall VM with IP forwarding enabled and routing software installed. We haven't configured `vm-public-linux` to actually forward anything, so outbound internet access from `private-subnet` would now silently fail — which is precisely the point: **UDR changes the path traffic takes, it doesn't make sure something is listening at the other end.** That's on you to configure if you build this for real.
+
+**Step 4 — Clean up the override:**
+
+Since this UDR has no real appliance behind it, remove the association so it doesn't interfere with later demos:
+
+1. Go to `rt-private-subnet` → **Subnets** → select `private-subnet` → **Remove**.
+2. Optionally delete `rt-private-subnet` entirely if you're not continuing to experiment with it.
+
+> **Exam tip:** A Route Table with a `0.0.0.0/0` route pointing at a virtual appliance is the standard building block behind "force tunneling" — sending all subnet egress through a firewall, proxy, or NVA for inspection and logging.
+
+---
+
+## Part 5 — NAT Gateway
+
+### The Problem: Default Outbound Access Isn't Production-Grade
+
+Back in Day 9 and Day 10, you saw that VMs with no public IP can still reach the internet *outbound* by default. What we didn't dig into is **how** — and why you shouldn't lean on it for anything serious.
+
+That mechanism is called **default outbound access**, and it has real limitations:
+
+- The source IP used is **not guaranteed or stable** — it's an arbitrary Microsoft-owned address, and it can change.
+- It allows only a **small number of outbound connections per VM** (a low SNAT port limit), so it falls over under real load.
+- Microsoft has been phasing it out for new deployments — it's meant for quick dev/test only, never for production.
+
+If you need private resources to make **reliable, scalable outbound** connections — calling a third-party API, downloading updates, reaching a partner service that whitelists your IP — you need something deliberate.
+
+### NAT Gateway — Managed, Scalable Outbound NAT
+
+A **NAT Gateway** is a fully managed PaaS resource that gives every resource in an associated subnet a stable outbound path to the internet through one or more **static public IP addresses** you control — with up to **64,512 SNAT ports** available, vastly more than default outbound access offers.
+
+**Key characteristic: NAT Gateway is outbound-only.** It does not let the internet initiate connections in. Your `private-subnet` VMs still have zero inbound exposure — exactly like in Day 10's demo — but now their *outbound* requests go out through a known, fixed public IP instead of an unpredictable platform-assigned one.
+
+```mermaid
+graph LR
+    PrivVM1["vm-private-linux\n10.0.2.4\nno public IP"]
+    PrivVM2["vm-private-win\n10.0.2.5\nno public IP"]
+    NATGW["NAT Gateway\nnatgw-demo"]
+    PIP["Static Public IP\n20.x.x.x"]
+    Internet["🌐 Internet"]
+
+    PrivVM1 -->|"Outbound only"| NATGW
+    PrivVM2 -->|"Outbound only"| NATGW
+    NATGW --> PIP --> Internet
+    Internet -.-x|"No inbound path"| PrivVM1
+```
+
+### Hands-On: Deploy a NAT Gateway for `private-subnet`
+
+**💳 Small cost (~$0.045/hr plus data processing) — delete immediately after this demo**
+
+**Step 1 — Create a static public IP for the gateway:**
+
+1. Search for **Public IP addresses** → **+ Create**.
+2. Fill in:
+   - **Resource group:** `rg-networking-demo`
+   - **Name:** `pip-natgw-demo`
+   - **SKU:** Standard (NAT Gateway requires Standard SKU)
+   - **Region:** East US
+3. **Review + create** → **Create**.
+
+**Step 2 — Create the NAT Gateway:**
+
+1. Search for **NAT gateways** → **+ Create**.
+2. On **Basics**:
+   - **Resource group:** `rg-networking-demo`
+   - **Name:** `natgw-demo`
+   - **Region:** East US
+   - **Idle timeout:** leave default (4 minutes)
+3. On **Outbound IP**:
+   - **Public IP addresses:** select `pip-natgw-demo`
+4. On **Subnet**:
+   - **Virtual network:** `vnet-demo`
+   - **Subnets:** check `private-subnet`
+5. **Review + create** → **Create**.
+
+**Step 3 — Verify it from inside the private VM:**
+
+1. Reach `vm-private-linux` the same way you did in Day 10 — jump through `vm-public-linux` via SSH, then SSH from there to `10.0.2.4`.
+2. From inside `vm-private-linux`, run `curl ifconfig.me` (or any "what's my IP" check).
+3. The IP returned should now match `pip-natgw-demo`'s address — not a random platform IP. Every resource in `private-subnet` now shares this one stable, static outbound identity.
+
+`vm-private-linux` still has **no public IP** and is still **completely unreachable from the internet inbound** — NAT Gateway changes nothing about that. It only gives outbound traffic a stable, scalable exit path.
+
+**Step 4 — Clean up:**
+
+1. Search for **NAT gateways**, find `natgw-demo` → **Delete**.
+2. Search for **Public IP addresses**, find `pip-natgw-demo` → **Delete**.
+
+> **Exam tip:** NAT Gateway, Load Balancer outbound rules, and a VM's own public IP are the three ways a resource gets outbound internet access in Azure beyond default outbound access. NAT Gateway is the modern, recommended choice for subnet-wide outbound NAT — and it cannot be used on a subnet that also contains a Bastion host or that already has outbound rules from a Standard Load Balancer; pick one mechanism per subnet.
+
+---
+
 ## Summary
 
 Let's bring it all together. Here's what you covered today:
@@ -355,9 +533,13 @@ Let's bring it all together. Here's what you covered today:
 
 **Azure Bastion** removes the need for public IPs and open SSH/RDP ports on your VMs altogether. Browser-based access over HTTPS, through a managed Bastion host in a dedicated `AzureBastionSubnet`. More secure, compliant, and no extra software needed.
 
+**Route Tables and User-Defined Routes (UDR)** let you override Azure's invisible default routing — you built `rt-private-subnet` with a `0.0.0.0/0` route pointing at a virtual appliance, associated it with `private-subnet`, and saw that UDR only changes the *path* traffic takes, not whether anything is configured to handle it at the other end.
+
+**NAT Gateway** gave `private-subnet` a stable, scalable outbound path to the internet through a static public IP — fixing the unpredictability and SNAT-port limits of Azure's default outbound access — while keeping every VM in that subnet just as unreachable from the internet *inbound* as it was in Day 10.
+
 ### What's Next
 
-You now have a complete picture of core Azure networking: addressing fundamentals (Day 9), building a VNet with subnets and NSGs (Day 10), and connecting that VNet to other networks and services securely (today). Coming up next in this course: **Azure DNS** gets its own dedicated day — covering Public DNS Zones (hosting your domain's records in Azure) and Private DNS Zones (internal name resolution inside a VNet, which you got a preview of today through the private endpoint's automatic DNS integration). After that, we move on to **Load Balancer & VM Scale Sets** — taking the VNets and subnets you've built and distributing traffic across multiple VMs.
+You now have a complete picture of core Azure networking: addressing fundamentals (Day 9), building a VNet with subnets, NSGs and ASGs (Day 10), and connecting that VNet to other networks and services securely while controlling routing in both directions (today). Coming up next in this course: **Azure DNS** gets its own dedicated day — covering Public DNS Zones (hosting your domain's records in Azure) and Private DNS Zones (internal name resolution inside a VNet, which you got a preview of today through the private endpoint's automatic DNS integration). After that, we move on to **Load Balancer & VM Scale Sets** — taking the VNets and subnets you've built and distributing traffic across multiple VMs.
 
 ---
 
@@ -369,3 +551,7 @@ You now have a complete picture of core Azure networking: addressing fundamental
 - **Private Endpoints** give an Azure service a private IP inside your VNet and integrate with Private DNS Zones so the public hostname resolves privately — small ongoing cost, most secure option
 - **Azure Bastion** requires a subnet named `AzureBastionSubnet` with at least `/26` (64 addresses, per the CIDR table from Day 9) — once deployed, VMs no longer need public IPs or open SSH/RDP ports
 - Always delete Private Endpoints and Bastion (plus its public IP) when done with a demo — both charge on an ongoing basis
+- Every subnet has invisible **system routes** by default (local VNet, peering, internet) — a **Route Table** with **User-Defined Routes (UDR)** lets you override them, e.g. forcing all egress through a firewall/NVA via a `0.0.0.0/0` route with next hop type "Virtual appliance"
+- A UDR only changes the path traffic takes — it's on you to make sure something is actually configured to handle traffic at the next hop
+- **NAT Gateway** gives a subnet's private resources a stable, scalable outbound-only path to the internet via a static public IP (up to 64,512 SNAT ports) — it never enables inbound access and doesn't mix with Bastion or Standard Load Balancer outbound rules on the same subnet
+- Azure's **default outbound access** (no NAT Gateway, no public IP, no LB) is unreliable and dev/test-only — don't rely on it for anything production-grade

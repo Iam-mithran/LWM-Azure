@@ -14,6 +14,9 @@
 - Hands-on: building a VNet with two subnets from scratch
 - **Network Security Groups (NSGs)** — the firewall rules that control exactly what traffic is allowed
 - Hands-on: writing NSG rules and attaching them to a subnet
+- Hands-on: deploying real VMs (Windows **and** Linux) into the public and private subnets, and proving public vs. private reachability with your own hands
+- **Application Security Groups (ASGs)** — grouping VMs by role so NSG rules target a group, not a fragile IP address
+- Hands-on: tagging VMs into ASGs and rewriting an NSG rule to use them
 
 ---
 
@@ -254,13 +257,237 @@ Done. Every resource you deploy into `public-subnet` is now protected by these r
 
 ---
 
+## Part 5 — Proving It With Real VMs: Public Subnet vs. Private Subnet
+
+### Why This Demo Matters
+
+Everything so far has been address spaces and firewall rules on a screen. Let's make the public-vs-private distinction *real* by deploying actual VMs and trying to connect to them — exactly the way you'll be tested on this in the AZ-104 exam, and exactly the way you'll design real environments on the job.
+
+We're going to build the classic pattern: one VM with a **public IP** sitting in `public-subnet`, directly reachable from the internet, and one VM with **no public IP at all** sitting in `private-subnet`, completely unreachable from the internet — reachable only from inside the VNet. We'll do this for **both Windows and Linux**, because the exam (and real environments) expect you to be comfortable connecting to either.
+
+```mermaid
+graph LR
+    You["💻 Your Laptop"]
+    Internet["🌐 Internet"]
+    PubVM["vm-public-linux / vm-public-win\npublic-subnet — 10.0.1.x\nHAS a public IP"]
+    PrivVM["vm-private-linux / vm-private-win\nprivate-subnet — 10.0.2.x\nNO public IP"]
+
+    You -->|"SSH / RDP to Public IP"| Internet --> PubVM
+    You -.-x|"SSH / RDP to Private IP — fails, no route"| PrivVM
+    PubVM -->|"SSH / RDP to Private IP — works, same VNet"| PrivVM
+```
+
+### Step 1 — Add an RDP Rule to the Public NSG
+
+Our `nsg-public-subnet` already allows SSH (22) and HTTP (80) from earlier in this video. If you want to demo the Windows VM too, add one more rule:
+
+**✅ Free Tier**
+
+1. Go to `nsg-public-subnet` → **Inbound security rules** → **+ Add**.
+2. Fill in:
+   - **Source:** Any (demo only — lock this to your own IP in production)
+   - **Service:** RDP (auto-fills port 3389 / TCP)
+   - **Action:** Allow
+   - **Priority:** 120
+   - **Name:** `Allow-RDP`
+3. Click **Add**.
+
+`public-subnet` can now accept SSH, HTTP, and RDP. `private-subnet` still has no NSG attached at all — which matters in a moment.
+
+### Step 2 — Deploy the Public VMs (Public IP, in `public-subnet`)
+
+Create one or both of these — do both if you want the full Windows + Linux comparison.
+
+**✅ Free Tier — both VM sizes below are B1s, eligible for the Azure free tier's 750 free hours/month for 12 months. Stop/deallocate VMs you're not actively using to stay within that limit.**
+
+**Linux public VM:**
+
+1. **Virtual machines** → **+ Create** → **Azure virtual machine**.
+2. **Resource group:** `rg-networking-demo`
+3. **VM name:** `vm-public-linux`
+4. **Region:** East US
+5. **Image:** Ubuntu Server 24.04 LTS
+6. **Size:** Standard_B1s
+7. **Authentication type:** SSH public key (generate a new key pair if you don't have one)
+8. **Username:** `azureuser`
+9. On the **Networking** tab:
+   - **Virtual network:** `vnet-demo`
+   - **Subnet:** `public-subnet`
+   - **Public IP:** Create new
+   - **NIC network security group:** None (the subnet-level NSG already covers this VM)
+10. **Review + create** → **Create**. Download the private key when prompted — you'll need it to SSH in.
+
+**Windows public VM:**
+
+1. **Virtual machines** → **+ Create** → **Azure virtual machine**.
+2. **Resource group:** `rg-networking-demo`
+3. **VM name:** `vm-public-win`
+4. **Region:** East US
+5. **Image:** Windows Server 2022 Datacenter
+6. **Size:** Standard_B1s
+7. **Authentication type:** Password — set a username (e.g. `azureadmin`) and a strong password
+8. On the **Networking** tab:
+   - **Virtual network:** `vnet-demo`
+   - **Subnet:** `public-subnet`
+   - **Public IP:** Create new
+   - **NIC network security group:** None
+9. **Review + create** → **Create**.
+
+### Step 3 — Deploy the Private VMs (No Public IP, in `private-subnet`)
+
+**✅ Free Tier**
+
+**Linux private VM:**
+
+1. **Virtual machines** → **+ Create** → **Azure virtual machine**.
+2. **VM name:** `vm-private-linux`, same resource group and region.
+3. **Image:** Ubuntu Server 24.04 LTS, **Size:** Standard_B1s
+4. **Authentication type:** SSH public key — you can reuse the same key pair from `vm-public-linux`
+5. On the **Networking** tab:
+   - **Virtual network:** `vnet-demo`
+   - **Subnet:** `private-subnet`
+   - **Public IP:** **None** ← this is the entire point of this VM
+   - **NIC network security group:** None
+6. **Review + create** → **Create**.
+
+**Windows private VM:**
+
+1. **VM name:** `vm-private-win`, same resource group and region.
+2. **Image:** Windows Server 2022 Datacenter, **Size:** Standard_B1s
+3. **Authentication type:** Password — reuse or set a new username/password.
+4. On the **Networking** tab:
+   - **Virtual network:** `vnet-demo`
+   - **Subnet:** `private-subnet`
+   - **Public IP:** **None**
+   - **NIC network security group:** None
+5. **Review + create** → **Create**.
+
+Once all four are deployed, note each VM's **private IP** from its Overview page — something like `10.0.1.4` and `10.0.1.5` for the two public-subnet VMs, `10.0.2.4` and `10.0.2.5` for the two private-subnet VMs. The public VMs will also show a **public IP** like `20.x.x.x`; the private VMs will show **no public IP field at all** — there's nothing to show, because none was ever attached.
+
+### Step 4 — Confirm the Public VM Is Directly Reachable
+
+**✅ Free Tier**
+
+From your own laptop, **not** through the Azure Portal:
+
+- **Linux:** Open a terminal and run `ssh azureuser@<public-IP-of-vm-public-linux>` (using the private key you downloaded). You should land at a shell prompt in seconds.
+- **Windows:** Open **Remote Desktop Connection** (`mstsc`) on your laptop and connect to `<public-IP-of-vm-public-win>`. Enter the username/password you set. You should see the Windows desktop.
+
+Both connections work because each VM has two things at once: a **public IP** (so the internet can route to it) and an **NSG rule allowing the relevant port** (22 for SSH, 3389 for RDP). Take away either one and this stops working.
+
+### Step 5 — Confirm the Private VM Is NOT Directly Reachable
+
+**✅ Free Tier**
+
+Now try the exact same thing, but aim at the *private* VMs' addresses:
+
+- Try `ssh azureuser@10.0.2.4` (or whatever `vm-private-linux`'s private IP is) directly from your laptop.
+- Try RDP'ing from `mstsc` on your laptop straight to `10.0.2.5` (or whatever `vm-private-win`'s private IP is).
+
+Both attempts will simply time out — not "connection refused," but no response at all. This isn't an NSG blocking you (in fact, `private-subnet` has no NSG attached at all, so there's nothing actively denying the request). It's simpler and more fundamental than that: `10.0.2.4` is a private IP. The public internet has no route to it whatsoever — your laptop's request never even reaches Azure. This is the exact NAT/private-IP concept from Day 9 working in your favour: a VM with no public IP is unreachable from outside the VNet, full stop, regardless of any NSG rule.
+
+### Step 6 — Reach the Private VM *From* the Public VM
+
+**✅ Free Tier**
+
+This is the payoff: the private VMs aren't reachable from the internet, but they're fully reachable from anything else *inside* the same VNet — because the default NSG rule we saw earlier ("Allow all traffic from within the VNet," priority 65000) permits it.
+
+**Linux → Linux:**
+
+1. SSH into `vm-public-linux` from your laptop, exactly as in Step 4.
+2. From *inside* that SSH session (you're now on the public VM, not your laptop), run: `ssh azureuser@10.0.2.4` (the private IP of `vm-private-linux`).
+3. You'll need the private key available on the public VM to do this — either copy it over securely, or generate a fresh key pair on the public VM and add its public half to `vm-private-linux`'s authorized keys via the Portal's **Reset password** → **Add SSH key** option.
+4. You should land inside `vm-private-linux` — a hop the internet could never make directly.
+
+**Windows → Windows:**
+
+1. RDP into `vm-public-win` from your laptop, exactly as in Step 4.
+2. *Inside* that remote desktop session, open **Remote Desktop Connection** again (yes, RDP from inside an RDP session) and connect to `10.0.2.5`, the private IP of `vm-private-win`.
+3. Enter `vm-private-win`'s credentials. You're now remoted two layers deep — your laptop → the public VM → the private VM — entirely over Azure's private network for the second hop.
+
+You can mix and match too (e.g., SSH from the public Linux VM into a private Windows VM isn't possible without an RDP client installed on the Linux box, but SSH-to-SSH and RDP-to-RDP both work cleanly as shown above).
+
+> **This is called a "jump box" or "bastion host" pattern** — a publicly reachable VM that acts as the one doorway into an otherwise unreachable private network. It's exactly what you just built by hand. In Day 11, you'll meet **Azure Bastion**, which is Microsoft's fully managed version of this same idea — same outcome (reach a VM with no public IP), but without needing a separate VM, an open SSH/RDP port on a public IP, or any of the manual key-juggling you just did.
+
+---
+
+## Part 6 — Application Security Groups (ASGs)
+
+### The Problem With IP-Based NSG Rules
+
+Look back at `Allow-HTTP` from Part 4 — its **Destination** is `Any`. That means *any* resource you ever drop into `public-subnet` automatically receives inbound HTTP traffic, whether you intended that or not. You could narrow the destination to a specific private IP, but IPs change — rebuild a VM, and it can come back with a different address, silently breaking your rule.
+
+An **Application Security Group (ASG)** solves this by letting you group VMs by **role** — `web`, `database`, `app-tier` — and write NSG rules against the *group*, not against an IP address or a subnet. Add a VM to the group, and it inherits every rule that references that group; remove it, and those rules no longer apply. The VM's actual IP is irrelevant.
+
+> **Important:** an ASG is not a firewall by itself — it does nothing on its own. It's a label that an NSG rule can reference as a **source** or **destination**, exactly like you'd otherwise type in a CIDR block. All VMs referenced together in one NSG rule (e.g., as both source and destination ASGs) must belong to the same VNet.
+
+### Hands-On: Group Your VMs and Rewrite the NSG Rule
+
+**✅ Free Tier**
+
+**Step 1 — Create two ASGs:**
+
+1. Search for **Application security groups** → **+ Create**.
+2. Fill in:
+   - **Resource group:** `rg-networking-demo`
+   - **Name:** `asg-web`
+   - **Region:** East US
+3. **Review + create** → **Create**.
+4. Repeat with **Name:** `asg-db` — same resource group and region.
+
+`asg-web` will represent anything internet-facing; `asg-db` will represent anything backend-only — mirroring the public-subnet / private-subnet split you already built.
+
+**Step 2 — Add your VMs to the right ASG:**
+
+1. Go to `vm-public-linux` → **Networking** → select its network interface → **Application security groups** → **Add application security groups** → select `asg-web` → **Save**.
+2. Repeat for `vm-public-win` → add it to `asg-web` too.
+3. Go to `vm-private-linux` → its NIC → **Application security groups** → add `asg-db`.
+4. Repeat for `vm-private-win` → add it to `asg-db`.
+
+Every VM is now tagged by role, independent of which subnet or IP it happens to have.
+
+**Step 3 — Rewrite `Allow-HTTP` to target `asg-web` instead of `Any`:**
+
+1. Go to `nsg-public-subnet` → **Inbound security rules** → open `Allow-HTTP`.
+2. Change **Destination** from `Any` to **Application security group**, then select `asg-web`.
+3. **Save**.
+
+The rule now reads "allow inbound HTTP **only to VMs tagged `asg-web`**" — if you deploy a tenth VM into `public-subnet` tomorrow and forget to tag it, it simply won't receive HTTP traffic, even though it's in the right subnet. That's the safety net ASGs give you over plain subnet-based rules.
+
+**Step 4 — (Optional) Write a role-to-role rule:**
+
+A common real-world pattern: "only my web tier may talk to my database tier, on the database port." Try adding this rule to a new NSG attached to `private-subnet`:
+
+- **Source:** Application security group → `asg-web`
+- **Destination:** Application security group → `asg-db`
+- **Service:** custom, port 1433 (SQL) or 3306 (MySQL) — whatever your backend uses
+- **Action:** Allow
+- **Priority:** 100
+
+This single rule enforces "web talks to database, nothing else does" — and it keeps working even as VMs in either group are added, removed, or rebuilt with new IPs.
+
+### Step 5 — Clean Up
+
+**✅ Free Tier — but stop/deallocate or delete VMs you're done with to conserve your free-tier hours**
+
+1. Select all four VMs in **Virtual machines**.
+2. Click **Stop** to deallocate them (keeps the disks for later, stops compute billing) — or **Delete** if you're fully done with this demo and don't need them for Day 11.
+3. If you delete the VMs, also check **Disks**, **Network interfaces**, and **Public IP addresses** in `rg-networking-demo` for any orphaned resources left behind, and delete those too.
+4. ASGs themselves cost nothing to leave behind, but if you deleted the VMs, the now-empty `asg-web` and `asg-db` aren't doing anything useful — delete them too if you're tidying up, or keep them for a future demo.
+
+---
+
 ## Summary
 
 Let's bring it all together. Here's what you built today and why it matters:
 
 A **Virtual Network** is the private, isolated network that every Azure resource lives in. Building on the CIDR knowledge from Day 9, you defined its **address space** — `10.0.0.0/16` gives you 65,536 addresses to work with. You carved that address space into **subnets** to separate concerns: a `public-subnet` for internet-facing resources and a `private-subnet` for backend services — and you saw firsthand that Azure reserves 5 addresses per subnet (`.0`, `.1`, `.2`, `.3`, and `.255`), turning a `/24`'s 256 addresses into 251 usable ones.
 
-**Network Security Groups** are the firewall that protects those subnets. Rules have priorities — the lowest number wins. You explicitly allowed SSH and HTTP; everything else is denied by default. You attached the NSG to the subnet, and every resource inside inherits those rules.
+**Network Security Groups** are the firewall that protects those subnets. Rules have priorities — the lowest number wins. You explicitly allowed SSH, HTTP, and RDP; everything else is denied by default. You attached the NSG to the subnet, and every resource inside inherits those rules.
+
+Then you **proved it with real VMs**. A Windows and a Linux VM in `public-subnet`, each with a public IP, were directly reachable from your laptop over SSH and RDP. A Windows and a Linux VM in `private-subnet`, each with **no** public IP, were completely unreachable from the internet — not because of an NSG, but because a private IP simply has no route from outside the VNet. The only way in was through the public VM, hopping over the private backbone to the private VM's private IP — the classic **jump box** pattern.
+
+Finally, you used **Application Security Groups** to tag those VMs by role (`asg-web`, `asg-db`) and rewrote an NSG rule to target the group instead of `Any` or a raw IP — a safer, more maintainable way to write firewall rules that survives VMs being added, removed, or rebuilt.
 
 ### What's Next
 
@@ -276,3 +503,8 @@ In **Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Azure B
 - **Subnets** divide your VNet's address space into segments for security and organisation — "public" and "private" are naming conventions, not technical guarantees
 - **NSGs** are evaluated by priority (lowest first); the first matching rule wins; Azure's default rules allow intra-VNet traffic and deny all internet inbound
 - NSGs can attach to a **subnet** (broad policy) or a **NIC** (per-VM overrides) — prefer subnet-level for simplicity
+- A VM with a **public IP** + an NSG rule allowing the port is directly reachable from the internet, for both Windows (RDP) and Linux (SSH)
+- A VM with **no public IP** is unreachable from the internet regardless of NSG rules — there's no route in, not just a blocked one — but it's fully reachable from other resources inside the same VNet
+- Connecting through a public VM to reach a private VM is the **jump box / bastion host** pattern — the manual version of what Azure Bastion (Day 11) automates
+- **Application Security Groups (ASGs)** group VMs by role so NSG rules can target "all web VMs" or "all database VMs" instead of a specific IP or subnet — rules keep working as VMs are added, removed, or rebuilt
+- An ASG does nothing by itself — it's only a label an NSG rule can reference as a source or destination; all ASGs referenced in one rule must be in the same VNet

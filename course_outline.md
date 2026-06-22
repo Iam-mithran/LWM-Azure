@@ -83,11 +83,11 @@
 | Day | Title | Key Services | Tier |
 |-----|-------|-------------|------|
 | Day 9 | Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes | IPv4 Addressing, Binary/Decimal Conversion, Public vs Private IP, NAT, CIDR Notation, IP Address Classes | ✅ |
-| Day 10 | Azure Virtual Network: Address Spaces, Subnets & NSGs | VNet, Address Space (CIDR), Subnets, Azure-Reserved Addresses, Network Security Groups | ✅ |
-| Day 11 | VNet Advanced: Peering, Service & Private Endpoints, and Bastion | VNet Peering, Service Endpoints, Private Endpoints, **Azure Bastion** | ✅ / 💳 |
-| Day 12 | Azure DNS: Public & Private Zones | Azure DNS Public Zones, DNS Record Types, TTL, Azure DNS Private Zones, VNet Links & Autoregistration, Custom DNS | ✅ |
+| Day 10 | Azure Virtual Network: Address Spaces, Subnets & NSGs | VNet, Address Space (CIDR), Subnets, Azure-Reserved Addresses, Network Security Groups, Application Security Groups (ASGs) | ✅ |
+| Day 11 | VNet Advanced: Peering, Service & Private Endpoints, and Bastion | VNet Peering, Service Endpoints, Private Endpoints, **Azure Bastion**, Route Tables (UDR), **NAT Gateway** | ✅ / 💳 |
+| Day 12 | VPN Gateway & ExpressRoute | VPN Gateway, Site-to-Site VPN, Point-to-Site VPN, ExpressRoute, Azure Virtual WAN | 💳 |
 | Day 13 | Load Balancer & VM Scale Sets | **Azure Load Balancer** (Standard), Frontend IP, Backend Pools, Health Probes, Inbound NAT Rules, VMSS Autoscale | 💳 |
-| Day 14 | VPN Gateway & ExpressRoute | VPN Gateway, Site-to-Site VPN, Point-to-Site VPN, ExpressRoute, Azure Virtual WAN | 💳 |
+| Day 14 | Azure DNS: Public & Private Zones | Azure DNS Public Zones, DNS Record Types, TTL, Azure DNS Private Zones, VNet Links & Autoregistration, Custom DNS | ✅ |
 | Day 15 | Application Gateway & WAF | **Application Gateway v2**, Path-based routing, Multi-site hosting, SSL termination, **WAF**, OWASP CRS | 💳 |
 | Day 16 | Traffic Manager, Front Door & CDN | **Azure Traffic Manager**, **Azure Front Door**, **Azure CDN**, global routing methods, edge caching | 💳 |
 
@@ -156,6 +156,9 @@
 | Storage Account (Blob, Files, Queues, Tables) | Day 7–8 |
 | Networking Fundamentals (IP, Binary, CIDR) | Day 9 |
 | Virtual Network (VNet) | Day 10–11 |
+| Application Security Groups (ASGs) | Day 10 |
+| Route Tables / User Defined Routes (UDR) | Day 11 |
+| NAT Gateway | Day 11 |
 | Microsoft Entra ID | Day 19 |
 | Azure Monitor | Day 22 |
 | Application Gateway + WAF | Day 15 |
@@ -169,8 +172,8 @@
 | Backup Service (Azure Backup) | Day 5 |
 | Function App | Day 17 |
 | ARM Templates | Day 28 |
-| Azure DNS | Day 12 |
-| VPN Gateway / ExpressRoute | Day 14 |
+| Azure DNS | Day 14 |
+| VPN Gateway / ExpressRoute | Day 12 |
 | Azure Kubernetes Service | Day 31–32 |
 | Containers / ACR | Day 30 |
 | Azure DevOps | Day 23–27 |
