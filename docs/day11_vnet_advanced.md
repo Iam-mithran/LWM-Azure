@@ -2,22 +2,23 @@
 
 **Phase 2 — Networking**
 
-> In Day 10, you built `vnet-demo` — a working VNet with two subnets and an NSG controlling traffic. That's a complete, isolated network. But real Azure environments are rarely just one VNet, and they almost never talk to Azure services like Storage or SQL over the public internet if they can help it. And once your VMs are locked away inside private subnets, how do *you* — the administrator — actually get in to manage them? Today we answer all three of those questions: connecting separate VNets together with **VNet Peering**, reaching Azure PaaS services privately with **Service Endpoints** and **Private Endpoints**, and getting secure, browser-based access to your VMs with **Azure Bastion** — no public IP, no exposed SSH or RDP port required.
+> Back in Day 10, you built a VNet with two subnets and an NSG controlling traffic — a complete, isolated network. But real Azure environments are rarely just one VNet, and they almost never talk to Azure services like Storage or SQL over the public internet if they can help it. And once your VMs are locked away inside private subnets, how do *you* — the administrator — actually get in to manage them? Today we answer all three of those questions: connecting separate VNets together with **VNet Peering**, reaching Azure PaaS services privately with **Service Endpoints** and **Private Endpoints**, and getting secure, browser-based access to your VMs with **Azure Bastion** — no public IP, no exposed SSH or RDP port required. To keep today's lab self-contained, we'll spin up a fresh VNet and a couple of test VMs from scratch rather than reaching back into Day 10's resources.
 
 ---
 
 ## What You'll Learn
 
 - **VNet Peering** — connect two separate VNets privately, no internet, no gateway required
-- Hands-on: create a second VNet and peer it with `vnet-demo`
+- Hands-on: build a new VNet with two subnets, then create a second VNet and peer the two together
 - **Service Endpoints vs Private Endpoints** — the two ways to securely connect to Azure services from inside a VNet
 - Hands-on: enable a Service Endpoint and lock a storage account down to your VNet
 - Hands-on: create a Private Endpoint for a storage account (small cost — instructor demo)
+- Hands-on: deploy two test VMs to use for the rest of today's demos
 - **Azure Bastion** — browser-based VM access with no public IP and no exposed SSH or RDP port (💳 Paid)
 - **Route Tables & User-Defined Routes (UDR)** — overriding Azure's default routing to send traffic through a firewall or network appliance instead
 - Hands-on: building a custom route table and associating it with a subnet
 - **Application Security Groups (ASGs)** — grouping VMs by role so NSG rules target a group, not a fragile IP address
-- Hands-on: tagging Day 10's VMs into ASGs and rewriting an NSG rule to use them
+- Hands-on: tagging today's VMs into ASGs and rewriting an NSG rule to use them
 
 ---
 
@@ -28,13 +29,58 @@ A mix of tiers today:
 - **VNet Peering** is free within the same region. Cross-region (Global) peering has a small bandwidth charge — we're staying in one region, so this part is **✅ free**.
 - **Service Endpoints** are **✅ free** — no additional charge at all.
 - **Private Endpoints** cost roughly **$0.01/hour** (~$7.30/month if left running) plus a small data processing charge. We'll mark this **💳** and walk through deleting it immediately after.
+- **Two test VMs** on `Standard_B1s` are **✅ free** — covered by the Free Tier's 750 B-series hours/month, as long as you stop/deallocate them when you're not actively using them.
 - **Azure Bastion** Basic SKU runs approximately **$0.19/hr** — **💳 instructor demo**, delete immediately after.
 - **Route Tables** are **✅ free** — no charge for the route table resource itself.
 - **Application Security Groups** are **✅ free** — no additional charge at all.
 
 ---
 
-## Part 1 — VNet Peering
+## Part 1 — Build a Fresh VNet, Then Peer It With a Second VNet
+
+### Setting Up Today's Playground
+
+Everything today happens inside its own resource group so it's easy to find — and easy to clean up — when we're done.
+
+**✅ Free Tier — follow along**
+
+**Step 1 — Create the resource group:**
+
+1. Search for **Resource groups** → **+ Create**.
+2. **Resource group name:** `rg-day11-demo`
+3. **Region:** East US
+4. **Review + create** → **Create**.
+
+**Step 2 — Create the VNet:**
+
+1. Search for **Virtual networks** → **+ Create**.
+2. On **Basics**:
+   - **Resource group:** `rg-day11-demo`
+   - **Virtual network name:** `vnet-day11`
+   - **Region:** East US
+3. Click **Next: IP Addresses**.
+4. Set the address space to **`10.0.0.0/16`**.
+5. Delete the default subnet and add two subnets instead — this mirrors the public/private split from Day 10, rebuilt fresh for today:
+   - **subnet-app** → `10.0.1.0/24`
+   - **subnet-data** → `10.0.2.0/24`
+6. Click **Review + create**, then **Create**.
+
+**Step 3 — Create an NSG and attach it to `subnet-app`:**
+
+We'll reuse the same `Allow-HTTP` pattern you learned in Day 10's NSG section, built fresh here.
+
+1. Search for **Network security groups** → **+ Create**.
+2. **Resource group:** `rg-day11-demo`, **Name:** `nsg-subnet-app`, **Region:** East US → **Create**.
+3. Open `nsg-subnet-app` → **Inbound security rules** → **+ Add**.
+4. Fill in:
+   - **Source:** Any
+   - **Destination:** Any
+   - **Service:** HTTP
+   - **Action:** Allow
+   - **Priority:** 100
+   - **Name:** `Allow-HTTP`
+5. Click **Add**.
+6. Go to `nsg-subnet-app` → **Subnets** → **Associate** → **Virtual network:** `vnet-day11`, **Subnet:** `subnet-app` → **OK**.
 
 ### The Problem: Two Separate VNets
 
@@ -48,8 +94,8 @@ By default, two VNets are completely isolated from each other — even if they'r
 
 ```mermaid
 graph LR
-    VNetA["vnet-demo\n10.0.0.0/16"]
-    VNetB["vnet-dev\n10.1.0.0/16"]
+    VNetA["vnet-day11\n10.0.0.0/16"]
+    VNetB["vnet-day11-dev\n10.1.0.0/16"]
     VNetA <-->|"VNet Peering\n(Private backbone)"| VNetB
     Internet["🌐 Internet"]
     Internet -.-x VNetA
@@ -60,13 +106,13 @@ Two important points about VNet Peering:
 
 **1. It is not transitive.** If VNet A is peered with VNet B, and VNet B is peered with VNet C, VNet A cannot reach VNet C. You need a direct peering between A and C as well.
 
-**2. Address spaces cannot overlap.** Our `vnet-demo` uses `10.0.0.0/16`. If we want to peer it with another VNet, that VNet needs a *different* address space — say, `10.1.0.0/16`. If both used `10.0.0.0/16`, Azure wouldn't know which VNet to send the traffic to, and the peering would fail. This is exactly the kind of address-space planning we covered back in Day 9 — choosing non-overlapping CIDR blocks upfront saves you from a redesign later.
+**2. Address spaces cannot overlap.** Our `vnet-day11` uses `10.0.0.0/16`. If we want to peer it with another VNet, that VNet needs a *different* address space — say, `10.1.0.0/16`. If both used `10.0.0.0/16`, Azure wouldn't know which VNet to send the traffic to, and the peering would fail. This is exactly the kind of address-space planning we covered back in Day 9 — choosing non-overlapping CIDR blocks upfront saves you from a redesign later.
 
 **VNet Peering is free within the same region.** Cross-region peering (Global VNet Peering) has a small bandwidth charge.
 
 ---
 
-### Hands-On: Create a Second VNet and Peer It with `vnet-demo`
+### Hands-On: Create a Second VNet and Peer It with `vnet-day11`
 
 Unlike a single-VNet demo, peering needs two VNets to actually show — so let's build a second one and connect it.
 
@@ -76,38 +122,38 @@ Unlike a single-VNet demo, peering needs two VNets to actually show — so let's
 
 1. In the Azure Portal, search for **Virtual networks** and click **+ Create**.
 2. On the **Basics** tab:
-   - **Resource group:** `rg-networking-demo` (same resource group as `vnet-demo`)
-   - **Virtual network name:** `vnet-dev`
-   - **Region:** East US (must match `vnet-demo`'s region for this demo)
+   - **Resource group:** `rg-day11-demo` (same resource group as `vnet-day11`)
+   - **Virtual network name:** `vnet-day11-dev`
+   - **Region:** East US (must match `vnet-day11`'s region for this demo)
 3. Click **Next: IP Addresses**.
-4. Change the default address space to **`10.1.0.0/16`** — different from `vnet-demo`'s `10.0.0.0/16`, satisfying the non-overlap rule.
+4. Change the default address space to **`10.1.0.0/16`** — different from `vnet-day11`'s `10.0.0.0/16`, satisfying the non-overlap rule.
 5. Leave the default subnet as-is (Azure names it `default`, with a range like `10.1.0.0/24`).
 6. Click **Review + create**, then **Create**.
 
 **Step 2 — Create the peering:**
 
-1. Go to `vnet-demo` in the portal.
+1. Go to `vnet-day11` in the portal.
 2. Click **Peerings** in the left menu, then **+ Add**.
 3. You'll configure both directions of the peering in one screen:
-   - **This virtual network's peering link name:** `peer-to-vnet-dev`
-   - **Remote virtual network's peering link name:** `peer-to-vnet-demo`
-   - **Virtual network:** select `vnet-dev`
+   - **This virtual network's peering link name:** `peer-to-vnet-day11-dev`
+   - **Remote virtual network's peering link name:** `peer-to-vnet-day11`
+   - **Virtual network:** select `vnet-day11-dev`
 4. Leave the default settings checked:
    - **Allow virtual network access** (both directions) — this is the core setting that lets traffic flow
    - **Allow forwarded traffic** — leave unchecked unless you have an NVA (network virtual appliance) routing traffic between VNets; not needed for this demo
    - **Allow gateway transit / Use remote gateways** — leave unchecked; these relate to sharing a VPN Gateway across peered VNets, which we'll touch on in a future networking topic
 5. Click **Add**.
 
-Azure provisions the peering in **both directions automatically** — you only had to configure it once, from `vnet-demo`'s side.
+Azure provisions the peering in **both directions automatically** — you only had to configure it once, from `vnet-day11`'s side.
 
 **Step 3 — Verify the peering:**
 
-1. Still on `vnet-demo` → **Peerings**, you should see `peer-to-vnet-dev` with **Peering status: Connected**.
-2. Now go to `vnet-dev` → **Peerings**. You'll see `peer-to-vnet-demo`, also **Connected** — created automatically as part of the same operation.
+1. Still on `vnet-day11` → **Peerings**, you should see `peer-to-vnet-day11-dev` with **Peering status: Connected**.
+2. Now go to `vnet-day11-dev` → **Peerings**. You'll see `peer-to-vnet-day11`, also **Connected** — created automatically as part of the same operation.
 
-**How would you actually test this?** If you deployed a VM into `vnet-dev`'s `default` subnet (`10.1.0.0/24`) and another VM into `vnet-demo`'s `private-subnet` (`10.0.2.0/24`), the two VMs could ping each other using their **private IPs** — `10.1.0.4` reaching `10.0.2.4`, for example — over Azure's private backbone, with no internet, no public IP, and no gateway involved on either side. We won't deploy extra VMs just for this (to keep costs and clutter down), but this is exactly the mechanism that lets a `vnet-prod` and `vnet-shared-services` VNet talk to each other privately in a real environment.
+**How would you actually test this?** If you deployed a VM into `vnet-day11-dev`'s `default` subnet (`10.1.0.0/24`) and another VM into `vnet-day11`'s `subnet-data` (`10.0.2.0/24`), the two VMs could ping each other using their **private IPs** — `10.1.0.4` reaching `10.0.2.4`, for example — over Azure's private backbone, with no internet, no public IP, and no gateway involved on either side. We won't deploy extra VMs just for this (to keep costs and clutter down), but this is exactly the mechanism that lets a `vnet-prod` and `vnet-shared-services` VNet talk to each other privately in a real environment.
 
-> **Cleanup note:** VNet Peering within the same region is free, so there's no cost pressure to remove `vnet-dev` or the peering. Feel free to keep both for future demos — or delete `vnet-dev` later if you want to tidy up; deleting a VNet automatically removes any peerings attached to it.
+> **Cleanup note:** VNet Peering within the same region is free, so there's no cost pressure to remove `vnet-day11-dev` or the peering. Feel free to keep both for future demos — or delete `vnet-day11-dev` later if you want to tidy up; deleting a VNet automatically removes any peerings attached to it.
 
 ---
 
@@ -160,15 +206,13 @@ graph TD
 
 ### Hands-On: Lock a Storage Account Down with a Service Endpoint
 
-For this demo, create a **brand-new storage account** rather than reusing the one from Day 7 — that one hosts your static website demo, and restricting its network access would break public access to that site.
-
 **✅ Free Tier — follow along**
 
 **Step 1 — Create a test storage account:**
 
 1. Search for **Storage accounts** → **+ Create**.
 2. Fill in:
-   - **Resource group:** `rg-networking-demo`
+   - **Resource group:** `rg-day11-demo`
    - **Storage account name:** `lwmstoragenetdemo<yourname>` *(lowercase letters and numbers only, globally unique)*
    - **Region:** East US
    - **Performance/Redundancy:** leave defaults (Standard / LRS)
@@ -176,7 +220,7 @@ For this demo, create a **brand-new storage account** rather than reusing the on
 
 **Step 2 — Enable the Service Endpoint on the subnet:**
 
-1. Go to `vnet-demo` → **Subnets** → click `private-subnet`.
+1. Go to `vnet-day11` → **Subnets** → click `subnet-data`.
 2. Under **Service endpoints**, click the dropdown and select **Microsoft.Storage**.
 3. Click **Save**.
 
@@ -186,11 +230,11 @@ For this demo, create a **brand-new storage account** rather than reusing the on
 2. Under **Public network access**, choose **Enabled from selected virtual networks and IP addresses**.
 3. Click **+ Add existing virtual network**.
 4. Select:
-   - **Virtual networks:** `vnet-demo`
-   - **Subnets:** `private-subnet` (you'll see a green checkmark confirming the Service Endpoint is enabled — Azure won't let you add a subnet that doesn't have the endpoint configured)
+   - **Virtual networks:** `vnet-day11`
+   - **Subnets:** `subnet-data` (you'll see a green checkmark confirming the Service Endpoint is enabled — Azure won't let you add a subnet that doesn't have the endpoint configured)
 5. Click **Add**, then **Save**.
 
-That's it. Now this storage account only accepts connections from `private-subnet` in `vnet-demo` (plus any IP addresses you explicitly allow under the same **Networking** blade). If you open the storage account's blob URL directly from your browser at home, you'll get an authorization error — your laptop isn't inside `vnet-demo`. A VM deployed into `private-subnet`, however, would connect successfully, and that traffic would travel over Azure's backbone rather than the public internet.
+That's it. Now this storage account only accepts connections from `subnet-data` in `vnet-day11` (plus any IP addresses you explicitly allow under the same **Networking** blade). If you open the storage account's blob URL directly from your browser at home, you'll get an authorization error — your laptop isn't inside `vnet-day11`. A VM deployed into `subnet-data`, however, would connect successfully, and that traffic would travel over Azure's backbone rather than the public internet.
 
 > **Tip:** The **Networking** blade also has an **Exceptions** section with a checkbox for "Allow Azure services on the trusted services list to access this storage account" — this is what lets things like Azure Monitor or Azure Backup continue to function even when network access is restricted.
 
@@ -200,12 +244,12 @@ That's it. Now this storage account only accepts connections from `private-subne
 
 **💳 Small cost (~$0.01/hr, ~$7.30/month if left running) — delete immediately after this demo**
 
-Let's go one step further and give this same storage account a private IP address inside `vnet-demo`.
+Let's go one step further and give this same storage account a private IP address inside `vnet-day11`.
 
 1. Go to your storage account → **Networking** → **Private endpoint connections** tab.
 2. Click **+ Private endpoint**.
 3. On **Basics**:
-   - **Resource group:** `rg-networking-demo`
+   - **Resource group:** `rg-day11-demo`
    - **Name:** `pe-storage-demo`
    - **Region:** East US
 4. On **Resource**:
@@ -213,15 +257,15 @@ Let's go one step further and give this same storage account a private IP addres
    - **Resource:** your storage account
    - **Target sub-resource:** `blob`
 5. On **Virtual Network**:
-   - **Virtual network:** `vnet-demo`
-   - **Subnet:** `private-subnet`
+   - **Virtual network:** `vnet-day11`
+   - **Subnet:** `subnet-data`
 6. On **DNS**:
-   - Leave **Integrate with private DNS zone** set to **Yes**. Azure will automatically create (or reuse) a Private DNS Zone named `privatelink.blob.core.windows.net` and link it to `vnet-demo`.
+   - Leave **Integrate with private DNS zone** set to **Yes**. Azure will automatically create (or reuse) a Private DNS Zone named `privatelink.blob.core.windows.net` and link it to `vnet-day11`.
 7. Click **Review + create**, then **Create**.
 
-Once deployed, go back to **Networking** → **Private endpoint connections**. You'll see `pe-storage-demo` listed with **Connection state: Approved** and a **private IP** from `private-subnet`'s range — something like `10.0.2.20`.
+Once deployed, go back to **Networking** → **Private endpoint connections**. You'll see `pe-storage-demo` listed with **Connection state: Approved** and a **private IP** from `subnet-data`'s range — something like `10.0.2.20`.
 
-**What just happened?** A network interface with a private IP was created inside `private-subnet`, mapped directly to your storage account's blob service. Because of the Private DNS Zone integration, any VM inside `vnet-demo` that resolves `lwmstoragenetdemo<yourname>.blob.core.windows.net` will now get back the **private IP** (`10.0.2.20`) instead of the public one — meaning the connection never leaves your VNet. At this point, you could go back to the **Networking** blade and set **Public network access** to **Disabled** entirely, and the storage account would still be fully reachable from inside `vnet-demo` via the private endpoint.
+**What just happened?** A network interface with a private IP was created inside `subnet-data`, mapped directly to your storage account's blob service. Because of the Private DNS Zone integration, any VM inside `vnet-day11` that resolves `lwmstoragenetdemo<yourname>.blob.core.windows.net` will now get back the **private IP** (`10.0.2.20`) instead of the public one — meaning the connection never leaves your VNet. At this point, you could go back to the **Networking** blade and set **Public network access** to **Disabled** entirely, and the storage account would still be fully reachable from inside `vnet-day11` via the private endpoint.
 
 **Step — Clean up the Private Endpoint:**
 
@@ -233,7 +277,40 @@ Since this resource carries a small ongoing charge:
 
 ---
 
-## Part 3 — Azure Bastion
+## Part 3 — Deploy Two Test VMs, Then Azure Bastion
+
+Several of today's remaining demos — Bastion, route tables, and ASGs — all need actual VMs to point at. Let's deploy two now, one per subnet, and reuse them for the rest of the day.
+
+**✅ Free Tier — `Standard_B1s` is covered by the Free Tier's 750 B-series hours/month**
+
+**Step 1 — Deploy `vm-web-demo` into `subnet-app`:**
+
+1. Search for **Virtual machines** → **+ Create** → **Azure virtual machine**.
+2. Fill in:
+   - **Resource group:** `rg-day11-demo`
+   - **VM name:** `vm-web-demo`
+   - **Region:** East US
+   - **Image:** Ubuntu Server 24.04 LTS
+   - **Size:** Standard_B1s
+   - **Authentication:** SSH public key (or password for quick demo)
+3. On the **Networking** tab:
+   - **Virtual network:** `vnet-day11`
+   - **Subnet:** `subnet-app`
+   - **Public IP:** Create new (we'll remove it once Bastion is working)
+   - **NIC network security group:** None (the subnet's `nsg-subnet-app` will handle it)
+4. Click **Review + create**, then **Create**.
+
+**Step 2 — Deploy `vm-db-demo` into `subnet-data`:**
+
+1. Repeat the same steps with:
+   - **VM name:** `vm-db-demo`
+   - **Subnet:** `subnet-data`
+   - **Public IP:** None — this one represents a backend-only VM with no internet-facing surface at all
+2. Click **Review + create**, then **Create**.
+
+You now have two VMs to use for the rest of today's hands-on demos: `vm-web-demo` (internet-facing role) and `vm-db-demo` (backend-only role).
+
+---
 
 ### The Problem With Public IPs on VMs
 
@@ -286,7 +363,7 @@ For this demo, the Basic SKU is sufficient.
 
 **Step 1 — Add the AzureBastionSubnet to your VNet:**
 
-1. Go to your `vnet-demo` VNet in the portal.
+1. Go to your `vnet-day11` VNet in the portal.
 2. Click **Subnets** in the left menu.
 3. Click **+ Subnet**.
 4. Fill in:
@@ -294,43 +371,24 @@ For this demo, the Basic SKU is sufficient.
    - **Subnet address range:** `10.0.3.0/26` (gives 64 addresses, the minimum for Bastion)
 5. Click **Save**.
 
-**Step 2 — Deploy a test VM (if you don't already have one in this VNet):**
-
-If you followed Day 3's VM lab, you can use that VM — just make sure it's in the same region as `vnet-demo`. Otherwise, quickly deploy a small VM:
-
-1. Search for **Virtual machines** → **+ Create** → **Azure virtual machine**.
-2. Fill in:
-   - **Resource group:** `rg-networking-demo`
-   - **VM name:** `vm-demo-01`
-   - **Region:** East US
-   - **Image:** Ubuntu Server 24.04 LTS
-   - **Size:** Standard_B1s
-   - **Authentication:** SSH public key (or password for quick demo)
-3. On the **Networking** tab:
-   - **Virtual network:** `vnet-demo`
-   - **Subnet:** `private-subnet`
-   - **Public IP:** Create new (you can remove this later once Bastion is working)
-   - **NIC network security group:** None (the VNet's subnet NSG will handle it)
-4. Click **Review + create**, then **Create**.
-
-**Step 3 — Deploy Azure Bastion:**
+**Step 2 — Deploy Azure Bastion:**
 
 1. In the portal, search for **Bastions** and click **+ Create**.
 2. Fill in:
-   - **Resource group:** `rg-networking-demo`
+   - **Resource group:** `rg-day11-demo`
    - **Name:** `bastion-demo`
    - **Region:** East US
    - **Tier:** Basic
-   - **Virtual network:** `vnet-demo`
+   - **Virtual network:** `vnet-day11`
    - **Subnet:** AzureBastionSubnet (auto-selected once you pick the VNet)
    - **Public IP address:** Create new, name it `pip-bastion-demo`
 3. Click **Review + create**, then **Create**.
 
-Bastion takes about 5 minutes to provision. While it's deploying, notice that you could remove the public IP from your target VM and close ports 22 and 3389 on its NSG entirely — once Bastion is running, you no longer need them.
+Bastion takes about 5 minutes to provision. While it's deploying, notice that you could remove the public IP from `vm-web-demo` and close ports 22 and 3389 on its NSG entirely — once Bastion is running, you no longer need them.
 
-**Step 4 — Connect to your VM via Bastion:**
+**Step 3 — Connect to your VM via Bastion:**
 
-1. Go to `vm-demo-01`.
+1. Go to `vm-web-demo`.
 2. Click **Connect** in the left menu, then choose **Connect via Bastion**.
 3. You'll see the Bastion connection panel:
    - **Authentication type:** SSH Private Key (or Password if you set one)
@@ -340,9 +398,9 @@ Bastion takes about 5 minutes to provision. While it's deploying, notice that yo
 
 A terminal window opens directly in your browser tab. You are now inside the VM — over HTTPS, through Bastion, with no public IP on the VM itself.
 
-You can now close port 22 entirely on the NSG. The VM is accessible only through Bastion. From a security and compliance standpoint, this is significantly better than a public IP with port 22 open.
+You can now remove the public IP from `vm-web-demo` and close port 22 entirely on `nsg-subnet-app`. The VM is accessible only through Bastion. From a security and compliance standpoint, this is significantly better than a public IP with port 22 open.
 
-**Step 5 — Clean up Bastion after the demo:**
+**Step 4 — Clean up Bastion after the demo:**
 
 Bastion charges by the hour. Delete it when you're done:
 
@@ -359,8 +417,8 @@ Every subnet you create already has routing happening behind the scenes, even th
 
 | Destination | Next Hop | What It Does |
 |---|---|---|
-| Traffic to another address inside the same VNet | **Local VNet** | Delivers it directly — this is why your `public-subnet` and `private-subnet` VMs can already reach each other |
-| Traffic to a peered VNet's address space | **VNet Peering** | Routes it across the peering connection — this is what made Day 11 Part 1's peering work without you configuring any routes yourself |
+| Traffic to another address inside the same VNet | **Local VNet** | Delivers it directly — this is why your `subnet-app` and `subnet-data` VMs can already reach each other |
+| Traffic to a peered VNet's address space | **VNet Peering** | Routes it across the peering connection — this is what made Part 1's peering work without you configuring any routes yourself |
 | Everything else (`0.0.0.0/0`) | **Internet** | Sends it out to the public internet |
 
 These system routes are invisible — you never see them in a "Route Tables" blade unless you go looking — but they're exactly what's been making your VMs reachable (or not) this entire course.
@@ -390,14 +448,14 @@ Each route has:
 
 ```mermaid
 graph LR
-    PrivVM["vm-private-linux\n10.0.2.4"]
+    DbVM["vm-db-demo\n10.0.2.4"]
     Default["Default route\n0.0.0.0/0 -> Internet"]
-    Custom["UDR override\n0.0.0.0/0 -> Virtual appliance\n10.0.1.10"]
-    NVA["Firewall / NVA\n10.0.1.10"]
+    Custom["UDR override\n0.0.0.0/0 -> Virtual appliance\n10.0.1.4"]
+    NVA["vm-web-demo (stand-in appliance)\n10.0.1.4"]
     Internet["🌐 Internet"]
 
-    PrivVM -.->|"Without a route table"| Default --> Internet
-    PrivVM -->|"With rt-private-subnet associated"| Custom --> NVA --> Internet
+    DbVM -.->|"Without a route table"| Default --> Internet
+    DbVM -->|"With rt-subnet-data associated"| Custom --> NVA --> Internet
 ```
 
 ### Hands-On: Build a Route Table and Override the Default Path
@@ -408,37 +466,37 @@ graph LR
 
 1. Search for **Route tables** → **+ Create**.
 2. Fill in:
-   - **Resource group:** `rg-networking-demo`
+   - **Resource group:** `rg-day11-demo`
    - **Region:** East US
-   - **Name:** `rt-private-subnet`
+   - **Name:** `rt-subnet-data`
    - **Propagate gateway routes:** No (leave default)
 3. **Review + create** → **Create**.
 
 **Step 2 — Add a custom route:**
 
-1. Go to `rt-private-subnet` → **Routes** → **+ Add**.
+1. Go to `rt-subnet-data` → **Routes** → **+ Add**.
 2. Fill in:
    - **Route name:** `force-via-appliance`
    - **Destination type:** IP Addresses
    - **Destination IP addresses/CIDR ranges:** `0.0.0.0/0` (every destination)
    - **Next hop type:** Virtual appliance
-   - **Next hop address:** `10.0.1.4` (use the private IP of `vm-public-linux` from Day 10 as a stand-in "appliance" — purely to demonstrate the mechanic; it isn't actually configured to forward traffic)
+   - **Next hop address:** `10.0.1.4` (use the private IP of `vm-web-demo` as a stand-in "appliance" — purely to demonstrate the mechanic; it isn't actually configured to forward traffic)
 3. Click **Add**.
 
-**Step 3 — Associate the route table with `private-subnet`:**
+**Step 3 — Associate the route table with `subnet-data`:**
 
-1. Go to `rt-private-subnet` → **Subnets** → **Associate**.
-2. **Virtual network:** `vnet-demo`, **Subnet:** `private-subnet`.
+1. Go to `rt-subnet-data` → **Subnets** → **Associate**.
+2. **Virtual network:** `vnet-day11`, **Subnet:** `subnet-data`.
 3. Click **OK**.
 
-From this point on, any resource in `private-subnet` that tries to reach the internet has its traffic directed toward `10.0.1.4` first, instead of going straight out — exactly what you'd want if `10.0.1.4` were a real firewall VM with IP forwarding enabled and routing software installed. We haven't configured `vm-public-linux` to actually forward anything, so outbound internet access from `private-subnet` would now silently fail — which is precisely the point: **UDR changes the path traffic takes, it doesn't make sure something is listening at the other end.** That's on you to configure if you build this for real.
+From this point on, any resource in `subnet-data` that tries to reach the internet has its traffic directed toward `10.0.1.4` first, instead of going straight out — exactly what you'd want if `10.0.1.4` were a real firewall VM with IP forwarding enabled and routing software installed. We haven't configured `vm-web-demo` to actually forward anything, so outbound internet access from `subnet-data` would now silently fail — which is precisely the point: **UDR changes the path traffic takes, it doesn't make sure something is listening at the other end.** That's on you to configure if you build this for real.
 
 **Step 4 — Clean up the override:**
 
 Since this UDR has no real appliance behind it, remove the association so it doesn't interfere with later demos:
 
-1. Go to `rt-private-subnet` → **Subnets** → select `private-subnet` → **Remove**.
-2. Optionally delete `rt-private-subnet` entirely if you're not continuing to experiment with it.
+1. Go to `rt-subnet-data` → **Subnets** → select `subnet-data` → **Remove**.
+2. Optionally delete `rt-subnet-data` entirely if you're not continuing to experiment with it.
 
 > **Exam tip:** A Route Table with a `0.0.0.0/0` route pointing at a virtual appliance is the standard building block behind "force tunneling" — sending all subnet egress through a firewall, proxy, or NVA for inspection and logging.
 
@@ -448,7 +506,7 @@ Since this UDR has no real appliance behind it, remove the association so it doe
 
 ### The Problem With IP-Based NSG Rules
 
-Look back at the `Allow-HTTP` rule you created in Day 10's NSG section — its **Destination** is `Any`. That means *any* resource you ever drop into `public-subnet` automatically receives inbound HTTP traffic, whether you intended that or not. You could narrow the destination to a specific private IP, but IPs change — rebuild a VM, and it can come back with a different address, silently breaking your rule.
+Look back at the `Allow-HTTP` rule you created earlier today on `nsg-subnet-app` — its **Destination** is `Any`. That means *any* resource you ever drop into `subnet-app` automatically receives inbound HTTP traffic, whether you intended that or not. You could narrow the destination to a specific private IP, but IPs change — rebuild a VM, and it can come back with a different address, silently breaking your rule.
 
 An **Application Security Group (ASG)** solves this by letting you group VMs by **role** — `web`, `database`, `app-tier` — and write NSG rules against the *group*, not against an IP address or a subnet. Add a VM to the group, and it inherits every rule that references that group; remove it, and those rules no longer apply. The VM's actual IP is irrelevant.
 
@@ -458,40 +516,38 @@ An **Application Security Group (ASG)** solves this by letting you group VMs by 
 
 **✅ Free Tier**
 
-This picks up the four VMs you built in Day 10: `vm-public-linux`, `vm-public-win`, `vm-private-linux`, and `vm-private-win`. If you stopped/deallocated them, start them back up (or just reattach the ASGs — that works on a stopped VM's NIC too).
+This picks up the two VMs you built in Part 3 today: `vm-web-demo` and `vm-db-demo`. If you stopped/deallocated them, start them back up (or just reattach the ASGs — that works on a stopped VM's NIC too).
 
 **Step 1 — Create two ASGs:**
 
 1. Search for **Application security groups** → **+ Create**.
 2. Fill in:
-   - **Resource group:** `rg-networking-demo`
+   - **Resource group:** `rg-day11-demo`
    - **Name:** `asg-web`
    - **Region:** East US
 3. **Review + create** → **Create**.
 4. Repeat with **Name:** `asg-db` — same resource group and region.
 
-`asg-web` will represent anything internet-facing; `asg-db` will represent anything backend-only — mirroring the public-subnet / private-subnet split from Day 10.
+`asg-web` represents anything internet-facing; `asg-db` represents anything backend-only — mirroring the `subnet-app` / `subnet-data` split we built in Part 1.
 
 **Step 2 — Add your VMs to the right ASG:**
 
-1. Go to `vm-public-linux` → **Networking** → select its network interface → **Application security groups** → **Add application security groups** → select `asg-web` → **Save**.
-2. Repeat for `vm-public-win` → add it to `asg-web` too.
-3. Go to `vm-private-linux` → its NIC → **Application security groups** → add `asg-db`.
-4. Repeat for `vm-private-win` → add it to `asg-db`.
+1. Go to `vm-web-demo` → **Networking** → select its network interface → **Application security groups** → **Add application security groups** → select `asg-web` → **Save**.
+2. Go to `vm-db-demo` → its NIC → **Application security groups** → add `asg-db`.
 
-Every VM is now tagged by role, independent of which subnet or IP it happens to have.
+Both VMs are now tagged by role, independent of which subnet or IP they happen to have.
 
 **Step 3 — Rewrite `Allow-HTTP` to target `asg-web` instead of `Any`:**
 
-1. Go to `nsg-public-subnet` → **Inbound security rules** → open `Allow-HTTP`.
+1. Go to `nsg-subnet-app` → **Inbound security rules** → open `Allow-HTTP`.
 2. Change **Destination** from `Any` to **Application security group**, then select `asg-web`.
 3. **Save**.
 
-The rule now reads "allow inbound HTTP **only to VMs tagged `asg-web`**" — if you deploy a tenth VM into `public-subnet` tomorrow and forget to tag it, it simply won't receive HTTP traffic, even though it's in the right subnet. That's the safety net ASGs give you over plain subnet-based rules.
+The rule now reads "allow inbound HTTP **only to VMs tagged `asg-web`**" — if you deploy a second VM into `subnet-app` tomorrow and forget to tag it, it simply won't receive HTTP traffic, even though it's in the right subnet. That's the safety net ASGs give you over plain subnet-based rules.
 
 **Step 4 — (Optional) Write a role-to-role rule:**
 
-A common real-world pattern: "only my web tier may talk to my database tier, on the database port." Try adding this rule to a new NSG attached to `private-subnet`:
+A common real-world pattern: "only my web tier may talk to my database tier, on the database port." Try adding this rule to a new NSG attached to `subnet-data`:
 
 - **Source:** Application security group → `asg-web`
 - **Destination:** Application security group → `asg-db`
@@ -505,10 +561,11 @@ This single rule enforces "web talks to database, nothing else does" — and it 
 
 **✅ Free Tier — but stop/deallocate or delete VMs you're done with to conserve your free-tier hours**
 
-1. Select all four VMs in **Virtual machines**.
+1. Select both VMs in **Virtual machines**.
 2. Click **Stop** to deallocate them (keeps the disks for later, stops compute billing) — or **Delete** if you're fully done with these demos and don't need them anymore.
-3. If you delete the VMs, also check **Disks**, **Network interfaces**, and **Public IP addresses** in `rg-networking-demo` for any orphaned resources left behind, and delete those too.
+3. If you delete the VMs, also check **Disks**, **Network interfaces**, and **Public IP addresses** in `rg-day11-demo` for any orphaned resources left behind, and delete those too.
 4. ASGs themselves cost nothing to leave behind, but if you deleted the VMs, the now-empty `asg-web` and `asg-db` aren't doing anything useful — delete them too if you're tidying up, or keep them for a future demo.
+5. If you're fully done with today's lab, you can delete the whole `rg-day11-demo` resource group in one step to remove everything at once — VNets, VMs, storage account, NSGs, and ASGs included.
 
 ---
 
@@ -516,15 +573,15 @@ This single rule enforces "web talks to database, nothing else does" — and it 
 
 Let's bring it all together. Here's what you covered today:
 
-**VNet Peering** connects two separate VNets on Azure's private backbone — no internet, no gateway, low latency. You created `vnet-dev` (`10.1.0.0/16`) and peered it with `vnet-demo` (`10.0.0.0/16`) in a single operation that configured both directions automatically. Remember: peering is non-transitive, and address spaces must not overlap — exactly the CIDR planning discipline from Day 9.
+**VNet Peering** connects two separate VNets on Azure's private backbone — no internet, no gateway, low latency. You built `vnet-day11` (`10.0.0.0/16`) and `vnet-day11-dev` (`10.1.0.0/16`) and peered them in a single operation that configured both directions automatically. Remember: peering is non-transitive, and address spaces must not overlap — exactly the CIDR planning discipline from Day 9.
 
-**Service Endpoints** and **Private Endpoints** are the two ways to securely reach Azure services from inside your VNet. Service Endpoints keep traffic on the Azure backbone and let you restrict a service's firewall to specific subnets — free, and you used one to lock a storage account down to `private-subnet`. Private Endpoints go further, giving the service its own private IP inside your VNet via a small additional charge — letting you disable public access entirely.
+**Service Endpoints** and **Private Endpoints** are the two ways to securely reach Azure services from inside your VNet. Service Endpoints keep traffic on the Azure backbone and let you restrict a service's firewall to specific subnets — free, and you used one to lock a storage account down to `subnet-data`. Private Endpoints go further, giving the service its own private IP inside your VNet via a small additional charge — letting you disable public access entirely.
 
 **Azure Bastion** removes the need for public IPs and open SSH/RDP ports on your VMs altogether. Browser-based access over HTTPS, through a managed Bastion host in a dedicated `AzureBastionSubnet`. More secure, compliant, and no extra software needed.
 
-**Route Tables and User-Defined Routes (UDR)** let you override Azure's invisible default routing — you built `rt-private-subnet` with a `0.0.0.0/0` route pointing at a virtual appliance, associated it with `private-subnet`, and saw that UDR only changes the *path* traffic takes, not whether anything is configured to handle it at the other end.
+**Route Tables and User-Defined Routes (UDR)** let you override Azure's invisible default routing — you built `rt-subnet-data` with a `0.0.0.0/0` route pointing at a virtual appliance, associated it with `subnet-data`, and saw that UDR only changes the *path* traffic takes, not whether anything is configured to handle it at the other end.
 
-Finally, you used **Application Security Groups** to tag Day 10's VMs by role (`asg-web`, `asg-db`) and rewrote an NSG rule to target the group instead of `Any` or a raw IP — a safer, more maintainable way to write firewall rules that survives VMs being added, removed, or rebuilt.
+Finally, you used **Application Security Groups** to tag today's VMs by role (`asg-web`, `asg-db`) and rewrote an NSG rule to target the group instead of `Any` or a raw IP — a safer, more maintainable way to write firewall rules that survives VMs being added, removed, or rebuilt.
 
 ### What's Next
 
