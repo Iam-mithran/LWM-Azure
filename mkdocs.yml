@@ -58,3 +58,4 @@ nav:
   - "Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes": day09_intro_to_networking.md
   - "Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs": day10_virtual_network.md
   - "Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion": day11_vnet_advanced.md
+  - "Day 12 — VPN Gateway & ExpressRoute": day12_vpn_expressroute.md
