@@ -16,7 +16,8 @@
 - **Azure Bastion** — browser-based VM access with no public IP and no exposed SSH or RDP port (💳 Paid)
 - **Route Tables & User-Defined Routes (UDR)** — overriding Azure's default routing to send traffic through a firewall or network appliance instead
 - Hands-on: building a custom route table and associating it with a subnet
-- **NAT Gateway** — giving private-subnet resources a stable, scalable outbound path to the internet without ever giving them a public IP (💳 Paid)
+- **Application Security Groups (ASGs)** — grouping VMs by role so NSG rules target a group, not a fragile IP address
+- Hands-on: tagging Day 10's VMs into ASGs and rewriting an NSG rule to use them
 
 ---
 
@@ -29,7 +30,7 @@ A mix of tiers today:
 - **Private Endpoints** cost roughly **$0.01/hour** (~$7.30/month if left running) plus a small data processing charge. We'll mark this **💳** and walk through deleting it immediately after.
 - **Azure Bastion** Basic SKU runs approximately **$0.19/hr** — **💳 instructor demo**, delete immediately after.
 - **Route Tables** are **✅ free** — no charge for the route table resource itself.
-- **NAT Gateway** runs approximately **$0.045/hr** plus a small per-GB data processing charge — **💳 instructor demo**, delete immediately after.
+- **Application Security Groups** are **✅ free** — no additional charge at all.
 
 ---
 
@@ -443,83 +444,71 @@ Since this UDR has no real appliance behind it, remove the association so it doe
 
 ---
 
-## Part 5 — NAT Gateway
+## Part 5 — Application Security Groups (ASGs)
 
-### The Problem: Default Outbound Access Isn't Production-Grade
+### The Problem With IP-Based NSG Rules
 
-Back in Day 9 and Day 10, you saw that VMs with no public IP can still reach the internet *outbound* by default. What we didn't dig into is **how** — and why you shouldn't lean on it for anything serious.
+Look back at the `Allow-HTTP` rule you created in Day 10's NSG section — its **Destination** is `Any`. That means *any* resource you ever drop into `public-subnet` automatically receives inbound HTTP traffic, whether you intended that or not. You could narrow the destination to a specific private IP, but IPs change — rebuild a VM, and it can come back with a different address, silently breaking your rule.
 
-That mechanism is called **default outbound access**, and it has real limitations:
+An **Application Security Group (ASG)** solves this by letting you group VMs by **role** — `web`, `database`, `app-tier` — and write NSG rules against the *group*, not against an IP address or a subnet. Add a VM to the group, and it inherits every rule that references that group; remove it, and those rules no longer apply. The VM's actual IP is irrelevant.
 
-- The source IP used is **not guaranteed or stable** — it's an arbitrary Microsoft-owned address, and it can change.
-- It allows only a **small number of outbound connections per VM** (a low SNAT port limit), so it falls over under real load.
-- Microsoft has been phasing it out for new deployments — it's meant for quick dev/test only, never for production.
+> **Important:** an ASG is not a firewall by itself — it does nothing on its own. It's a label that an NSG rule can reference as a **source** or **destination**, exactly like you'd otherwise type in a CIDR block. All VMs referenced together in one NSG rule (e.g., as both source and destination ASGs) must belong to the same VNet.
 
-If you need private resources to make **reliable, scalable outbound** connections — calling a third-party API, downloading updates, reaching a partner service that whitelists your IP — you need something deliberate.
+### Hands-On: Group Your VMs and Rewrite the NSG Rule
 
-### NAT Gateway — Managed, Scalable Outbound NAT
+**✅ Free Tier**
 
-A **NAT Gateway** is a fully managed PaaS resource that gives every resource in an associated subnet a stable outbound path to the internet through one or more **static public IP addresses** you control — with up to **64,512 SNAT ports** available, vastly more than default outbound access offers.
+This picks up the four VMs you built in Day 10: `vm-public-linux`, `vm-public-win`, `vm-private-linux`, and `vm-private-win`. If you stopped/deallocated them, start them back up (or just reattach the ASGs — that works on a stopped VM's NIC too).
 
-**Key characteristic: NAT Gateway is outbound-only.** It does not let the internet initiate connections in. Your `private-subnet` VMs still have zero inbound exposure — exactly like in Day 10's demo — but now their *outbound* requests go out through a known, fixed public IP instead of an unpredictable platform-assigned one.
+**Step 1 — Create two ASGs:**
 
-```mermaid
-graph LR
-    PrivVM1["vm-private-linux\n10.0.2.4\nno public IP"]
-    PrivVM2["vm-private-win\n10.0.2.5\nno public IP"]
-    NATGW["NAT Gateway\nnatgw-demo"]
-    PIP["Static Public IP\n20.x.x.x"]
-    Internet["🌐 Internet"]
-
-    PrivVM1 -->|"Outbound only"| NATGW
-    PrivVM2 -->|"Outbound only"| NATGW
-    NATGW --> PIP --> Internet
-    Internet -.-x|"No inbound path"| PrivVM1
-```
-
-### Hands-On: Deploy a NAT Gateway for `private-subnet`
-
-**💳 Small cost (~$0.045/hr plus data processing) — delete immediately after this demo**
-
-**Step 1 — Create a static public IP for the gateway:**
-
-1. Search for **Public IP addresses** → **+ Create**.
+1. Search for **Application security groups** → **+ Create**.
 2. Fill in:
    - **Resource group:** `rg-networking-demo`
-   - **Name:** `pip-natgw-demo`
-   - **SKU:** Standard (NAT Gateway requires Standard SKU)
+   - **Name:** `asg-web`
    - **Region:** East US
 3. **Review + create** → **Create**.
+4. Repeat with **Name:** `asg-db` — same resource group and region.
 
-**Step 2 — Create the NAT Gateway:**
+`asg-web` will represent anything internet-facing; `asg-db` will represent anything backend-only — mirroring the public-subnet / private-subnet split from Day 10.
 
-1. Search for **NAT gateways** → **+ Create**.
-2. On **Basics**:
-   - **Resource group:** `rg-networking-demo`
-   - **Name:** `natgw-demo`
-   - **Region:** East US
-   - **Idle timeout:** leave default (4 minutes)
-3. On **Outbound IP**:
-   - **Public IP addresses:** select `pip-natgw-demo`
-4. On **Subnet**:
-   - **Virtual network:** `vnet-demo`
-   - **Subnets:** check `private-subnet`
-5. **Review + create** → **Create**.
+**Step 2 — Add your VMs to the right ASG:**
 
-**Step 3 — Verify it from inside the private VM:**
+1. Go to `vm-public-linux` → **Networking** → select its network interface → **Application security groups** → **Add application security groups** → select `asg-web` → **Save**.
+2. Repeat for `vm-public-win` → add it to `asg-web` too.
+3. Go to `vm-private-linux` → its NIC → **Application security groups** → add `asg-db`.
+4. Repeat for `vm-private-win` → add it to `asg-db`.
 
-1. Reach `vm-private-linux` the same way you did in Day 10 — jump through `vm-public-linux` via SSH, then SSH from there to `10.0.2.4`.
-2. From inside `vm-private-linux`, run `curl ifconfig.me` (or any "what's my IP" check).
-3. The IP returned should now match `pip-natgw-demo`'s address — not a random platform IP. Every resource in `private-subnet` now shares this one stable, static outbound identity.
+Every VM is now tagged by role, independent of which subnet or IP it happens to have.
 
-`vm-private-linux` still has **no public IP** and is still **completely unreachable from the internet inbound** — NAT Gateway changes nothing about that. It only gives outbound traffic a stable, scalable exit path.
+**Step 3 — Rewrite `Allow-HTTP` to target `asg-web` instead of `Any`:**
 
-**Step 4 — Clean up:**
+1. Go to `nsg-public-subnet` → **Inbound security rules** → open `Allow-HTTP`.
+2. Change **Destination** from `Any` to **Application security group**, then select `asg-web`.
+3. **Save**.
 
-1. Search for **NAT gateways**, find `natgw-demo` → **Delete**.
-2. Search for **Public IP addresses**, find `pip-natgw-demo` → **Delete**.
+The rule now reads "allow inbound HTTP **only to VMs tagged `asg-web`**" — if you deploy a tenth VM into `public-subnet` tomorrow and forget to tag it, it simply won't receive HTTP traffic, even though it's in the right subnet. That's the safety net ASGs give you over plain subnet-based rules.
 
-> **Exam tip:** NAT Gateway, Load Balancer outbound rules, and a VM's own public IP are the three ways a resource gets outbound internet access in Azure beyond default outbound access. NAT Gateway is the modern, recommended choice for subnet-wide outbound NAT — and it cannot be used on a subnet that also contains a Bastion host or that already has outbound rules from a Standard Load Balancer; pick one mechanism per subnet.
+**Step 4 — (Optional) Write a role-to-role rule:**
+
+A common real-world pattern: "only my web tier may talk to my database tier, on the database port." Try adding this rule to a new NSG attached to `private-subnet`:
+
+- **Source:** Application security group → `asg-web`
+- **Destination:** Application security group → `asg-db`
+- **Service:** custom, port 1433 (SQL) or 3306 (MySQL) — whatever your backend uses
+- **Action:** Allow
+- **Priority:** 100
+
+This single rule enforces "web talks to database, nothing else does" — and it keeps working even as VMs in either group are added, removed, or rebuilt with new IPs.
+
+### Step 5 — Clean Up
+
+**✅ Free Tier — but stop/deallocate or delete VMs you're done with to conserve your free-tier hours**
+
+1. Select all four VMs in **Virtual machines**.
+2. Click **Stop** to deallocate them (keeps the disks for later, stops compute billing) — or **Delete** if you're fully done with these demos and don't need them anymore.
+3. If you delete the VMs, also check **Disks**, **Network interfaces**, and **Public IP addresses** in `rg-networking-demo` for any orphaned resources left behind, and delete those too.
+4. ASGs themselves cost nothing to leave behind, but if you deleted the VMs, the now-empty `asg-web` and `asg-db` aren't doing anything useful — delete them too if you're tidying up, or keep them for a future demo.
 
 ---
 
@@ -535,11 +524,11 @@ Let's bring it all together. Here's what you covered today:
 
 **Route Tables and User-Defined Routes (UDR)** let you override Azure's invisible default routing — you built `rt-private-subnet` with a `0.0.0.0/0` route pointing at a virtual appliance, associated it with `private-subnet`, and saw that UDR only changes the *path* traffic takes, not whether anything is configured to handle it at the other end.
 
-**NAT Gateway** gave `private-subnet` a stable, scalable outbound path to the internet through a static public IP — fixing the unpredictability and SNAT-port limits of Azure's default outbound access — while keeping every VM in that subnet just as unreachable from the internet *inbound* as it was in Day 10.
+Finally, you used **Application Security Groups** to tag Day 10's VMs by role (`asg-web`, `asg-db`) and rewrote an NSG rule to target the group instead of `Any` or a raw IP — a safer, more maintainable way to write firewall rules that survives VMs being added, removed, or rebuilt.
 
 ### What's Next
 
-You now have a complete picture of core Azure networking: addressing fundamentals (Day 9), building a VNet with subnets, NSGs and ASGs (Day 10), and connecting that VNet to other networks and services securely while controlling routing in both directions (today). Coming up next in this course: **Azure DNS** gets its own dedicated day — covering Public DNS Zones (hosting your domain's records in Azure) and Private DNS Zones (internal name resolution inside a VNet, which you got a preview of today through the private endpoint's automatic DNS integration). After that, we move on to **Load Balancer & VM Scale Sets** — taking the VNets and subnets you've built and distributing traffic across multiple VMs.
+You now have a complete picture of core Azure networking: addressing fundamentals (Day 9), building a VNet with subnets and NSGs (Day 10), and connecting that VNet to other networks and services securely while controlling routing and tagging VMs by role (today). Coming up next in this course: **Azure DNS** gets its own dedicated day — covering Public DNS Zones (hosting your domain's records in Azure) and Private DNS Zones (internal name resolution inside a VNet, which you got a preview of today through the private endpoint's automatic DNS integration). After that, we move on to **Load Balancer & VM Scale Sets** — taking the VNets and subnets you've built and distributing traffic across multiple VMs.
 
 ---
 
@@ -553,5 +542,5 @@ You now have a complete picture of core Azure networking: addressing fundamental
 - Always delete Private Endpoints and Bastion (plus its public IP) when done with a demo — both charge on an ongoing basis
 - Every subnet has invisible **system routes** by default (local VNet, peering, internet) — a **Route Table** with **User-Defined Routes (UDR)** lets you override them, e.g. forcing all egress through a firewall/NVA via a `0.0.0.0/0` route with next hop type "Virtual appliance"
 - A UDR only changes the path traffic takes — it's on you to make sure something is actually configured to handle traffic at the next hop
-- **NAT Gateway** gives a subnet's private resources a stable, scalable outbound-only path to the internet via a static public IP (up to 64,512 SNAT ports) — it never enables inbound access and doesn't mix with Bastion or Standard Load Balancer outbound rules on the same subnet
-- Azure's **default outbound access** (no NAT Gateway, no public IP, no LB) is unreliable and dev/test-only — don't rely on it for anything production-grade
+- **Application Security Groups (ASGs)** group VMs by role so NSG rules can target "all web VMs" or "all database VMs" instead of a specific IP or subnet — rules keep working as VMs are added, removed, or rebuilt
+- An ASG does nothing by itself — it's only a label an NSG rule can reference as a source or destination; all ASGs referenced in one rule must be in the same VNet
