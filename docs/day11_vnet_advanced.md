@@ -10,10 +10,10 @@
 
 - **VNet Peering** — connect two separate VNets privately, no internet, no gateway required
 - Hands-on: build a new VNet with two subnets, then create a second VNet and peer the two together
-- **Service Endpoints vs Private Endpoints** — the two ways to securely connect to Azure services from inside a VNet
-- Hands-on: enable a Service Endpoint and lock a storage account down to your VNet
-- Hands-on: create a Private Endpoint for a storage account (small cost — instructor demo)
 - Hands-on: deploy two test VMs to use for the rest of today's demos
+- **Service Endpoints vs Private Endpoints** — the two ways to securely connect to Azure services from inside a VNet
+- Hands-on: enable a Service Endpoint, lock a storage account down to one subnet, and prove it from a VM inside vs. outside that subnet
+- Hands-on: create a Private Endpoint for a storage account and verify the DNS resolution changes from inside a VM (small cost — instructor demo)
 - **Azure Bastion** — browser-based VM access with no public IP and no exposed SSH or RDP port (💳 Paid)
 - **Route Tables & User-Defined Routes (UDR)** — overriding Azure's default routing to send traffic through a firewall or network appliance instead
 - Hands-on: building a custom route table and associating it with a subnet
@@ -157,6 +157,41 @@ Azure provisions the peering in **both directions automatically** — you only h
 
 ---
 
+### Hands-On: Deploy Two Test VMs
+
+We're about to lock a storage account down to a single subnet — and the best way to *prove* a network restriction is real is to actually try connecting from a VM that's allowed, and one that isn't. These two VMs will also carry us through Bastion, route tables, and ASGs later today.
+
+**✅ Free Tier — `Standard_B1s` is covered by the Free Tier's 750 B-series hours/month**
+
+**Step 1 — Deploy `vm-web-demo` into `subnet-app`:**
+
+1. Search for **Virtual machines** → **+ Create** → **Azure virtual machine**.
+2. Fill in:
+   - **Resource group:** `rg-day11-demo`
+   - **VM name:** `vm-web-demo`
+   - **Region:** East US
+   - **Image:** Ubuntu Server 24.04 LTS
+   - **Size:** Standard_B1s
+   - **Authentication:** SSH public key (or password for quick demo)
+3. On the **Networking** tab:
+   - **Virtual network:** `vnet-day11`
+   - **Subnet:** `subnet-app`
+   - **Public IP:** Create new (we'll remove it once Bastion is working later today)
+   - **NIC network security group:** None (the subnet's `nsg-subnet-app` will handle it)
+4. Click **Review + create**, then **Create**.
+
+**Step 2 — Deploy `vm-db-demo` into `subnet-data`:**
+
+1. Repeat the same steps with:
+   - **VM name:** `vm-db-demo`
+   - **Subnet:** `subnet-data`
+   - **Public IP:** Create new — this VM represents a backend-only role and won't keep this public IP long-term, but we need it *temporarily* so we can SSH in directly and test storage connectivity before Bastion exists.
+2. Click **Review + create**, then **Create**.
+
+You now have two VMs: `vm-web-demo` (internet-facing role, in `subnet-app`) and `vm-db-demo` (backend role, in `subnet-data`) — both with a public IP for now so we can SSH straight in and test things. We'll strip the public IPs off both of them later today, once Bastion takes over as the access path.
+
+---
+
 ## Part 2 — Service Endpoints vs Private Endpoints
 
 ### The Problem: PaaS Traffic Goes Over the Internet by Default
@@ -234,7 +269,26 @@ graph TD
    - **Subnets:** `subnet-data` (you'll see a green checkmark confirming the Service Endpoint is enabled — Azure won't let you add a subnet that doesn't have the endpoint configured)
 5. Click **Add**, then **Save**.
 
-That's it. Now this storage account only accepts connections from `subnet-data` in `vnet-day11` (plus any IP addresses you explicitly allow under the same **Networking** blade). If you open the storage account's blob URL directly from your browser at home, you'll get an authorization error — your laptop isn't inside `vnet-day11`. A VM deployed into `subnet-data`, however, would connect successfully, and that traffic would travel over Azure's backbone rather than the public internet.
+That's it. Now this storage account only accepts connections from `subnet-data` in `vnet-day11` (plus any IP addresses you explicitly allow under the same **Networking** blade). If you open the storage account's blob URL directly from your browser at home, you'll get an authorization error — your laptop isn't inside `vnet-day11`.
+
+**Step 4 — Prove it from the two VMs you already deployed:**
+
+This is the part that makes the restriction real instead of theoretical. We'll hit the storage account's public hostname from a VM that's allowed, then from one that isn't.
+
+1. SSH into `vm-db-demo` using its public IP: `ssh azureuser@<vm-db-demo-public-ip>`.
+2. Run:
+   ```
+   curl -sI https://lwmstoragenetdemo<yourname>.blob.core.windows.net/
+   ```
+   Because `vm-db-demo` sits in `subnet-data` — the subnet you just added to the storage account's allow list — the storage service responds (you'll see an HTTP response like `400 Bad Request`, which is expected since we're not authenticating; the point is it answered at all instead of being blocked).
+3. Exit, then SSH into `vm-web-demo` instead: `ssh azureuser@<vm-web-demo-public-ip>`.
+4. Run the exact same command:
+   ```
+   curl -sI https://lwmstoragenetdemo<yourname>.blob.core.windows.net/
+   ```
+   This time you'll get back `403 This request is not authorized to perform this operation` — `subnet-app` was never added to the storage account's trusted subnets, so the storage service rejects it, even though `vm-web-demo` sits in the very same VNet and reaches the same backbone.
+
+Same VNet, same storage account, same public hostname — but only the subnet you explicitly trusted gets through. That's the Service Endpoint + firewall combination doing its job.
 
 > **Tip:** The **Networking** blade also has an **Exceptions** section with a checkbox for "Allow Azure services on the trusted services list to access this storage account" — this is what lets things like Azure Monitor or Azure Backup continue to function even when network access is restricted.
 
@@ -265,7 +319,18 @@ Let's go one step further and give this same storage account a private IP addres
 
 Once deployed, go back to **Networking** → **Private endpoint connections**. You'll see `pe-storage-demo` listed with **Connection state: Approved** and a **private IP** from `subnet-data`'s range — something like `10.0.2.20`.
 
-**What just happened?** A network interface with a private IP was created inside `subnet-data`, mapped directly to your storage account's blob service. Because of the Private DNS Zone integration, any VM inside `vnet-day11` that resolves `lwmstoragenetdemo<yourname>.blob.core.windows.net` will now get back the **private IP** (`10.0.2.20`) instead of the public one — meaning the connection never leaves your VNet. At this point, you could go back to the **Networking** blade and set **Public network access** to **Disabled** entirely, and the storage account would still be fully reachable from inside `vnet-day11` via the private endpoint.
+**What just happened?** A network interface with a private IP was created inside `subnet-data`, mapped directly to your storage account's blob service. Because of the Private DNS Zone integration, any VM inside `vnet-day11` that resolves `lwmstoragenetdemo<yourname>.blob.core.windows.net` will now get back the **private IP** (`10.0.2.20`) instead of the public one — meaning the connection never leaves your VNet.
+
+**Step — Verify the DNS resolution from inside `vm-db-demo`:**
+
+1. SSH into `vm-db-demo` again: `ssh azureuser@<vm-db-demo-public-ip>`.
+2. Run:
+   ```
+   getent hosts lwmstoragenetdemo<yourname>.blob.core.windows.net
+   ```
+3. The hostname now resolves to a private IP in `subnet-data`'s range — something like `10.0.2.20` — instead of a public Azure Storage IP. The URL itself didn't change; only where it points changed, transparently, because of the Private DNS Zone link Azure created for you.
+
+At this point, you could go back to the **Networking** blade and set **Public network access** to **Disabled** entirely, and the storage account would still be fully reachable from inside `vnet-day11` via the private endpoint — `vm-db-demo` would never notice the difference.
 
 **Step — Clean up the Private Endpoint:**
 
@@ -275,42 +340,19 @@ Since this resource carries a small ongoing charge:
 2. Select `pe-storage-demo` → **Remove**.
 3. Optionally, also delete the **Private DNS zone** (`privatelink.blob.core.windows.net`) that Azure created, via **Private DNS zones** in the portal search — it costs a small amount per zone per month if left behind.
 
----
+**Step — Remove `vm-db-demo`'s temporary public IP:**
 
-## Part 3 — Deploy Two Test VMs, Then Azure Bastion
+We only gave `vm-db-demo` a public IP so we could SSH straight in and run these tests before Bastion existed. Now that we've proven both connections work, take it back off — `vm-db-demo` is a backend-only VM and shouldn't have internet-facing access at all.
 
-Several of today's remaining demos — Bastion, route tables, and ASGs — all need actual VMs to point at. Let's deploy two now, one per subnet, and reuse them for the rest of the day.
-
-**✅ Free Tier — `Standard_B1s` is covered by the Free Tier's 750 B-series hours/month**
-
-**Step 1 — Deploy `vm-web-demo` into `subnet-app`:**
-
-1. Search for **Virtual machines** → **+ Create** → **Azure virtual machine**.
-2. Fill in:
-   - **Resource group:** `rg-day11-demo`
-   - **VM name:** `vm-web-demo`
-   - **Region:** East US
-   - **Image:** Ubuntu Server 24.04 LTS
-   - **Size:** Standard_B1s
-   - **Authentication:** SSH public key (or password for quick demo)
-3. On the **Networking** tab:
-   - **Virtual network:** `vnet-day11`
-   - **Subnet:** `subnet-app`
-   - **Public IP:** Create new (we'll remove it once Bastion is working)
-   - **NIC network security group:** None (the subnet's `nsg-subnet-app` will handle it)
-4. Click **Review + create**, then **Create**.
-
-**Step 2 — Deploy `vm-db-demo` into `subnet-data`:**
-
-1. Repeat the same steps with:
-   - **VM name:** `vm-db-demo`
-   - **Subnet:** `subnet-data`
-   - **Public IP:** None — this one represents a backend-only VM with no internet-facing surface at all
-2. Click **Review + create**, then **Create**.
-
-You now have two VMs to use for the rest of today's hands-on demos: `vm-web-demo` (internet-facing role) and `vm-db-demo` (backend-only role).
+1. Go to `vm-db-demo` → **Networking** → click its network interface → **IP configurations** → select **ipconfig1**.
+2. Under **Public IP address**, choose **Disassociate** → **Save**.
+3. Search for **Public IP addresses**, find the now-unattached IP that was on `vm-db-demo`, and delete it.
 
 ---
+
+## Part 3 — Azure Bastion
+
+We'll reuse `vm-web-demo`, the VM you deployed back in Part 1, for this demo — it currently has a public IP, which is exactly the problem Bastion solves.
 
 ### The Problem With Public IPs on VMs
 
