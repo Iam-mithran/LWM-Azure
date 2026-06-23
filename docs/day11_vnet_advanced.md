@@ -274,24 +274,36 @@ graph TD
 
 That's it. Now this storage account only accepts connections from `subnet-data` in `vnet-day11` (plus any IP addresses you explicitly allow under the same **Networking** blade). If you open the storage account's blob URL directly from your browser at home, you'll get an authorization error — your laptop isn't inside `vnet-day11`.
 
-**Step 4 — Prove it from the two VMs you already deployed:**
+**Step 4 — Upload a test file and generate a SAS token:**
 
-This is the part that makes the restriction real instead of theoretical. We'll hit the storage account's public hostname from a VM that's allowed, then from one that isn't.
+A network rule and a valid credential are two separate checks — both have to pass. To prove that, we need an actual file and an actual working SAS token, not just an unauthenticated request.
+
+1. Go to your storage account → **Containers** (under **Data storage**) → **+ Container** → name it `demo-container` → **Create**.
+2. Open `demo-container` → **Upload** → upload any small text file (e.g., create a local `hello.txt` containing "Service Endpoint demo" and upload that).
+3. Click the uploaded blob → **Generate SAS**.
+4. Set:
+   - **Permissions:** Read
+   - **Expiry:** leave the default (a few hours from now) — plenty of time for this demo
+5. Click **Generate SAS token and URL**, then copy the **Blob SAS URL** at the bottom — this is a fully authenticated URL that, on its own, grants read access to that file.
+
+**Step 5 — Prove it from the two VMs you already deployed:**
+
+This is the part that makes the restriction real instead of theoretical. We'll hit that same SAS URL — same valid credential both times — from a VM that's allowed, then from one that isn't.
 
 1. SSH into `vm-db-demo` using its public IP: `ssh azureuser@<vm-db-demo-public-ip>`.
 2. Run:
    ```
-   curl -sI https://lwmstoragenetdemo<yourname>.blob.core.windows.net/
+   curl -i "<paste the Blob SAS URL>"
    ```
-   Because `vm-db-demo` sits in `subnet-data` — the subnet you just added to the storage account's allow list — the storage service responds (you'll see an HTTP response like `400 Bad Request`, which is expected since we're not authenticating; the point is it answered at all instead of being blocked).
+   Because `vm-db-demo` sits in `subnet-data` — the subnet you just added to the storage account's allow list — you get back `200 OK` and the actual contents of `hello.txt`. The SAS token is valid *and* the request comes from a trusted subnet, so it succeeds end to end.
 3. Exit, then SSH into `vm-web-demo` instead: `ssh azureuser@<vm-web-demo-public-ip>`.
-4. Run the exact same command:
+4. Run the exact same command with the exact same SAS URL:
    ```
-   curl -sI https://lwmstoragenetdemo<yourname>.blob.core.windows.net/
+   curl -i "<paste the Blob SAS URL>"
    ```
-   This time you'll get back `403 This request is not authorized to perform this operation` — `subnet-app` was never added to the storage account's trusted subnets, so the storage service rejects it, even though `vm-web-demo` sits in the very same VNet and reaches the same backbone.
+   This time you'll get back `403 This request is not authorized to perform this operation` — even though the SAS token is identical and perfectly valid. `subnet-app` was never added to the storage account's trusted subnets, so the network rule rejects the request before the SAS token is even evaluated.
 
-Same VNet, same storage account, same public hostname — but only the subnet you explicitly trusted gets through. That's the Service Endpoint + firewall combination doing its job.
+Same VNet, same storage account, same valid SAS token — but only the subnet you explicitly trusted gets through. That's the key lesson: a Service Endpoint firewall rule isn't bypassable just by having working credentials; the network check and the auth check are independent, and both must pass.
 
 > **Tip:** The **Networking** blade also has an **Exceptions** section with a checkbox for "Allow Azure services on the trusted services list to access this storage account" — this is what lets things like Azure Monitor or Azure Backup continue to function even when network access is restricted.
 
