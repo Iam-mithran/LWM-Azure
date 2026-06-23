@@ -63,6 +63,7 @@ Everything today happens inside its own resource group so it's easy to find — 
 5. Delete the default subnet and add two subnets instead — this mirrors the public/private split from Day 10, rebuilt fresh for today:
    - **subnet-app** → `10.0.1.0/24`
    - **subnet-data** → `10.0.2.0/24`
+   - On each subnet's creation screen you'll see **Enable private subnet (no default outbound access)** — ticked by default. Since March 31, 2026, this is Azure's new default for every subnet in a newly created VNet: no implicit internet path out, unless you explicitly add one (a public IP on the resource, a NAT Gateway, or a Load Balancer outbound rule — the same three mechanisms from Day 10's NAT Gateway section). **Leave it ticked** — it's the secure, recommended setting, and we'll account for it as we go.
 6. Click **Review + create**, then **Create**.
 
 **Step 3 — Create an NSG and attach it to `subnet-app`:**
@@ -189,6 +190,8 @@ We're about to lock a storage account down to a single subnet — and the best w
 2. Click **Review + create**, then **Create**.
 
 You now have two VMs: `vm-web-demo` (internet-facing role, in `subnet-app`) and `vm-db-demo` (backend role, in `subnet-data`) — both with a public IP for now so we can SSH straight in and test things. We'll strip the public IPs off both of them later today, once Bastion takes over as the access path.
+
+> **Note on private subnets:** because both `subnet-app` and `subnet-data` were created with **no default outbound access** (the new default since March 31, 2026), each VM's instance-level public IP isn't just *inbound* access right now — it's also the *only* reason these VMs currently have outbound internet connectivity at all. Once we remove those public IPs later in this lab, neither VM will have an internet path unless something else provides one. Keep that in mind for the cleanup steps below — we'll call it out again when it matters.
 
 ---
 
@@ -348,6 +351,8 @@ We only gave `vm-db-demo` a public IP so we could SSH straight in and run these 
 2. Under **Public IP address**, choose **Disassociate** → **Save**.
 3. Search for **Public IP addresses**, find the now-unattached IP that was on `vm-db-demo`, and delete it.
 
+Because `subnet-data` was created with **no default outbound access**, this isn't just closing off inbound access — `vm-db-demo` now has no outbound internet path at all. That's fine here: its only job is talking to the storage account, and it does that over the **Private Endpoint** we just deployed (a private IP inside `subnet-data`, never touching the internet) rather than over a Service Endpoint route. If a real backend VM still needed genuine internet egress — to pull OS updates, for example — you'd attach a **NAT Gateway** to `subnet-data`, exactly as you did for `private-subnet` in Day 10.
+
 ---
 
 ## Part 3 — Azure Bastion
@@ -441,6 +446,8 @@ Bastion takes about 5 minutes to provision. While it's deploying, notice that yo
 A terminal window opens directly in your browser tab. You are now inside the VM — over HTTPS, through Bastion, with no public IP on the VM itself.
 
 You can now remove the public IP from `vm-web-demo` and close port 22 entirely on `nsg-subnet-app`. The VM is accessible only through Bastion. From a security and compliance standpoint, this is significantly better than a public IP with port 22 open.
+
+Remember, since `subnet-app` was also created with **no default outbound access**, removing this public IP doesn't just close off inbound SSH — it removes `vm-web-demo`'s outbound internet path too, the same as we saw with `vm-db-demo` earlier. Bastion only adds an *inbound* management path; it doesn't restore outbound internet access. That's the correct end state for this lab (the VM doesn't need to reach the internet for anything we've done today), but if you needed it to — say, for OS patching — you'd attach a NAT Gateway to `subnet-app`, just like Day 10.
 
 **Step 4 — Clean up Bastion after the demo:**
 
@@ -638,6 +645,7 @@ You now have a complete picture of core Azure networking: addressing fundamental
 - **Service Endpoints** keep traffic on the Azure backbone and let you restrict a PaaS resource's firewall to specific subnets — free
 - **Private Endpoints** give an Azure service a private IP inside your VNet and integrate with Private DNS Zones so the public hostname resolves privately — small ongoing cost, most secure option
 - **Azure Bastion** requires a subnet named `AzureBastionSubnet` with at least `/26` (64 addresses, per the CIDR table from Day 9) — once deployed, VMs no longer need public IPs or open SSH/RDP ports
+- Since March 31, 2026, new VNet subnets default to **private (no default outbound access)** — removing a VM's public IP now removes its outbound internet path too, not just inbound exposure. If a VM still needs to reach the internet, attach a **NAT Gateway** (Day 10) instead of relying on a public IP
 - Always delete Private Endpoints and Bastion (plus its public IP) when done with a demo — both charge on an ongoing basis
 - Every subnet has invisible **system routes** by default (local VNet, peering, internet) — a **Route Table** with **User-Defined Routes (UDR)** lets you override them, e.g. forcing all egress through a firewall/NVA via a `0.0.0.0/0` route with next hop type "Virtual appliance"
 - A UDR only changes the path traffic takes — it's on you to make sure something is actually configured to handle traffic at the next hop
