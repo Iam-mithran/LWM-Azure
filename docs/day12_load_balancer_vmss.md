@@ -1,8 +1,8 @@
-# Day 12 — Azure Load Balancer & VM Scale Sets: Distributing Traffic at Scale
+# Day 12 — Load Balancer, VM Scale Sets & Application Gateway: Distributing Traffic at Scale
 
 **Phase 3 — Networking**
 
-> Every VM you've deployed so far in this course has been a single box. It has one public IP, it does one job, and if it goes down — or simply gets overwhelmed by traffic — your application goes down with it. That's fine for a lab. It's not fine for anything real. Today we fix both halves of that problem: **Azure Load Balancer**, which spreads incoming traffic across multiple VMs so no single machine is a bottleneck or a single point of failure, and **VM Scale Sets (VMSS)**, which let Azure automatically add and remove VMs based on actual demand instead of you guessing capacity up front. Put together, this is the standard pattern behind almost every scalable compute workload in Azure — and it's a heavily tested area on both the **AZ-104 (Administrator)** and **AZ-305 (Solutions Architect)** exams, so we'll call out exam-relevant details as we go. As with Day 11, today's lab builds its own VNet and resources from scratch so it's fully self-contained.
+> Every VM you've deployed so far in this course has been a single box. It has one public IP, it does one job, and if it goes down — or simply gets overwhelmed by traffic — your application goes down with it. That's fine for a lab. It's not fine for anything real. Today we fix that problem from three different angles: **Azure Load Balancer**, which spreads incoming traffic across multiple VMs at the network layer so no single machine is a bottleneck or a single point of failure; **VM Scale Sets (VMSS)**, which let Azure automatically add and remove VMs based on actual demand instead of you guessing capacity up front; and **Application Gateway**, which does the same job as Load Balancer but one layer up — understanding HTTP itself, so it can route by URL path, terminate SSL, and host multiple sites behind one IP. Together, these three are the standard pattern behind almost every scalable compute workload in Azure — and a heavily tested area on both the **AZ-104 (Administrator)** and **AZ-305 (Solutions Architect)** exams, so we'll call out exam-relevant details as we go. As with Day 11, today's lab builds its own VNet and resources from scratch so it's fully self-contained.
 
 ---
 
@@ -14,16 +14,19 @@
 - **VM Scale Sets (VMSS)** — managing a fleet of identical VMs as a single resource, Uniform vs Flexible orchestration modes
 - Hands-on: build a VMSS with an integrated Standard Load Balancer, install a web server fleet-wide with a custom script extension, and prove traffic is actually being distributed
 - **Autoscale** — scale-out and scale-in rules driven by real metrics, and watching a scale event happen live
+- **Application Gateway** — Layer 7 (HTTP/HTTPS) routing: listeners, routing rules, URL path-based routing, multi-site hosting, and SSL termination
+- Hands-on: build an Application Gateway v2 with two backend pools and a path-based routing rule, and prove two different sites are served from one public IP
 - How exam questions frame Load Balancer vs Application Gateway, and the decision points the AZ-104/AZ-305 exams like to test
 
 ---
 
 ## Before We Begin
 
-A mostly-paid lab today — both Load Balancer (Standard SKU) and VM Scale Set instances carry a cost. We'll delete everything at the end.
+A fully paid lab today — Load Balancer, VM Scale Set instances, and Application Gateway all carry a cost. We'll delete everything at the end.
 
 - **Standard Load Balancer**: ~$0.025/hour for the load balancer resource itself, plus ~$0.005/hour per load balancing rule and a small per-GB data processing charge. **💳 Paid**, but only a few cents for a short lab session.
 - **VM Scale Set instances** on `Standard_B1s`: same billing as any VM. The Free Tier's 750 B-series hours/month can cover a couple of instances for a short demo, but running several VMSS instances simultaneously alongside other VMs you may have left running elsewhere can exceed that allowance fast — budget for **💳 small paid usage** today.
+- **Application Gateway v2**: billed per gateway-hour (~$0.246/hour for Standard_v2) plus capacity units consumed. There's no way around this cost to even create one — **💳 instructor demo**, delete immediately after.
 - **Public IP addresses**: a Standard SKU public IP costs a small hourly amount once it's no longer attached to a running resource — we'll clean these up at the end.
 - Everything else (the VNet, subnets, NSGs, autoscale rules themselves) is **✅ free**.
 
@@ -44,7 +47,7 @@ The fix for both is the same: **run more than one VM**, and put something in fro
 
 ### Azure Load Balancer — Layer 4 Traffic Distribution
 
-Azure Load Balancer operates at **Layer 4** of the OSI model — it works with TCP and UDP, routing based on IP addresses and ports. It has no awareness of HTTP, cookies, URL paths, or anything above the transport layer. (That's the job of **Application Gateway**, which we'll cover in a future day — Layer 4 vs Layer 7 is exactly the line between the two services, and a favorite distinction on the exams.)
+Azure Load Balancer operates at **Layer 4** of the OSI model — it works with TCP and UDP, routing based on IP addresses and ports. It has no awareness of HTTP, cookies, URL paths, or anything above the transport layer. (That's the job of **Application Gateway**, which we'll build later today in Part 3 — Layer 4 vs Layer 7 is exactly the line between the two services, and a favorite distinction on the exams.)
 
 **How traffic gets distributed:** Azure Load Balancer uses a **5-tuple hash** to decide which backend VM gets a given connection:
 
@@ -319,28 +322,131 @@ Waiting for real CPU load is slow for a demo, so let's force it:
 
 > **Exam tip:** autoscale rules act on **aggregated metrics across the whole scale set** (e.g., *average* CPU across all instances), not any single instance. A scenario describing "one instance is overloaded but the rest are idle" is not a textbook autoscale trigger — that's a sign of an uneven load distribution problem, not a capacity problem.
 
-**Step 5 — Clean up:**
+**Step 5 — Leave it running for now:**
 
-Both the Load Balancer and VMSS instances bill continuously:
-
-1. Go to `rg-day12-demo` → **Delete resource group** (this removes the VNet, both NSG-protected lab VMs, `lb-day12` and its public IP, the VMSS and its instances, `lb-vmss-day12` and its public IP — everything from today, in one step).
-2. Confirm by typing the resource group name, then **Delete**.
+Both the Load Balancer and VMSS instances continue to bill by the hour — but we have one more thing to build in the same resource group before we tear everything down, so hold off on deleting anything until the end of Part 3.
 
 ---
 
-## Load Balancer vs Application Gateway — A Preview
+## Part 3 — Application Gateway: Routing by URL, Not Just by Port
 
-You'll meet **Application Gateway** properly in a future day, but it's worth previewing the decision point now, because exam questions love to test it:
+### The Problem: Load Balancer Can't See Inside the Request
+
+Everything you built in Parts 1 and 2 routes purely on IP and port — Load Balancer has no idea whether a request is for `/checkout`, `/images/logo.png`, or `shop.example.com` vs `blog.example.com`. Often that's exactly what you want. But sometimes you need *smarter* routing: send `/api/*` requests to one set of backend VMs and everything else to another, host two completely different websites behind a single public IP, or terminate SSL/TLS once at the edge instead of on every backend VM. That's what **Application Gateway** is for.
+
+### Application Gateway — Layer 7 HTTP/HTTPS Routing
+
+**Application Gateway** is a fully managed **Layer 7** load balancer — it understands HTTP and HTTPS, not just TCP/UDP, which means it can make routing decisions based on the actual content of a request: the URL path, the hostname, request headers, or cookies.
+
+**Core building blocks:**
+
+| Component | What it does |
+|---|---|
+| **Listener** | Defines how the gateway accepts traffic — a **Basic listener** handles a single site; a **Multi-site listener** distinguishes between multiple hostnames on the same IP/port using the host header |
+| **Backend pool** | The group of targets receiving traffic — and unlike Load Balancer, this can be VMs, VM Scale Sets, **App Service**, raw IP addresses, or even FQDNs, mixed in the same pool |
+| **HTTP settings** | Defines how the gateway talks to the backend — protocol, port, cookie-based affinity, request timeout |
+| **Routing rule** | Binds a listener to a destination — a **Basic rule** sends everything to one backend pool; a **Path-based rule** sends different URL paths to different backend pools via a path map |
+| **Health probe** | A custom HTTP probe checking backend health — same concept as Load Balancer's probe, but it can inspect HTTP status codes and response body content, not just TCP/port reachability |
+
+```mermaid
+graph TD
+    Client["Client"]
+    Listener["Listener\n(Public IP, port 80)"]
+    Rule["Path-Based Routing Rule"]
+    PoolA["Backend Pool: app1\n(/app1/*)"]
+    PoolB["Backend Pool: app2\n(/app2/*)"]
+
+    Client --> Listener --> Rule
+    Rule -->|"/app1/*"| PoolA
+    Rule -->|"/app2/*"| PoolB
+```
+
+### Key Features
+
+- **URL path-based routing** — `/api/*` to one backend pool, `/images/*` to another, `/` to a third, all through a single public IP and a single gateway
+- **Multi-site hosting** — host multiple independent websites on one Application Gateway using host-header-based listeners (`app1.example.com` → Backend Pool A, `app2.example.com` → Backend Pool B)
+- **SSL/TLS termination** — decrypt HTTPS once, at the gateway; backend VMs receive plain HTTP, cutting their CPU load and centralizing certificate management to one place instead of every VM
+- **End-to-end SSL** — optionally re-encrypt traffic between the gateway and the backend for environments that require encryption all the way through, not just at the edge
+- **Cookie-based session affinity** — route the same user to the same backend instance across multiple requests, configured per HTTP setting
+- **Autoscaling** — the v2 SKU scales its own gateway capacity automatically based on traffic; you don't size it manually
+- **Redirection and header rewrite** — redirect HTTP → HTTPS automatically, or rewrite request/response headers (inject CORS headers, strip internal headers) before forwarding
+
+### SKUs
+
+**Standard_v2** is the current generation and what you should use for any new deployment — it adds autoscaling and zone redundancy over the legacy v1 SKU, which is being phased out. (You'll also see a **WAF_v2** SKU mentioned in documentation — that adds a Web Application Firewall directly on the gateway. We're covering WAF in its own day later in this phase, paired with Azure Front Door, since WAF policies attach to both services the same way.)
+
+> **Exam tip:** the line between Load Balancer and Application Gateway is the OSI layer. Any scenario describing routing by **URL path**, **hostname**, **cookies**, or needing **SSL termination** is a Layer 7 problem — Application Gateway. Anything that's just "spread TCP/UDP traffic across VMs" with no awareness of HTTP content is Layer 4 — Load Balancer.
 
 | | Load Balancer | Application Gateway |
 |---|---|---|
 | OSI Layer | Layer 4 (TCP/UDP) | Layer 7 (HTTP/HTTPS) |
 | Routing decisions based on | IP + port (5-tuple hash) | URL path, host header, cookies |
 | SSL termination | No | Yes |
-| Web Application Firewall (WAF) | No | Yes (optional add-on) |
-| Typical use | Raw TCP/UDP workloads, or as the backend for VMSS | Web applications needing path-based routing, SSL offload, or WAF protection |
+| Backend pool can include | VMs, VMSS | VMs, VMSS, App Service, IPs, FQDNs |
+| Typical use | Raw TCP/UDP workloads, or as the backend for VMSS | Web applications needing path-based routing, SSL offload, or multi-site hosting |
 
-> **Exam tip:** if a question mentions routing based on URL path (`/api/*` to one pool, `/images/*` to another), cookie-based session affinity, or SSL termination/offload, the answer is **Application Gateway**, not Load Balancer — those are Layer 7 capabilities Load Balancer simply doesn't have.
+---
+
+### Hands-On: Build an Application Gateway with Path-Based Routing
+
+**💳 Paid — Instructor Demo (~$0.246/hour Standard_v2 + capacity units). Delete immediately after.**
+
+We'll point this gateway at two backend pools, each serving different content, and prove path-based routing actually works.
+
+**Step 1 — Reuse `vm-web-1` and `vm-web-2` as two distinct "apps":**
+
+To keep this self-contained without deploying more VMs, we'll repurpose the two plain VMs from Part 1 as stand-ins for two different applications.
+
+1. SSH into `vm-web-1` (via the inbound NAT rule pattern from Part 1, or temporarily attach a public IP) and run:
+   ```
+   echo "Welcome to App 1" | sudo tee /var/www/html/index.html
+   ```
+2. SSH into `vm-web-2` and run:
+   ```
+   echo "Welcome to App 2" | sudo tee /var/www/html/index.html
+   ```
+
+**Step 2 — Create the Application Gateway:**
+
+1. Search for **Application gateways** → **+ Create**.
+   - **Resource group:** `rg-day12-demo`
+   - **Name:** `appgw-day12`
+   - **Region:** East US
+   - **Tier:** Standard V2
+   - **Enable autoscaling:** Yes, **Minimum/Maximum instance count:** 0 / 2
+2. On **Frontends**: **Frontend IP address type:** Public → Create new → `pip-appgw-day12`, Standard SKU.
+3. On **Backends** → **+ Add a backend pool**:
+   - **Name:** `bep-app1` → add target `vm-web-1`
+4. Add a second backend pool: **Name:** `bep-app2` → add target `vm-web-2`.
+5. On **Configuration**, add a routing rule:
+   - **Listener name:** `listener-day12`, **Frontend IP:** Public, **Protocol:** HTTP, **Port:** 80
+   - **Backend targets:** select `bep-app1` as the default backend pool with a default HTTP setting (**Name:** `http-setting-default`, **Backend port:** 80)
+6. **Review + create** → **Create**. (This takes 10–15 minutes to provision — Application Gateway is a heavier resource than Load Balancer.)
+
+**Step 3 — Add path-based routing:**
+
+1. Once deployed, go to `appgw-day12` → **Rules** → open `rule1` (the routing rule created during setup).
+2. Under **Path-based rules**, click **+ Add multi-target**:
+   - **Path:** `/app2/*`
+   - **Backend target:** `bep-app2`, with a new HTTP setting `http-setting-app2` (Backend port 80)
+3. **Save** — the default `/*` path target stays pointed at `bep-app1`, and now `/app2/*` is overridden to `bep-app2`.
+
+**Step 4 — Test path-based routing:**
+
+1. Go to `appgw-day12` → **Overview**, copy the **Frontend public IP address**.
+2. Visit `http://<gateway-ip>/` in a browser — you get **"Welcome to App 1"** (the default path target, `bep-app1`).
+3. Visit `http://<gateway-ip>/app2/` — you get **"Welcome to App 2"** instead, even though it's the exact same public IP and the exact same gateway. The path in the URL, not the destination IP or port, decided which backend pool answered.
+
+That's Layer 7 routing in action — something Azure Load Balancer structurally cannot do, no matter how it's configured.
+
+**Step 5 — Final cleanup for today's entire lab:**
+
+Everything from Parts 1–3 lives in one resource group, so this is a single step:
+
+1. Search for **Resource groups** → open `rg-day12-demo` → **Delete resource group**.
+2. Confirm by typing the resource group name, then **Delete**.
+
+This removes the VNet, both lab VMs, `lb-day12` and its public IP, the VMSS and its instances, `lb-vmss-day12` and its public IP, `appgw-day12` and its public IP — every paid resource from today, in one step.
 
 ---
 
@@ -352,9 +458,11 @@ You'll meet **Application Gateway** properly in a future day, but it's worth pre
 
 **Autoscale** is what makes this genuinely automatic: rules based on CPU (or other metrics) trigger scale-out and scale-in within a minimum/maximum instance range you define, and you watched a scale-out happen live, with the new instance picked up by the Load Balancer with zero manual steps.
 
+**Application Gateway** does the job Load Balancer structurally can't — Layer 7 routing based on the actual content of an HTTP request. You built one with two backend pools and a path-based routing rule, and proved that `/` and `/app2/*` on the exact same public IP serve completely different backends, purely because of the URL path. SSL termination, multi-site hosting, and cookie-based affinity all follow from that same Layer 7 awareness.
+
 ### What's Next
 
-Coming up: **VPN Gateway & ExpressRoute** — connecting your Azure VNet privately to on-premises networks, the other major networking topic in this phase. After that, we round out the phase with **Azure DNS**, **Application Gateway & WAF** (where today's Layer 4 vs Layer 7 preview gets its full treatment), and **Traffic Manager, Front Door & CDN** for global traffic routing.
+Coming up: **VPN Gateway & ExpressRoute** — connecting your Azure VNet privately to on-premises networks, the other major networking topic in this phase. After that, we round out the phase with **Azure DNS**, and **Traffic Manager, Front Door, CDN & WAF** — where the Web Application Firewall you'd expect alongside Application Gateway gets its full treatment, paired with Front Door since WAF policies attach to both the same way.
 
 ---
 
@@ -369,4 +477,7 @@ Coming up: **VPN Gateway & ExpressRoute** — connecting your Azure VNet private
 - A VMSS attached to a Load Balancer **auto-registers and auto-deregisters** instances from the backend pool as it scales — no manual backend pool management
 - **Autoscale** rules act on aggregated metrics across the whole scale set (e.g., average CPU), trigger scale-out/scale-in within a minimum/maximum instance range, and can also run on a fixed schedule
 - **Overprovisioning** (Uniform mode) creates extra VMs during scale-out and keeps only the fastest-healthy ones, protecting against a single slow VM delaying the whole scale event
-- Load Balancer vs Application Gateway is a Layer 4 vs Layer 7 decision: anything involving URL-path routing, SSL termination, or WAF means Application Gateway, not Load Balancer
+- **Application Gateway** is **Layer 7** — it understands HTTP/HTTPS, enabling URL path-based routing, multi-site hosting via host-header listeners, and SSL termination, none of which Load Balancer can do
+- Application Gateway's backend pool can mix VMs, VM Scale Sets, App Service, raw IPs, and FQDNs — far more flexible than Load Balancer's VM/VMSS-only pool
+- **Standard_v2** is the current Application Gateway SKU, with built-in autoscaling; WAF is a separate add-on covered in its own day later in this phase
+- Load Balancer vs Application Gateway is fundamentally an OSI-layer decision: anything involving URL-path routing, hostname-based routing, cookies, or SSL termination means Application Gateway, not Load Balancer

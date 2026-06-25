@@ -19,7 +19,7 @@
 | Day 9 | Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes | `docs/day09_intro_to_networking.md` |
 | Day 10 | Azure Virtual Network: Address Spaces, Subnets & NSGs | `docs/day10_virtual_network.md` |
 | Day 11 | VNet Advanced: Peering, Service & Private Endpoints, and Bastion | `docs/day11_vnet_advanced.md` |
-| Day 12 | Load Balancer & VM Scale Sets | `docs/day12_load_balancer_vmss.md` |
+| Day 12 | Load Balancer, VM Scale Sets & Application Gateway | `docs/day12_load_balancer_vmss.md` |
 
 ---
 
@@ -33,66 +33,65 @@ Day numbers are fixed by `course_outline.md`. Record in order — dependencies a
 |-----|-------|------|------------|
 | **Day 13 (next)** | VPN Gateway & ExpressRoute | `vpn_expressroute.md` | Days 10–12 ✅ |
 | Day 14 | Azure DNS — Public & Private Zones | `azure_dns.md` | Days 10–11 ✅ |
-| Day 15 | Application Gateway & WAF | `application_gateway.md` | Days 10–11 ✅ |
-| Day 16 | Traffic Manager, Front Door & CDN | `traffic_frontdoor_cdn.md` | None |
+| Day 15 | Traffic Manager, Front Door, CDN & WAF | `traffic_frontdoor_cdn.md` + `application_gateway.md` (WAF section) | Day 12 ✅ (Application Gateway, for WAF context) |
 
-> Day 13 (VPN/ExpressRoute) is being held back for a future session — it was judged too advanced to record right after Day 11, so Day 12 picked up Load Balancer & VM Scale Sets instead. Days 14–16 have no ordering constraint relative to each other or to Day 13.
+> Day 13 (VPN/ExpressRoute) is being held back for a future session — it was judged too advanced to record right after Day 11, so Day 12 picked up Load Balancer, VM Scale Sets & Application Gateway instead. WAF was pulled out of the old standalone Application Gateway day and now lives in Day 15, alongside Front Door — which also attaches WAF policies. Days 14–15 have no ordering constraint relative to each other or to Day 13.
 
 ### Phase 4 — Serverless & Databases
 
 | Day | Topic | File | Depends On |
 |-----|-------|------|------------|
-| Day 17 | Azure Functions & Serverless | `functions.md` | Day 6 ✅ (App Service recommended); slotted here so Compute wraps up after Networking |
-| Day 18 | Azure SQL Database + Other Databases | `sql_database.md` | None |
+| Day 16 | Azure Functions & Serverless | `functions.md` | Day 6 ✅ (App Service recommended); slotted here so Compute wraps up after Networking |
+| Day 17 | Azure SQL Database + Other Databases | `sql_database.md` | None |
 
 ### Phase 5 — Identity, Security & Monitoring
 
 | Day | Topic | File | Depends On |
 |-----|-------|------|------------|
-| Day 19 | Microsoft Entra ID | `entra_id.md` | None |
-| Day 20 | Azure RBAC | `rbac.md` | Entra ID |
-| Day 21 | Azure Key Vault | `key_vault.md` | Entra ID |
-| Day 22 | Azure Monitor & Alerts | `azure_monitor.md` | None |
+| Day 18 | Microsoft Entra ID | `entra_id.md` | None |
+| Day 19 | Azure RBAC | `rbac.md` | Entra ID |
+| Day 20 | Azure Key Vault | `key_vault.md` | Entra ID |
+| Day 21 | Azure Monitor & Alerts | `azure_monitor.md` | None |
 
-> Day 20 and Day 21 only depend on Day 19, not on each other — order between them is flexible.
+> Day 19 and Day 20 only depend on Day 18, not on each other — order between them is flexible.
 
 ### Phase 6 — Azure DevOps
 
 | Day | Topic | File | Depends On |
 |-----|-------|------|------------|
-| Day 23 | Azure DevOps Introduction | `devops_intro.md` | None |
-| Day 24 | Azure Repos | `azure_repos.md` | DevOps Intro |
-| Day 25 | Pipelines: CI | `pipelines_ci.md` | Azure Repos |
-| Day 26 | Pipelines: CD | `pipelines_cd.md` | Pipelines CI |
-| Day 27 | Azure Artifacts | `artifacts.md` | DevOps Intro |
+| Day 22 | Azure DevOps Introduction | `devops_intro.md` | None |
+| Day 23 | Azure Repos | `azure_repos.md` | DevOps Intro |
+| Day 24 | Pipelines: CI | `pipelines_ci.md` | Azure Repos |
+| Day 25 | Pipelines: CD | `pipelines_cd.md` | Pipelines CI |
+| Day 26 | Azure Artifacts | `artifacts.md` | DevOps Intro |
 
 ### Phase 7 — Infrastructure as Code
 
 | Day | Topic | File | Depends On |
 |-----|-------|------|------------|
-| Day 28 | ARM Templates & Bicep | `arm_bicep.md` | Phases 1–4 recommended (so demos have services to deploy) |
-| Day 29 | Terraform on Azure | `terraform.md` | ARM & Bicep |
+| Day 27 | ARM Templates & Bicep | `arm_bicep.md` | Phases 1–4 recommended (so demos have services to deploy) |
+| Day 28 | Terraform on Azure | `terraform.md` | ARM & Bicep |
 
 ### Phase 8 — Containers & AKS
 
 | Day | Topic | File | Depends On |
 |-----|-------|------|------------|
-| Day 30 | ACR & Docker | `acr_docker.md` | None |
-| Day 31 | AKS Setup | `aks_setup.md` | ACR & Docker |
-| Day 32 | AKS Advanced | `aks_advanced.md` | AKS Setup |
+| Day 29 | ACR & Docker | `acr_docker.md` | None |
+| Day 30 | AKS Setup | `aks_setup.md` | ACR & Docker |
+| Day 31 | AKS Advanced | `aks_advanced.md` | AKS Setup |
 
 ### Phase 9 — Capstone Project
 
 | Day | Topic | File | Depends On |
 |-----|-------|------|------------|
-| Day 33 | Capstone Part 1 | `capstone_part1.md` | Phases 1–6 |
-| Day 34 | Capstone Part 2 | `capstone_part2.md` | Capstone Part 1 |
+| Day 32 | Capstone Part 1 | `capstone_part1.md` | Phases 1–6 |
+| Day 33 | Capstone Part 2 | `capstone_part2.md` | Capstone Part 1 |
 
 ### Optional Bonus
 
 | Day | Topic | File | Depends On |
 |-----|-------|------|------------|
-| Day 35 | Cosmos DB (Optional) | `cosmos_db_optional.md` | Phase 2 (Storage) |
+| Day 34 | Cosmos DB (Optional) | `cosmos_db_optional.md` | Phase 2 (Storage) |
 
 ---
 
