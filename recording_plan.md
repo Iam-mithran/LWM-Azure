@@ -19,6 +19,7 @@
 | Day 9 | Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes | `docs/day09_intro_to_networking.md` |
 | Day 10 | Azure Virtual Network: Address Spaces, Subnets & NSGs | `docs/day10_virtual_network.md` |
 | Day 11 | VNet Advanced: Peering, Service & Private Endpoints, and Bastion | `docs/day11_vnet_advanced.md` |
+| Day 12 | Load Balancer & VM Scale Sets | `docs/day12_load_balancer_vmss.md` |
 
 ---
 
@@ -30,13 +31,12 @@ Day numbers are fixed by `course_outline.md`. Record in order — dependencies a
 
 | Day | Topic | File | Depends On |
 |-----|-------|------|------------|
-| **Day 12 (next)** | Azure DNS — Public & Private Zones | `azure_dns.md` | Days 10–11 ✅ |
-| Day 13 | Load Balancer & VM Scale Sets | `load_balancer.md` | Days 10–11 ✅ |
-| Day 14 | VPN Gateway & ExpressRoute | `vpn_expressroute.md` | Days 10–11 ✅ |
+| **Day 13 (next)** | VPN Gateway & ExpressRoute | `vpn_expressroute.md` | Days 10–12 ✅ |
+| Day 14 | Azure DNS — Public & Private Zones | `azure_dns.md` | Days 10–11 ✅ |
 | Day 15 | Application Gateway & WAF | `application_gateway.md` | Days 10–11 ✅ |
 | Day 16 | Traffic Manager, Front Door & CDN | `traffic_frontdoor_cdn.md` | None |
 
-> Days 13–16 have no ordering constraint relative to each other — only Day 12 (DNS) needs to come first since Day 11's "What's Next" promises it.
+> Day 13 (VPN/ExpressRoute) is being held back for a future session — it was judged too advanced to record right after Day 11, so Day 12 picked up Load Balancer & VM Scale Sets instead. Days 14–16 have no ordering constraint relative to each other or to Day 13.
 
 ### Phase 4 — Serverless & Databases
 
@@ -98,4 +98,4 @@ Day numbers are fixed by `course_outline.md`. Record in order — dependencies a
 
 ## What's Next to Record
 
-**Day 12 — Azure DNS: Public & Private Zones** (`days/azure_dns.md`) — completes the VNet/DNS arc started in Days 9–11, as promised in Day 11's "What's Next" section.
+**Day 13 — VPN Gateway & ExpressRoute** (`days/vpn_expressroute.md`) — next up once it's ready to record.

@@ -646,7 +646,7 @@ Finally, you used **Application Security Groups** to tag today's VMs by role (`a
 
 ### What's Next
 
-You now have a complete picture of core Azure networking: addressing fundamentals (Day 9), building a VNet with subnets and NSGs (Day 10), and connecting that VNet to other networks and services securely while controlling routing and tagging VMs by role (today). Coming up next in this course: **Azure DNS** gets its own dedicated day — covering Public DNS Zones (hosting your domain's records in Azure) and Private DNS Zones (internal name resolution inside a VNet, which you got a preview of today through the private endpoint's automatic DNS integration). After that, we move on to **Load Balancer & VM Scale Sets** — taking the VNets and subnets you've built and distributing traffic across multiple VMs.
+You now have a complete picture of core Azure networking: addressing fundamentals (Day 9), building a VNet with subnets and NSGs (Day 10), and connecting that VNet to other networks and services securely while controlling routing and tagging VMs by role (today). Coming up next in this course: **Load Balancer & VM Scale Sets** — taking the VNets and subnets you've built and distributing traffic across multiple VMs automatically. **Azure DNS** (Public and Private Zones) gets its own dedicated day a little further on.
 
 ---
 

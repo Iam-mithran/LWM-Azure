@@ -85,8 +85,8 @@
 | Day 9 | Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes | IPv4 Addressing, Binary/Decimal Conversion, Public vs Private IP, NAT, CIDR Notation, IP Address Classes | ✅ |
 | Day 10 | Azure Virtual Network: Address Spaces, Subnets & NSGs | VNet, Address Space (CIDR), Subnets, Azure-Reserved Addresses, Network Security Groups, Application Security Groups (ASGs) | ✅ |
 | Day 11 | VNet Advanced: Peering, Service & Private Endpoints, and Bastion | VNet Peering, Service Endpoints, Private Endpoints, **Azure Bastion**, Route Tables (UDR), **NAT Gateway** | ✅ / 💳 |
-| Day 12 | VPN Gateway & ExpressRoute | VPN Gateway, Site-to-Site VPN, Point-to-Site VPN, ExpressRoute, Azure Virtual WAN | 💳 |
-| Day 13 | Load Balancer & VM Scale Sets | **Azure Load Balancer** (Standard), Frontend IP, Backend Pools, Health Probes, Inbound NAT Rules, VMSS Autoscale | 💳 |
+| Day 12 | Load Balancer & VM Scale Sets | **Azure Load Balancer** (Standard), Frontend IP, Backend Pools, Health Probes, Inbound NAT Rules, VMSS Autoscale | 💳 |
+| Day 13 | VPN Gateway & ExpressRoute | VPN Gateway, Site-to-Site VPN, Point-to-Site VPN, ExpressRoute, Azure Virtual WAN | 💳 |
 | Day 14 | Azure DNS: Public & Private Zones | Azure DNS Public Zones, DNS Record Types, TTL, Azure DNS Private Zones, VNet Links & Autoregistration, Custom DNS | ✅ |
 | Day 15 | Application Gateway & WAF | **Application Gateway v2**, Path-based routing, Multi-site hosting, SSL termination, **WAF**, OWASP CRS | 💳 |
 | Day 16 | Traffic Manager, Front Door & CDN | **Azure Traffic Manager**, **Azure Front Door**, **Azure CDN**, global routing methods, edge caching | 💳 |
@@ -162,8 +162,8 @@
 | Microsoft Entra ID | Day 19 |
 | Azure Monitor | Day 22 |
 | Application Gateway + WAF | Day 15 |
-| Load Balancer | Day 13 |
-| VM Scale Sets (VMSS) | Day 5 + Day 13 |
+| Load Balancer | Day 12 |
+| VM Scale Sets (VMSS) | Day 5 + Day 12 |
 | Traffic Manager | Day 16 |
 | Azure Front Door | Day 16 |
 | Azure SQL Database | Day 18 |
@@ -173,7 +173,7 @@
 | Function App | Day 17 |
 | ARM Templates | Day 28 |
 | Azure DNS | Day 14 |
-| VPN Gateway / ExpressRoute | Day 12 |
+| VPN Gateway / ExpressRoute | Day 13 |
 | Azure Kubernetes Service | Day 31–32 |
 | Containers / ACR | Day 30 |
 | Azure DevOps | Day 23–27 |
