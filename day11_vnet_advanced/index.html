@@ -1,0 +1,2179 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A complete beginner's guide to Azure Cloud and Azure DevOps — 29 days, zero assumed cloud knowledge.">
+      
+      
+      
+        <link rel="canonical" href="https://iam-mithran.github.io/LWM-Azure/day11_vnet_advanced/">
+      
+      
+        <link rel="prev" href="../day10_virtual_network/">
+      
+      
+        <link rel="next" href="../day12_load_balancer_vmss/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion - LearnWithMithran — Azure Complete Beginner's Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#day-11-vnet-advanced-peering-service-private-endpoints-and-azure-bastion" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-header__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LearnWithMithran — Azure Complete Beginner's Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-nav__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LearnWithMithran — Azure Complete Beginner's Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day01_account_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day02_fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day03_vms_part1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day04_web_hosting_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day05_vms_part3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day06_app_service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day07_storage_account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day08_storage_files_queue_tables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day09_intro_to_networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day10_virtual_network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-build-a-fresh-vnet-then-peer-it-with-a-second-vnet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Build a Fresh VNet, Then Peer It With a Second VNet
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Build a Fresh VNet, Then Peer It With a Second VNet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setting-up-todays-playground" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting Up Today's Playground
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-two-separate-vnets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem: Two Separate VNets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vnet-peering-private-connectivity-between-vnets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VNet Peering — Private Connectivity Between VNets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-a-second-vnet-and-peer-it-with-vnet-day11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create a Second VNet and Peer It with vnet-day11
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-deploy-two-test-vms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Deploy Two Test VMs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-service-endpoints-vs-private-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Service Endpoints vs Private Endpoints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Service Endpoints vs Private Endpoints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-paas-traffic-goes-over-the-internet-by-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem: PaaS Traffic Goes Over the Internet by Default
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#service-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Service Endpoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#private-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Private Endpoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#which-should-you-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Should You Use?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-lock-a-storage-account-down-with-a-service-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Lock a Storage Account Down with a Service Endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-a-private-endpoint-for-the-storage-account" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create a Private Endpoint for the Storage Account
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-azure-bastion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Azure Bastion
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Azure Bastion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-with-public-ips-on-vms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem With Public IPs on VMs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#azure-bastion-browser-based-vm-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Bastion — Browser-Based VM Access
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-deploy-azure-bastion-and-connect-to-a-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Deploy Azure Bastion and Connect to a VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-route-tables-user-defined-routes-udr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Route Tables &amp; User-Defined Routes (UDR)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Route Tables &amp; User-Defined Routes (UDR)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#azures-hidden-default-routes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure's Hidden Default Routes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-the-default-isnt-good-enough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When the Default Isn't Good Enough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-build-a-route-table-and-override-the-default-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Build a Route Table and Override the Default Path
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-application-security-groups-asgs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — Application Security Groups (ASGs)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — Application Security Groups (ASGs)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-with-ip-based-nsg-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem With IP-Based NSG Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-group-your-vms-and-rewrite-the-nsg-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Group Your VMs and Rewrite the NSG Rule
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-clean-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Clean Up
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day12_load_balancer_vmss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-build-a-fresh-vnet-then-peer-it-with-a-second-vnet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Build a Fresh VNet, Then Peer It With a Second VNet
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Build a Fresh VNet, Then Peer It With a Second VNet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#setting-up-todays-playground" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Setting Up Today's Playground
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-two-separate-vnets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem: Two Separate VNets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vnet-peering-private-connectivity-between-vnets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VNet Peering — Private Connectivity Between VNets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-a-second-vnet-and-peer-it-with-vnet-day11" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create a Second VNet and Peer It with vnet-day11
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-deploy-two-test-vms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Deploy Two Test VMs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-service-endpoints-vs-private-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Service Endpoints vs Private Endpoints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Service Endpoints vs Private Endpoints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-paas-traffic-goes-over-the-internet-by-default" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem: PaaS Traffic Goes Over the Internet by Default
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#service-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Service Endpoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#private-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Private Endpoints
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#which-should-you-use" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Which Should You Use?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-lock-a-storage-account-down-with-a-service-endpoint" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Lock a Storage Account Down with a Service Endpoint
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-a-private-endpoint-for-the-storage-account" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create a Private Endpoint for the Storage Account
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-azure-bastion" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Azure Bastion
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Azure Bastion">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-with-public-ips-on-vms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem With Public IPs on VMs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#azure-bastion-browser-based-vm-access" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Bastion — Browser-Based VM Access
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-deploy-azure-bastion-and-connect-to-a-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Deploy Azure Bastion and Connect to a VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-route-tables-user-defined-routes-udr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Route Tables &amp; User-Defined Routes (UDR)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Route Tables &amp; User-Defined Routes (UDR)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#azures-hidden-default-routes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure's Hidden Default Routes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-the-default-isnt-good-enough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When the Default Isn't Good Enough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-build-a-route-table-and-override-the-default-path" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Build a Route Table and Override the Default Path
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-application-security-groups-asgs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — Application Security Groups (ASGs)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — Application Security Groups (ASGs)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-with-ip-based-nsg-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem With IP-Based NSG Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-group-your-vms-and-rewrite-the-nsg-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Group Your VMs and Rewrite the NSG Rule
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-clean-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Clean Up
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="day-11-vnet-advanced-peering-service-private-endpoints-and-azure-bastion">Day 11 — VNet Advanced: Peering, Service &amp; Private Endpoints, and Azure Bastion</h1>
+<p><strong>Phase 2 — Networking</strong></p>
+<blockquote>
+<p>Back in Day 10, you built a VNet with two subnets and an NSG controlling traffic — a complete, isolated network. But real Azure environments are rarely just one VNet, and they almost never talk to Azure services like Storage or SQL over the public internet if they can help it. And once your VMs are locked away inside private subnets, how do <em>you</em> — the administrator — actually get in to manage them? Today we answer all three of those questions: connecting separate VNets together with <strong>VNet Peering</strong>, reaching Azure PaaS services privately with <strong>Service Endpoints</strong> and <strong>Private Endpoints</strong>, and getting secure, browser-based access to your VMs with <strong>Azure Bastion</strong> — no public IP, no exposed SSH or RDP port required. To keep today's lab self-contained, we'll spin up a fresh VNet and a couple of test VMs from scratch rather than reaching back into Day 10's resources.</p>
+</blockquote>
+<hr />
+<h2 id="what-youll-learn">What You'll Learn</h2>
+<ul>
+<li><strong>VNet Peering</strong> — connect two separate VNets privately, no internet, no gateway required</li>
+<li>Hands-on: build a new VNet with two subnets, then create a second VNet and peer the two together</li>
+<li>Hands-on: deploy two test VMs to use for the rest of today's demos</li>
+<li><strong>Service Endpoints vs Private Endpoints</strong> — the two ways to securely connect to Azure services from inside a VNet</li>
+<li>Hands-on: enable a Service Endpoint, lock a storage account down to one subnet, and prove it from a VM inside vs. outside that subnet</li>
+<li>Hands-on: create a Private Endpoint for a storage account and verify the DNS resolution changes from inside a VM (small cost — instructor demo)</li>
+<li><strong>Azure Bastion</strong> — browser-based VM access with no public IP and no exposed SSH or RDP port (💳 Paid)</li>
+<li><strong>Route Tables &amp; User-Defined Routes (UDR)</strong> — overriding Azure's default routing to send traffic through a firewall or network appliance instead</li>
+<li>Hands-on: building a custom route table and associating it with a subnet</li>
+<li><strong>Application Security Groups (ASGs)</strong> — grouping VMs by role so NSG rules target a group, not a fragile IP address</li>
+<li>Hands-on: tagging today's VMs into ASGs and rewriting an NSG rule to use them</li>
+</ul>
+<hr />
+<h2 id="before-we-begin">Before We Begin</h2>
+<p>A mix of tiers today:</p>
+<ul>
+<li><strong>VNet Peering</strong> is free within the same region. Cross-region (Global) peering has a small bandwidth charge — we're staying in one region, so this part is <strong>✅ free</strong>.</li>
+<li><strong>Service Endpoints</strong> are <strong>✅ free</strong> — no additional charge at all.</li>
+<li><strong>Private Endpoints</strong> cost roughly <strong>$0.01/hour</strong> (~$7.30/month if left running) plus a small data processing charge. We'll mark this <strong>💳</strong> and walk through deleting it immediately after.</li>
+<li><strong>Two test VMs</strong> on <code>Standard_B1s</code> are <strong>✅ free</strong> — covered by the Free Tier's 750 B-series hours/month, as long as you stop/deallocate them when you're not actively using them.</li>
+<li><strong>Azure Bastion</strong> Basic SKU runs approximately <strong>$0.19/hr</strong> — <strong>💳 instructor demo</strong>, delete immediately after.</li>
+<li><strong>Route Tables</strong> are <strong>✅ free</strong> — no charge for the route table resource itself.</li>
+<li><strong>Application Security Groups</strong> are <strong>✅ free</strong> — no additional charge at all.</li>
+</ul>
+<hr />
+<h2 id="part-1-build-a-fresh-vnet-then-peer-it-with-a-second-vnet">Part 1 — Build a Fresh VNet, Then Peer It With a Second VNet</h2>
+<h3 id="setting-up-todays-playground">Setting Up Today's Playground</h3>
+<p>Everything today happens inside its own resource group so it's easy to find — and easy to clean up — when we're done.</p>
+<p><strong>✅ Free Tier — follow along</strong></p>
+<p><strong>Step 1 — Create the resource group:</strong></p>
+<ol>
+<li>Search for <strong>Resource groups</strong> → <strong>+ Create</strong>.</li>
+<li><strong>Resource group name:</strong> <code>rg-day11-demo</code></li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+</ol>
+<p><strong>Step 2 — Create the VNet:</strong></p>
+<ol>
+<li>Search for <strong>Virtual networks</strong> → <strong>+ Create</strong>.</li>
+<li>On <strong>Basics</strong>:</li>
+<li><strong>Resource group:</strong> <code>rg-day11-demo</code></li>
+<li><strong>Virtual network name:</strong> <code>vnet-day11</code></li>
+<li><strong>Region:</strong> East US</li>
+<li>Click <strong>Next: IP Addresses</strong>.</li>
+<li>Set the address space to <strong><code>10.0.0.0/16</code></strong>.</li>
+<li>Delete the default subnet and add two subnets instead — this mirrors the public/private split from Day 10, rebuilt fresh for today:</li>
+<li><strong>subnet-app</strong> → <code>10.0.1.0/24</code></li>
+<li><strong>subnet-data</strong> → <code>10.0.2.0/24</code></li>
+<li>On each subnet's creation screen you'll see <strong>Enable private subnet (no default outbound access)</strong> — ticked by default. Since March 31, 2026, this is Azure's new default for every subnet in a newly created VNet: no implicit internet path out, unless you explicitly add one (a public IP on the resource, a NAT Gateway, or a Load Balancer outbound rule — the same three mechanisms from Day 10's NAT Gateway section). <strong>Leave it ticked</strong> — it's the secure, recommended setting, and we'll account for it as we go.</li>
+<li>Click <strong>Review + create</strong>, then <strong>Create</strong>.</li>
+</ol>
+<p><strong>Step 3 — Create an NSG and attach it to <code>subnet-app</code>:</strong></p>
+<p>We'll reuse the same <code>Allow-HTTP</code> pattern you learned in Day 10's NSG section, built fresh here.</p>
+<ol>
+<li>Search for <strong>Network security groups</strong> → <strong>+ Create</strong>.</li>
+<li><strong>Resource group:</strong> <code>rg-day11-demo</code>, <strong>Name:</strong> <code>nsg-subnet-app</code>, <strong>Region:</strong> East US → <strong>Create</strong>.</li>
+<li>Open <code>nsg-subnet-app</code> → <strong>Inbound security rules</strong> → <strong>+ Add</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Source:</strong> Any</li>
+<li><strong>Destination:</strong> Any</li>
+<li><strong>Service:</strong> HTTP</li>
+<li><strong>Action:</strong> Allow</li>
+<li><strong>Priority:</strong> 100</li>
+<li><strong>Name:</strong> <code>Allow-HTTP</code></li>
+<li>Click <strong>Add</strong>.</li>
+<li>Go to <code>nsg-subnet-app</code> → <strong>Subnets</strong> → <strong>Associate</strong> → <strong>Virtual network:</strong> <code>vnet-day11</code>, <strong>Subnet:</strong> <code>subnet-app</code> → <strong>OK</strong>.</li>
+</ol>
+<h3 id="the-problem-two-separate-vnets">The Problem: Two Separate VNets</h3>
+<p>As your Azure environment grows, you'll often end up with more than one VNet. Maybe your company uses separate VNets per environment (dev, staging, prod). Maybe different teams each manage their own VNet. Maybe you have resources in two different regions.</p>
+<p>By default, two VNets are completely isolated from each other — even if they're in the same subscription and the same region. A VM in <code>vnet-prod</code> cannot reach a VM in <code>vnet-dev</code> by default.</p>
+<h3 id="vnet-peering-private-connectivity-between-vnets">VNet Peering — Private Connectivity Between VNets</h3>
+<p><strong>VNet Peering</strong> lets two VNets communicate privately as if they were one network — no internet, no VPN tunnel, no gateway required. Traffic between peered VNets travels on Azure's private backbone network with low latency.</p>
+<pre class="mermaid"><code>graph LR
+    VNetA["vnet-day11\n10.0.0.0/16"]
+    VNetB["vnet-day11-dev\n10.1.0.0/16"]
+    VNetA &lt;--&gt;|"VNet Peering\n(Private backbone)"| VNetB
+    Internet["🌐 Internet"]
+    Internet -.-x VNetA
+    Internet -.-x VNetB</code></pre>
+<p>Two important points about VNet Peering:</p>
+<p><strong>1. It is not transitive.</strong> If VNet A is peered with VNet B, and VNet B is peered with VNet C, VNet A cannot reach VNet C. You need a direct peering between A and C as well.</p>
+<p><strong>2. Address spaces cannot overlap.</strong> Our <code>vnet-day11</code> uses <code>10.0.0.0/16</code>. If we want to peer it with another VNet, that VNet needs a <em>different</em> address space — say, <code>10.1.0.0/16</code>. If both used <code>10.0.0.0/16</code>, Azure wouldn't know which VNet to send the traffic to, and the peering would fail. This is exactly the kind of address-space planning we covered back in Day 9 — choosing non-overlapping CIDR blocks upfront saves you from a redesign later.</p>
+<p><strong>VNet Peering is free within the same region.</strong> Cross-region peering (Global VNet Peering) has a small bandwidth charge.</p>
+<hr />
+<h3 id="hands-on-create-a-second-vnet-and-peer-it-with-vnet-day11">Hands-On: Create a Second VNet and Peer It with <code>vnet-day11</code></h3>
+<p>Unlike a single-VNet demo, peering needs two VNets to actually show — so let's build a second one and connect it.</p>
+<p><strong>✅ Free Tier — follow along</strong></p>
+<p><strong>Step 1 — Create the second VNet:</strong></p>
+<ol>
+<li>In the Azure Portal, search for <strong>Virtual networks</strong> and click <strong>+ Create</strong>.</li>
+<li>On the <strong>Basics</strong> tab:</li>
+<li><strong>Resource group:</strong> <code>rg-day11-demo</code> (same resource group as <code>vnet-day11</code>)</li>
+<li><strong>Virtual network name:</strong> <code>vnet-day11-dev</code></li>
+<li><strong>Region:</strong> East US (must match <code>vnet-day11</code>'s region for this demo)</li>
+<li>Click <strong>Next: IP Addresses</strong>.</li>
+<li>Change the default address space to <strong><code>10.1.0.0/16</code></strong> — different from <code>vnet-day11</code>'s <code>10.0.0.0/16</code>, satisfying the non-overlap rule.</li>
+<li>Leave the default subnet as-is (Azure names it <code>default</code>, with a range like <code>10.1.0.0/24</code>).</li>
+<li>Click <strong>Review + create</strong>, then <strong>Create</strong>.</li>
+</ol>
+<p><strong>Step 2 — Create the peering:</strong></p>
+<ol>
+<li>Go to <code>vnet-day11</code> in the portal.</li>
+<li>Click <strong>Peerings</strong> in the left menu, then <strong>+ Add</strong>.</li>
+<li>You'll configure both directions of the peering in one screen:</li>
+<li><strong>This virtual network's peering link name:</strong> <code>peer-to-vnet-day11-dev</code></li>
+<li><strong>Remote virtual network's peering link name:</strong> <code>peer-to-vnet-day11</code></li>
+<li><strong>Virtual network:</strong> select <code>vnet-day11-dev</code></li>
+<li>Leave the default settings checked:</li>
+<li><strong>Allow virtual network access</strong> (both directions) — this is the core setting that lets traffic flow</li>
+<li><strong>Allow forwarded traffic</strong> — leave unchecked unless you have an NVA (network virtual appliance) routing traffic between VNets; not needed for this demo</li>
+<li><strong>Allow gateway transit / Use remote gateways</strong> — leave unchecked; these relate to sharing a VPN Gateway across peered VNets, which we'll touch on in a future networking topic</li>
+<li>Click <strong>Add</strong>.</li>
+</ol>
+<p>Azure provisions the peering in <strong>both directions automatically</strong> — you only had to configure it once, from <code>vnet-day11</code>'s side.</p>
+<p><strong>Step 3 — Verify the peering:</strong></p>
+<ol>
+<li>Still on <code>vnet-day11</code> → <strong>Peerings</strong>, you should see <code>peer-to-vnet-day11-dev</code> with <strong>Peering status: Connected</strong>.</li>
+<li>Now go to <code>vnet-day11-dev</code> → <strong>Peerings</strong>. You'll see <code>peer-to-vnet-day11</code>, also <strong>Connected</strong> — created automatically as part of the same operation.</li>
+</ol>
+<p><strong>How would you actually test this?</strong> If you deployed a VM into <code>vnet-day11-dev</code>'s <code>default</code> subnet (<code>10.1.0.0/24</code>) and another VM into <code>vnet-day11</code>'s <code>subnet-data</code> (<code>10.0.2.0/24</code>), the two VMs could ping each other using their <strong>private IPs</strong> — <code>10.1.0.4</code> reaching <code>10.0.2.4</code>, for example — over Azure's private backbone, with no internet, no public IP, and no gateway involved on either side. We won't deploy extra VMs just for this (to keep costs and clutter down), but this is exactly the mechanism that lets a <code>vnet-prod</code> and <code>vnet-shared-services</code> VNet talk to each other privately in a real environment.</p>
+<blockquote>
+<p><strong>Cleanup note:</strong> VNet Peering within the same region is free, so there's no cost pressure to remove <code>vnet-day11-dev</code> or the peering. Feel free to keep both for future demos — or delete <code>vnet-day11-dev</code> later if you want to tidy up; deleting a VNet automatically removes any peerings attached to it.</p>
+</blockquote>
+<hr />
+<h3 id="hands-on-deploy-two-test-vms">Hands-On: Deploy Two Test VMs</h3>
+<p>We're about to lock a storage account down to a single subnet — and the best way to <em>prove</em> a network restriction is real is to actually try connecting from a VM that's allowed, and one that isn't. These two VMs will also carry us through Bastion, route tables, and ASGs later today.</p>
+<p><strong>✅ Free Tier — <code>Standard_B1s</code> is covered by the Free Tier's 750 B-series hours/month</strong></p>
+<p><strong>Step 1 — Deploy <code>vm-web-demo</code> into <code>subnet-app</code>:</strong></p>
+<ol>
+<li>Search for <strong>Virtual machines</strong> → <strong>+ Create</strong> → <strong>Azure virtual machine</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Resource group:</strong> <code>rg-day11-demo</code></li>
+<li><strong>VM name:</strong> <code>vm-web-demo</code></li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>Image:</strong> Ubuntu Server 24.04 LTS</li>
+<li><strong>Size:</strong> Standard_B1s</li>
+<li><strong>Authentication:</strong> SSH public key (or password for quick demo)</li>
+<li>On the <strong>Networking</strong> tab:</li>
+<li><strong>Virtual network:</strong> <code>vnet-day11</code></li>
+<li><strong>Subnet:</strong> <code>subnet-app</code></li>
+<li><strong>Public IP:</strong> Create new (we'll remove it once Bastion is working later today)</li>
+<li><strong>NIC network security group:</strong> None (the subnet's <code>nsg-subnet-app</code> will handle it)</li>
+<li>Click <strong>Review + create</strong>, then <strong>Create</strong>.</li>
+</ol>
+<p><strong>Step 2 — Deploy <code>vm-db-demo</code> into <code>subnet-data</code>:</strong></p>
+<ol>
+<li>Repeat the same steps with:</li>
+<li><strong>VM name:</strong> <code>vm-db-demo</code></li>
+<li><strong>Subnet:</strong> <code>subnet-data</code></li>
+<li><strong>Public IP:</strong> Create new — this VM represents a backend-only role and won't keep this public IP long-term, but we need it <em>temporarily</em> so we can SSH in directly and test storage connectivity before Bastion exists.</li>
+<li>Click <strong>Review + create</strong>, then <strong>Create</strong>.</li>
+</ol>
+<p>You now have two VMs: <code>vm-web-demo</code> (internet-facing role, in <code>subnet-app</code>) and <code>vm-db-demo</code> (backend role, in <code>subnet-data</code>) — both with a public IP for now so we can SSH straight in and test things. We'll strip the public IPs off both of them later today, once Bastion takes over as the access path.</p>
+<blockquote>
+<p><strong>Note on private subnets:</strong> because both <code>subnet-app</code> and <code>subnet-data</code> were created with <strong>no default outbound access</strong> (the new default since March 31, 2026), each VM's instance-level public IP isn't just <em>inbound</em> access right now — it's also the <em>only</em> reason these VMs currently have outbound internet connectivity at all. Once we remove those public IPs later in this lab, neither VM will have an internet path unless something else provides one. Keep that in mind for the cleanup steps below — we'll call it out again when it matters.</p>
+</blockquote>
+<hr />
+<h2 id="part-2-service-endpoints-vs-private-endpoints">Part 2 — Service Endpoints vs Private Endpoints</h2>
+<h3 id="the-problem-paas-traffic-goes-over-the-internet-by-default">The Problem: PaaS Traffic Goes Over the Internet by Default</h3>
+<p>When you use Azure services like Azure Storage, Azure SQL, or Azure Key Vault from inside a VM, that traffic goes out over the public internet by default — even though both the VM and the service are technically in Azure. There are two ways to fix this: <strong>Service Endpoints</strong> and <strong>Private Endpoints</strong>. They solve the same problem differently.</p>
+<h3 id="service-endpoints">Service Endpoints</h3>
+<p>A <strong>Service Endpoint</strong> extends your VNet's identity to an Azure service. When you enable a Service Endpoint on a subnet for, say, Azure Storage, Azure Storage knows that traffic from that subnet is coming from a trusted VNet — and you can configure the storage account to only accept connections from that specific subnet.</p>
+<p><strong>How it works:</strong> Your VM still reaches the storage account using its public endpoint URL (<code>mystorageaccount.blob.core.windows.net</code>), but the traffic travels on Azure's internal network rather than the public internet. The storage account can then use a firewall rule to allow only connections from your VNet and block everything else.</p>
+<p><strong>Key characteristic:</strong> The service still has a public IP and a public endpoint. Service Endpoints don't make the service private — they make the <em>connection</em> private and give you a network-based access control.</p>
+<h3 id="private-endpoints">Private Endpoints</h3>
+<p>A <strong>Private Endpoint</strong> gives an Azure service a <strong>private IP address directly inside your VNet</strong>. Instead of reaching the service via its public URL, your VM connects to <code>10.0.2.20</code> (or whatever private IP it's assigned) and that connection stays entirely within your VNet — never touching the internet.</p>
+<p><strong>How it works:</strong> Azure creates a network interface inside your subnet with a private IP. That NIC is mapped to the Azure service. DNS is updated (via Private DNS Zones) so that the service's public hostname resolves to the private IP when queried from inside the VNet.</p>
+<pre class="mermaid"><code>graph TD
+    VM["VM in VNet\n10.0.2.10"]
+    PE["Private Endpoint\n10.0.2.20 (inside your VNet)"]
+    SA["Azure Storage Account\n(no longer reachable from internet)"]
+    VM --&gt;|"Connects to 10.0.2.20"| PE
+    PE --&gt;|"Private backbone"| SA
+    Internet["🌐 Internet"] -.-x SA</code></pre>
+<p><strong>Key characteristic:</strong> The service gets a private IP inside your VNet. You can disable the public endpoint entirely. This is the most secure option.</p>
+<h3 id="which-should-you-use">Which Should You Use?</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Service Endpoint</th>
+<th>Private Endpoint</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Traffic path</td>
+<td>Azure backbone (not internet)</td>
+<td>Azure backbone (not internet)</td>
+</tr>
+<tr>
+<td>Service gets a private IP</td>
+<td>❌ No</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td>Can disable public access</td>
+<td>Partially (via firewall)</td>
+<td>✅ Fully</td>
+</tr>
+<tr>
+<td>DNS changes needed</td>
+<td>❌ No</td>
+<td>✅ Yes (Private DNS Zone)</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td>Free</td>
+<td>Small charge per endpoint</td>
+</tr>
+<tr>
+<td>Best for</td>
+<td>Simple scenarios, small teams</td>
+<td>Production, compliance, maximum security</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>General rule:</strong> Use Private Endpoints for any service that stores sensitive data (databases, storage with PII, Key Vault). Service Endpoints are fine for internal tooling or non-sensitive data where you want network-level control without the operational overhead.</p>
+</blockquote>
+<hr />
+<h3 id="hands-on-lock-a-storage-account-down-with-a-service-endpoint">Hands-On: Lock a Storage Account Down with a Service Endpoint</h3>
+<p><strong>✅ Free Tier — follow along</strong></p>
+<p><strong>Step 1 — Create a test storage account:</strong></p>
+<ol>
+<li>Search for <strong>Storage accounts</strong> → <strong>+ Create</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Resource group:</strong> <code>rg-day11-demo</code></li>
+<li><strong>Storage account name:</strong> <code>lwmstoragenetdemo&lt;yourname&gt;</code> <em>(lowercase letters and numbers only, globally unique)</em></li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>Performance/Redundancy:</strong> leave defaults (Standard / LRS)</li>
+<li>Click <strong>Review + create</strong>, then <strong>Create</strong>.</li>
+</ol>
+<p><strong>Step 2 — Enable the Service Endpoint on the subnet:</strong></p>
+<ol>
+<li>Go to <code>vnet-day11</code> → <strong>Subnets</strong> → click <code>subnet-data</code>.</li>
+<li>Under <strong>Service endpoints</strong>, click the dropdown and select <strong>Microsoft.Storage</strong>.</li>
+<li>Click <strong>Save</strong>.</li>
+</ol>
+<p><strong>Step 3 — Restrict the storage account to that subnet:</strong></p>
+<ol>
+<li>Go to your new storage account → <strong>Networking</strong> (under <strong>Security + networking</strong>).</li>
+<li>Under <strong>Public network access</strong>, choose <strong>Enabled from selected virtual networks and IP addresses</strong>.</li>
+<li>Click <strong>+ Add existing virtual network</strong>.</li>
+<li>Select:</li>
+<li><strong>Virtual networks:</strong> <code>vnet-day11</code></li>
+<li><strong>Subnets:</strong> <code>subnet-data</code> (you'll see a green checkmark confirming the Service Endpoint is enabled — Azure won't let you add a subnet that doesn't have the endpoint configured)</li>
+<li>Click <strong>Add</strong>, then <strong>Save</strong>.</li>
+</ol>
+<p>That's it. Now this storage account only accepts connections from <code>subnet-data</code> in <code>vnet-day11</code> (plus any IP addresses you explicitly allow under the same <strong>Networking</strong> blade). If you open the storage account's blob URL directly from your browser at home, you'll get an authorization error — your laptop isn't inside <code>vnet-day11</code>.</p>
+<p><strong>Step 4 — Upload a test file and generate a SAS token:</strong></p>
+<p>A network rule and a valid credential are two separate checks — both have to pass. To prove that, we need an actual file and an actual working SAS token, not just an unauthenticated request.</p>
+<ol>
+<li>Go to your storage account → <strong>Containers</strong> (under <strong>Data storage</strong>) → <strong>+ Container</strong> → name it <code>demo-container</code> → <strong>Create</strong>.</li>
+<li>Open <code>demo-container</code> → <strong>Upload</strong> → upload any small text file (e.g., create a local <code>hello.txt</code> containing "Service Endpoint demo" and upload that).</li>
+<li>Click the uploaded blob → <strong>Generate SAS</strong>.</li>
+<li>Set:</li>
+<li><strong>Permissions:</strong> Read</li>
+<li><strong>Expiry:</strong> leave the default (a few hours from now) — plenty of time for this demo</li>
+<li>Click <strong>Generate SAS token and URL</strong>, then copy the <strong>Blob SAS URL</strong> at the bottom — this is a fully authenticated URL that, on its own, grants read access to that file.</li>
+</ol>
+<p><strong>Step 5 — Prove it from the two VMs you already deployed:</strong></p>
+<p>This is the part that makes the restriction real instead of theoretical. We'll hit that same SAS URL — same valid credential both times — from a VM that's allowed, then from one that isn't.</p>
+<ol>
+<li>SSH into <code>vm-db-demo</code> using its public IP: <code>ssh azureuser@&lt;vm-db-demo-public-ip&gt;</code>.</li>
+<li>Run:
+   <div class="highlight"><pre><span></span><code>curl -i &quot;&lt;paste the Blob SAS URL&gt;&quot;
+</code></pre></div>
+   Because <code>vm-db-demo</code> sits in <code>subnet-data</code> — the subnet you just added to the storage account's allow list — you get back <code>200 OK</code> and the actual contents of <code>hello.txt</code>. The SAS token is valid <em>and</em> the request comes from a trusted subnet, so it succeeds end to end.</li>
+<li>Exit, then SSH into <code>vm-web-demo</code> instead: <code>ssh azureuser@&lt;vm-web-demo-public-ip&gt;</code>.</li>
+<li>Run the exact same command with the exact same SAS URL:
+   <div class="highlight"><pre><span></span><code>curl -i &quot;&lt;paste the Blob SAS URL&gt;&quot;
+</code></pre></div>
+   This time you'll get back <code>403 This request is not authorized to perform this operation</code> — even though the SAS token is identical and perfectly valid. <code>subnet-app</code> was never added to the storage account's trusted subnets, so the network rule rejects the request before the SAS token is even evaluated.</li>
+</ol>
+<p>Same VNet, same storage account, same valid SAS token — but only the subnet you explicitly trusted gets through. That's the key lesson: a Service Endpoint firewall rule isn't bypassable just by having working credentials; the network check and the auth check are independent, and both must pass.</p>
+<blockquote>
+<p><strong>Tip:</strong> The <strong>Networking</strong> blade also has an <strong>Exceptions</strong> section with a checkbox for "Allow Azure services on the trusted services list to access this storage account" — this is what lets things like Azure Monitor or Azure Backup continue to function even when network access is restricted.</p>
+</blockquote>
+<hr />
+<h3 id="hands-on-create-a-private-endpoint-for-the-storage-account">Hands-On: Create a Private Endpoint for the Storage Account</h3>
+<p><strong>💳 Small cost (~$0.01/hr, ~$7.30/month if left running) — delete immediately after this demo</strong></p>
+<p>Let's go one step further and give this same storage account a private IP address inside <code>vnet-day11</code>.</p>
+<ol>
+<li>Go to your storage account → <strong>Networking</strong> → <strong>Private endpoint connections</strong> tab.</li>
+<li>Click <strong>+ Private endpoint</strong>.</li>
+<li>On <strong>Basics</strong>:</li>
+<li><strong>Resource group:</strong> <code>rg-day11-demo</code></li>
+<li><strong>Name:</strong> <code>pe-storage-demo</code></li>
+<li><strong>Region:</strong> East US</li>
+<li>On <strong>Resource</strong>:</li>
+<li><strong>Resource type:</strong> <code>Microsoft.Storage/storageAccounts</code></li>
+<li><strong>Resource:</strong> your storage account</li>
+<li><strong>Target sub-resource:</strong> <code>blob</code></li>
+<li>On <strong>Virtual Network</strong>:</li>
+<li><strong>Virtual network:</strong> <code>vnet-day11</code></li>
+<li><strong>Subnet:</strong> <code>subnet-data</code></li>
+<li>On <strong>DNS</strong>:</li>
+<li>Leave <strong>Integrate with private DNS zone</strong> set to <strong>Yes</strong>. Azure will automatically create (or reuse) a Private DNS Zone named <code>privatelink.blob.core.windows.net</code> and link it to <code>vnet-day11</code>.</li>
+<li>Click <strong>Review + create</strong>, then <strong>Create</strong>.</li>
+</ol>
+<p>Once deployed, go back to <strong>Networking</strong> → <strong>Private endpoint connections</strong>. You'll see <code>pe-storage-demo</code> listed with <strong>Connection state: Approved</strong> and a <strong>private IP</strong> from <code>subnet-data</code>'s range — something like <code>10.0.2.20</code>.</p>
+<p><strong>What just happened?</strong> A network interface with a private IP was created inside <code>subnet-data</code>, mapped directly to your storage account's blob service. Because of the Private DNS Zone integration, any VM inside <code>vnet-day11</code> that resolves <code>lwmstoragenetdemo&lt;yourname&gt;.blob.core.windows.net</code> will now get back the <strong>private IP</strong> (<code>10.0.2.20</code>) instead of the public one — meaning the connection never leaves your VNet.</p>
+<p><strong>Step — Verify the DNS resolution from inside <code>vm-db-demo</code>:</strong></p>
+<ol>
+<li>SSH into <code>vm-db-demo</code> again: <code>ssh azureuser@&lt;vm-db-demo-public-ip&gt;</code>.</li>
+<li>Run:
+   <div class="highlight"><pre><span></span><code>getent hosts lwmstoragenetdemo&lt;yourname&gt;.blob.core.windows.net
+</code></pre></div></li>
+<li>The hostname now resolves to a private IP in <code>subnet-data</code>'s range — something like <code>10.0.2.20</code> — instead of a public Azure Storage IP. The URL itself didn't change; only where it points changed, transparently, because of the Private DNS Zone link Azure created for you.</li>
+</ol>
+<p>At this point, you could go back to the <strong>Networking</strong> blade and set <strong>Public network access</strong> to <strong>Disabled</strong> entirely, and the storage account would still be fully reachable from inside <code>vnet-day11</code> via the private endpoint — <code>vm-db-demo</code> would never notice the difference.</p>
+<p><strong>Step — Clean up the Private Endpoint:</strong></p>
+<p>Since this resource carries a small ongoing charge:</p>
+<ol>
+<li>Go to your storage account → <strong>Networking</strong> → <strong>Private endpoint connections</strong>.</li>
+<li>Select <code>pe-storage-demo</code> → <strong>Remove</strong>.</li>
+<li>Optionally, also delete the <strong>Private DNS zone</strong> (<code>privatelink.blob.core.windows.net</code>) that Azure created, via <strong>Private DNS zones</strong> in the portal search — it costs a small amount per zone per month if left behind.</li>
+</ol>
+<p><strong>Step — Remove <code>vm-db-demo</code>'s temporary public IP:</strong></p>
+<p>We only gave <code>vm-db-demo</code> a public IP so we could SSH straight in and run these tests before Bastion existed. Now that we've proven both connections work, take it back off — <code>vm-db-demo</code> is a backend-only VM and shouldn't have internet-facing access at all.</p>
+<ol>
+<li>Go to <code>vm-db-demo</code> → <strong>Networking</strong> → click its network interface → <strong>IP configurations</strong> → select <strong>ipconfig1</strong>.</li>
+<li>Under <strong>Public IP address</strong>, choose <strong>Disassociate</strong> → <strong>Save</strong>.</li>
+<li>Search for <strong>Public IP addresses</strong>, find the now-unattached IP that was on <code>vm-db-demo</code>, and delete it.</li>
+</ol>
+<p>Because <code>subnet-data</code> was created with <strong>no default outbound access</strong>, this isn't just closing off inbound access — <code>vm-db-demo</code> now has no outbound internet path at all. That's fine here: its only job is talking to the storage account, and it does that over the <strong>Private Endpoint</strong> we just deployed (a private IP inside <code>subnet-data</code>, never touching the internet) rather than over a Service Endpoint route. If a real backend VM still needed genuine internet egress — to pull OS updates, for example — you'd attach a <strong>NAT Gateway</strong> to <code>subnet-data</code>, exactly as you did for <code>private-subnet</code> in Day 10.</p>
+<hr />
+<h2 id="part-3-azure-bastion">Part 3 — Azure Bastion</h2>
+<p>We'll reuse <code>vm-web-demo</code>, the VM you deployed back in Part 1, for this demo — it currently has a public IP, which is exactly the problem Bastion solves.</p>
+<h3 id="the-problem-with-public-ips-on-vms">The Problem With Public IPs on VMs</h3>
+<p>When you deploy a VM for management access, the classic approach is to give it a public IP and open port 22 (SSH) or port 3389 (RDP). This works — but it means your VM is exposed on the public internet. Bots actively scan the internet for open SSH and RDP ports, attempting brute-force logins constantly.</p>
+<p>Even with strong passwords and key-based authentication, the fact that port 22 is open on a public IP is a real attack surface. In regulated industries, security teams often flag this as a compliance violation.</p>
+<h3 id="azure-bastion-browser-based-vm-access">Azure Bastion — Browser-Based VM Access</h3>
+<p><strong>Azure Bastion</strong> is a fully managed PaaS service that lets you connect to VMs via a browser over HTTPS (port 443) — with <strong>no public IP on the VM</strong> and <strong>no open port 22 or 3389</strong>.</p>
+<p>Here's how it works:</p>
+<ol>
+<li>You deploy Azure Bastion into a dedicated subnet in your VNet called <code>AzureBastionSubnet</code> (the name is mandatory).</li>
+<li>Bastion gets a public IP — but it's the <em>only</em> public-facing surface.</li>
+<li>When you click <strong>Connect → Bastion</strong> in the Azure Portal, the portal communicates with the Bastion service, which then opens an RDP or SSH session to the VM over the private network.</li>
+<li>The session runs inside your browser window — no SSH client or RDP client needed.</li>
+</ol>
+<pre class="mermaid"><code>graph LR
+    Browser["Your Browser\n(HTTPS port 443)"]
+    Bastion["Azure Bastion\n(AzureBastionSubnet)\nPublic IP"]
+    VM["Target VM\nNo public IP\nPort 22/3389 closed"]
+    Internet["🌐 Internet"]
+
+    Browser --&gt;|"HTTPS 443"| Internet
+    Internet --&gt; Bastion
+    Bastion --&gt;|"SSH/RDP over private VNet"| VM</code></pre>
+<p><strong>Azure Bastion SKUs:</strong></p>
+<table>
+<thead>
+<tr>
+<th>SKU</th>
+<th>Cost</th>
+<th>Features</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Basic</strong></td>
+<td>~$0.19/hr</td>
+<td>SSH + RDP in browser, shareable link</td>
+</tr>
+<tr>
+<td><strong>Standard</strong></td>
+<td>~$0.38/hr</td>
+<td>All Basic features + file upload/download, audio support, custom ports, private-only Bastion</td>
+</tr>
+</tbody>
+</table>
+<p>For this demo, the Basic SKU is sufficient.</p>
+<p><strong>Important requirements:</strong>
+- The subnet must be named <code>AzureBastionSubnet</code> exactly — capital A, capital B
+- The subnet must be at least <code>/26</code> in size (Azure Bastion requires 64 addresses minimum) — recall from Day 9's CIDR table, <code>/26</code> gives you exactly 64 addresses
+- You need to add <code>AzureBastionSubnet</code> to your existing VNet — not a separate VNet</p>
+<hr />
+<h3 id="hands-on-deploy-azure-bastion-and-connect-to-a-vm">Hands-On: Deploy Azure Bastion and Connect to a VM</h3>
+<p><strong>💳 Paid — Instructor Demo (~$0.19/hr Basic SKU). Delete immediately after to minimise cost.</strong></p>
+<p><strong>Step 1 — Add the AzureBastionSubnet to your VNet:</strong></p>
+<ol>
+<li>Go to your <code>vnet-day11</code> VNet in the portal.</li>
+<li>Click <strong>Subnets</strong> in the left menu.</li>
+<li>Click <strong>+ Subnet</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Name:</strong> <code>AzureBastionSubnet</code> (exact spelling, exact casing — this is required)</li>
+<li><strong>Subnet address range:</strong> <code>10.0.3.0/26</code> (gives 64 addresses, the minimum for Bastion)</li>
+<li>Click <strong>Save</strong>.</li>
+</ol>
+<p><strong>Step 2 — Deploy Azure Bastion:</strong></p>
+<ol>
+<li>In the portal, search for <strong>Bastions</strong> and click <strong>+ Create</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Resource group:</strong> <code>rg-day11-demo</code></li>
+<li><strong>Name:</strong> <code>bastion-demo</code></li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>Tier:</strong> Basic</li>
+<li><strong>Virtual network:</strong> <code>vnet-day11</code></li>
+<li><strong>Subnet:</strong> AzureBastionSubnet (auto-selected once you pick the VNet)</li>
+<li><strong>Public IP address:</strong> Create new, name it <code>pip-bastion-demo</code></li>
+<li>Click <strong>Review + create</strong>, then <strong>Create</strong>.</li>
+</ol>
+<p>Bastion takes about 5 minutes to provision. While it's deploying, notice that you could remove the public IP from <code>vm-web-demo</code> and close ports 22 and 3389 on its NSG entirely — once Bastion is running, you no longer need them.</p>
+<p><strong>Step 3 — Connect to your VM via Bastion:</strong></p>
+<ol>
+<li>Go to <code>vm-web-demo</code>.</li>
+<li>Click <strong>Connect</strong> in the left menu, then choose <strong>Connect via Bastion</strong>.</li>
+<li>You'll see the Bastion connection panel:</li>
+<li><strong>Authentication type:</strong> SSH Private Key (or Password if you set one)</li>
+<li><strong>Username:</strong> azureuser</li>
+<li>Enter your credentials</li>
+<li>Click <strong>Connect</strong>.</li>
+</ol>
+<p>A terminal window opens directly in your browser tab. You are now inside the VM — over HTTPS, through Bastion, with no public IP on the VM itself.</p>
+<p>You can now remove the public IP from <code>vm-web-demo</code> and close port 22 entirely on <code>nsg-subnet-app</code>. The VM is accessible only through Bastion. From a security and compliance standpoint, this is significantly better than a public IP with port 22 open.</p>
+<p>Remember, since <code>subnet-app</code> was also created with <strong>no default outbound access</strong>, removing this public IP doesn't just close off inbound SSH — it removes <code>vm-web-demo</code>'s outbound internet path too, the same as we saw with <code>vm-db-demo</code> earlier. Bastion only adds an <em>inbound</em> management path; it doesn't restore outbound internet access. That's the correct end state for this lab (the VM doesn't need to reach the internet for anything we've done today), but if you needed it to — say, for OS patching — you'd attach a NAT Gateway to <code>subnet-app</code>, just like Day 10.</p>
+<p><strong>Step 4 — Clean up Bastion after the demo:</strong></p>
+<p>Bastion charges by the hour. Delete it when you're done:</p>
+<ol>
+<li>Search for <strong>Bastions</strong>, find <code>bastion-demo</code>, click <strong>Delete</strong>.</li>
+<li>Also delete the <code>pip-bastion-demo</code> public IP to avoid any idle IP charges.</li>
+</ol>
+<hr />
+<h2 id="part-4-route-tables-user-defined-routes-udr">Part 4 — Route Tables &amp; User-Defined Routes (UDR)</h2>
+<h3 id="azures-hidden-default-routes">Azure's Hidden Default Routes</h3>
+<p>Every subnet you create already has routing happening behind the scenes, even though you've never configured a single route. Azure automatically populates each subnet with a set of <strong>system routes</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Destination</th>
+<th>Next Hop</th>
+<th>What It Does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Traffic to another address inside the same VNet</td>
+<td><strong>Local VNet</strong></td>
+<td>Delivers it directly — this is why your <code>subnet-app</code> and <code>subnet-data</code> VMs can already reach each other</td>
+</tr>
+<tr>
+<td>Traffic to a peered VNet's address space</td>
+<td><strong>VNet Peering</strong></td>
+<td>Routes it across the peering connection — this is what made Part 1's peering work without you configuring any routes yourself</td>
+</tr>
+<tr>
+<td>Everything else (<code>0.0.0.0/0</code>)</td>
+<td><strong>Internet</strong></td>
+<td>Sends it out to the public internet</td>
+</tr>
+</tbody>
+</table>
+<p>These system routes are invisible — you never see them in a "Route Tables" blade unless you go looking — but they're exactly what's been making your VMs reachable (or not) this entire course.</p>
+<h3 id="when-the-default-isnt-good-enough">When the Default Isn't Good Enough</h3>
+<p>Sometimes you need traffic to take a different path than Azure's default. The classic example: you've deployed a firewall or network virtual appliance (NVA) into your VNet, and you want <strong>all</strong> outbound traffic from a subnet to pass through that appliance for inspection first, instead of going straight to the internet. Azure has no way of knowing you want this unless you tell it explicitly.</p>
+<p>A <strong>Route Table</strong> is a resource you create and populate with your own routes — <strong>User-Defined Routes (UDR)</strong> — then associate with one or more subnets. Once associated, your custom routes take priority over Azure's system routes for any destination they cover.</p>
+<p>Each route has:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Address prefix</strong></td>
+<td>The destination CIDR block this route applies to (e.g. <code>0.0.0.0/0</code> for "everything")</td>
+</tr>
+<tr>
+<td><strong>Next hop type</strong></td>
+<td>Where to actually send matching traffic</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Next hop types you can choose:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Next Hop Type</th>
+<th>What It Means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Virtual appliance</strong></td>
+<td>Send traffic to a specific private IP — typically a firewall/NVA VM</td>
+</tr>
+<tr>
+<td><strong>Virtual network gateway</strong></td>
+<td>Send traffic to a VPN or ExpressRoute gateway</td>
+</tr>
+<tr>
+<td><strong>Virtual network</strong></td>
+<td>Force traffic to stay within the VNet's routing, even for ranges that might otherwise go elsewhere</td>
+</tr>
+<tr>
+<td><strong>Internet</strong></td>
+<td>Send straight to the internet (the default for <code>0.0.0.0/0</code> unless you override it)</td>
+</tr>
+<tr>
+<td><strong>None</strong></td>
+<td>Drop the traffic entirely — a deliberate black hole, useful for blocking a specific range</td>
+</tr>
+</tbody>
+</table>
+<pre class="mermaid"><code>graph LR
+    DbVM["vm-db-demo\n10.0.2.4"]
+    Default["Default route\n0.0.0.0/0 -&gt; Internet"]
+    Custom["UDR override\n0.0.0.0/0 -&gt; Virtual appliance\n10.0.1.4"]
+    NVA["vm-web-demo (stand-in appliance)\n10.0.1.4"]
+    Internet["🌐 Internet"]
+
+    DbVM -.-&gt;|"Without a route table"| Default --&gt; Internet
+    DbVM --&gt;|"With rt-subnet-data associated"| Custom --&gt; NVA --&gt; Internet</code></pre>
+<h3 id="hands-on-build-a-route-table-and-override-the-default-path">Hands-On: Build a Route Table and Override the Default Path</h3>
+<p><strong>✅ Free Tier — the route table resource itself is free; we're not deploying a real firewall appliance, just demonstrating the override mechanism</strong></p>
+<p><strong>Step 1 — Create the route table:</strong></p>
+<ol>
+<li>Search for <strong>Route tables</strong> → <strong>+ Create</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Resource group:</strong> <code>rg-day11-demo</code></li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>Name:</strong> <code>rt-subnet-data</code></li>
+<li><strong>Propagate gateway routes:</strong> No (leave default)</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+</ol>
+<p><strong>Step 2 — Add a custom route:</strong></p>
+<ol>
+<li>Go to <code>rt-subnet-data</code> → <strong>Routes</strong> → <strong>+ Add</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Route name:</strong> <code>force-via-appliance</code></li>
+<li><strong>Destination type:</strong> IP Addresses</li>
+<li><strong>Destination IP addresses/CIDR ranges:</strong> <code>0.0.0.0/0</code> (every destination)</li>
+<li><strong>Next hop type:</strong> Virtual appliance</li>
+<li><strong>Next hop address:</strong> <code>10.0.1.4</code> (use the private IP of <code>vm-web-demo</code> as a stand-in "appliance" — purely to demonstrate the mechanic; it isn't actually configured to forward traffic)</li>
+<li>Click <strong>Add</strong>.</li>
+</ol>
+<p><strong>Step 3 — Associate the route table with <code>subnet-data</code>:</strong></p>
+<ol>
+<li>Go to <code>rt-subnet-data</code> → <strong>Subnets</strong> → <strong>Associate</strong>.</li>
+<li><strong>Virtual network:</strong> <code>vnet-day11</code>, <strong>Subnet:</strong> <code>subnet-data</code>.</li>
+<li>Click <strong>OK</strong>.</li>
+</ol>
+<p>From this point on, any resource in <code>subnet-data</code> that tries to reach the internet has its traffic directed toward <code>10.0.1.4</code> first, instead of going straight out — exactly what you'd want if <code>10.0.1.4</code> were a real firewall VM with IP forwarding enabled and routing software installed. We haven't configured <code>vm-web-demo</code> to actually forward anything, so outbound internet access from <code>subnet-data</code> would now silently fail — which is precisely the point: <strong>UDR changes the path traffic takes, it doesn't make sure something is listening at the other end.</strong> That's on you to configure if you build this for real.</p>
+<p><strong>Step 4 — Clean up the override:</strong></p>
+<p>Since this UDR has no real appliance behind it, remove the association so it doesn't interfere with later demos:</p>
+<ol>
+<li>Go to <code>rt-subnet-data</code> → <strong>Subnets</strong> → select <code>subnet-data</code> → <strong>Remove</strong>.</li>
+<li>Optionally delete <code>rt-subnet-data</code> entirely if you're not continuing to experiment with it.</li>
+</ol>
+<blockquote>
+<p><strong>Exam tip:</strong> A Route Table with a <code>0.0.0.0/0</code> route pointing at a virtual appliance is the standard building block behind "force tunneling" — sending all subnet egress through a firewall, proxy, or NVA for inspection and logging.</p>
+</blockquote>
+<hr />
+<h2 id="part-5-application-security-groups-asgs">Part 5 — Application Security Groups (ASGs)</h2>
+<h3 id="the-problem-with-ip-based-nsg-rules">The Problem With IP-Based NSG Rules</h3>
+<p>Look back at the <code>Allow-HTTP</code> rule you created earlier today on <code>nsg-subnet-app</code> — its <strong>Destination</strong> is <code>Any</code>. That means <em>any</em> resource you ever drop into <code>subnet-app</code> automatically receives inbound HTTP traffic, whether you intended that or not. You could narrow the destination to a specific private IP, but IPs change — rebuild a VM, and it can come back with a different address, silently breaking your rule.</p>
+<p>An <strong>Application Security Group (ASG)</strong> solves this by letting you group VMs by <strong>role</strong> — <code>web</code>, <code>database</code>, <code>app-tier</code> — and write NSG rules against the <em>group</em>, not against an IP address or a subnet. Add a VM to the group, and it inherits every rule that references that group; remove it, and those rules no longer apply. The VM's actual IP is irrelevant.</p>
+<blockquote>
+<p><strong>Important:</strong> an ASG is not a firewall by itself — it does nothing on its own. It's a label that an NSG rule can reference as a <strong>source</strong> or <strong>destination</strong>, exactly like you'd otherwise type in a CIDR block. All VMs referenced together in one NSG rule (e.g., as both source and destination ASGs) must belong to the same VNet.</p>
+</blockquote>
+<h3 id="hands-on-group-your-vms-and-rewrite-the-nsg-rule">Hands-On: Group Your VMs and Rewrite the NSG Rule</h3>
+<p><strong>✅ Free Tier</strong></p>
+<p>This picks up the two VMs you built in Part 3 today: <code>vm-web-demo</code> and <code>vm-db-demo</code>. If you stopped/deallocated them, start them back up (or just reattach the ASGs — that works on a stopped VM's NIC too).</p>
+<p><strong>Step 1 — Create two ASGs:</strong></p>
+<ol>
+<li>Search for <strong>Application security groups</strong> → <strong>+ Create</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Resource group:</strong> <code>rg-day11-demo</code></li>
+<li><strong>Name:</strong> <code>asg-web</code></li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+<li>Repeat with <strong>Name:</strong> <code>asg-db</code> — same resource group and region.</li>
+</ol>
+<p><code>asg-web</code> represents anything internet-facing; <code>asg-db</code> represents anything backend-only — mirroring the <code>subnet-app</code> / <code>subnet-data</code> split we built in Part 1.</p>
+<p><strong>Step 2 — Add your VMs to the right ASG:</strong></p>
+<ol>
+<li>Go to <code>vm-web-demo</code> → <strong>Networking</strong> → select its network interface → <strong>Application security groups</strong> → <strong>Add application security groups</strong> → select <code>asg-web</code> → <strong>Save</strong>.</li>
+<li>Go to <code>vm-db-demo</code> → its NIC → <strong>Application security groups</strong> → add <code>asg-db</code>.</li>
+</ol>
+<p>Both VMs are now tagged by role, independent of which subnet or IP they happen to have.</p>
+<p><strong>Step 3 — Rewrite <code>Allow-HTTP</code> to target <code>asg-web</code> instead of <code>Any</code>:</strong></p>
+<ol>
+<li>Go to <code>nsg-subnet-app</code> → <strong>Inbound security rules</strong> → open <code>Allow-HTTP</code>.</li>
+<li>Change <strong>Destination</strong> from <code>Any</code> to <strong>Application security group</strong>, then select <code>asg-web</code>.</li>
+<li><strong>Save</strong>.</li>
+</ol>
+<p>The rule now reads "allow inbound HTTP <strong>only to VMs tagged <code>asg-web</code></strong>" — if you deploy a second VM into <code>subnet-app</code> tomorrow and forget to tag it, it simply won't receive HTTP traffic, even though it's in the right subnet. That's the safety net ASGs give you over plain subnet-based rules.</p>
+<p><strong>Step 4 — (Optional) Write a role-to-role rule:</strong></p>
+<p>A common real-world pattern: "only my web tier may talk to my database tier, on the database port." Try adding this rule to a new NSG attached to <code>subnet-data</code>:</p>
+<ul>
+<li><strong>Source:</strong> Application security group → <code>asg-web</code></li>
+<li><strong>Destination:</strong> Application security group → <code>asg-db</code></li>
+<li><strong>Service:</strong> custom, port 1433 (SQL) or 3306 (MySQL) — whatever your backend uses</li>
+<li><strong>Action:</strong> Allow</li>
+<li><strong>Priority:</strong> 100</li>
+</ul>
+<p>This single rule enforces "web talks to database, nothing else does" — and it keeps working even as VMs in either group are added, removed, or rebuilt with new IPs.</p>
+<h3 id="step-5-clean-up">Step 5 — Clean Up</h3>
+<p><strong>✅ Free Tier — but stop/deallocate or delete VMs you're done with to conserve your free-tier hours</strong></p>
+<ol>
+<li>Select both VMs in <strong>Virtual machines</strong>.</li>
+<li>Click <strong>Stop</strong> to deallocate them (keeps the disks for later, stops compute billing) — or <strong>Delete</strong> if you're fully done with these demos and don't need them anymore.</li>
+<li>If you delete the VMs, also check <strong>Disks</strong>, <strong>Network interfaces</strong>, and <strong>Public IP addresses</strong> in <code>rg-day11-demo</code> for any orphaned resources left behind, and delete those too.</li>
+<li>ASGs themselves cost nothing to leave behind, but if you deleted the VMs, the now-empty <code>asg-web</code> and <code>asg-db</code> aren't doing anything useful — delete them too if you're tidying up, or keep them for a future demo.</li>
+<li>If you're fully done with today's lab, you can delete the whole <code>rg-day11-demo</code> resource group in one step to remove everything at once — VNets, VMs, storage account, NSGs, and ASGs included.</li>
+</ol>
+<hr />
+<h2 id="summary">Summary</h2>
+<p>Let's bring it all together. Here's what you covered today:</p>
+<p><strong>VNet Peering</strong> connects two separate VNets on Azure's private backbone — no internet, no gateway, low latency. You built <code>vnet-day11</code> (<code>10.0.0.0/16</code>) and <code>vnet-day11-dev</code> (<code>10.1.0.0/16</code>) and peered them in a single operation that configured both directions automatically. Remember: peering is non-transitive, and address spaces must not overlap — exactly the CIDR planning discipline from Day 9.</p>
+<p><strong>Service Endpoints</strong> and <strong>Private Endpoints</strong> are the two ways to securely reach Azure services from inside your VNet. Service Endpoints keep traffic on the Azure backbone and let you restrict a service's firewall to specific subnets — free, and you used one to lock a storage account down to <code>subnet-data</code>. Private Endpoints go further, giving the service its own private IP inside your VNet via a small additional charge — letting you disable public access entirely.</p>
+<p><strong>Azure Bastion</strong> removes the need for public IPs and open SSH/RDP ports on your VMs altogether. Browser-based access over HTTPS, through a managed Bastion host in a dedicated <code>AzureBastionSubnet</code>. More secure, compliant, and no extra software needed.</p>
+<p><strong>Route Tables and User-Defined Routes (UDR)</strong> let you override Azure's invisible default routing — you built <code>rt-subnet-data</code> with a <code>0.0.0.0/0</code> route pointing at a virtual appliance, associated it with <code>subnet-data</code>, and saw that UDR only changes the <em>path</em> traffic takes, not whether anything is configured to handle it at the other end.</p>
+<p>Finally, you used <strong>Application Security Groups</strong> to tag today's VMs by role (<code>asg-web</code>, <code>asg-db</code>) and rewrote an NSG rule to target the group instead of <code>Any</code> or a raw IP — a safer, more maintainable way to write firewall rules that survives VMs being added, removed, or rebuilt.</p>
+<h3 id="whats-next">What's Next</h3>
+<p>You now have a complete picture of core Azure networking: addressing fundamentals (Day 9), building a VNet with subnets and NSGs (Day 10), and connecting that VNet to other networks and services securely while controlling routing and tagging VMs by role (today). Coming up next in this course: <strong>Load Balancer, VM Scale Sets &amp; Application Gateway</strong> — taking the VNets and subnets you've built and distributing traffic across multiple VMs automatically, both at the network layer and the HTTP layer. <strong>Azure DNS</strong> (Public and Private Zones) gets its own dedicated day a little further on.</p>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<ul>
+<li><strong>VNet Peering</strong> is private, low-latency connectivity between VNets — non-transitive and requires non-overlapping address spaces; free within the same region</li>
+<li>Creating a peering from one VNet automatically creates the matching peering on the other side</li>
+<li><strong>Service Endpoints</strong> keep traffic on the Azure backbone and let you restrict a PaaS resource's firewall to specific subnets — free</li>
+<li><strong>Private Endpoints</strong> give an Azure service a private IP inside your VNet and integrate with Private DNS Zones so the public hostname resolves privately — small ongoing cost, most secure option</li>
+<li><strong>Azure Bastion</strong> requires a subnet named <code>AzureBastionSubnet</code> with at least <code>/26</code> (64 addresses, per the CIDR table from Day 9) — once deployed, VMs no longer need public IPs or open SSH/RDP ports</li>
+<li>Since March 31, 2026, new VNet subnets default to <strong>private (no default outbound access)</strong> — removing a VM's public IP now removes its outbound internet path too, not just inbound exposure. If a VM still needs to reach the internet, attach a <strong>NAT Gateway</strong> (Day 10) instead of relying on a public IP</li>
+<li>Always delete Private Endpoints and Bastion (plus its public IP) when done with a demo — both charge on an ongoing basis</li>
+<li>Every subnet has invisible <strong>system routes</strong> by default (local VNet, peering, internet) — a <strong>Route Table</strong> with <strong>User-Defined Routes (UDR)</strong> lets you override them, e.g. forcing all egress through a firewall/NVA via a <code>0.0.0.0/0</code> route with next hop type "Virtual appliance"</li>
+<li>A UDR only changes the path traffic takes — it's on you to make sure something is actually configured to handle traffic at the next hop</li>
+<li><strong>Application Security Groups (ASGs)</strong> group VMs by role so NSG rules can target "all web VMs" or "all database VMs" instead of a specific IP or subnet — rules keep working as VMs are added, removed, or rebuilt</li>
+<li>An ASG does nothing by itself — it's only a label an NSG rule can reference as a source or destination; all ASGs referenced in one rule must be in the same VNet</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../day10_virtual_network/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Day 10 — Azure Virtual Network: Address Spaces, Subnets &amp; NSGs">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../day12_load_balancer_vmss/" class="md-footer__link md-footer__link--next" aria-label="Next: Day 12 — Load Balancer, VM Scale Sets &amp; Application Gateway">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

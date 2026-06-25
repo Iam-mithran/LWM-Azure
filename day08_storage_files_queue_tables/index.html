@@ -1,0 +1,2646 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A complete beginner's guide to Azure Cloud and Azure DevOps — 29 days, zero assumed cloud knowledge.">
+      
+      
+      
+        <link rel="canonical" href="https://iam-mithran.github.io/LWM-Azure/day08_storage_files_queue_tables/">
+      
+      
+        <link rel="prev" href="../day07_storage_account/">
+      
+      
+        <link rel="next" href="../day09_intro_to_networking/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer - LearnWithMithran — Azure Complete Beginner's Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#day-8-azure-storage-files-queues-tables-storage-explorer" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-header__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LearnWithMithran — Azure Complete Beginner's Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-nav__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LearnWithMithran — Azure Complete Beginner's Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day01_account_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day02_fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day03_vms_part1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day04_web_hosting_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day05_vms_part3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day06_app_service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day07_storage_account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-azure-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Azure Files
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Azure Files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-azure-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Azure Files?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-share-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Share Tiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-an-azure-file-share" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create an Azure File Share
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-share-snapshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Share Snapshots
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#soft-delete-for-file-shares" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Soft Delete for File Shares
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-queue-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Queue Storage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Queue Storage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-queue-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Queue Storage?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-queue-and-send-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a Queue and Send Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-python-sdk-send-and-peek-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Python SDK: Send and Peek Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-table-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Table Storage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Table Storage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-table-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Table Storage?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-table-and-add-entities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a Table and Add Entities
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-azure-file-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Azure File Sync
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Azure File Sync">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-azure-file-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Azure File Sync?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloud-tiering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cloud Tiering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Concepts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-configure-azure-file-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Configure Azure File Sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-storage-security-firewall-azcopy-immutable-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — Storage Security: Firewall, AzCopy &amp; Immutable Storage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — Storage Security: Firewall, AzCopy &amp; Immutable Storage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#storage-firewall-and-network-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Storage Firewall and Network Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#azcopy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AzCopy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#immutable-storage-worm-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Immutable Storage (WORM Policies)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-azure-storage-explorer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6 — Azure Storage Explorer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6 — Azure Storage Explorer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-storage-explorer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Storage Explorer?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-connect-storage-explorer-to-your-azure-account" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Connect Storage Explorer to Your Azure Account
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleaning-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning Up
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-and-whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary and What's Next
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day09_intro_to_networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day10_virtual_network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day11_vnet_advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day12_load_balancer_vmss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-azure-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Azure Files
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Azure Files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-azure-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Azure Files?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-share-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Share Tiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-an-azure-file-share" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create an Azure File Share
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-share-snapshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File Share Snapshots
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#soft-delete-for-file-shares" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Soft Delete for File Shares
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-queue-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Queue Storage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Queue Storage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-queue-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Queue Storage?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-queue-and-send-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a Queue and Send Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-python-sdk-send-and-peek-messages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Python SDK: Send and Peek Messages
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-table-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Table Storage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Table Storage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-table-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Table Storage?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-table-and-add-entities" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a Table and Add Entities
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-azure-file-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Azure File Sync
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Azure File Sync">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-azure-file-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Azure File Sync?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#cloud-tiering" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cloud Tiering
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Concepts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-configure-azure-file-sync" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Configure Azure File Sync
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-storage-security-firewall-azcopy-immutable-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — Storage Security: Firewall, AzCopy &amp; Immutable Storage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — Storage Security: Firewall, AzCopy &amp; Immutable Storage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#storage-firewall-and-network-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Storage Firewall and Network Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#azcopy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        AzCopy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#immutable-storage-worm-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Immutable Storage (WORM Policies)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-azure-storage-explorer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6 — Azure Storage Explorer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6 — Azure Storage Explorer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-storage-explorer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Storage Explorer?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-connect-storage-explorer-to-your-azure-account" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Connect Storage Explorer to Your Azure Account
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleaning-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning Up
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-and-whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary and What's Next
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="day-8-azure-storage-files-queues-tables-storage-explorer">Day 8 — Azure Storage: Files, Queues, Tables &amp; Storage Explorer</h1>
+<p><strong>Phase 3 — Storage, Databases &amp; Global Delivery</strong></p>
+<blockquote>
+<p>Last session you built a complete picture of Blob Storage — uploading files, controlling access with SAS tokens, managing cost with tiers and lifecycle policies, hosting a static website, and protecting your data with versioning. Today we finish the storage picture. Azure Files gives you a cloud file share that mounts like a network drive. Queue Storage lets your application components talk to each other without depending on each other's uptime. Table Storage is the simplest NoSQL option in Azure. And Storage Explorer gives you a desktop tool to manage all of it without opening the portal.</p>
+</blockquote>
+<hr />
+<h2 id="what-youll-learn">What You'll Learn</h2>
+<ul>
+<li>Azure Files — fully managed cloud file shares via SMB and NFS, file share tiers, snapshots, and soft delete</li>
+<li>How to mount an Azure File Share on a Windows or Linux machine</li>
+<li>Azure File Sync — syncing on-premises Windows file servers with Azure Files using cloud tiering</li>
+<li>Queue Storage — how messages work and why decoupling your services matters</li>
+<li>How producers send messages and consumers process them independently</li>
+<li>Table Storage — schemaless NoSQL key-value storage and when to use it</li>
+<li>PartitionKey and RowKey — the unique identity of every table entity</li>
+<li>Storage Firewall — restricting storage account access to specific networks</li>
+<li>AzCopy — the command-line tool for bulk data migration (an AZ-104 exam staple)</li>
+<li>Immutable Storage — WORM policies for compliance and regulatory requirements</li>
+<li>Azure Storage Explorer — the free desktop tool for managing all storage services</li>
+</ul>
+<hr />
+<h2 id="before-we-begin">Before We Begin</h2>
+<p>All demos today are <strong>✅ Free Tier</strong>. Azure Files, Queue Storage, and Table Storage are pay-per-use at fractions of a cent — the volumes we use for demos are effectively free.</p>
+<hr />
+<h2 id="part-1-azure-files">Part 1 — Azure Files</h2>
+<h3 id="what-is-azure-files">What Is Azure Files?</h3>
+<p><strong>Azure Files</strong> is a fully managed file share service in the cloud. Unlike Blob Storage — which is object storage where you access files via a URL — Azure Files behaves like a traditional network drive.</p>
+<ul>
+<li>Accessible via <strong>SMB (Server Message Block)</strong> — the same protocol Windows uses for shared drives. Mount it as <code>Z:\</code> on any Windows machine or VM.</li>
+<li>Accessible via <strong>NFS (Network File System)</strong> — for Linux VMs. Mount it like any network filesystem.</li>
+<li>Accessible via <strong>HTTPS/REST</strong> — from any application without mounting.</li>
+</ul>
+<p><strong>Use cases:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Why Azure Files</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lift and shift of on-premise file servers</td>
+<td>Applications continue to access files via the same path — no code changes</td>
+</tr>
+<tr>
+<td>Shared config files across multiple VMs</td>
+<td>Update a config file once; every VM reading from the share sees the change immediately</td>
+</tr>
+<tr>
+<td>Log aggregation</td>
+<td>All VMs in a pool write their logs to a central file share instead of local disks</td>
+</tr>
+<tr>
+<td>Home directory shares</td>
+<td>Each user gets a mounted drive backed by Azure — works across machines</td>
+</tr>
+</tbody>
+</table>
+<pre class="mermaid"><code>graph LR
+    FS["Azure File Share\nmyfiles.file.core.windows.net"]
+    FS --&gt;|"SMB (port 445)"| WIN["Windows VM\nMounted as Z:\\"]
+    FS --&gt;|"NFS"| LIN["Linux VM\nMounted at /mnt/share"]
+    FS --&gt;|"HTTPS REST"| APP["Application\nvia SDK or portal"]</code></pre>
+<p><strong>Azure Files vs Blob Storage:</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Azure Files</th>
+<th>Blob Storage</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Access method</td>
+<td>SMB / NFS / HTTPS</td>
+<td>HTTPS (URL per object)</td>
+</tr>
+<tr>
+<td>Directory structure</td>
+<td>Yes — nested folders</td>
+<td>Flat (virtual paths via <code>/</code> in name)</td>
+</tr>
+<tr>
+<td>Best for</td>
+<td>File shares, lift-and-shift</td>
+<td>Images, backups, static assets, any unstructured data</td>
+</tr>
+<tr>
+<td>Can be mounted as a drive</td>
+<td>✅ Yes</td>
+<td>❌ No</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="file-share-tiers">File Share Tiers</h3>
+<p>Azure Files has four tiers. Choose at creation time — you cannot change the tier later without recreating the share.</p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Storage Type</th>
+<th>Best For</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Transaction Optimized</strong></td>
+<td>Standard HDD</td>
+<td>General-purpose file shares — the default choice for most workloads</td>
+</tr>
+<tr>
+<td><strong>Hot</strong></td>
+<td>Standard HDD</td>
+<td>Actively used file shares with frequent reads and writes</td>
+</tr>
+<tr>
+<td><strong>Cool</strong></td>
+<td>Standard HDD</td>
+<td>Infrequently accessed archives — lower storage cost, higher transaction cost</td>
+</tr>
+<tr>
+<td><strong>Premium</strong></td>
+<td>SSD</td>
+<td>Latency-sensitive workloads, databases, CI/CD build caches — also required for NFS</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>NFS support requires Premium tier. SMB works on all four tiers. If you pick the wrong tier, you must create a new share and copy the data — plan ahead.</p>
+</blockquote>
+<hr />
+<h3 id="demo-create-an-azure-file-share">Demo — Create an Azure File Share</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open File shares</p>
+<p>In your storage account → left menu → <strong>"File shares"</strong> → <strong>"+ File share."</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td><code>my-file-share</code></td>
+</tr>
+<tr>
+<td>Tier</td>
+<td><strong>Transaction optimized</strong> <em>(default — best for general use)</em></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Create."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Upload a file via the portal</p>
+<p>Click on <code>my-file-share</code> → <strong>"Upload."</strong></p>
+<p>Upload any file from your laptop — a document, an image, anything. The file appears inside the share, exactly like a folder on your computer.</p>
+<p>Click <strong>"+ Add directory"</strong> → name it <code>configs</code>. Click into that folder and upload another file. Notice you now have a real directory structure — this is fundamentally different from Blob Storage containers, which are flat.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — View the mount instructions</p>
+<p>Click <strong>"Connect"</strong> at the top of the file share.</p>
+<p>Azure shows you the exact command to mount this share on any machine — already filled in with your account name, share name, and access key.</p>
+<p><strong>Windows (PowerShell):</strong>
+<div class="highlight"><pre><span></span><code><span class="nv">$connectTestResult</span> <span class="p">=</span> <span class="nb">Test-NetConnection</span> <span class="n">-ComputerName</span> <span class="n">lwmstoragedemo</span><span class="p">.</span><span class="n">file</span><span class="p">.</span><span class="n">core</span><span class="p">.</span><span class="n">windows</span><span class="p">.</span><span class="n">net</span> <span class="n">-Port</span> <span class="n">445</span>
+<span class="k">if</span> <span class="p">(</span><span class="nv">$connectTestResult</span><span class="p">.</span><span class="n">TcpTestSucceeded</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">net</span> <span class="n">use</span> <span class="n">Z</span><span class="p">:</span> <span class="p">\\</span><span class="n">lwmstoragedemo</span><span class="p">.</span><span class="n">file</span><span class="p">.</span><span class="n">core</span><span class="p">.</span><span class="n">windows</span><span class="p">.</span><span class="n">net</span><span class="p">\</span><span class="n">my</span><span class="o">-file</span><span class="n">-share</span> <span class="p">/</span><span class="n">user</span><span class="p">:</span><span class="n">Azure</span><span class="p">\</span><span class="n">lwmstoragedemo</span> <span class="p">&lt;</span><span class="n">key</span><span class="p">&gt;</span> <span class="p">/</span><span class="n">persistent</span><span class="p">:</span><span class="n">yes</span>
+<span class="p">}</span>
+</code></pre></div></p>
+<p><strong>Linux (Ubuntu):</strong>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>mount<span class="w"> </span>-t<span class="w"> </span>cifs<span class="w"> </span>//lwmstoragedemo.file.core.windows.net/my-file-share<span class="w"> </span>/mnt/myfileshare<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>-o<span class="w"> </span><span class="nv">username</span><span class="o">=</span>lwmstoragedemo,password<span class="o">=</span>&lt;key&gt;,serverino
+</code></pre></div></p>
+<blockquote>
+<p><strong>Port 445 note:</strong> SMB uses port 445. Some home ISPs and corporate firewalls block outbound port 445. If <code>Test-NetConnection</code> shows <code>TcpTestSucceeded: False</code>, your network is blocking it. Mount from a VM inside Azure instead — port 445 is always open within Azure's network.</p>
+</blockquote>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Browse via Storage Browser</p>
+<p>In the left menu → <strong>"Storage browser"</strong> → expand <strong>File shares</strong> → click <code>my-file-share</code>.</p>
+<p>You can browse the full directory tree, upload/download files, create folders, and delete files — all without mounting.</p>
+</div>
+<hr />
+<h3 id="file-share-snapshots">File Share Snapshots</h3>
+<p>A <strong>snapshot</strong> is a read-only, point-in-time copy of your file share. Azure stores only the delta — the blocks that changed since the previous snapshot — so they are storage-efficient. You can browse a snapshot, restore individual files, or restore the entire share back to that state.</p>
+<p><strong>Use cases:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pre-deployment checkpoint</td>
+<td>Snapshot before a config change — roll back instantly if something breaks</td>
+</tr>
+<tr>
+<td>Accidental deletion recovery</td>
+<td>User deleted an important file — restore it from the last snapshot</td>
+</tr>
+<tr>
+<td>Compliance</td>
+<td>Capture share state at specific intervals for audit trails</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><strong>Demo — Create and Restore a File Share Snapshot</strong></p>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Take a snapshot</p>
+<p>In your storage account → <strong>File shares</strong> → click <code>my-file-share</code> → left menu → <strong>"Snapshots"</strong> → <strong>"Add snapshot."</strong></p>
+<p>Add an optional note: <code>before-demo-change</code> → click <strong>"OK."</strong></p>
+<p>The snapshot appears in the list with an exact timestamp. This represents the state of your entire file share right now.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Simulate a destructive change</p>
+<p>Go back to the file share → delete one of the files you uploaded earlier, or overwrite it with different content.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Browse the snapshot</p>
+<p>Click on the snapshot in the Snapshots list. You can navigate the share <em>exactly as it was</em> at that point in time. Every file, every folder — frozen.</p>
+<p>Find the file you deleted → right-click → <strong>"Restore."</strong> Choose to overwrite the current version or restore it as a new file. The original is back.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Delete the snapshot</p>
+<p>Snapshots are not deleted automatically — you manage their lifecycle. In the Snapshots list → select the snapshot → <strong>"Delete snapshot."</strong></p>
+<blockquote>
+<p>In production: use <strong>Azure Backup</strong> to automate snapshot scheduling and retention policies rather than managing snapshots manually. Azure Backup integrates directly with Azure Files.</p>
+</blockquote>
+</div>
+<hr />
+<h3 id="soft-delete-for-file-shares">Soft Delete for File Shares</h3>
+<p><strong>Soft delete</strong> is a safety net against accidental deletion of an entire file share. When enabled, a deleted share is retained for a configurable grace period (1–365 days) before it is permanently removed. During that window you can restore it completely — all files, folders, and metadata intact.</p>
+<hr />
+<p><strong>Demo — Enable Soft Delete and Recover a Deleted Share</strong></p>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Enable soft delete</p>
+<p>In your storage account → left menu → <strong>"Data protection"</strong> → under the "Recovery" section → toggle <strong>"Enable soft delete for file shares"</strong> → set retention to <strong>7 days</strong> → click <strong>"Save."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Delete the file share</p>
+<p>Go to <strong>File shares</strong> → select <code>my-file-share</code> → click <strong>"Delete."</strong> Confirm. The share disappears from the active list.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Recover the deleted share</p>
+<p>Still in <strong>File shares</strong> → click <strong>"Show deleted shares"</strong> (toggle at the top of the list).</p>
+<p>Your share reappears with a "Deleted" badge and its expiry date. Click it → <strong>"Undelete."</strong> The share is fully restored — every file is exactly as it was.</p>
+<blockquote>
+<p>Soft delete applies at the share level, not the file level. If you need per-file recovery, use snapshots or Azure Backup.</p>
+</blockquote>
+</div>
+<hr />
+<h2 id="part-2-queue-storage">Part 2 — Queue Storage</h2>
+<h3 id="what-is-queue-storage">What Is Queue Storage?</h3>
+<p><strong>Queue Storage</strong> is a message queue — a service that holds messages that one part of your application sends and another part reads when it's ready.</p>
+<p><strong>Why queues?</strong> Without a queue, if Component A calls Component B directly and B is slow or temporarily offline, A fails. With a queue, A puts a message in and moves on immediately. B picks up the message when it's ready. The two components are <strong>decoupled</strong> — neither depends on the other being available at the same instant.</p>
+<pre class="mermaid"><code>graph LR
+    PROD["Web App\n(Producer)\nUser places order"] --&gt;|"Add message"| Q["Queue\norder-queue\n---\nOrder #1001\nOrder #1002\nOrder #1003"]
+    Q --&gt;|"Read + Delete"| CONS["Order Processor\n(Consumer)\nProcesses when ready"]</code></pre>
+<p><strong>Real-world example:</strong> A user uploads a video. The web app puts a message in a queue: <em>"Process video: user123/upload.mp4."</em> The video processing service reads from the queue when it has capacity, transcodes the video, and deletes the message. The web app didn't wait — it already told the user "your video is being processed." Even if the processor crashes halfway through, the message reappears in the queue after a timeout for another instance to retry.</p>
+<p><strong>Key properties:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Max message size</td>
+<td>64 KB</td>
+</tr>
+<tr>
+<td>Max queue size</td>
+<td>500 TB</td>
+</tr>
+<tr>
+<td>Max message TTL</td>
+<td>7 days (configurable)</td>
+</tr>
+<tr>
+<td>Visibility timeout</td>
+<td>Configurable — while one consumer processes a message, others can't see it</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Visibility timeout explained:</strong> When a consumer reads a message, the message becomes invisible to all other consumers for the visibility timeout period (e.g., 30 seconds). If the consumer successfully processes it, it deletes the message. If it crashes, the message reappears after the timeout for another consumer to retry. This prevents double-processing without requiring complex coordination.</p>
+<hr />
+<h3 id="demo-create-a-queue-and-send-messages">Demo — Create a Queue and Send Messages</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open Queues</p>
+<p>In your storage account → left menu → <strong>"Queues"</strong> → <strong>"+ Queue."</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Queue name</td>
+<td><code>order-queue</code> <em>(lowercase, hyphens allowed)</em></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"OK."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Add a message</p>
+<p>Click on <code>order-queue</code> → <strong>"Add message."</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Message text</td>
+<td><code>{"orderId": "1001", "product": "Azure Course", "qty": 1}</code></td>
+</tr>
+<tr>
+<td>Expires in</td>
+<td><strong>7 days</strong></td>
+</tr>
+<tr>
+<td>Encode the message body in Base64</td>
+<td>Leave unchecked</td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"OK."</strong> The message appears in the queue with its insertion time and expiry.</p>
+<p>Add two more messages:
+- <code>{"orderId": "1002", "product": "DevOps Course", "qty": 2}</code>
+- <code>{"orderId": "1003", "product": "Linux Course", "qty": 1}</code></p>
+<p>You now have three messages queued up, simulating three customer orders waiting to be processed.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Peek at the message</p>
+<p>Click <strong>"Peek"</strong> at the top. You can see the message content — this is what a consumer would read. Peeking does <strong>not</strong> remove the message from the queue and does <strong>not</strong> trigger the visibility timeout. It's a read-only preview.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Dequeue the message</p>
+<p>Click <strong>"Dequeue."</strong> The first message (order 1001) is removed. This simulates a consumer successfully processing it and deleting it from the queue. The remaining two messages are still queued.</p>
+<blockquote>
+<p>In a real application: the consumer reads the message via SDK → processes the order → calls <code>DeleteMessage()</code> to remove it. If the consumer crashes before calling delete, the message reappears after the visibility timeout. Queue Storage provides at-least-once delivery — design your consumers to be idempotent (safe to process the same message twice).</p>
+</blockquote>
+</div>
+<hr />
+<h3 id="demo-python-sdk-send-and-peek-messages">Demo — Python SDK: Send and Peek Messages</h3>
+<p><strong>✅ Free Tier</strong></p>
+<p>The portal demo showed you the concepts. Now let's do what a real application does — use the Azure SDK for Python to send messages programmatically and peek at the queue.</p>
+<p><strong>What you need:</strong>
+- Python 3.8+ installed on your machine
+- The <code>azure-storage-queue</code> package
+- Your storage account connection string</p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Get your connection string</p>
+<p>In the Azure Portal → your storage account → left menu → <strong>"Security + networking"</strong> → <strong>"Access keys."</strong></p>
+<p>Click <strong>"Show"</strong> next to <strong>key1</strong> → copy the full <strong>Connection string</strong> value. It looks like:</p>
+<div class="highlight"><pre><span></span><code>DefaultEndpointsProtocol=https;AccountName=lwmstoragedemo;AccountKey=...;EndpointSuffix=core.windows.net
+</code></pre></div>
+<blockquote>
+<p>Never commit this string to GitHub. In production you'd use a managed identity or Key Vault. For this demo, we'll paste it directly so you can see the SDK in action.</p>
+</blockquote>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Install the SDK</p>
+<p>Open a terminal and run:</p>
+<div class="highlight"><pre><span></span><code>pip<span class="w"> </span>install<span class="w"> </span>azure-storage-queue
+</code></pre></div>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Send messages with Python</p>
+<p>Create a file called <code>send_messages.py</code> and paste this code:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">azure.storage.queue</span><span class="w"> </span><span class="kn">import</span> <span class="n">QueueClient</span>
+
+<span class="n">CONNECTION_STRING</span> <span class="o">=</span> <span class="s2">&quot;YOUR_CONNECTION_STRING_HERE&quot;</span>
+<span class="n">QUEUE_NAME</span> <span class="o">=</span> <span class="s2">&quot;order-queue&quot;</span>
+
+<span class="n">queue_client</span> <span class="o">=</span> <span class="n">QueueClient</span><span class="o">.</span><span class="n">from_connection_string</span><span class="p">(</span><span class="n">CONNECTION_STRING</span><span class="p">,</span> <span class="n">QUEUE_NAME</span><span class="p">)</span>
+
+<span class="n">orders</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;{&quot;orderId&quot;: &quot;2001&quot;, &quot;product&quot;: &quot;Azure Course&quot;, &quot;qty&quot;: 1}&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;{&quot;orderId&quot;: &quot;2002&quot;, &quot;product&quot;: &quot;DevOps Course&quot;, &quot;qty&quot;: 2}&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;{&quot;orderId&quot;: &quot;2003&quot;, &quot;product&quot;: &quot;Linux Course&quot;, &quot;qty&quot;: 1}&#39;</span><span class="p">,</span>
+<span class="p">]</span>
+
+<span class="k">for</span> <span class="n">order</span> <span class="ow">in</span> <span class="n">orders</span><span class="p">:</span>
+    <span class="n">queue_client</span><span class="o">.</span><span class="n">send_message</span><span class="p">(</span><span class="n">order</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Sent: </span><span class="si">{</span><span class="n">order</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">All messages sent to the queue.&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>Replace <code>YOUR_CONNECTION_STRING_HERE</code> with the value you copied in Step 1.</p>
+<p>Run it:
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>send_messages.py
+</code></pre></div></p>
+<p>You'll see:
+<div class="highlight"><pre><span></span><code>Sent: {&quot;orderId&quot;: &quot;2001&quot;, &quot;product&quot;: &quot;Azure Course&quot;, &quot;qty&quot;: 1}
+Sent: {&quot;orderId&quot;: &quot;2002&quot;, &quot;product&quot;: &quot;DevOps Course&quot;, &quot;qty&quot;: 2}
+Sent: {&quot;orderId&quot;: &quot;2003&quot;, &quot;product&quot;: &quot;Linux Course&quot;, &quot;qty&quot;: 1}
+
+All messages sent to the queue.
+</code></pre></div></p>
+<p>Go back to the portal → your <code>order-queue</code> → you'll see the new messages sitting there, inserted by your Python code.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Peek messages with Python</p>
+<p>Create a second file called <code>peek_messages.py</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="kn">from</span><span class="w"> </span><span class="nn">azure.storage.queue</span><span class="w"> </span><span class="kn">import</span> <span class="n">QueueClient</span>
+
+<span class="n">CONNECTION_STRING</span> <span class="o">=</span> <span class="s2">&quot;YOUR_CONNECTION_STRING_HERE&quot;</span>
+<span class="n">QUEUE_NAME</span> <span class="o">=</span> <span class="s2">&quot;order-queue&quot;</span>
+
+<span class="n">queue_client</span> <span class="o">=</span> <span class="n">QueueClient</span><span class="o">.</span><span class="n">from_connection_string</span><span class="p">(</span><span class="n">CONNECTION_STRING</span><span class="p">,</span> <span class="n">QUEUE_NAME</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Peeking at messages in the queue (no messages removed):</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">messages</span> <span class="o">=</span> <span class="n">queue_client</span><span class="o">.</span><span class="n">peek_messages</span><span class="p">(</span><span class="n">max_messages</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">message</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">messages</span><span class="p">,</span> <span class="n">start</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Message </span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">message</span><span class="o">.</span><span class="n">content</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Done peeking. Queue is unchanged.&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>Run it:
+<div class="highlight"><pre><span></span><code>python<span class="w"> </span>peek_messages.py
+</code></pre></div></p>
+<p>You'll see all the queued messages printed out — but nothing is removed. Refresh the portal queue view to confirm the message count hasn't changed.</p>
+<p><strong>This is the key difference:</strong>
+- <code>peek_messages()</code> — read-only preview, no side effects
+- <code>receive_messages()</code> — makes the message invisible to other consumers for a visibility timeout period; you must call <code>delete_message()</code> after processing or it reappears</p>
+<p>For this demo, peeking is enough to prove the producer/consumer pattern end-to-end.</p>
+</div>
+<hr />
+<h2 id="part-3-table-storage">Part 3 — Table Storage</h2>
+<h3 id="what-is-table-storage">What Is Table Storage?</h3>
+<p><strong>Table Storage</strong> is Azure's simple, schemaless NoSQL key-value store. Think of it as a massive structured table in the cloud — rows of data where each row has a unique identifier, and different rows can have completely different columns.</p>
+<p><strong>Structure:</strong></p>
+<pre class="mermaid"><code>graph TD
+    T["Table: courseprogress"]
+    T --&gt; E1["Entity\nPartitionKey: student-001\nRowKey: day-07\ncompleted: true\nscore: 92"]
+    T --&gt; E2["Entity\nPartitionKey: student-001\nRowKey: day-08\ncompleted: false"]
+    T --&gt; E3["Entity\nPartitionKey: student-002\nRowKey: day-07\ncompleted: true\nscore: 78\nnotes: great video"]</code></pre>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Table</strong></td>
+<td>The top-level container — like a database table</td>
+</tr>
+<tr>
+<td><strong>Entity</strong></td>
+<td>A single row of data</td>
+</tr>
+<tr>
+<td><strong>Property</strong></td>
+<td>A field on an entity — each entity can have different properties (schemaless)</td>
+</tr>
+<tr>
+<td><strong>PartitionKey</strong></td>
+<td>Groups related entities together for efficient querying</td>
+</tr>
+<tr>
+<td><strong>RowKey</strong></td>
+<td>Unique identifier within a partition</td>
+</tr>
+<tr>
+<td><strong>PartitionKey + RowKey</strong></td>
+<td>The composite primary key — must be unique per entity</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Partitioning:</strong> Azure physically stores all entities with the same PartitionKey on the same storage node. Queries that filter by PartitionKey are extremely fast. Queries that span multiple partitions are slower. Design your PartitionKey around your most common query pattern.</p>
+<p><strong>When to use Table Storage:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Good fit</th>
+<th>Poor fit</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Simple lookup data: user settings, session state, feature flags</td>
+<td>Complex queries with joins or aggregations → use Azure SQL</td>
+</tr>
+<tr>
+<td>Time-series data: sensor readings, event logs keyed by device + timestamp</td>
+<td>Large-scale analytics → use Azure Data Explorer or Synapse</td>
+</tr>
+<tr>
+<td>Cheap, fast NoSQL when Cosmos DB is overkill</td>
+<td>More than 20 GB per partition (performance degrades)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Table Storage vs Cosmos DB:</strong> Cosmos DB is the enterprise NoSQL option — global replication, multiple APIs, guaranteed SLAs, single-digit millisecond reads. Table Storage is simpler and much cheaper. If you need global scale and high availability guarantees, use Cosmos DB. For straightforward key-value lookups with modest scale, Table Storage is the right call.</p>
+<hr />
+<h3 id="demo-create-a-table-and-add-entities">Demo — Create a Table and Add Entities</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open Tables</p>
+<p>In your storage account → left menu → <strong>"Tables"</strong> → <strong>"+ Table."</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Table name</td>
+<td><code>courseprogress</code></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"OK."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Open Storage Browser to add data</p>
+<p>In the left menu → <strong>"Storage browser"</strong> → expand <strong>Tables</strong> → click <code>courseprogress</code> → <strong>"Add entity."</strong></p>
+<p>Add the first entity:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PartitionKey</td>
+<td>String</td>
+<td><code>student-001</code></td>
+</tr>
+<tr>
+<td>RowKey</td>
+<td>String</td>
+<td><code>day-07</code></td>
+</tr>
+<tr>
+<td>Add property: <code>completed</code></td>
+<td>Boolean</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td>Add property: <code>score</code></td>
+<td>Int32</td>
+<td><code>92</code></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Insert."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Add a second entity</p>
+<p>Click <strong>"Add entity"</strong> again:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PartitionKey</td>
+<td>String</td>
+<td><code>student-001</code></td>
+</tr>
+<tr>
+<td>RowKey</td>
+<td>String</td>
+<td><code>day-08</code></td>
+</tr>
+<tr>
+<td>Add property: <code>completed</code></td>
+<td>Boolean</td>
+<td><code>false</code></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Insert."</strong></p>
+<p>Notice the second entity has no <code>score</code> property — Table Storage is schemaless. Each entity can have a completely different set of properties. You don't define columns upfront.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Add a third entity for a different student</p>
+<p>Click <strong>"Add entity"</strong> again:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Type</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PartitionKey</td>
+<td>String</td>
+<td><code>student-002</code></td>
+</tr>
+<tr>
+<td>RowKey</td>
+<td>String</td>
+<td><code>day-07</code></td>
+</tr>
+<tr>
+<td>Add property: <code>completed</code></td>
+<td>Boolean</td>
+<td><code>true</code></td>
+</tr>
+<tr>
+<td>Add property: <code>score</code></td>
+<td>Int32</td>
+<td><code>78</code></td>
+</tr>
+<tr>
+<td>Add property: <code>notes</code></td>
+<td>String</td>
+<td><code>great video</code></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Insert."</strong></p>
+<p>You now have two partitions (<code>student-001</code> and <code>student-002</code>). All entities within the same partition are stored together for fast retrieval. A query like "get all progress for student-001" hits only one partition and is extremely efficient.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 5 — Query the table</p>
+<p>In the Storage Browser table view, click <strong>"Edit query"</strong> or use the filter bar.</p>
+<p>Filter by: <code>PartitionKey eq 'student-001'</code></p>
+<p>Only the two <code>student-001</code> entities are returned. This is the most efficient query pattern — always filter by PartitionKey first.</p>
+</div>
+<hr />
+<h2 id="part-4-azure-file-sync">Part 4 — Azure File Sync</h2>
+<h3 id="what-is-azure-file-sync">What Is Azure File Sync?</h3>
+<p><strong>Azure File Sync</strong> turns an Azure file share into a centralized hub that your on-premises Windows file servers sync with. Users keep accessing files from the local server — same drive letters, same paths, no behavior change — but the data lives in Azure and is always up to date across every server in the sync group.</p>
+<p><strong>The problem it solves:</strong> You have a Windows file server running on-premises. The disk is full, it's a single point of failure, and buying more hardware is expensive. But you can't simply "move" the file server to Azure because local applications and users expect <code>\\fileserver01\data</code> to just work. Azure File Sync solves this: the local server stays, but the cloud becomes the source of truth.</p>
+<pre class="mermaid"><code>graph LR
+    SHARE["Azure File Share\n(Source of Truth)"]
+    SYNC["Azure File Sync\nService (Cloud)"]
+    AGENT["Sync Agent\nInstalled on Server"]
+    SERVER["Windows File Server\nOn-Premises\nUsers see \\\\fileserver01\\data"]
+
+    SHARE &lt;--&gt;|"Sync"| SYNC
+    SYNC &lt;--&gt;|"Sync"| AGENT
+    AGENT &lt;--&gt;|"Local access"| SERVER</code></pre>
+<hr />
+<h3 id="cloud-tiering">Cloud Tiering</h3>
+<p><strong>Cloud tiering</strong> is the killer feature of Azure File Sync. When enabled, files that have not been accessed recently are automatically replaced on the local server with a tiny placeholder (a reparse point). When a user opens a tiered file, Azure File Sync downloads it transparently in the background — the user sees a brief delay but otherwise experiences no difference.</p>
+<p>The local server's disk stays lean. The full dataset lives in Azure. You control how much free space to maintain on the local volume.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Cloud Tiering Off</th>
+<th>Cloud Tiering On</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Local disk usage</td>
+<td>Full dataset — disk must be large enough</td>
+<td>Only hot files — cold files tiered to Azure</td>
+</tr>
+<tr>
+<td>Access speed</td>
+<td>Instant for all files</td>
+<td>Instant for hot files; brief delay on first access after tiering</td>
+</tr>
+<tr>
+<td>Disk capacity required</td>
+<td>100% of dataset</td>
+<td>Configurable — e.g., keep 20% of disk free, tier the rest</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="key-concepts">Key Concepts</h3>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>What It Is</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Storage Sync Service</strong></td>
+<td>Top-level Azure resource — one per organization or region</td>
+</tr>
+<tr>
+<td><strong>Sync Group</strong></td>
+<td>Defines which endpoints sync together: one Azure file share + one or more server endpoints</td>
+</tr>
+<tr>
+<td><strong>Cloud Endpoint</strong></td>
+<td>The Azure file share in the sync group</td>
+</tr>
+<tr>
+<td><strong>Server Endpoint</strong></td>
+<td>A folder path on a registered Windows Server</td>
+</tr>
+<tr>
+<td><strong>Registered Server</strong></td>
+<td>A Windows Server with the sync agent installed and authenticated to the Storage Sync Service</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Supported OS:</strong> Windows Server 2019, 2022, and 2025. Multiple servers can sync to the same Azure share — changes on one server propagate to all others automatically.</p>
+<hr />
+<h3 id="demo-configure-azure-file-sync">Demo — Configure Azure File Sync</h3>
+<blockquote>
+<p>Creating a Storage Sync Service and registering a server requires a Windows Server VM, which is a paid resource. The steps below walk through the full setup so you understand the flow — watch the instructor demo and follow along on your own when you have a Windows Server available.</p>
+</blockquote>
+<p><strong>💳 Paid (Instructor Demo)</strong></p>
+<div class="admonition warning">
+<p class="admonition-title">Step 1 — Create a Storage Sync Service</p>
+<p>In the Azure portal → search <strong>"Azure File Sync"</strong> → <strong>"+ Create."</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resource group</td>
+<td><code>storage-demo-rg</code></td>
+</tr>
+<tr>
+<td>Storage sync service name</td>
+<td><code>lwm-file-sync</code></td>
+</tr>
+<tr>
+<td>Region</td>
+<td>Same region as your storage account</td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Review + create"</strong> → <strong>"Create."</strong></p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Step 2 — Create a Sync Group</p>
+<p>Open the Storage Sync Service → <strong>"Sync groups"</strong> → <strong>"+ Sync group."</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sync group name</td>
+<td><code>production-docs-sync</code></td>
+</tr>
+<tr>
+<td>Storage account</td>
+<td><code>lwmstoragedemo</code></td>
+</tr>
+<tr>
+<td>Azure File Share</td>
+<td><code>my-file-share</code></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Create."</strong> This establishes the Azure file share as the cloud endpoint — the single source of truth for this sync group.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Step 3 — Install the sync agent on Windows Server</p>
+<p>On your Windows Server VM → download the <strong>Azure File Sync agent</strong> from the Microsoft Download Center → run the installer.</p>
+<p>After installation, the agent configuration wizard opens. Sign in with your Azure credentials and register the server with <code>lwm-file-sync</code>. The server now appears under <strong>"Registered servers"</strong> in the portal.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Step 4 — Add a Server Endpoint</p>
+<p>In the <code>production-docs-sync</code> sync group → <strong>"Add server endpoint."</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Registered server</td>
+<td>Your Windows Server</td>
+</tr>
+<tr>
+<td>Path</td>
+<td><code>D:\FileShareData</code></td>
+</tr>
+<tr>
+<td>Cloud tiering</td>
+<td><strong>Enabled</strong></td>
+</tr>
+<tr>
+<td>Volume free space</td>
+<td><strong>20%</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Create."</strong> Initial sync begins — Azure pulls all files from the file share to the server endpoint (or vice versa). After sync, every file in the Azure share appears on the local server at <code>D:\FileShareData</code>.</p>
+<blockquote>
+<p>With cloud tiering on, files not accessed recently will automatically be tiered to Azure, keeping the local disk at 80% capacity or lower. The server endpoint shows sync health, tiering status, and last sync time in the portal.</p>
+</blockquote>
+</div>
+<hr />
+<h2 id="part-5-storage-security-firewall-azcopy-immutable-storage">Part 5 — Storage Security: Firewall, AzCopy &amp; Immutable Storage</h2>
+<h3 id="storage-firewall-and-network-rules">Storage Firewall and Network Rules</h3>
+<p>By default, a storage account accepts requests from anywhere on the internet — any IP, any network. The <strong>Storage Firewall</strong> lets you lock that down to specific virtual networks, subnets, or IP ranges. Everything else gets a 403 Forbidden.</p>
+<p><strong>How it works:</strong> Storage account → <strong>Networking</strong> tab → change "Enabled from all networks" to <strong>"Enabled from selected virtual networks and IP addresses."</strong> You then add the specific VNets, subnets, or IP ranges that are allowed.</p>
+<p><strong>Use cases:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Configuration</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Only Azure VMs in a specific subnet should access storage</td>
+<td>Add the VNet + subnet as an allowed network rule</td>
+</tr>
+<tr>
+<td>Only your office should be able to manage blobs</td>
+<td>Add your office's public IP range</td>
+</tr>
+<tr>
+<td>No public internet access at all</td>
+<td>Use a Private Endpoint instead (covered in the Networking phase)</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Exception: Trusted Microsoft services</strong> — Azure services like Azure Backup, Azure Monitor, and Azure Data Factory have a "trusted services" bypass that lets them access firewalled storage accounts without being on the allowed list. Enable this under the Exceptions section.</p>
+<blockquote>
+<p><strong>Note:</strong> We'll run this as a hands-on portal demo in the Networking phase once you have VNets configured. For now, understand the concept and where to find it — the <strong>Networking</strong> tab of any storage account. This is a frequent AZ-104 exam topic.</p>
+</blockquote>
+<hr />
+<h3 id="azcopy">AzCopy</h3>
+<p><strong>AzCopy</strong> is Microsoft's command-line tool built specifically for moving data to and from Azure Storage. It uses concurrent connections and supports resuming interrupted transfers — far faster than dragging files through the portal or Storage Explorer for large datasets.</p>
+<p><strong>Why it matters for certification:</strong> AZ-104 exam scenarios frequently involve data migration. "You need to copy 2 TB from an on-premises server to Azure Blob Storage efficiently" — the answer is AzCopy. Memorize the key commands and authentication methods.</p>
+<p><strong>Common operations:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Command</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Upload a local folder to blob</td>
+<td><code>azcopy copy "C:\data\*" "https://account.blob.core.windows.net/container?&lt;SAS&gt;" --recursive</code></td>
+</tr>
+<tr>
+<td>Copy between two storage accounts</td>
+<td><code>azcopy copy "https://source.blob.core.windows.net/container?&lt;SAS&gt;" "https://dest.blob.core.windows.net/container?&lt;SAS&gt;" --recursive</code></td>
+</tr>
+<tr>
+<td>Sync (copy only changed files)</td>
+<td><code>azcopy sync "C:\data" "https://account.blob.core.windows.net/container?&lt;SAS&gt;" --recursive</code></td>
+</tr>
+<tr>
+<td>Check job progress</td>
+<td><code>azcopy jobs list</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Authentication options:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SAS token</td>
+<td>Simplest — append <code>?&lt;SAS&gt;</code> to the URL</td>
+</tr>
+<tr>
+<td>Azure AD (Entra ID)</td>
+<td><code>azcopy login</code> — uses your Azure credentials; supports RBAC</td>
+</tr>
+<tr>
+<td>Managed Identity</td>
+<td>For VMs or services running in Azure — no credentials to manage</td>
+</tr>
+</tbody>
+</table>
+<p><strong>AzCopy is pre-installed in Azure Cloud Shell</strong> — open the portal, click the Cloud Shell icon, and you have AzCopy ready without any setup.</p>
+<hr />
+<h3 id="immutable-storage-worm-policies">Immutable Storage (WORM Policies)</h3>
+<p><strong>Immutable blob storage</strong> enforces a write-once, read-many (WORM) policy. Once a blob is written under an active immutability policy, it cannot be modified or deleted — not by regular users, not by admins, not even by the storage account owner — until the retention period expires.</p>
+<p><strong>Why this matters:</strong> Financial services (SEC Rule 17a-4), healthcare (HIPAA), and legal compliance requirements mandate that certain records be preserved in an unmodified state for a defined period. Azure's immutable storage is SEC 17a-4(f) compliant.</p>
+<p><strong>Two policy types:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Policy</th>
+<th>How It Works</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Time-based retention</strong></td>
+<td>Blobs cannot be deleted or modified for a set number of days. Timer resets if blob is overwritten.</td>
+<td>Financial records, audit logs — retention period is known</td>
+</tr>
+<tr>
+<td><strong>Legal hold</strong></td>
+<td>Blobs are locked indefinitely until the hold tag is explicitly removed.</td>
+<td>Litigation — retention period is unknown</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Locking a policy:</strong> Time-based policies can be <strong>locked</strong>. Once locked, the retention period cannot be shortened or the policy removed — it can only be extended. Locking is what satisfies regulatory auditors. Before locking, you can modify or delete the policy freely (useful during testing).</p>
+<hr />
+<p><strong>Demo — Enable a Time-Based Retention Policy</strong></p>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open the blob container</p>
+<p>In your storage account → <strong>Containers</strong> → click on <code>my-uploads</code>.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Set an immutability policy</p>
+<p>In the container's left menu → <strong>"Access policy"</strong> → under "Immutable blob storage" → <strong>"+ Add policy."</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Policy type</td>
+<td><strong>Time-based retention</strong></td>
+</tr>
+<tr>
+<td>Retention period</td>
+<td><strong>7 days</strong> <em>(short period for testing)</em></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Save."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Verify the policy blocks deletion</p>
+<p>Try to delete any blob in the container. Azure rejects it: <em>"This operation is not permitted as the blob is immutable due to a policy."</em></p>
+<p>The blob is protected. No one can delete or modify it during the retention window.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Lock the policy (understand the implications)</p>
+<p>In the Access policy panel → click <strong>"Lock."</strong></p>
+<blockquote>
+<p>⚠️ <strong>Warning:</strong> Locking is irreversible — you cannot shorten or remove a locked policy, only extend it. For this demo, you can skip locking. In a production compliance environment, you lock after validating the policy is correct.</p>
+</blockquote>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 5 — Remove the unlocked policy (cleanup)</p>
+<p>Since we did not lock the policy, you can remove it: in the Access policy panel → select the policy → <strong>"Delete."</strong> Blobs are writable again.</p>
+</div>
+<hr />
+<h2 id="part-6-azure-storage-explorer">Part 6 — Azure Storage Explorer</h2>
+<h3 id="what-is-storage-explorer">What Is Storage Explorer?</h3>
+<p><strong>Azure Storage Explorer</strong> is a free desktop application from Microsoft that gives you a visual, file-explorer-style interface for managing all four storage services — Blob, Files, Queue, and Table — across all your subscriptions and storage accounts.</p>
+<p><strong>Why use it over the portal:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th>Portal</th>
+<th>Storage Explorer</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Upload 500 files</td>
+<td>Tedious — one at a time or small batches</td>
+<td>Drag and drop the whole folder</td>
+</tr>
+<tr>
+<td>Copy data between two storage accounts</td>
+<td>Requires CLI</td>
+<td>Right-click → Copy → paste into destination account</td>
+</tr>
+<tr>
+<td>Generate SAS tokens</td>
+<td>Works</td>
+<td>Works — faster with right-click</td>
+</tr>
+<tr>
+<td>Browse Table entities</td>
+<td>Works</td>
+<td>Works — with better filter UI</td>
+</tr>
+<tr>
+<td>Works offline / without browser</td>
+<td>❌</td>
+<td>✅ (once signed in)</td>
+</tr>
+</tbody>
+</table>
+<p>Available for <strong>Windows, macOS, and Linux</strong> — free to download and use.</p>
+<hr />
+<h3 id="demo-connect-storage-explorer-to-your-azure-account">Demo — Connect Storage Explorer to Your Azure Account</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Download Storage Explorer</p>
+<p>Go to the Azure portal and search for "Storage Explorer" — or download directly from the Microsoft website. Install it on your machine.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Sign in</p>
+<p>Open Storage Explorer → click the <strong>plug icon</strong> (Connect to Azure Resources) in the left sidebar → <strong>"Add an Azure Account"</strong> → sign in with your Azure credentials.</p>
+<p>Your subscriptions load automatically in the left panel.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Browse your storage account</p>
+<p>In the left panel, expand:
+<strong>Storage Accounts</strong> → <code>lwmstoragedemo</code> → <strong>Blob Containers</strong> → <code>my-uploads</code></p>
+<p>Your uploaded blob appears. Drag another file from your desktop directly into the Storage Explorer window — it uploads immediately.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Browse the file share</p>
+<p>Expand <strong>File Shares</strong> → <code>my-file-share</code>. You see the full folder tree. Double-click into the <code>configs</code> folder you created earlier. Drag a file from your laptop into that folder — it uploads directly to the nested directory.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 5 — View the queue</p>
+<p>Expand <strong>Queues</strong> → <code>order-queue</code>. You'll see the remaining messages from the earlier demo. Right-click a message → <strong>"Dequeue message"</strong> to remove it, simulating a consumer processing it.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 6 — Query the table</p>
+<p>Expand <strong>Tables</strong> → <code>courseprogress</code>. All entities are listed. Use the query bar to filter: <code>PartitionKey eq 'student-001'</code> → click <strong>Execute</strong> — only student-001's rows are shown.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 7 — Generate a SAS token from Storage Explorer</p>
+<p>Right-click on your <code>my-uploads</code> blob container → <strong>"Get Shared Access Signature."</strong></p>
+<p>Set an expiry and permissions → <strong>"Create."</strong> Storage Explorer generates the full SAS URL immediately — faster than going through the portal.</p>
+</div>
+<hr />
+<h2 id="cleaning-up">Cleaning Up</h2>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition warning">
+<p class="admonition-title">Delete the resource group</p>
+<p>Go to <strong>Resource groups</strong> → <code>storage-demo-rg</code> → <strong>"Delete resource group"</strong> → type the name to confirm → <strong>"Delete."</strong></p>
+<p>This removes the storage account and everything inside it — the file share, queue, table, and all blobs — in one step.</p>
+</div>
+<hr />
+<h2 id="summary-and-whats-next">Summary and What's Next</h2>
+<p>Today you completed the full Azure Storage Account picture — and the topics that certification exams actually test.</p>
+<p><strong>Azure Files</strong> is the cloud equivalent of a network file server. Mount it as a drive letter via SMB on Windows or NFS on Linux. All machines share the same files. Choose your tier at creation time — Transaction Optimized for general use, Premium for low-latency or NFS workloads. Protect your shares with snapshots (point-in-time recovery) and soft delete (share-level recovery within a grace period).</p>
+<p><strong>Azure File Sync</strong> extends Azure Files to your on-premises Windows Servers. The local server keeps its familiar path; Azure holds the source of truth. Cloud tiering keeps hot files local and tiers cold files to Azure automatically, so your on-premises disk never fills up.</p>
+<p><strong>Queue Storage</strong> decouples your application components. Producers write messages and move on. Consumers read and process when ready. If a consumer crashes mid-processing, the message reappears after the visibility timeout — no message lost, no double-processing risk if your consumers are idempotent.</p>
+<p><strong>Table Storage</strong> is the cheapest and simplest NoSQL option in Azure. PartitionKey groups related entities for fast querying; RowKey uniquely identifies each one within that group. Schemaless means different entities can have completely different properties. Use it when Cosmos DB is more than you need.</p>
+<p><strong>Storage Firewall</strong> restricts your storage account to specific VNets or IP ranges — a critical hardening step in any real deployment, and a frequent exam question.</p>
+<p><strong>AzCopy</strong> is the right tool when you need to move large amounts of data into or out of Azure Storage — bulk uploads, cross-account copies, and migrations. It's pre-installed in Azure Cloud Shell.</p>
+<p><strong>Immutable Storage</strong> enforces WORM policies on blob containers — blobs cannot be modified or deleted until the retention period expires. Lock the policy to satisfy regulatory requirements like SEC 17a-4.</p>
+<p><strong>Azure Storage Explorer</strong> ties it all together — drag-and-drop uploads, cross-account blob copies, table queries, message dequeuing, and SAS token generation in a single desktop tool.</p>
+<p><strong>Coming up next — Day 9:</strong> We move into <strong>Azure Virtual Networking</strong>. You'll learn how Azure's private network infrastructure works, create a VNet with public and private subnets, control traffic with Network Security Groups, set up DNS for your resources, and see how Azure Bastion lets you connect to VMs without exposing any ports to the internet.</p>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<ul>
+<li><strong>Azure Files</strong> serves via SMB (port 445) on Windows and NFS on Linux — mount it as a drive; update files in one place and every connected machine sees the change</li>
+<li><strong>Port 445</strong> may be blocked by home ISPs — mount from a VM inside Azure if <code>Test-NetConnection</code> fails</li>
+<li><strong>File Share Tiers</strong> — Transaction Optimized for general use, Hot/Cool for access-pattern cost optimization, Premium (SSD) for low latency and NFS; tier is set at creation and cannot be changed</li>
+<li><strong>File Share Snapshots</strong> are point-in-time read-only copies — restore individual files or the entire share; manage manually or automate via Azure Backup</li>
+<li><strong>Soft delete for file shares</strong> — deleted shares are retained for up to 365 days before permanent removal; recover with one click during the grace period</li>
+<li><strong>Azure File Sync</strong> — syncs Azure Files with on-premises Windows Servers; cloud tiering keeps hot files local and tiers cold files to Azure; supports multiple servers in a sync group</li>
+<li><strong>Queue Storage</strong> decouples producers and consumers — neither needs the other to be online at the same time</li>
+<li><strong>Visibility timeout</strong> prevents double-processing — a message becomes invisible while one consumer holds it; if the consumer crashes, it reappears for retry</li>
+<li><strong>Queue messages</strong> are up to 64 KB, live up to 7 days, and can be peeked without dequeuing</li>
+<li><strong>Table Storage</strong> is schemaless NoSQL — PartitionKey + RowKey is the unique composite key; always query by PartitionKey for best performance</li>
+<li><strong>Different entities in the same table can have different properties</strong> — no column schema to define upfront</li>
+<li><strong>Use Table Storage</strong> for simple lookups and time-series data; use Cosmos DB when you need global replication, guaranteed low latency, or complex query APIs</li>
+<li><strong>Storage Firewall</strong> — restrict storage account access to specific VNets, subnets, or IP ranges; everything else gets 403; configured under the Networking tab</li>
+<li><strong>AzCopy</strong> — command-line tool for bulk data movement; faster than the portal; pre-installed in Cloud Shell; authenticate with SAS, Azure AD, or Managed Identity</li>
+<li><strong>Immutable Storage (WORM)</strong> — time-based retention or legal hold; blobs cannot be modified or deleted during the active policy; lock the policy to satisfy regulatory requirements like SEC 17a-4</li>
+<li><strong>Azure Storage Explorer</strong> is free, cross-platform, and handles bulk uploads, cross-account copies, SAS generation, and table queries better than the portal</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../day07_storage_account/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Day 7 — Azure Storage Account: Blob Storage, Static Websites &amp; Versioning">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../day09_intro_to_networking/" class="md-footer__link md-footer__link--next" aria-label="Next: Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR &amp; Subnet Classes">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

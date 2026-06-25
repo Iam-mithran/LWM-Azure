@@ -1,0 +1,3122 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A complete beginner's guide to Azure Cloud and Azure DevOps — 29 days, zero assumed cloud knowledge.">
+      
+      
+      
+        <link rel="canonical" href="https://iam-mithran.github.io/LWM-Azure/day05_vms_part3/">
+      
+      
+        <link rel="prev" href="../day04_web_hosting_architecture/">
+      
+      
+        <link rel="next" href="../day06_app_service/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Day 5 — VM Management, Availability, Bastion & Backup - LearnWithMithran — Azure Complete Beginner's Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#day-5-azure-virtual-machines-part-3-management-availability-backup" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-header__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LearnWithMithran — Azure Complete Beginner's Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Day 5 — VM Management, Availability, Bastion & Backup
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-nav__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LearnWithMithran — Azure Complete Beginner's Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day01_account_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day02_fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day03_vms_part1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day04_web_hosting_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin-set-up-a-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin — Set Up a VM
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-availability-sets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Availability Sets
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Availability Sets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-an-availability-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is an Availability Set?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-vm-with-an-availability-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a VM with an Availability Set
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-availability-zones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Availability Zones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Availability Zones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-are-availability-zones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Are Availability Zones?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#availability-sets-vs-availability-zones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Availability Sets vs Availability Zones
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-vm-with-an-availability-zone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a VM with an Availability Zone
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-vm-scale-sets-vmss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — VM Scale Sets (VMSS)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — VM Scale Sets (VMSS)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-vm-scale-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a VM Scale Set?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-disk-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Disk Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Disk Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#disk-types-in-azure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disk Types in Azure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#three-types-of-disk-on-every-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three Types of Disk on Every VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-add-a-data-disk-in-the-portal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Add a Data Disk in the Portal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-initialise-the-data-disk-on-windows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Initialise the Data Disk on Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-initialise-the-data-disk-on-ubuntu-linux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Initialise the Data Disk on Ubuntu Linux
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-vm-snapshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — VM Snapshots
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — VM Snapshots">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-snapshot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Snapshot?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-vm-snapshot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a VM Snapshot
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-custom-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6 — Custom Images
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6 — Custom Images">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-custom-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Custom Image?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-build-a-nginx-web-server-vm-capture-it-and-deploy-a-clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Build a Nginx Web Server VM, Capture It, and Deploy a Clone
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Demo — Build a Nginx Web Server VM, Capture It, and Deploy a Clone">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-a-create-the-source-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step A — Create the Source VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-b-install-nginx-and-deploy-the-html-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step B — Install Nginx and Deploy the HTML Page
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-c-generalise-the-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step C — Generalise the VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-d-capture-the-image-in-azure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step D — Capture the Image in Azure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-e-deploy-a-new-vm-from-the-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step E — Deploy a New VM from the Image
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-7-azure-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 7 — Azure Backup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 7 — Azure Backup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-azure-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Azure Backup?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recovery-services-vault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recovery Services Vault
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-recovery-services-vault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a Recovery Services Vault
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backup-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backup Policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#understanding-daily-weekly-and-monthly-retention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Understanding Daily, Weekly, and Monthly Retention
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Understanding Daily, Weekly, and Monthly Retention">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-the-tiers-actually-overlap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the Tiers Actually Overlap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-happens-when-a-daily-point-ages-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Happens When a Daily Point Ages Out
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-if-you-configure-all-three-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: If You Configure All Three Together
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-retention-in-the-portal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuring Retention in the Portal
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-enable-backup-for-your-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Enable Backup for Your VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recovery-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recovery Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-trigger-an-on-demand-backup-and-view-recovery-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Trigger an On-Demand Backup and View Recovery Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restore-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restore Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-explore-restore-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Explore Restore Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleaning-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning Up
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-and-whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary and What's Next
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day06_app_service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day07_storage_account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day08_storage_files_queue_tables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day09_intro_to_networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day10_virtual_network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day11_vnet_advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day12_load_balancer_vmss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin-set-up-a-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin — Set Up a VM
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-availability-sets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Availability Sets
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Availability Sets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-an-availability-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is an Availability Set?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-vm-with-an-availability-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a VM with an Availability Set
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-availability-zones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Availability Zones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Availability Zones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-are-availability-zones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Are Availability Zones?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#availability-sets-vs-availability-zones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Availability Sets vs Availability Zones
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-vm-with-an-availability-zone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a VM with an Availability Zone
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-vm-scale-sets-vmss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — VM Scale Sets (VMSS)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — VM Scale Sets (VMSS)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-vm-scale-set" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a VM Scale Set?
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-disk-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Disk Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Disk Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#disk-types-in-azure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disk Types in Azure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#three-types-of-disk-on-every-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three Types of Disk on Every VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-add-a-data-disk-in-the-portal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Add a Data Disk in the Portal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-initialise-the-data-disk-on-windows" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Initialise the Data Disk on Windows
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-initialise-the-data-disk-on-ubuntu-linux" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Initialise the Data Disk on Ubuntu Linux
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-vm-snapshots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — VM Snapshots
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — VM Snapshots">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-snapshot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Snapshot?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-vm-snapshot" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a VM Snapshot
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-custom-images" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6 — Custom Images
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6 — Custom Images">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-custom-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Custom Image?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-build-a-nginx-web-server-vm-capture-it-and-deploy-a-clone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Build a Nginx Web Server VM, Capture It, and Deploy a Clone
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Demo — Build a Nginx Web Server VM, Capture It, and Deploy a Clone">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-a-create-the-source-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step A — Create the Source VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-b-install-nginx-and-deploy-the-html-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step B — Install Nginx and Deploy the HTML Page
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-c-generalise-the-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step C — Generalise the VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-d-capture-the-image-in-azure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step D — Capture the Image in Azure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-e-deploy-a-new-vm-from-the-image" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step E — Deploy a New VM from the Image
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-7-azure-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 7 — Azure Backup
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 7 — Azure Backup">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-azure-backup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Azure Backup?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recovery-services-vault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recovery Services Vault
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-recovery-services-vault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a Recovery Services Vault
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#backup-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Backup Policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#understanding-daily-weekly-and-monthly-retention" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Understanding Daily, Weekly, and Monthly Retention
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Understanding Daily, Weekly, and Monthly Retention">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-the-tiers-actually-overlap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How the Tiers Actually Overlap
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-happens-when-a-daily-point-ages-out" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Happens When a Daily Point Ages Out
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#example-if-you-configure-all-three-together" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Example: If You Configure All Three Together
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuring-retention-in-the-portal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuring Retention in the Portal
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-enable-backup-for-your-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Enable Backup for Your VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recovery-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Recovery Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-trigger-an-on-demand-backup-and-view-recovery-points" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Trigger an On-Demand Backup and View Recovery Points
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#restore-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Restore Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-explore-restore-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Explore Restore Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleaning-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning Up
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-and-whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary and What's Next
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="day-5-azure-virtual-machines-part-3-management-availability-backup">Day 5 — Azure Virtual Machines Part 3: Management, Availability &amp; Backup</h1>
+<p><strong>Phase 1 — Compute</strong></p>
+<blockquote>
+<p>You can create a VM and connect to it. But in the real world, that's only the beginning. What happens when the physical server your VM lives on fails? What happens when traffic doubles overnight? What happens if someone accidentally deletes your VM? Today you'll learn how Azure keeps VMs reliable at scale — how to manage disks, capture images, and protect your data with a fully managed backup service.</p>
+</blockquote>
+<hr />
+<h2 id="what-youll-learn">What You'll Learn</h2>
+<ul>
+<li>Availability Sets and Availability Zones — how Azure protects VMs from hardware and datacenter failures</li>
+<li>VM Scale Sets (VMSS) — automatically deploy and scale a group of identical VMs based on demand</li>
+<li>Disk types in Azure — Standard HDD, Standard SSD, Premium SSD, and Ultra Disk compared</li>
+<li>Adding a data disk to a VM and initialising it on both Windows and Linux</li>
+<li>VM Snapshots — capture a disk's exact state at a point in time</li>
+<li>Custom Images — build a configured Ubuntu + Nginx VM, capture it as an image, and deploy a clone from it</li>
+<li>Azure Backup — fully managed backup service: Recovery Services Vault, backup policies, tiered retention, recovery points, and all four restore options</li>
+</ul>
+<hr />
+<h2 id="before-we-begin-set-up-a-vm">Before We Begin — Set Up a VM</h2>
+<p>All the demos today require an existing VM. If you still have your VM from Day 3 deallocated, start it up. If not, quickly create an Ubuntu B1s VM in a new resource group called <code>vm-mgmt-rg</code> — the creation steps are in Day 3.</p>
+<p><strong>✅ Free Tier</strong></p>
+<hr />
+<h2 id="part-1-availability-sets">Part 1 — Availability Sets</h2>
+<h3 id="the-problem">The Problem</h3>
+<p>When your VM runs on a physical server in a Microsoft data center, that server has hardware inside it — CPUs, RAM, hard drives, network cards. Any of that hardware can fail. There are two types of failure to plan for:</p>
+<table>
+<thead>
+<tr>
+<th>Failure type</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Unplanned hardware failure</strong></td>
+<td>A physical component dies — your VM goes down until Azure migrates it</td>
+</tr>
+<tr>
+<td><strong>Planned maintenance</strong></td>
+<td>Microsoft updates the hypervisor — your VM may restart</td>
+</tr>
+</tbody>
+</table>
+<p>If you run your application on a single VM, either event takes your app offline.</p>
+<h3 id="what-is-an-availability-set">What Is an Availability Set?</h3>
+<p>An <strong>Availability Set</strong> is a logical grouping of VMs that tells Azure to spread them across different physical hardware within the same data center.</p>
+<p>When you put two or more VMs in an Availability Set, Azure guarantees they will never be on the same:
+- <strong>Fault Domain</strong> — a rack of servers sharing power and network. If one rack loses power, only VMs on that rack go down.
+- <strong>Update Domain</strong> — a group of servers rebooted together during maintenance. Azure reboots domains one at a time — other VMs stay up.</p>
+<p><strong>Example — 3 web servers in an Availability Set:</strong></p>
+<table>
+<thead>
+<tr>
+<th>VM</th>
+<th>Fault Domain</th>
+<th>Update Domain</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>web-vm-1</td>
+<td>FD 0 — Rack A</td>
+<td>UD 0</td>
+</tr>
+<tr>
+<td>web-vm-2</td>
+<td>FD 1 — Rack B</td>
+<td>UD 1</td>
+</tr>
+<tr>
+<td>web-vm-3</td>
+<td>FD 2 — Rack C</td>
+<td>UD 2</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Hardware failure (Fault Domain in action):</strong> A power supply fails on Rack B — <code>web-vm-2</code> goes down. <code>web-vm-1</code> and <code>web-vm-3</code> are on separate racks with their own power, so they keep serving traffic. Your site stays up.</p>
+<p><strong>Azure planned maintenance (Update Domain in action):</strong> Azure needs to patch the hypervisor. It reboots UD 0 first — <code>web-vm-1</code> is briefly offline. <code>web-vm-2</code> and <code>web-vm-3</code> keep running. Once <code>web-vm-1</code> is back, Azure reboots UD 1, then UD 2. At no point are all three VMs down at the same time.</p>
+<pre class="mermaid"><code>graph TD
+    subgraph AS["Availability Set — my-app-avset"]
+        subgraph FD0["Fault Domain 0 — Rack A"]
+            VM1["VM 1\n(Update Domain 0)"]
+        end
+        subgraph FD1["Fault Domain 1 — Rack B"]
+            VM2["VM 2\n(Update Domain 1)"]
+        end
+        subgraph FD2["Fault Domain 2 — Rack C"]
+            VM3["VM 3\n(Update Domain 2)"]
+        end
+    end
+    LB["Load Balancer"] --&gt; VM1 &amp; VM2 &amp; VM3</code></pre>
+<p><strong>SLA:</strong> Two or more VMs in an Availability Set = <strong>99.95% uptime</strong>.</p>
+<p><strong>Important:</strong> You set the Availability Set at VM creation time. You cannot add a running VM to one after deployment.</p>
+<hr />
+<h3 id="demo-create-a-vm-with-an-availability-set">Demo — Create a VM with an Availability Set</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Start creating a VM</p>
+<p>Search <strong>"Virtual machines"</strong> → <strong>"+ Create"</strong> → <strong>"Azure virtual machine."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Availability options</p>
+<p>On the <strong>Basics</strong> tab, find the <strong>"Availability options"</strong> dropdown. Change it from <em>"No infrastructure redundancy required"</em> to <strong>"Availability set."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Create a new Availability Set</p>
+<p>Click <strong>"Create new"</strong> next to the Availability Set field.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td><code>my-app-avset</code></td>
+</tr>
+<tr>
+<td>Fault domains</td>
+<td><strong>3</strong> <em>(Azure spreads VMs across 3 racks)</em></td>
+</tr>
+<tr>
+<td>Update domains</td>
+<td><strong>5</strong> <em>(Azure staggers reboots across 5 groups)</em></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"OK."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Observe the placement</p>
+<p>The VM wizard now shows your Availability Set name. Any second VM assigned to the same set automatically lands on a different fault and update domain.</p>
+<blockquote>
+<p>You don't need to finish creating this VM — you've seen where the setting lives. Click <strong>"Cancel"</strong> if you don't want to deploy it.</p>
+</blockquote>
+</div>
+<hr />
+<h2 id="part-2-availability-zones">Part 2 — Availability Zones</h2>
+<h3 id="what-are-availability-zones">What Are Availability Zones?</h3>
+<p>An <strong>Availability Zone</strong> is a physically separate data center within the same Azure region. Each zone has its own independent power, cooling, and networking — connected by a high-speed private network kilometres apart.</p>
+<p>Every major Azure region has at least three zones — Zone 1, Zone 2, and Zone 3.</p>
+<pre class="mermaid"><code>graph TD
+    subgraph Region["Azure Region — East US"]
+        subgraph Z1["Zone 1 — Data Center A"]
+            VM1["VM 1"]
+        end
+        subgraph Z2["Zone 2 — Data Center B"]
+            VM2["VM 2"]
+        end
+        subgraph Z3["Zone 3 — Data Center C"]
+            VM3["VM 3"]
+        end
+    end
+    LB["Zone-Redundant Load Balancer"] --&gt; VM1 &amp; VM2 &amp; VM3</code></pre>
+<p><strong>SLA:</strong> VMs spread across Availability Zones = <strong>99.99% uptime</strong> — the highest SLA for VMs.</p>
+<h3 id="availability-sets-vs-availability-zones">Availability Sets vs Availability Zones</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Availability Sets</th>
+<th>Availability Zones</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Protects against</td>
+<td>Rack / hardware failure in one DC</td>
+<td>Full data center failure</td>
+</tr>
+<tr>
+<td>SLA</td>
+<td>99.95%</td>
+<td>99.99%</td>
+</tr>
+<tr>
+<td>Cost</td>
+<td>No extra charge</td>
+<td>Minor inter-zone data transfer</td>
+</tr>
+<tr>
+<td>When to use</td>
+<td>Lower-cost HA</td>
+<td>Production workloads, maximum resilience</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="demo-create-a-vm-with-an-availability-zone">Demo — Create a VM with an Availability Zone</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Start creating a VM</p>
+<p>Search <strong>"Virtual machines"</strong> → <strong>"+ Create"</strong> → <strong>"Azure virtual machine."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Select Availability Zone</p>
+<p>On the <strong>Basics</strong> tab, change <strong>"Availability options"</strong> to <strong>"Availability zone."</strong></p>
+<p>A zone dropdown appears — select <strong>Zone 1</strong>. A second VM would go in Zone 2, a third in Zone 3.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Observe zone selection</p>
+<p>The region stays the same (e.g., East US) but the VM is physically deployed to the data center for Zone 1 within that region.</p>
+<blockquote>
+<p>Click <strong>"Cancel"</strong> to exit without creating.</p>
+</blockquote>
+</div>
+<hr />
+<h2 id="part-3-vm-scale-sets-vmss">Part 3 — VM Scale Sets (VMSS)</h2>
+<h3 id="the-problem_1">The Problem</h3>
+<p>Your web app runs on one VM. Normal traffic — fine. Sale day — 10x traffic — VM is overwhelmed. You could provision a large VM to handle peak load, but you'd pay for maximum capacity 24/7 even at 2 AM when no one is online.</p>
+<h3 id="what-is-a-vm-scale-set">What Is a VM Scale Set?</h3>
+<p>A <strong>VM Scale Set (VMSS)</strong> is a group of identical VMs managed as a single unit. You define one configuration — OS image, size, startup script — and Azure clones it into as many instances as demand requires, automatically.</p>
+<pre class="mermaid"><code>graph TD
+    LB["Azure Load Balancer"] --&gt; VM1["Instance 1"] &amp; VM2["Instance 2"] &amp; VM3["Instance 3"]
+    LB -.-&gt;|"Auto-scale adds"| VM4["Instance 4 (new)"]
+    AM["Azure Monitor\nCPU &gt; 70% for 5 min"] --&gt;|"Scale-out trigger"| VMSS["VMSS Orchestrator"]
+    VMSS --&gt; VM4</code></pre>
+<p><strong>Auto-scale rules:</strong>
+- <strong>Scale-out:</strong> if average CPU &gt; 70% for 5 minutes, add 2 instances
+- <strong>Scale-in:</strong> if average CPU &lt; 30% for 10 minutes, remove 1 instance
+- Set a <strong>minimum</strong> (e.g., 2 for availability) and <strong>maximum</strong> (e.g., 20 to cap cost)</p>
+<p><strong>Orchestration modes:</strong>
+- <strong>Flexible</strong> — recommended; full control over individual instances, works with Availability Zones
+- <strong>Uniform</strong> — all instances truly identical, better for fully stateless batch workloads</p>
+<blockquote>
+<p><strong>VMSS demo is in Day 8</strong> alongside Load Balancer — a VMSS without a Load Balancer in front of it has nowhere to distribute traffic. Understanding the concept now means Day 8 clicks immediately.</p>
+</blockquote>
+<hr />
+<h2 id="part-4-disk-management">Part 4 — Disk Management</h2>
+<h3 id="disk-types-in-azure">Disk Types in Azure</h3>
+<p>When you create a VM, Azure attaches an <strong>OS disk</strong> automatically. But in most real-world scenarios, you also add <strong>data disks</strong> — separate disks just for your application data, databases, or logs. This separates your OS from your data, making backups, resizing, and migrations much cleaner.</p>
+<p>Every managed disk in Azure is one of four types:</p>
+<table>
+<thead>
+<tr>
+<th>Disk Type</th>
+<th>Max IOPS</th>
+<th>Max Throughput</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Standard HDD</strong></td>
+<td>500</td>
+<td>60 MB/s</td>
+<td>Dev/test, backups, infrequent access</td>
+</tr>
+<tr>
+<td><strong>Standard SSD</strong></td>
+<td>6,000</td>
+<td>750 MB/s</td>
+<td>Web servers, lightly loaded apps, CI/CD agents</td>
+</tr>
+<tr>
+<td><strong>Premium SSD</strong></td>
+<td>20,000</td>
+<td>900 MB/s</td>
+<td>Production databases, critical workloads</td>
+</tr>
+<tr>
+<td><strong>Ultra Disk</strong></td>
+<td>160,000</td>
+<td>2,000 MB/s</td>
+<td>SAP HANA, high-frequency trading, latency-sensitive DBs</td>
+</tr>
+</tbody>
+</table>
+<p><strong>IOPS</strong> = Input/Output Operations Per Second — how many read/write requests the disk can handle per second.<br />
+<strong>Throughput</strong> = how much data (MB/s) flows through the disk.</p>
+<pre class="mermaid"><code>graph LR
+    HDD["Standard HDD\nCheapest\nDev/Test"] --&gt; SSSD["Standard SSD\nBalanced\nWeb Servers"]
+    SSSD --&gt; PSSD["Premium SSD\nFast\nProduction DBs"]
+    PSSD --&gt; ULTRA["Ultra Disk\nExtreme\nSAP / HFT"]</code></pre>
+<h3 id="three-types-of-disk-on-every-vm">Three Types of Disk on Every VM</h3>
+<table>
+<thead>
+<tr>
+<th>Disk</th>
+<th>Purpose</th>
+<th>Billed</th>
+<th>Survives VM restart?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OS Disk</strong></td>
+<td>Runs the operating system</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>Data Disk</strong></td>
+<td>Your application data, separate from OS</td>
+<td>Yes</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>Temporary Disk</strong></td>
+<td>Swap space, short-term scratch data</td>
+<td>No</td>
+<td><strong>No — data is lost on deallocation</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Never store important data on the temporary disk. It is wiped every time the VM is deallocated.</p>
+</blockquote>
+<hr />
+<h3 id="demo-add-a-data-disk-in-the-portal">Demo — Add a Data Disk in the Portal</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open Disks for your VM</p>
+<p>Go to your VM → left menu → <strong>"Disks."</strong></p>
+<p>You'll see your OS disk. Below it is an empty <strong>Data disks</strong> section.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Create and attach a new disk</p>
+<p>Click <strong>"+ Create and attach a new disk."</strong> A new row appears.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Disk name</td>
+<td><code>my-data-disk-01</code></td>
+</tr>
+<tr>
+<td>Storage type</td>
+<td><strong>Standard SSD</strong></td>
+</tr>
+<tr>
+<td>Size</td>
+<td><strong>4 GiB</strong> <em>(smallest available — enough for the demo)</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Save</p>
+<p>Click <strong>"Save"</strong> at the top. Azure creates the managed disk and attaches it to the VM as a new block device. The VM does not need to restart.</p>
+<blockquote>
+<p>The disk is now attached but <strong>not yet usable</strong> — the OS doesn't know about it yet. You need to initialise it from inside the VM. We'll do that in both Windows and Linux.</p>
+</blockquote>
+</div>
+<hr />
+<h3 id="demo-initialise-the-data-disk-on-windows">Demo — Initialise the Data Disk on Windows</h3>
+<p><strong>✅ Free Tier</strong></p>
+<p>For this demo you need a <strong>Windows Server VM</strong> with the data disk attached. If you created one in Day 4, use that — or quickly create a Windows B1s VM and attach a 4 GiB Standard SSD data disk using the steps above.</p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — RDP into the Windows VM</p>
+<p>Go to your Windows VM → <strong>"Connect"</strong> → <strong>"RDP"</strong> → download and open the RDP file → log in.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Open Disk Management</p>
+<p>Press <strong>Win + R</strong>, type <code>diskmgmt.msc</code>, and press Enter.</p>
+<p>Disk Management opens. You'll see your OS disk (Disk 0) and the new disk (Disk 1) marked as <strong>Unknown</strong> and <strong>Not Initialized</strong> — this is the 4 GiB data disk you just attached.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Initialise the disk</p>
+<p>Right-click on <strong>Disk 1</strong> (the unknown disk on the left side) → <strong>"Initialize Disk."</strong></p>
+<p>A dialog appears asking for the partition style:
+- <strong>MBR</strong> — older format, max 2 TB, compatible with older systems
+- <strong>GPT</strong> — modern format, supports disks larger than 2 TB, required for most Azure workloads</p>
+<p>Select <strong>GPT</strong> → <strong>"OK."</strong></p>
+<p>The disk status changes to <strong>Online</strong>.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Create a new volume</p>
+<p>Right-click the black <strong>Unallocated</strong> bar next to Disk 1 → <strong>"New Simple Volume."</strong></p>
+<p>The New Simple Volume Wizard opens:</p>
+<ol>
+<li>Click <strong>"Next."</strong></li>
+<li>Leave the volume size at maximum → <strong>"Next."</strong></li>
+<li>Assign a drive letter — e.g., <strong>E:</strong> → <strong>"Next."</strong></li>
+<li>Format settings:<ul>
+<li>File system: <strong>NTFS</strong></li>
+<li>Allocation unit size: Default</li>
+<li>Volume label: <code>DataDisk</code></li>
+<li>Check <strong>"Perform a quick format"</strong></li>
+</ul>
+</li>
+<li>Click <strong>"Next"</strong> → <strong>"Finish."</strong></li>
+</ol>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 5 — Verify in File Explorer</p>
+<p>Open <strong>File Explorer</strong>. You'll see a new drive <strong>E: (DataDisk)</strong> listed alongside your C: drive. The disk is ready to use — create a folder, save a file, confirm it works.</p>
+</div>
+<hr />
+<h3 id="demo-initialise-the-data-disk-on-ubuntu-linux">Demo — Initialise the Data Disk on Ubuntu Linux</h3>
+<p><strong>✅ Free Tier</strong></p>
+<p>For this demo you need your <strong>Ubuntu VM</strong> with the data disk attached (done via the portal steps above).</p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — SSH into the Ubuntu VM</p>
+<div class="highlight"><pre><span></span><code>ssh<span class="w"> </span>-i<span class="w"> </span>~/Downloads/your-key.pem<span class="w"> </span>azureuser@&lt;your-vm-ip&gt;
+</code></pre></div>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — List block devices</p>
+<div class="highlight"><pre><span></span><code>lsblk
+</code></pre></div>
+<p>You'll see output like this:</p>
+<div class="highlight"><pre><span></span><code>NAME    MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+sda       8:0    0   30G  0 disk
+└─sda1    8:1    0   30G  0 part /
+sdb       8:16   0    4G  0 disk
+└─sdb1    8:17   0    4G  0 part /mnt
+sdc       8:32   0    4G  0 disk
+</code></pre></div>
+<p><code>sda</code> is the OS disk. <code>sdb</code> is the temporary disk. <code>sdc</code> is your new data disk — it has no partition yet.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Partition the disk with fdisk</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>fdisk<span class="w"> </span>/dev/sdc
+</code></pre></div>
+<p>You're now inside the <code>fdisk</code> prompt. Type the following commands one at a time:</p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>n</code></td>
+<td>Create a new partition</td>
+</tr>
+<tr>
+<td><code>p</code></td>
+<td>Primary partition</td>
+</tr>
+<tr>
+<td><code>1</code></td>
+<td>Partition number 1</td>
+</tr>
+<tr>
+<td><em>(Enter)</em></td>
+<td>Accept default first sector</td>
+</tr>
+<tr>
+<td><em>(Enter)</em></td>
+<td>Accept default last sector (use the whole disk)</td>
+</tr>
+<tr>
+<td><code>w</code></td>
+<td>Write the partition table and exit</td>
+</tr>
+</tbody>
+</table>
+<p><code>fdisk</code> writes the changes and exits.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Format the partition</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>mkfs.ext4<span class="w"> </span>/dev/sdc1
+</code></pre></div>
+<p>This formats the partition with the <strong>ext4</strong> filesystem — the standard Linux filesystem. You'll see output as it writes the superblock and inode tables.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 5 — Create a mount point and mount the disk</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>mkdir<span class="w"> </span>/mnt/data
+sudo<span class="w"> </span>mount<span class="w"> </span>/dev/sdc1<span class="w"> </span>/mnt/data
+</code></pre></div>
+<p>Verify it's mounted:
+<div class="highlight"><pre><span></span><code>df<span class="w"> </span>-h
+</code></pre></div></p>
+<p>You'll see <code>/dev/sdc1</code> listed with its size and mount point <code>/mnt/data</code>.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 6 — Make the mount permanent</p>
+<p>Right now the disk will unmount on reboot. To make it permanent, add it to <code>/etc/fstab</code>:</p>
+<div class="highlight"><pre><span></span><code><span class="nb">echo</span><span class="w"> </span><span class="s1">&#39;/dev/sdc1 /mnt/data ext4 defaults 0 0&#39;</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>-a<span class="w"> </span>/etc/fstab
+</code></pre></div>
+<p>Verify it's in fstab:
+<div class="highlight"><pre><span></span><code>cat<span class="w"> </span>/etc/fstab
+</code></pre></div></p>
+<p>Your entry should appear at the bottom. The disk will now automatically mount on every reboot.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 7 — Test it</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>touch<span class="w"> </span>/mnt/data/testfile.txt
+ls<span class="w"> </span>/mnt/data
+</code></pre></div>
+<p>The file appears — your data disk is fully initialised, formatted, mounted, and persistent.</p>
+</div>
+<hr />
+<h2 id="part-5-vm-snapshots">Part 5 — VM Snapshots</h2>
+<h3 id="what-is-a-snapshot">What Is a Snapshot?</h3>
+<p>A <strong>snapshot</strong> is a read-only, point-in-time copy of a managed disk. It freezes the disk's contents at that exact moment.</p>
+<p><strong>Use snapshots for:</strong>
+- Before a risky OS update or application install — if it breaks, restore from the snapshot
+- A quick one-time backup before decommissioning a VM
+- Cloning a disk — create a new managed disk from a snapshot and attach it to another VM</p>
+<p><strong>Snapshots are NOT</strong> a replacement for Azure Backup — they have no scheduling, no retention management, and no application consistency guarantees built in.</p>
+<hr />
+<h3 id="demo-create-a-vm-snapshot">Demo — Create a VM Snapshot</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open your VM's Disks</p>
+<p>Go to your VM → left menu → <strong>"Disks."</strong> You'll see your OS disk and the data disk you just attached.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Open the OS disk</p>
+<p>Click the name of your OS disk to open the disk resource.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Create a snapshot</p>
+<p>In the disk's left menu, click <strong>"Create snapshot."</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resource group</td>
+<td><em>(same as your VM)</em></td>
+</tr>
+<tr>
+<td>Name</td>
+<td><code>my-vm-os-snapshot-01</code></td>
+</tr>
+<tr>
+<td>Snapshot type</td>
+<td><strong>Full</strong></td>
+</tr>
+<tr>
+<td>Storage type</td>
+<td><strong>Standard HDD</strong> <em>(cheapest for a snapshot you won't access frequently)</em></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Review + create"</strong> → <strong>"Create."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Verify the snapshot</p>
+<p>Search for <strong>"Snapshots"</strong> in the portal. Your snapshot appears with its size and creation timestamp — a frozen copy of your disk at this exact moment.</p>
+<blockquote>
+<p>To restore later: go to the snapshot → <strong>"Create disk"</strong> → attach the new disk to a VM and boot from it.</p>
+</blockquote>
+</div>
+<hr />
+<h2 id="part-6-custom-images">Part 6 — Custom Images</h2>
+<h3 id="what-is-a-custom-image">What Is a Custom Image?</h3>
+<p>A <strong>custom image</strong> is an entire VM — OS disk and optionally data disks — captured and turned into a reusable deployment template.</p>
+<p><strong>Use case:</strong> You've set up a VM exactly how you want it — web server installed, custom HTML deployed, configuration applied. Instead of repeating that setup on every new VM, you capture the image once and deploy from it in seconds. Every new VM from that image is an identical clone.</p>
+<p><strong>The process:</strong>
+1. Configure your VM exactly as needed.
+2. <strong>Generalize</strong> it — run <code>waagent -deprovision</code> on Linux (or <code>sysprep</code> on Windows). This removes machine-specific identifiers like the SSH host keys, hostname, and user credentials so clones don't conflict.
+3. <strong>Deallocate</strong> the VM from the portal.
+4. <strong>Capture</strong> the VM as an image in Azure.
+5. Deploy new VMs from that image.</p>
+<blockquote>
+<p><strong>Important:</strong> Generalizing a VM makes it permanently unusable as a standalone machine. Always do this on a VM you've set up specifically to be a template — not one you're actively using.</p>
+</blockquote>
+<hr />
+<h3 id="demo-build-a-nginx-web-server-vm-capture-it-and-deploy-a-clone">Demo — Build a Nginx Web Server VM, Capture It, and Deploy a Clone</h3>
+<p><strong>✅ Free Tier</strong></p>
+<p>We're going to build an Ubuntu VM with Nginx and a custom HTML page, capture it as a custom image, then deploy a brand-new VM from that image and confirm it already has Nginx running — zero setup needed.</p>
+<h4 id="step-a-create-the-source-vm">Step A — Create the Source VM</h4>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Create an Ubuntu B1s VM</p>
+<p>Search <strong>"Virtual machines"</strong> → <strong>"+ Create"</strong> → <strong>"Azure virtual machine."</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resource group</td>
+<td><code>vm-mgmt-rg</code></td>
+</tr>
+<tr>
+<td>VM name</td>
+<td><code>nginx-source-vm</code></td>
+</tr>
+<tr>
+<td>Image</td>
+<td><strong>Ubuntu Server 22.04 LTS</strong></td>
+</tr>
+<tr>
+<td>Size</td>
+<td><strong>Standard_B1s</strong></td>
+</tr>
+<tr>
+<td>Authentication</td>
+<td>SSH public key — generate new key pair, name it <code>nginx-source-vm-key</code></td>
+</tr>
+<tr>
+<td>Inbound ports</td>
+<td>SSH (22)</td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Review + create"</strong> → <strong>"Create."</strong> Download the <code>.pem</code> key when prompted.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Open port 80 in NSG</p>
+<p>Once deployed, go to the VM → <strong>"Networking"</strong> → <strong>"Add inbound port rule"</strong> → port <strong>80</strong>, protocol TCP, name <code>Allow-HTTP-80</code> → <strong>"Add."</strong></p>
+</div>
+<h4 id="step-b-install-nginx-and-deploy-the-html-page">Step B — Install Nginx and Deploy the HTML Page</h4>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — SSH into the VM</p>
+<div class="highlight"><pre><span></span><code>ssh<span class="w"> </span>-i<span class="w"> </span>~/Downloads/nginx-source-vm-key.pem<span class="w"> </span>azureuser@&lt;vm-public-ip&gt;
+</code></pre></div>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Install Nginx</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>nginx<span class="w"> </span>-y
+</code></pre></div>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 5 — Deploy the custom HTML page</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>nano<span class="w"> </span>/var/www/html/index.html
+</code></pre></div>
+<p>Replace the contents with:</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span> <span class="na">lang</span><span class="o">=</span><span class="s">&quot;en&quot;</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">charset</span><span class="o">=</span><span class="s">&quot;UTF-8&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">meta</span> <span class="na">name</span><span class="o">=</span><span class="s">&quot;viewport&quot;</span> <span class="na">content</span><span class="o">=</span><span class="s">&quot;width=device-width, initial-scale=1.0&quot;</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">title</span><span class="p">&gt;</span>Azure Custom Image Demo<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">style</span><span class="p">&gt;</span>
+<span class="w">        </span><span class="nt">body</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">font-family</span><span class="p">:</span><span class="w"> </span><span class="n">Arial</span><span class="p">,</span><span class="w"> </span><span class="kc">sans-serif</span><span class="p">;</span>
+<span class="w">            </span><span class="k">display</span><span class="p">:</span><span class="w"> </span><span class="kc">flex</span><span class="p">;</span>
+<span class="w">            </span><span class="k">justify-content</span><span class="p">:</span><span class="w"> </span><span class="kc">center</span><span class="p">;</span>
+<span class="w">            </span><span class="k">align-items</span><span class="p">:</span><span class="w"> </span><span class="kc">center</span><span class="p">;</span>
+<span class="w">            </span><span class="k">height</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="kt">vh</span><span class="p">;</span>
+<span class="w">            </span><span class="k">margin</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">            </span><span class="k">background-color</span><span class="p">:</span><span class="w"> </span><span class="mh">#0078d4</span><span class="p">;</span>
+<span class="w">            </span><span class="k">color</span><span class="p">:</span><span class="w"> </span><span class="kc">white</span><span class="p">;</span>
+<span class="w">            </span><span class="k">text-align</span><span class="p">:</span><span class="w"> </span><span class="kc">center</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="p">.</span><span class="nc">card</span><span class="w"> </span><span class="p">{</span>
+<span class="w">            </span><span class="k">background</span><span class="p">:</span><span class="w"> </span><span class="nb">rgba</span><span class="p">(</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mi">255</span><span class="p">,</span><span class="mf">0.15</span><span class="p">);</span>
+<span class="w">            </span><span class="k">padding</span><span class="p">:</span><span class="w"> </span><span class="mi">40</span><span class="kt">px</span><span class="w"> </span><span class="mi">60</span><span class="kt">px</span><span class="p">;</span>
+<span class="w">            </span><span class="k">border-radius</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="kt">px</span><span class="p">;</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">        </span><span class="nt">h1</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="mf">2.5</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="k">margin-bottom</span><span class="p">:</span><span class="w"> </span><span class="mi">10</span><span class="kt">px</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">        </span><span class="nt">p</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">font-size</span><span class="p">:</span><span class="w"> </span><span class="mf">1.2</span><span class="kt">em</span><span class="p">;</span><span class="w"> </span><span class="k">opacity</span><span class="p">:</span><span class="w"> </span><span class="mf">0.9</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">    </span><span class="p">&lt;/</span><span class="nt">style</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+<span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">div</span> <span class="na">class</span><span class="o">=</span><span class="s">&quot;card&quot;</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Deployed from Custom Image<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>This VM was launched from an Azure Custom Image.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+        <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>Nginx was pre-installed — zero setup required.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+    <span class="p">&lt;/</span><span class="nt">div</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div>
+<p>Press <code>Ctrl + X</code> → <code>Y</code> → <code>Enter</code> to save.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 6 — Verify the page</p>
+<p>On your laptop, open a browser and go to <code>http://&lt;vm-public-ip&gt;</code>. The custom page appears. The source VM is ready to be captured.</p>
+</div>
+<h4 id="step-c-generalise-the-vm">Step C — Generalise the VM</h4>
+<div class="admonition success">
+<p class="admonition-title">Step 7 — Deprovision the VM</p>
+<p>Still in the SSH session, run:</p>
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>waagent<span class="w"> </span>-deprovision+user<span class="w"> </span>-force
+</code></pre></div>
+<p>This removes:
+- SSH host keys (so clones don't share the same keys)
+- Hostname configuration
+- The <code>azureuser</code> account and its credentials
+- Cloud-init logs and cached data</p>
+<p>The terminal may show warnings — this is normal. Type <code>exit</code> to close the SSH session.</p>
+<blockquote>
+<p><strong>The VM is now generalised.</strong> Do not SSH back in or restart it — it will not work correctly as a standalone machine anymore.</p>
+</blockquote>
+</div>
+<h4 id="step-d-capture-the-image-in-azure">Step D — Capture the Image in Azure</h4>
+<div class="admonition success">
+<p class="admonition-title">Step 8 — Deallocate the VM</p>
+<p>In the portal, go to <code>nginx-source-vm</code> → click <strong>"Stop"</strong> in the toolbar.</p>
+<p>Wait for the status to show <strong>"Stopped (deallocated)."</strong> You cannot capture a running or merely stopped VM.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 9 — Capture the image</p>
+<p>With the VM deallocated, click <strong>"Capture"</strong> in the VM toolbar.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resource group</td>
+<td><code>vm-mgmt-rg</code></td>
+</tr>
+<tr>
+<td>Share image to Azure Compute Gallery</td>
+<td><strong>No, capture only a managed image</strong> <em>(simpler for this demo)</em></td>
+</tr>
+<tr>
+<td>Image name</td>
+<td><code>nginx-web-image</code></td>
+</tr>
+<tr>
+<td>Automatically delete this VM after creating the image</td>
+<td><strong>Yes</strong> <em>(the source VM is no longer useful once generalised)</em></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Review + create"</strong> → <strong>"Create."</strong></p>
+<p>Azure captures the image and deletes the source VM. This takes 2–3 minutes.</p>
+</div>
+<h4 id="step-e-deploy-a-new-vm-from-the-image">Step E — Deploy a New VM from the Image</h4>
+<div class="admonition success">
+<p class="admonition-title">Step 10 — Find your custom image</p>
+<p>Search for <strong>"Images"</strong> in the portal. You'll see <code>nginx-web-image</code> in your <code>vm-mgmt-rg</code> resource group.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 11 — Create a VM from the image</p>
+<p>Click on <code>nginx-web-image</code> → <strong>"+ Create VM."</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resource group</td>
+<td><code>vm-mgmt-rg</code></td>
+</tr>
+<tr>
+<td>VM name</td>
+<td><code>nginx-clone-vm</code></td>
+</tr>
+<tr>
+<td>Size</td>
+<td><strong>Standard_B1s</strong></td>
+</tr>
+<tr>
+<td>Authentication</td>
+<td>SSH public key — generate new key pair</td>
+</tr>
+<tr>
+<td>Inbound ports</td>
+<td>SSH (22)</td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Review + create"</strong> → <strong>"Create."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 12 — Open port 80 on the clone</p>
+<p>Once deployed, go to <code>nginx-clone-vm</code> → <strong>"Networking"</strong> → add inbound rule for port <strong>80</strong> → <strong>"Add."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 13 — Verify Nginx is already running</p>
+<p>On your laptop, open a browser and go to <code>http://&lt;clone-vm-public-ip&gt;</code>.</p>
+<p>Your custom page appears — <strong>"Deployed from Custom Image"</strong> — with zero setup. Nginx was already installed and configured inside the image. The clone booted ready to serve traffic.</p>
+<p>You can also SSH in and confirm:
+<div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>systemctl<span class="w"> </span>status<span class="w"> </span>nginx
+</code></pre></div></p>
+<p>Output shows <code>active (running)</code>.</p>
+</div>
+<blockquote>
+<p>This is exactly how VM Scale Sets work in production — every instance is deployed from a custom image that already has your application installed and configured. When the VMSS spins up a new instance under load, it's live in seconds, not minutes.</p>
+</blockquote>
+<hr />
+<h2 id="part-7-azure-backup">Part 7 — Azure Backup</h2>
+<p>This is the most important section of today's session. If a VM holding important data gets deleted, corrupted, or encrypted by ransomware, you need a way to get it back. Azure Backup is how you do that.</p>
+<h3 id="what-is-azure-backup">What Is Azure Backup?</h3>
+<p><strong>Azure Backup</strong> is Microsoft's native, fully managed backup-as-a-service. You don't manage backup agents, storage accounts, or schedules manually — you tell Azure what to back up and when, and Azure handles everything else.</p>
+<p>What Azure Backup can protect: Azure VMs, SQL Server in VMs, Azure Files, Azure Blobs, on-premise servers via the MARS agent.</p>
+<p>Today we focus entirely on <strong>VM backup</strong>.</p>
+<hr />
+<h3 id="recovery-services-vault">Recovery Services Vault</h3>
+<p>Before backing up anything, you need a <strong>Recovery Services Vault</strong> — the container that stores all your backup data.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Detail</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Region</strong></td>
+<td>Must be in the same region as the VMs it protects</td>
+</tr>
+<tr>
+<td><strong>One vault, many VMs</strong></td>
+<td>A single vault can protect multiple VMs</td>
+</tr>
+<tr>
+<td><strong>Storage redundancy</strong></td>
+<td>LRS (3 copies, one data center) or GRS (6 copies across two regions)</td>
+</tr>
+<tr>
+<td><strong>Soft delete</strong></td>
+<td>Deleted backups are retained 14 extra days before permanent removal</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="demo-create-a-recovery-services-vault">Demo — Create a Recovery Services Vault</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Search for Recovery Services vaults</p>
+<p>Type <strong>"Recovery Services vaults"</strong> in the portal search bar → <strong>"+ Create."</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resource group</td>
+<td><code>vm-mgmt-rg</code></td>
+</tr>
+<tr>
+<td>Vault name</td>
+<td><code>my-backup-vault</code></td>
+</tr>
+<tr>
+<td>Region</td>
+<td><em>(same region as your VM — required)</em></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Review + create"</strong> → <strong>"Create."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Explore vault properties</p>
+<p>Once deployed, click <strong>"Go to resource"</strong> → left menu → <strong>"Properties."</strong></p>
+<p>Notice <strong>Backup Storage Redundancy</strong> defaults to <strong>GRS</strong> — your backup data is replicated to a paired Azure region. Change to LRS to reduce cost if cross-region recovery isn't required.</p>
+</div>
+<hr />
+<h3 id="backup-policy">Backup Policy</h3>
+<p>A <strong>backup policy</strong> defines two things: <strong>schedule</strong> (when to take backups) and <strong>retention</strong> (how long to keep each recovery point).</p>
+<pre class="mermaid"><code>graph LR
+    Schedule["Schedule\nDaily 2:00 AM"] --&gt; RP["Recovery Points"]
+    Retention["Retention\n7 days daily\n4 weeks weekly\n12 months monthly"] --&gt; RP
+    RP --&gt; Vault["Recovery Services Vault"]</code></pre>
+<p>This means you can restore from any point in the last 7 days, any Sunday in the last month, or any month in the last year — from a single policy.</p>
+<hr />
+<h3 id="understanding-daily-weekly-and-monthly-retention">Understanding Daily, Weekly, and Monthly Retention</h3>
+<p>When you configure a backup policy in Azure, you aren't just setting one timer — you're stacking three independent retention tiers on top of each other. Each tier answers a different question.</p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Question it answers</th>
+<th>Recovery points kept</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Daily</strong></td>
+<td>"What did my VM look like this week?"</td>
+<td>One per day, kept for N days</td>
+</tr>
+<tr>
+<td><strong>Weekly</strong></td>
+<td>"What did my VM look like this month?"</td>
+<td>One per week, kept for N weeks</td>
+</tr>
+<tr>
+<td><strong>Monthly</strong></td>
+<td>"What did my VM look like this year?"</td>
+<td>One per month, kept for N months</td>
+</tr>
+</tbody>
+</table>
+<p>Let's say your policy is: <strong>daily backup at 2:00 AM, retain 7 days daily, 4 weeks weekly, 12 months monthly.</strong></p>
+<p>Here's what Azure keeps at any given moment:</p>
+<div class="highlight"><pre><span></span><code>TODAY: Tuesday, May 19, 2026
+
+DAILY RECOVERY POINTS (last 7 days — granular undo):
+  May 19 02:00 AM  ← yesterday&#39;s backup
+  May 18 02:00 AM
+  May 17 02:00 AM
+  May 16 02:00 AM
+  May 15 02:00 AM
+  May 14 02:00 AM
+  May 13 02:00 AM  ← oldest daily point, expires tomorrow
+
+WEEKLY RECOVERY POINTS (last 4 Sundays — broader undo):
+  Sunday May 18  ← this week&#39;s weekly snapshot
+  Sunday May 11
+  Sunday May 04
+  Sunday Apr 27  ← oldest weekly point, expires next Sunday
+
+MONTHLY RECOVERY POINTS (last 12 months — long-term archive):
+  May 1, 2026    ← first of this month
+  Apr 1, 2026
+  Mar 1, 2026
+  ...all the way back to...
+  Jun 1, 2025    ← oldest monthly point, expires June 1
+</code></pre></div>
+<p><strong>Why three tiers instead of just keeping every backup forever?</strong></p>
+<p>Because storage costs money. If you kept every daily backup for a year, you'd store 365 recovery points per VM. Instead, the layered system gives you:
+- <strong>Daily tier</strong> → precise, short-term recovery (deleted a file yesterday, corrupted an app today)
+- <strong>Weekly tier</strong> → broader recovery without the storage cost of 30 daily snapshots
+- <strong>Monthly tier</strong> → long-term compliance and disaster recovery at minimal cost (12 snapshots per year, not 365)</p>
+<h4 id="how-the-tiers-actually-overlap">How the Tiers Actually Overlap</h4>
+<p>Here's the key detail people miss: <strong>the same backup job feeds all three tiers simultaneously.</strong></p>
+<p>When Azure runs the 2:00 AM backup on Sunday May 18:
+- It creates <strong>one snapshot</strong>
+- That snapshot is tagged as a <strong>daily</strong> recovery point (expires in 7 days)
+- Because it's a Sunday, it's also tagged as a <strong>weekly</strong> recovery point (expires in 4 weeks)
+- If it's the first Sunday of a month, it's also tagged as a <strong>monthly</strong> recovery point (expires in 12 months)</p>
+<p>Azure doesn't run three separate backups — it runs one and applies the right retention label based on which day it falls on.</p>
+<pre class="mermaid"><code>graph TD
+    JOB["Backup Job — 2:00 AM Sunday May 18"] --&gt; SNAP["One Snapshot Created"]
+    SNAP --&gt;|"Always"| D["Daily tag — expires May 25"]
+    SNAP --&gt;|"It's a Sunday"| W["Weekly tag — expires June 15"]
+    SNAP --&gt;|"First of the month?"| M["Monthly tag — expires May 2027"]</code></pre>
+<h4 id="what-happens-when-a-daily-point-ages-out">What Happens When a Daily Point Ages Out</h4>
+<p>On May 20, the May 13 daily recovery point expires. But if May 13 was also the designated weekly snapshot day (say, a Sunday), it does <strong>not</strong> get deleted — the weekly tag is still valid for another 3 weeks. The daily tag expires, the weekly tag keeps it alive. This is how Azure avoids gaps in your recovery history.</p>
+<h4 id="example-if-you-configure-all-three-together">Example: If You Configure All Three Together</h4>
+<p>Let's say you configure this policy in the portal:</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Backup schedule</td>
+<td>Daily at 2:00 AM</td>
+</tr>
+<tr>
+<td>Daily retention</td>
+<td>30 days</td>
+</tr>
+<tr>
+<td>Weekly retention</td>
+<td>12 weeks (every Sunday)</td>
+</tr>
+<tr>
+<td>Monthly retention</td>
+<td>12 months (first Sunday of month)</td>
+</tr>
+</tbody>
+</table>
+<p>One year from now, your vault holds:
+- <strong>30 daily points</strong> — one per day for the last 30 days
+- <strong>12 weekly points</strong> — one per week for the last 12 Sundays (minus those covered by daily)
+- <strong>12 monthly points</strong> — one per month going back a full year</p>
+<p>Total: roughly <strong>54 recovery points per VM</strong>, covering everything from yesterday to 12 months ago. Without tiered retention, covering the same range daily would cost 365 recovery points' worth of storage.</p>
+<h4 id="configuring-retention-in-the-portal">Configuring Retention in the Portal</h4>
+<p>When you create a custom backup policy, the portal exposes all three tiers under <strong>"Edit policy"</strong>:</p>
+<div class="highlight"><pre><span></span><code>Backup schedule:     Daily at 2:00 AM (UTC)
+
+Retention of instant recovery snapshot:  2 days
+
+Daily backup point:
+  Retain for: [30] days
+
+Weekly backup point:
+  On: [Sunday]
+  Retain for: [12] weeks
+
+Monthly backup point:
+  On: [First Sunday of month]
+  Retain for: [12] months
+
+Yearly backup point (optional):
+  On: [January — first Sunday]
+  Retain for: [3] years
+</code></pre></div>
+<p>Each tier is independent — you can set weekly to 8 weeks and monthly to 6 months without touching the daily setting. And you can disable any tier entirely if it doesn't match your retention requirements.</p>
+<blockquote>
+<p><strong>Instant recovery snapshot</strong> is a separate, short-lived snapshot (1–5 days) stored locally on the VM's disk for ultra-fast restores — no waiting for Azure to pull data back from the vault. Beyond that window, restores pull from the vault tiers above.</p>
+</blockquote>
+<hr />
+<h3 id="demo-enable-backup-for-your-vm">Demo — Enable Backup for Your VM</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open Backup from the vault</p>
+<p>Inside your vault → <strong>Getting started</strong> → <strong>"Backup."</strong></p>
+<ul>
+<li><strong>Where is your workload running?</strong> → <strong>Azure</strong></li>
+<li><strong>What do you want to back up?</strong> → <strong>Virtual machine</strong></li>
+</ul>
+<p>Click <strong>"Backup."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Review the default policy</p>
+<p>The <strong>DefaultPolicy</strong> is pre-selected:
+- Daily backup at 2:30 AM UTC
+- 30-day retention for daily recovery points
+- 12-week retention for weekly recovery points</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Select your VM</p>
+<p>Click <strong>"Add"</strong> → select your VM → <strong>"OK."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Enable backup</p>
+<p>Click <strong>"Enable Backup."</strong> Azure installs the backup extension on your VM in 1–2 minutes.</p>
+</div>
+<hr />
+<h3 id="recovery-points">Recovery Points</h3>
+<p>Every time a backup job runs, it creates a <strong>recovery point</strong> — a snapshot of your VM at that moment.</p>
+<table>
+<thead>
+<tr>
+<th>Consistency type</th>
+<th>What it means</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Application-consistent</strong></td>
+<td>VSS (Windows) or freeze/thaw (Linux) ensures apps are in a clean state before snapshot</td>
+</tr>
+<tr>
+<td><strong>Crash-consistent</strong></td>
+<td>Taken as-is — like pulling the power cord and snapshotting immediately</td>
+</tr>
+</tbody>
+</table>
+<p>Application-consistent is always preferred for databases.</p>
+<hr />
+<h3 id="demo-trigger-an-on-demand-backup-and-view-recovery-points">Demo — Trigger an On-Demand Backup and View Recovery Points</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Go to Backup Items</p>
+<p>Inside your vault → <strong>"Backup items"</strong> → <strong>"Azure Virtual Machine."</strong> Your VM appears.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Trigger a manual backup</p>
+<p>Click your VM → <strong>"Backup now."</strong> Set <strong>"Retain Backup Till"</strong> to one week from today → <strong>"OK."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Watch the backup job</p>
+<p>Vault left menu → <strong>"Backup jobs."</strong> Click the in-progress job to see each step — snapshot, transfer, complete. An initial B1s backup takes 15–30 minutes.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Browse recovery points</p>
+<p>Once complete → <strong>Backup items</strong> → your VM. Recovery points are listed with date, time, and consistency type. Each row is a restorable point in time.</p>
+</div>
+<hr />
+<h3 id="restore-options">Restore Options</h3>
+<pre class="mermaid"><code>graph TD
+    RP["Recovery Point"] --&gt; OPT{"What do you need?"}
+    OPT --&gt;|"VM corrupted, restore in-place"| R1["Replace Existing VM"]
+    OPT --&gt;|"Need original + restored copy"| R2["Create New VM"]
+    OPT --&gt;|"Just the disk"| R3["Restore Disks Only"]
+    OPT --&gt;|"Recover one file"| R4["File-Level Recovery"]</code></pre>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>What it does</th>
+<th>When to use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Replace Existing VM</strong></td>
+<td>Overwrites the running VM's disks</td>
+<td>VM corrupted, restore in-place</td>
+</tr>
+<tr>
+<td><strong>Create New VM</strong></td>
+<td>Restores as a brand-new VM — original untouched</td>
+<td>Test restore, or need both VMs</td>
+</tr>
+<tr>
+<td><strong>Restore Disks Only</strong></td>
+<td>Restores the managed disk; attach manually</td>
+<td>Inspect before attaching</td>
+</tr>
+<tr>
+<td><strong>File-Level Recovery</strong></td>
+<td>Mounts backup as temporary drive; copy files</td>
+<td>Recovering one file</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="demo-explore-restore-options">Demo — Explore Restore Options</h3>
+<p><strong>✅ Free Tier</strong> <em>(explore only — no actual restore)</em></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open the restore wizard</p>
+<p><strong>Backup items</strong> → your VM → <strong>"Restore VM."</strong> Browse the Restore type dropdown — all four options are visible. Select a recovery point and see how options update.</p>
+<blockquote>
+<p>Click <strong>"Cancel"</strong> — exploring only.</p>
+</blockquote>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — File-level recovery</p>
+<p>Back on the VM backup page → <strong>"File Recovery."</strong> Azure shows a downloadable script that mounts the backup disk as a temporary drive on any running VM for individual file browsing.</p>
+<blockquote>
+<p>Click <strong>"Cancel"</strong> — no action needed.</p>
+</blockquote>
+</div>
+<hr />
+<h2 id="cleaning-up">Cleaning Up</h2>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition warning">
+<p class="admonition-title">Stop backup before deleting</p>
+<p>Go to the vault → <strong>Backup items</strong> → your VM → <strong>"Stop backup"</strong> → <strong>"Delete backup data"</strong> → confirm. If you skip this step, recovery points keep accruing storage charges even after the VM is deleted.</p>
+</div>
+<p>Delete <code>vm-mgmt-rg</code> to remove all VMs, disks, snapshots, and NSGs in one step. Delete <code>my-backup-vault</code> separately.</p>
+<hr />
+<h2 id="summary-and-whats-next">Summary and What's Next</h2>
+<p>Today you covered the full VM management picture.</p>
+<p><strong>Availability Sets</strong> spread VMs across fault and update domains for 99.95% uptime. <strong>Availability Zones</strong> spread them across separate data centers for 99.99% uptime — the production standard.</p>
+<p><strong>VM Scale Sets</strong> let you define one config and auto-scale instances based on demand — full VMSS + Load Balancer demo is in Day 8.</p>
+<p><strong>Disk management</strong> — Azure offers four disk tiers from Standard HDD to Ultra Disk. You attached a data disk, initialised it with Disk Management on Windows, and partitioned, formatted, and mounted it with <code>fdisk</code> and <code>mount</code> on Linux.</p>
+<p><strong>Snapshots</strong> give you a fast point-in-time disk capture. <strong>Custom Images</strong> go further — you built an Ubuntu + Nginx VM, deployed a custom HTML page, generalised it with <code>waagent</code>, captured it as an Azure image, and deployed a clone from it that was already running Nginx with zero setup.</p>
+<p><strong>Azure Backup</strong> with Recovery Services Vault provides scheduled, managed backup with tiered daily, weekly, and monthly retention and four restore options.</p>
+<blockquote>
+<p><strong>Monitoring and alerts</strong> are covered in full on Day 17 — Azure Monitor, metrics, dashboards, and alert rules all using a VM as the example resource.</p>
+</blockquote>
+<p><strong>Coming up next:</strong> Day 6 moves to <strong>Azure App Service</strong> — Microsoft's fully managed platform for hosting web applications. Instead of managing the OS, web server, and patches yourself, App Service handles all of that. You deploy your code, Azure runs it.</p>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<ul>
+<li><strong>Availability Sets:</strong> 99.95% SLA — rack-level protection. Must be set at VM creation time.</li>
+<li><strong>Availability Zones:</strong> 99.99% SLA — full data center protection. Standard for production workloads.</li>
+<li><strong>VM Scale Sets:</strong> identical instances with auto-scale — full demo in Day 8 with Load Balancer.</li>
+<li><strong>Disk types:</strong> Standard HDD (dev/test) → Standard SSD (web servers) → Premium SSD (production DBs) → Ultra Disk (extreme workloads).</li>
+<li><strong>Never store data on the temporary disk</strong> — it is wiped on every deallocation.</li>
+<li><strong>Windows disk initialisation:</strong> Disk Management → Initialize → GPT → New Simple Volume → NTFS.</li>
+<li><strong>Linux disk initialisation:</strong> <code>fdisk</code> to partition → <code>mkfs.ext4</code> to format → <code>mount</code> to attach → <code>/etc/fstab</code> to persist.</li>
+<li><strong>Snapshots:</strong> fast point-in-time disk captures — good before risky changes, not a replacement for backup.</li>
+<li><strong>Custom Images:</strong> generalise with <code>waagent -deprovision</code> → deallocate → capture → deploy clones. Source VM is no longer usable after generalisation.</li>
+<li><strong>Recovery Services Vault:</strong> must be in the same region as protected VMs.</li>
+<li><strong>Tiered retention:</strong> daily (granular short-term), weekly (broader mid-term), monthly (long-term compliance) — one backup job feeds all three tiers simultaneously based on which day it falls on.</li>
+<li><strong>A Sunday backup tagged as weekly is not deleted when its daily tag expires</strong> — the weekly tag keeps it alive until its own retention window closes.</li>
+<li><strong>Four restore options:</strong> Replace existing VM, Create new VM, Restore disks, File-level recovery.</li>
+<li><strong>Always stop backup before deleting a VM</strong> — orphaned recovery points continue charging.</li>
+<li><strong>VM alerts and monitoring</strong> — covered in Day 17 with the full Azure Monitor deep dive.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../day04_web_hosting_architecture/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Day 4 — Web Servers on Azure VMs: Architecture + IIS &amp; Nginx">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../day06_app_service/" class="md-footer__link md-footer__link--next" aria-label="Next: Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

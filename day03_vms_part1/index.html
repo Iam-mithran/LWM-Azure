@@ -1,0 +1,2745 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A complete beginner's guide to Azure Cloud and Azure DevOps — 29 days, zero assumed cloud knowledge.">
+      
+      
+      
+        <link rel="canonical" href="https://iam-mithran.github.io/LWM-Azure/day03_vms_part1/">
+      
+      
+        <link rel="prev" href="../day02_fundamentals/">
+      
+      
+        <link rel="next" href="../day04_web_hosting_architecture/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Day 3 — Virtual Machines Part 1 - LearnWithMithran — Azure Complete Beginner's Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#day-3-azure-virtual-machines-part-1-creating-your-first-vm" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-header__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LearnWithMithran — Azure Complete Beginner's Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Day 3 — Virtual Machines Part 1
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-nav__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LearnWithMithran — Azure Complete Beginner's Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day01_account_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day02_fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin-create-a-resource-group" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin — Create a Resource Group
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-a-virtual-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Virtual Machine?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What Is a Virtual Machine?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-navigate-to-virtual-machines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Navigate to Virtual Machines
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vm-series-and-sizes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VM Series and Sizes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="VM Series and Sizes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-fill-in-the-basics-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Fill In the Basics Tab
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vm-pricing-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VM Pricing Models
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#os-options-and-the-azure-marketplace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OS Options and the Azure Marketplace
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#managed-disks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Managed Disks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Managed Disks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-configure-the-disks-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Configure the Disks Tab
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#public-ip-addresses-and-dns-labels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public IP Addresses and DNS Labels
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-security-groups-nsg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Network Security Groups (NSG)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Network Security Groups (NSG)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-configure-networking-management-and-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Configure Networking, Management, and Deploy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-explore-your-vm-in-the-portal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Explore Your VM in the Portal
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connecting-to-your-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connecting to Your VM
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connecting to Your VM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-ssh-into-your-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: SSH Into Your VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vm-lifecycle-stop-vs-deallocate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VM Lifecycle — Stop vs Deallocate
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="VM Lifecycle — Stop vs Deallocate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-deallocate-and-inspect-the-nsg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Deallocate and Inspect the NSG
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#windows-vms-and-connecting-via-rdp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows VMs and Connecting via RDP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Windows VMs and Connecting via RDP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Concepts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-a-windows-server-vm-and-connect-via-rdp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create a Windows Server VM and Connect via RDP
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day04_web_hosting_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day05_vms_part3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day06_app_service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day07_storage_account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day08_storage_files_queue_tables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day09_intro_to_networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day10_virtual_network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day11_vnet_advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day12_load_balancer_vmss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin-create-a-resource-group" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin — Create a Resource Group
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-a-virtual-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Virtual Machine?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What Is a Virtual Machine?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-navigate-to-virtual-machines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Navigate to Virtual Machines
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vm-series-and-sizes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VM Series and Sizes
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="VM Series and Sizes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-fill-in-the-basics-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Fill In the Basics Tab
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vm-pricing-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VM Pricing Models
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#os-options-and-the-azure-marketplace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OS Options and the Azure Marketplace
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#managed-disks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Managed Disks
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Managed Disks">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-configure-the-disks-tab" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Configure the Disks Tab
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#public-ip-addresses-and-dns-labels" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public IP Addresses and DNS Labels
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#network-security-groups-nsg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Network Security Groups (NSG)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Network Security Groups (NSG)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-configure-networking-management-and-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Configure Networking, Management, and Deploy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-explore-your-vm-in-the-portal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Explore Your VM in the Portal
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#connecting-to-your-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Connecting to Your VM
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Connecting to Your VM">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-ssh-into-your-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: SSH Into Your VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#vm-lifecycle-stop-vs-deallocate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VM Lifecycle — Stop vs Deallocate
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="VM Lifecycle — Stop vs Deallocate">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-deallocate-and-inspect-the-nsg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Deallocate and Inspect the NSG
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#windows-vms-and-connecting-via-rdp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Windows VMs and Connecting via RDP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Windows VMs and Connecting via RDP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#key-concepts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Concepts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-a-windows-server-vm-and-connect-via-rdp" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create a Windows Server VM and Connect via RDP
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="day-3-azure-virtual-machines-part-1-creating-your-first-vm">Day 3 — Azure Virtual Machines Part 1: Creating Your First VM</h1>
+<p><strong>Phase 1 — Compute</strong></p>
+<blockquote>
+<p>Today you're going to rent a computer in Microsoft's data center, configure it exactly how you want, connect to it from your laptop, and learn how to shut it down without wasting money. By the end of this session, you'll have a real Linux server running in the cloud — one you built from scratch.</p>
+</blockquote>
+<hr />
+<h2 id="what-youll-learn">What You'll Learn</h2>
+<ul>
+<li>What Azure Virtual Machines actually are and how they work under the hood</li>
+<li>VM series and sizes — and which one to pick for what job</li>
+<li>Pricing models: Pay-as-you-go, Reserved Instances, and Spot VMs</li>
+<li>OS options and the Azure Marketplace</li>
+<li>Managed Disks — OS disks vs Data disks, and the four disk tiers</li>
+<li>Public IP addresses and DNS labels</li>
+<li>Network Security Groups — the firewall that controls what can reach your VM</li>
+<li>Full walkthrough: creating an Ubuntu VM from zero in the Azure Portal</li>
+<li>Connecting to your VM over SSH</li>
+<li>The critical difference between stopping and deallocating a VM</li>
+<li>Windows VMs — creating a Windows Server VM and connecting via RDP from your Windows machine</li>
+</ul>
+<hr />
+<h2 id="before-we-begin-create-a-resource-group">Before We Begin — Create a Resource Group</h2>
+<p>Every resource in Azure needs a home. We create a dedicated resource group first so that when we're done, one delete cleans everything up.</p>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open Resource Groups</p>
+<p>In the Azure Portal search bar, type <strong>"Resource groups"</strong> and click the result.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Create the resource group</p>
+<p>Click <strong>"+ Create"</strong> and fill in:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Subscription</td>
+<td><em>(your subscription)</em></td>
+</tr>
+<tr>
+<td>Resource group name</td>
+<td><code>vm-demo-rg</code></td>
+</tr>
+<tr>
+<td>Region</td>
+<td><em>(closest to you — e.g., East US, Australia East, West Europe)</em></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Review + create"</strong> → <strong>"Create."</strong></p>
+<blockquote>
+<p><strong>Why a separate resource group?</strong> Everything we create today — the VM, its disk, its public IP, its NSG, its virtual network — lands here. When we're done learning, deleting this one resource group cleans everything up instantly.</p>
+</blockquote>
+</div>
+<hr />
+<h2 id="what-is-a-virtual-machine">What Is a Virtual Machine?</h2>
+<p>A <strong>Virtual Machine (VM)</strong> is a software-defined computer running inside a physical server in one of Microsoft's data centers. You don't buy or touch that server — you rent a slice of it.</p>
+<pre class="mermaid"><code>graph TD
+    subgraph DC["Microsoft Data Center — East US"]
+        subgraph PHYS["Physical Server — 96 vCPUs, 384 GB RAM"]
+            H["Hypervisor\n(manages isolation between VMs)"]
+
+            subgraph VM1["Your VM — Standard_B1s"]
+                C1["1 vCPU"]
+                M1["1 GB RAM"]
+                D1["30 GB OS Disk"]
+            end
+
+            subgraph VM2["Another customer's VM"]
+                C2["2 vCPUs"]
+                M2["8 GB RAM"]
+                D2["64 GB OS Disk"]
+            end
+
+            subgraph VM3["Another customer's VM"]
+                C3["4 vCPUs"]
+                M3["16 GB RAM"]
+                D3["128 GB OS Disk"]
+            end
+
+            H --&gt; VM1
+            H --&gt; VM2
+            H --&gt; VM3
+        end
+    end</code></pre>
+<p><strong>What you control on a VM:</strong>
+- The operating system (Ubuntu, Windows Server, RHEL — your choice)
+- Everything installed on it (web servers, databases, custom software)
+- Network rules that control who can reach it
+- The size and number of disks attached</p>
+<p><strong>What Azure controls:</strong>
+- The physical hardware underneath
+- The hypervisor that keeps your VM isolated from others
+- Power, cooling, and physical security in the data center
+- Hardware failures — if the physical server dies, Azure migrates your VM</p>
+<hr />
+<h3 id="hands-on-navigate-to-virtual-machines">Hands-On: Navigate to Virtual Machines</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Open Virtual Machines</p>
+<p>In the Azure Portal search bar, type <strong>"Virtual machines"</strong> and click the result. You'll see the VM list (empty for now). Click <strong>"+ Create"</strong> → <strong>"Azure virtual machine"</strong> to open the creation wizard.</p>
+<p>Keep this wizard open — we'll fill it in section by section as we learn each concept.</p>
+</div>
+<hr />
+<h2 id="vm-series-and-sizes">VM Series and Sizes</h2>
+<p>Azure offers hundreds of VM sizes organized into <strong>series</strong>, each optimized for a different type of workload. The series letter tells you the workload type; the number tells you how many vCPUs it has.</p>
+<pre class="mermaid"><code>graph LR
+    SIZES["Azure VM Sizes"]
+
+    SIZES --&gt; B["B-Series\nBurstable\n─────────────\nLow baseline CPU\nBursts when needed\nCheapest option\n─────────────\nB1s: 1 vCPU, 1 GB RAM\nB2s: 2 vCPU, 4 GB RAM\nB4ms: 4 vCPU, 16 GB RAM\n─────────────\nUse for: dev/test, light web\nservers, small apps"]
+
+    SIZES --&gt; D["D-Series\nGeneral Purpose\n─────────────\nBalanced CPU + memory\nMost common workload choice\n─────────────\nD2s v3: 2 vCPU, 8 GB RAM\nD4s v3: 4 vCPU, 16 GB RAM\nD8s v3: 8 vCPU, 32 GB RAM\n─────────────\nUse for: web apps, databases\nsmall-to-medium production"]
+
+    SIZES --&gt; F["F-Series\nCompute Optimized\n─────────────\nHigh CPU to memory ratio\nFastest per-core performance\n─────────────\nF2s v2: 2 vCPU, 4 GB RAM\nF4s v2: 4 vCPU, 8 GB RAM\n─────────────\nUse for: batch jobs, gaming\nservers, analytics"]
+
+    SIZES --&gt; E["E-Series\nMemory Optimized\n─────────────\nHigh memory to CPU ratio\n─────────────\nE2s v3: 2 vCPU, 16 GB RAM\nE4s v3: 4 vCPU, 32 GB RAM\nE8s v3: 8 vCPU, 64 GB RAM\n─────────────\nUse for: in-memory databases\nSAP HANA, Redis cache"]</code></pre>
+<p><strong>Other series worth knowing:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Series</th>
+<th>Optimized for</th>
+<th>Example use case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>N-series</strong></td>
+<td>GPU workloads</td>
+<td>Machine learning training, video rendering</td>
+</tr>
+<tr>
+<td><strong>H-series</strong></td>
+<td>High Performance Compute</td>
+<td>Scientific simulations, CFD, molecular dynamics</td>
+</tr>
+<tr>
+<td><strong>M-series</strong></td>
+<td>Massive memory</td>
+<td>SAP HANA up to 4 TB RAM</td>
+</tr>
+<tr>
+<td><strong>L-series</strong></td>
+<td>Storage optimized</td>
+<td>NoSQL databases, high disk I/O</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Understanding the size name — Standard_D2s_v3:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Part</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>Standard</code></td>
+<td>Pricing tier (Standard vs Basic)</td>
+</tr>
+<tr>
+<td><code>D</code></td>
+<td>Series (General Purpose)</td>
+</tr>
+<tr>
+<td><code>2</code></td>
+<td>vCPU count</td>
+</tr>
+<tr>
+<td><code>s</code></td>
+<td>Supports Premium SSD storage</td>
+</tr>
+<tr>
+<td><code>_v3</code></td>
+<td>Hardware generation (newer = better performance/price)</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">Free Tier in this course: Standard_B1s</p>
+<p>The Azure Free Tier includes <strong>750 hours per month of B1s compute for 12 months</strong> — that's enough to run a B1s VM around the clock for an entire year at zero cost. Every demo step today uses the B1s and is fully free.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">How to pick a size</p>
+<p>Start small — B2s or D2s — and use Azure Advisor's right-sizing recommendations to tell you if your VM is consistently under- or over-utilized. It's easier to resize up than to guess up front.</p>
+</div>
+<hr />
+<h3 id="hands-on-fill-in-the-basics-tab">Hands-On: Fill In the Basics Tab</h3>
+<p>Back in the VM creation wizard on the <strong>Basics</strong> tab.</p>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Project details</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Subscription</td>
+<td><em>(your subscription)</em></td>
+</tr>
+<tr>
+<td>Resource group</td>
+<td><code>vm-demo-rg</code></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 5 — Instance details</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Virtual machine name</td>
+<td><code>ubuntu-demo-vm01</code></td>
+</tr>
+<tr>
+<td>Region</td>
+<td><em>(same region as the resource group)</em></td>
+</tr>
+<tr>
+<td>Availability options</td>
+<td><strong>No infrastructure redundancy required</strong></td>
+</tr>
+<tr>
+<td>Security type</td>
+<td><strong>Standard</strong></td>
+</tr>
+<tr>
+<td>Image</td>
+<td><strong>Ubuntu Server 24.04 LTS — x64 Gen2</strong></td>
+</tr>
+<tr>
+<td>VM architecture</td>
+<td><strong>x64</strong></td>
+</tr>
+<tr>
+<td>Run with Azure Spot discount</td>
+<td><em>(leave unchecked)</em></td>
+</tr>
+<tr>
+<td>Size</td>
+<td>Click <strong>"See all sizes"</strong> → filter by <strong>B-series</strong> → select <strong>B1s (1 vCPU, 1 GiB RAM)</strong> → click <strong>Select</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Why Ubuntu 24.04 LTS?</strong> LTS stands for Long-Term Support — this version receives security updates until 2034. Industry-standard choice for cloud Linux servers.</p>
+</blockquote>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 6 — Administrator account</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Authentication type</td>
+<td><strong>SSH public key</strong></td>
+</tr>
+<tr>
+<td>Username</td>
+<td><code>azureuser</code></td>
+</tr>
+<tr>
+<td>SSH public key source</td>
+<td><strong>Generate new key pair</strong></td>
+</tr>
+<tr>
+<td>Key pair name</td>
+<td><code>ubuntu-demo-vm01_key</code></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>SSH key vs password:</strong> SSH public key authentication is more secure than a password. Azure generates a key pair — the private key goes to your laptop, the public key goes to the VM. Only someone with the private key file can log in.</p>
+</blockquote>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 7 — Inbound port rules</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Public inbound ports</td>
+<td><strong>Allow selected ports</strong></td>
+</tr>
+<tr>
+<td>Select inbound ports</td>
+<td><strong>SSH (22)</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Leave the Basics tab open — <strong>do not click "Review + create" yet.</strong> Click <strong>"Next: Disks &gt;"</strong></p>
+</div>
+<hr />
+<h2 id="vm-pricing-models">VM Pricing Models</h2>
+<p>The same VM size can be priced three different ways depending on your commitment level.</p>
+<pre class="mermaid"><code>graph TD
+    subgraph PAYG["Pay-As-You-Go\n─────────────────────────\nCharged per second\nNo commitment\nStart/stop anytime\nHighest per-hour rate\n─────────────────────────\nBest for: unpredictable workloads\nlearning, dev/test"]
+    end
+
+    subgraph RI["Reserved Instances\n─────────────────────────\n1-year: ~30–40% cheaper\n3-year: ~50–60% cheaper\nCommit to a specific size + region\nPay upfront or monthly\n─────────────────────────\nBest for: stable production\nworkloads you run 24/7"]
+    end
+
+    subgraph SPOT["Spot VMs\n─────────────────────────\nUp to 90% cheaper than PAYG\nUse spare Azure capacity\nAzure can evict with 30s notice\nVM gets a shutdown signal\nPrice fluctuates with demand\n─────────────────────────\nBest for: batch jobs, rendering\nfault-tolerant, interruptible work"]
+    end</code></pre>
+<p><strong>Pricing comparison — Standard_D2s_v3 in East US:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Pricing Model</th>
+<th>Monthly cost (approx.)</th>
+<th>Savings vs PAYG</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pay-As-You-Go</td>
+<td>~$70/month</td>
+<td>baseline</td>
+</tr>
+<tr>
+<td>1-Year Reserved</td>
+<td>~$44/month</td>
+<td>~37% cheaper</td>
+</tr>
+<tr>
+<td>3-Year Reserved</td>
+<td>~$30/month</td>
+<td>~57% cheaper</td>
+</tr>
+<tr>
+<td>Spot (when available)</td>
+<td>~$7–$15/month</td>
+<td>up to 90% cheaper</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Spot VMs are not for everything</p>
+<p>If Azure needs that capacity back, your Spot VM gets a 30-second eviction notice and then shuts down. Fine for batch processing or rendering jobs that save their state. Not suitable for web servers, databases, or anything that needs to be always available.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">Azure Hybrid Benefit</p>
+<p>If your organization already owns Windows Server or SQL Server licenses with Software Assurance, you can bring those to Azure and avoid paying for the OS layer — typically saving another 30–40% on top of Reserved pricing.</p>
+</div>
+<hr />
+<h2 id="os-options-and-the-azure-marketplace">OS Options and the Azure Marketplace</h2>
+<p>When you create a VM, you choose an <strong>image</strong> — a pre-built snapshot of an operating system ready to boot.</p>
+<p><strong>First-party images (Microsoft-published):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Options</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Windows Server</strong></td>
+<td>Windows Server 2019, 2022, Windows 10/11 (Dev/Test)</td>
+</tr>
+<tr>
+<td><strong>Linux</strong></td>
+<td>Ubuntu 20.04 / 22.04 / 24.04 LTS, Debian 11/12, SUSE SLES</td>
+</tr>
+<tr>
+<td><strong>Enterprise Linux</strong></td>
+<td>Red Hat Enterprise Linux 8/9 (licensed), Oracle Linux</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Third-party Marketplace images:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Publisher</th>
+<th>Images available</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Canonical</td>
+<td>Ubuntu Pro (enterprise support)</td>
+</tr>
+<tr>
+<td>Bitnami</td>
+<td>WordPress, LAMP, Nginx, Node.js, MongoDB — pre-configured stacks</td>
+</tr>
+<tr>
+<td>JetBrains</td>
+<td>TeamCity CI/CD server</td>
+</tr>
+<tr>
+<td>CIS</td>
+<td>Hardened OS images meeting CIS benchmarks</td>
+</tr>
+<tr>
+<td>Cisco, Palo Alto</td>
+<td>Network virtual appliances</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Generation 1 vs Generation 2:</strong>
+- <strong>Gen 1</strong>: Legacy BIOS, wider compatibility
+- <strong>Gen 2</strong>: UEFI boot, supports larger disks (&gt;2 TB OS disk), faster boot, required for Trusted Launch — always use Gen 2 for new VMs when supported</p>
+<hr />
+<h2 id="managed-disks">Managed Disks</h2>
+<p>Every VM needs storage. Azure storage for VMs comes in three categories:</p>
+<pre class="mermaid"><code>graph TD
+    subgraph VM["Your Virtual Machine"]
+        OS["💿 OS Disk\n─────────────────────────\nWhere the operating system lives\nMounts as C: (Windows) or / (Linux)\nRequired — cannot be removed\nTypically 30–128 GB\nDo NOT store your app data here"]
+
+        DATA["📀 Data Disk\n─────────────────────────\nAdditional storage you attach\nMounts as D: / E: or /dev/sdc\nOptional — attach as many as needed\nGood for: databases, logs, file storage\nSurvives VM recreation if detached"]
+    end
+
+    TEMP["⚡ Temporary Disk\n─────────────────────────\nPhysical local SSD on the host\nExtremely fast — lowest latency\nMounts as D: (Windows) /dev/sdb (Linux)\nLost when VM is deallocated or resized\nNever store important data here"]
+
+    VM --- TEMP</code></pre>
+<p><strong>Disk performance tiers:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Use case</th>
+<th>IOPS (example)</th>
+<th>Latency</th>
+<th>Price</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Standard HDD</strong></td>
+<td>Backup, archive, infrequent access</td>
+<td>~500 IOPS</td>
+<td>High</td>
+<td>Lowest</td>
+</tr>
+<tr>
+<td><strong>Standard SSD</strong></td>
+<td>Light production, dev/test, web servers</td>
+<td>~500–6,000 IOPS</td>
+<td>Medium</td>
+<td>Low</td>
+</tr>
+<tr>
+<td><strong>Premium SSD</strong></td>
+<td>Production databases, high-throughput apps</td>
+<td>~7,500–80,000 IOPS</td>
+<td>Low</td>
+<td>Medium</td>
+</tr>
+<tr>
+<td><strong>Ultra Disk</strong></td>
+<td>SAP HANA, top-tier databases, HPC</td>
+<td>Up to 160,000 IOPS</td>
+<td>Sub-ms</td>
+<td>Highest</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition info">
+<p class="admonition-title">Managed vs Unmanaged Disks</p>
+<p><strong>Managed disks</strong> are the modern standard — Azure manages the underlying storage account for you. You just pick the size and tier. Always use managed disks for new VMs.</p>
+</div>
+<hr />
+<h3 id="hands-on-configure-the-disks-tab">Hands-On: Configure the Disks Tab</h3>
+<p>Still in the VM creation wizard, now on the <strong>Disks</strong> tab.</p>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 8 — OS disk configuration</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OS disk size</td>
+<td><strong>Default size (30 GiB)</strong></td>
+</tr>
+<tr>
+<td>OS disk type</td>
+<td><strong>Standard SSD (locally redundant storage)</strong></td>
+</tr>
+<tr>
+<td>Delete with VM</td>
+<td>✅ Checked</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Delete with VM:</strong> Checking this means the OS disk is deleted when you delete the VM. If unchecked, the disk (and its cost) persists even after the VM is gone — a common source of surprise charges.</p>
+</blockquote>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 9 — Add a Data Disk</p>
+<p>Click <strong>"+ Create and attach a new disk."</strong> Configure:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td><code>ubuntu-demo-vm01-data01</code></td>
+</tr>
+<tr>
+<td>Source type</td>
+<td><strong>None (empty disk)</strong></td>
+</tr>
+<tr>
+<td>Size</td>
+<td>Click <strong>"Change size"</strong> → select <strong>4 GiB, Standard HDD</strong> → <strong>OK</strong></td>
+</tr>
+<tr>
+<td>Delete disk with virtual machine</td>
+<td>✅ Checked</td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"OK."</strong></p>
+<blockquote>
+<p>In production, your application data, logs, and databases live on separate data disks — never on the OS disk.</p>
+</blockquote>
+<p>Click <strong>"Next: Networking &gt;"</strong></p>
+</div>
+<hr />
+<h2 id="public-ip-addresses-and-dns-labels">Public IP Addresses and DNS Labels</h2>
+<p>For your VM to be reachable from the internet, it needs a <strong>Public IP address</strong>.</p>
+<pre class="mermaid"><code>graph LR
+    YOU["👤 You\nyour-laptop\n203.x.x.x"] --&gt;|"SSH port 22"| PIP["🌐 Public IP\ne.g., 20.84.x.x\nAttached to VM's NIC"]
+    PIP --&gt; NIC["Network Interface Card (NIC)\nVM's network adapter"]
+    NIC --&gt; VM["Your Ubuntu VM\nPrivate IP: 10.0.0.4"]</code></pre>
+<p><strong>Dynamic vs Static Public IP:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Behavior</th>
+<th>Use case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Dynamic</strong></td>
+<td>IP changes every time the VM is deallocated and started again</td>
+<td>Dev/test, short-lived VMs</td>
+</tr>
+<tr>
+<td><strong>Static</strong></td>
+<td>IP stays the same forever</td>
+<td>Production, DNS records, whitelisted IPs</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">DNS labels instead of IPs</p>
+<p>Azure lets you assign a <strong>DNS label</strong> to a Public IP: <code>myvm.eastus.cloudapp.azure.com</code>. This hostname always resolves to your VM's current public IP — even if you use a dynamic IP and it changes.</p>
+</div>
+<hr />
+<h2 id="network-security-groups-nsg">Network Security Groups (NSG)</h2>
+<p>A <strong>Network Security Group</strong> is the firewall for your VM. It contains rules that allow or deny traffic based on protocol, port, and source/destination address.</p>
+<pre class="mermaid"><code>graph TD
+    INTERNET["🌐 Internet\nAll traffic"]
+
+    subgraph NSG["Network Security Group: my-vm-nsg"]
+        R1["Rule 100\n✅ ALLOW\nSSH port 22\nfrom Any\npriority: 100"]
+        R2["Rule 200\n✅ ALLOW\nHTTP port 80\nfrom Any\npriority: 200"]
+        R3["Rule 65000\n✅ ALLOW\nAll traffic from VNet\n(default — always present)"]
+        R4["Rule 65001\n✅ ALLOW\nAzure Load Balancer probe\n(default — always present)"]
+        R5["Rule 65500\n❌ DENY\nAll inbound\n(default — blocks everything else)"]
+    end
+
+    VM["Your VM\nUbuntu B1s"]
+
+    INTERNET --&gt; R1 --&gt; VM
+    INTERNET --&gt; R2 --&gt; VM
+    INTERNET --&gt; R5</code></pre>
+<p><strong>Key NSG concepts:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Priority</strong></td>
+<td>Lower number = evaluated first. Range: 100–4096. Lower wins if rules conflict.</td>
+</tr>
+<tr>
+<td><strong>Direction</strong></td>
+<td>Inbound (traffic coming in to the VM) or Outbound (traffic leaving the VM)</td>
+</tr>
+<tr>
+<td><strong>Action</strong></td>
+<td>Allow or Deny</td>
+</tr>
+<tr>
+<td><strong>Source</strong></td>
+<td>Any IP, a specific IP/CIDR range, a VNet, or a Service Tag (e.g., <code>Internet</code>, <code>AzureCloud</code>)</td>
+</tr>
+<tr>
+<td><strong>Protocol</strong></td>
+<td>TCP, UDP, ICMP, or Any</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Default inbound rules (always present, cannot be deleted):</strong></p>
+<table>
+<thead>
+<tr>
+<th>Priority</th>
+<th>Name</th>
+<th>Action</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>65000</td>
+<td>AllowVnetInBound</td>
+<td>Allow</td>
+<td>All traffic between resources in the same VNet</td>
+</tr>
+<tr>
+<td>65001</td>
+<td>AllowAzureLoadBalancerInBound</td>
+<td>Allow</td>
+<td>Health probes from Azure Load Balancer</td>
+</tr>
+<tr>
+<td>65500</td>
+<td>DenyAllInBound</td>
+<td>Deny</td>
+<td>Blocks everything not explicitly allowed above</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition tip">
+<p class="admonition-title">NSG can be attached to a subnet or a NIC</p>
+<p>When attached to a <strong>subnet</strong>, it applies to every VM in that subnet. When attached to a <strong>NIC</strong>, it applies to one specific VM. You can use both — traffic is evaluated at the subnet NSG first, then the NIC NSG.</p>
+</div>
+<hr />
+<h3 id="hands-on-configure-networking-management-and-deploy">Hands-On: Configure Networking, Management, and Deploy</h3>
+<p>Still in the VM creation wizard — <strong>Networking</strong>, <strong>Management</strong>, <strong>Monitoring</strong>, <strong>Tags</strong>, then deploy.</p>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 10 — Networking tab</p>
+<p>Azure auto-creates a Virtual Network and subnet since this is the first VM in this resource group.</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Virtual network</td>
+<td><em>(auto-generated)</em></td>
+</tr>
+<tr>
+<td>Subnet</td>
+<td><em>(auto-generated: <code>default 10.0.0.0/24</code>)</em></td>
+</tr>
+<tr>
+<td>Public IP</td>
+<td><em>(auto-generated)</em></td>
+</tr>
+<tr>
+<td>NIC network security group</td>
+<td><strong>Basic</strong></td>
+</tr>
+<tr>
+<td>Public inbound ports</td>
+<td><strong>Allow selected ports</strong></td>
+</tr>
+<tr>
+<td>Select inbound ports</td>
+<td><strong>SSH (22)</strong></td>
+</tr>
+<tr>
+<td>Load balancing options</td>
+<td><strong>None</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Next: Management &gt;"</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 11 — Management tab: Enable auto-shutdown</p>
+<p>Scroll to <strong>"Auto-shutdown."</strong> Enable it:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Enable auto-shutdown</td>
+<td>✅ On</td>
+</tr>
+<tr>
+<td>Shutdown time</td>
+<td><strong>11:00 PM</strong> (or your local evening time)</td>
+</tr>
+<tr>
+<td>Time zone</td>
+<td><em>(your local time zone)</em></td>
+</tr>
+<tr>
+<td>Send notification before shutdown</td>
+<td>✅ On</td>
+</tr>
+<tr>
+<td>Notification email</td>
+<td><em>(your email address)</em></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>This is critical for cost control.</strong> Auto-shutdown deallocates your VM each night so you're not paying for compute while you sleep.</p>
+</blockquote>
+<p>Click <strong>"Next: Monitoring &gt;"</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 12 — Monitoring tab</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Boot diagnostics</td>
+<td><strong>Enable with managed storage account (recommended)</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Boot diagnostics</strong> captures a screenshot of your VM's console during startup. If your VM ever fails to boot, this is your only way to see what went wrong on a headless cloud VM.</p>
+</blockquote>
+<p>Click <strong>"Next: Advanced &gt;"</strong> → leave defaults → click <strong>"Next: Tags &gt;"</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 13 — Tags tab</p>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Environment</td>
+<td>Learning</td>
+</tr>
+<tr>
+<td>Owner</td>
+<td><em>(your name)</em></td>
+</tr>
+<tr>
+<td>Project</td>
+<td>AzureCourse</td>
+</tr>
+<tr>
+<td>Day</td>
+<td>Day02</td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Next: Review + create &gt;"</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 14 — Review and deploy</p>
+<p>Azure validates all your settings. Confirm:
+- VM size: <strong>Standard_B1s</strong>
+- Image: <strong>Ubuntu Server 24.04 LTS</strong>
+- OS disk: <strong>Standard SSD, 30 GiB</strong>
+- Data disk: <strong>Standard HDD, 4 GiB</strong></p>
+<p>Click <strong>"Create."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 15 — Download the private key</p>
+<p>A dialog appears: <strong>"Generate new key pair."</strong> Click <strong>"Download private key and create resource."</strong></p>
+<p>Your browser downloads <code>ubuntu-demo-vm01_key.pem</code>. <strong>Move this file somewhere safe.</strong> On Linux/macOS: <code>~/.ssh/</code>. On Windows: <code>C:\Users\YourName\.ssh\</code>.</p>
+<p>Deployment takes 1–3 minutes. When complete, click <strong>"Go to resource."</strong></p>
+</div>
+<hr />
+<h3 id="hands-on-explore-your-vm-in-the-portal">Hands-On: Explore Your VM in the Portal</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 16 — Overview page</p>
+<p>The VM Overview shows:
+- <strong>Status:</strong> Running
+- <strong>Public IP address:</strong> Note this — you'll SSH to it shortly
+- <strong>Private IP address:</strong> The VM's internal address (10.0.0.x)
+- <strong>Operating system:</strong> Linux (Ubuntu 24.04)
+- <strong>Size:</strong> Standard_B1s</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 17 — Explore the Disks section</p>
+<p>In the left-hand menu, click <strong>"Disks."</strong> You'll see the OS disk (30 GiB Standard SSD) and the data disk (4 GiB Standard HDD). Click on the OS disk — notice disks are first-class Azure resources with their own Overview, Snapshots, and access control.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 18 — Explore Networking and the NSG</p>
+<p>In the left-hand menu, click <strong>"Networking."</strong> You can see your NIC and the NSG rules. Click <strong>"ubuntu-demo-vm01-nsg"</strong> to open the NSG blade directly — you'll see your port 22 rule and the three Azure default rules.</p>
+</div>
+<hr />
+<h2 id="connecting-to-your-vm">Connecting to Your VM</h2>
+<p>SSH (Secure Shell) is the standard way to connect to a Linux VM. You authenticate with the private key you downloaded during creation — no password needed.</p>
+<hr />
+<h3 id="hands-on-ssh-into-your-vm">Hands-On: SSH Into Your VM</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 19 — Open a terminal</p>
+<p>On <strong>Windows:</strong> Open Windows Terminal or PowerShell.
+On <strong>macOS/Linux:</strong> Open Terminal.
+Or use <strong>Azure Cloud Shell</strong> (click <code>&gt;_</code> in the portal) — SSH is pre-installed.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 20 — Set permissions on the private key (macOS/Linux only)</p>
+<p>SSH requires the key file is readable only by you:</p>
+<div class="highlight"><pre><span></span><code>chmod<span class="w"> </span><span class="m">400</span><span class="w"> </span>~/.ssh/ubuntu-demo-vm01_key.pem
+</code></pre></div>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 21 — Connect via SSH</p>
+<p>Replace <code>YOUR_PUBLIC_IP</code> with the IP from your VM's Overview page:</p>
+<div class="highlight"><pre><span></span><code>ssh<span class="w"> </span>-i<span class="w"> </span>~/.ssh/ubuntu-demo-vm01_key.pem<span class="w"> </span>azureuser@YOUR_PUBLIC_IP
+</code></pre></div>
+<p>On Windows PowerShell:
+<div class="highlight"><pre><span></span><code><span class="n">ssh</span> <span class="n">-i</span> <span class="n">C</span><span class="p">:\</span><span class="n">Users</span><span class="p">\</span><span class="n">YourName</span><span class="p">\.</span><span class="n">ssh</span><span class="p">\</span><span class="n">ubuntu-demo-vm01_key</span><span class="p">.</span><span class="n">pem</span> <span class="n">azureuser</span><span class="nv">@YOUR_PUBLIC_IP</span>
+</code></pre></div></p>
+<p>Type <strong>yes</strong> when prompted about the host fingerprint. You're now inside your Ubuntu VM.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 22 — Explore the VM from inside</p>
+<p><div class="highlight"><pre><span></span><code><span class="c1"># Check the OS version</span>
+lsb_release<span class="w"> </span>-a
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check CPU and memory</span>
+nproc<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>free<span class="w"> </span>-h
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Check disk layout — you&#39;ll see the OS disk and the data disk</span>
+lsblk
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Confirm your public internet address</span>
+curl<span class="w"> </span>ifconfig.me
+</code></pre></div></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 23 — Format and mount the data disk</p>
+<p>The data disk is attached but not yet usable:</p>
+<p><div class="highlight"><pre><span></span><code><span class="c1"># Format with ext4 filesystem</span>
+sudo<span class="w"> </span>mkfs.ext4<span class="w"> </span>/dev/sdc
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Create mount point and mount</span>
+sudo<span class="w"> </span>mkdir<span class="w"> </span>/data<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>mount<span class="w"> </span>/dev/sdc<span class="w"> </span>/data
+</code></pre></div>
+<div class="highlight"><pre><span></span><code><span class="c1"># Verify it&#39;s mounted</span>
+df<span class="w"> </span>-h<span class="w"> </span>/data
+</code></pre></div></p>
+<p>In a real workload, <code>/data</code> is where your application data, database files, or logs would live.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 24 — Exit the SSH session</p>
+<div class="highlight"><pre><span></span><code><span class="nb">exit</span>
+</code></pre></div>
+<p>The VM continues running in Azure.</p>
+</div>
+<hr />
+<h2 id="vm-lifecycle-stop-vs-deallocate">VM Lifecycle — Stop vs Deallocate</h2>
+<p>This is one of the most important cost concepts for VMs and one of the most common mistakes beginners make.</p>
+<pre class="mermaid"><code>graph LR
+    RUNNING["▶️ Running\n─────────────────────\nCompute: ✅ Billed\nOS disk: ✅ Billed\nPublic IP: ✅ Billed\nData in memory: ✅ Preserved"]
+
+    STOPPED["⏹️ Stopped (OS-level)\n─────────────────────\nTriggered by shutdown inside\nthe OS or Stop in portal\n─────────────────────\nCompute: ✅ STILL BILLED\nOS disk: ✅ Billed\nPublic IP: ✅ Billed\nData in memory: ❌ Lost"]
+
+    DEALLOCATED["💤 Deallocated\n─────────────────────\nTriggered by Stop (Deallocate)\nin portal or auto-shutdown\n─────────────────────\nCompute: ❌ NOT BILLED\nOS disk: ✅ Billed (storage only)\nPublic IP: ✅ if static\nData in memory: ❌ Lost"]
+
+    RUNNING --&gt;|"Shut down from inside\nor Stop in portal"| STOPPED
+    RUNNING --&gt;|"Stop (Deallocate)\nor auto-shutdown"| DEALLOCATED
+    DEALLOCATED --&gt;|"Start button"| RUNNING</code></pre>
+<p><strong>The key insight:</strong> When you shut down from inside the VM (<code>sudo shutdown now</code>) or press Stop in the portal, Azure keeps the compute capacity <strong>reserved</strong> for you. You're still paying for the vCPU and RAM.</p>
+<p><strong>Deallocating</strong> releases that reserved compute back to Azure's pool. You pay only for disk storage — a few cents per GB per month — until you start the VM again.</p>
+<hr />
+<h3 id="hands-on-deallocate-and-inspect-the-nsg">Hands-On: Deallocate and Inspect the NSG</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 25 — Deallocate the VM</p>
+<p>In the Azure Portal on your VM's Overview page, click the <strong>"Stop"</strong> button in the top toolbar.</p>
+<p>A dialog appears: <strong>"Do you want to reserve the public IP address?"</strong> — leave it unchecked (we're using a dynamic IP).</p>
+<p>Click <strong>"OK."</strong></p>
+<p>The VM status changes: <strong>Running → Stopping → Stopped (deallocated).</strong> The Public IP disappears from the Overview — it's been released. The compute charge has now stopped.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 26 — Start the VM again (optional)</p>
+<p>Click <strong>"Start."</strong> The VM goes Running in about 30–60 seconds. Notice the Public IP has changed — that's the tradeoff of a dynamic IP.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 27 — Navigate to the NSG and review rules</p>
+<p>In the Azure Portal search bar, type <strong>"Network security groups"</strong> and click <strong>"ubuntu-demo-vm01-nsg."</strong> Click <strong>"Inbound security rules"</strong> and confirm:</p>
+<table>
+<thead>
+<tr>
+<th>Priority</th>
+<th>Name</th>
+<th>Port</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>300</td>
+<td>SSH</td>
+<td>22</td>
+<td>Allow</td>
+</tr>
+<tr>
+<td>65000</td>
+<td>AllowVnetInBound</td>
+<td>Any</td>
+<td>Allow</td>
+</tr>
+<tr>
+<td>65001</td>
+<td>AllowAzureLoadBalancerInBound</td>
+<td>Any</td>
+<td>Allow</td>
+</tr>
+<tr>
+<td>65500</td>
+<td>DenyAllInBound</td>
+<td>Any</td>
+<td>Deny</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 28 — Add an HTTP rule</p>
+<p>Click <strong>"+ Add"</strong> and configure:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Destination port</td>
+<td><code>80</code></td>
+</tr>
+<tr>
+<td>Protocol</td>
+<td><strong>TCP</strong></td>
+</tr>
+<tr>
+<td>Action</td>
+<td><strong>Allow</strong></td>
+</tr>
+<tr>
+<td>Priority</td>
+<td><code>310</code></td>
+</tr>
+<tr>
+<td>Name</td>
+<td><code>HTTP</code></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Add."</strong></p>
+<blockquote>
+<p>We're not running a web server yet — but this is exactly how you'd open port 80 when you install one. Add the NSG rule first, then install the software.</p>
+</blockquote>
+</div>
+<hr />
+<h2 id="windows-vms-and-connecting-via-rdp">Windows VMs and Connecting via RDP</h2>
+<p>So far today we've been working with Linux. But Azure supports Windows VMs just as fully — Windows Server is the standard OS for .NET applications, IIS web servers, Active Directory domain controllers, and any workload that requires a Windows environment.</p>
+<p>Connecting to a Windows VM uses a completely different protocol: <strong>RDP (Remote Desktop Protocol)</strong> — you get a full graphical desktop in a window on your machine.</p>
+<h3 id="key-concepts">Key Concepts</h3>
+<p><strong>RDP — Remote Desktop Protocol:</strong>
+- Microsoft's protocol for remote graphical desktop access
+- Runs on <strong>TCP port 3389</strong> (you must open this in the NSG — same as SSH on port 22)
+- Built into every version of Windows — you connect using the <strong>Remote Desktop Connection</strong> app (<code>mstsc</code>) on your local machine
+- Gives you a full Windows Server desktop in a window — mouse, keyboard, file explorer, everything</p>
+<p><strong>Windows VM vs Linux VM:</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Linux VM (Ubuntu)</th>
+<th>Windows VM (Windows Server)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Connection</td>
+<td>SSH — terminal only</td>
+<td>RDP — full graphical desktop</td>
+</tr>
+<tr>
+<td>Port to open</td>
+<td>22</td>
+<td>3389</td>
+</tr>
+<tr>
+<td>Authentication</td>
+<td>SSH key (recommended) or password</td>
+<td>Username + password</td>
+</tr>
+<tr>
+<td>OS license cost</td>
+<td>Included free</td>
+<td>Windows Server license added (~$0.02–$0.10/hr extra)</td>
+</tr>
+<tr>
+<td>Use case</td>
+<td>Web servers, containers, DevOps, APIs</td>
+<td>.NET apps, IIS, Active Directory, SQL Server on VM</td>
+</tr>
+<tr>
+<td>Minimum size</td>
+<td>B1s (1 vCPU, 1 GB RAM)</td>
+<td><strong>B2s (2 vCPU, 4 GB RAM)</strong> — Windows Server needs RAM</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="admonition-title">Windows VMs are not Free Tier</p>
+<p>Linux VMs on B1s are fully covered by the Azure Free Tier (750 hours/month). Windows VMs carry an additional Windows Server license fee on top of compute — even on the same B1s size. For this demo we use <strong>B2s</strong> which is a paid instance. Instructor demonstrates; students watch or use trial credits.</p>
+</div>
+<hr />
+<h3 id="hands-on-create-a-windows-server-vm-and-connect-via-rdp">Hands-On: Create a Windows Server VM and Connect via RDP</h3>
+<p><strong>💳 Paid — Instructor Demo.</strong> B2s Windows Server costs approximately $0.10/hr. Deallocate immediately after the demo.</p>
+<div class="admonition success">
+<p class="admonition-title">Step 29 — Start the VM creation wizard</p>
+<p>In the Azure Portal, search <strong>"Virtual machines"</strong> → <strong>"+ Create"</strong> → <strong>"Azure virtual machine."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 30 — Configure the Basics tab</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Resource group</td>
+<td><code>vm-demo-rg</code></td>
+</tr>
+<tr>
+<td>Virtual machine name</td>
+<td><code>windows-demo-vm01</code></td>
+</tr>
+<tr>
+<td>Region</td>
+<td><em>(your region)</em></td>
+</tr>
+<tr>
+<td>Availability options</td>
+<td><strong>No infrastructure redundancy required</strong></td>
+</tr>
+<tr>
+<td>Image</td>
+<td><strong>Windows Server 2022 Datacenter — x64 Gen2</strong></td>
+</tr>
+<tr>
+<td>Size</td>
+<td>Click <strong>"See all sizes"</strong> → select <strong>B2s (2 vCPU, 4 GiB RAM)</strong></td>
+</tr>
+<tr>
+<td>Authentication type</td>
+<td><strong>Password</strong></td>
+</tr>
+<tr>
+<td>Username</td>
+<td><code>azureuser</code></td>
+</tr>
+<tr>
+<td>Password</td>
+<td><em>(create a strong password — min 12 chars, uppercase, number, symbol)</em></td>
+</tr>
+<tr>
+<td>Public inbound ports</td>
+<td><strong>Allow selected ports</strong></td>
+</tr>
+<tr>
+<td>Select inbound ports</td>
+<td><strong>RDP (3389)</strong></td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Why password instead of SSH key?</strong> Windows VMs use password authentication for RDP by default. You can add SSH key auth later for PowerShell remoting, but for RDP the username + password is the standard method.</p>
+</blockquote>
+<p>Click <strong>"Next: Disks &gt;"</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 31 — Disks tab</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OS disk type</td>
+<td><strong>Standard SSD</strong></td>
+</tr>
+<tr>
+<td>Delete with VM</td>
+<td>✅ Checked</td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Next: Networking &gt;"</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 32 — Networking tab</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Virtual network</td>
+<td><em>(same VNet as ubuntu-demo-vm01, or auto-create)</em></td>
+</tr>
+<tr>
+<td>Public IP</td>
+<td><em>(auto-generated)</em></td>
+</tr>
+<tr>
+<td>NIC NSG</td>
+<td><strong>Basic</strong></td>
+</tr>
+<tr>
+<td>Inbound ports</td>
+<td><strong>RDP (3389)</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Next: Management &gt;"</strong> → enable <strong>Auto-shutdown</strong> at 11 PM → click through to <strong>Review + create</strong> → <strong>Create.</strong></p>
+<p>Deployment takes 3–5 minutes for Windows Server (longer than Linux due to the larger image).</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 33 — Connect via RDP</p>
+<p>Once the VM status shows <strong>Running</strong>, click <strong>"Connect"</strong> in the top toolbar → <strong>"RDP."</strong></p>
+<p>Azure shows the <strong>Connect</strong> panel on the right. Click <strong>"Download RDP File."</strong> A <code>.rdp</code> file downloads to your machine.</p>
+<blockquote>
+<p>The <code>.rdp</code> file contains the VM's public IP, port, and connection settings pre-configured. Double-clicking it opens Remote Desktop Connection automatically.</p>
+</blockquote>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 34 — Open the RDP file</p>
+<p>On your Windows machine, <strong>double-click</strong> the downloaded <code>.rdp</code> file.</p>
+<p>A security dialog appears — click <strong>"Connect."</strong></p>
+<p>Enter the credentials you set during VM creation:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Username</td>
+<td><code>azureuser</code></td>
+</tr>
+<tr>
+<td>Password</td>
+<td><em>(the password you created)</em></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"OK."</strong> Another dialog may appear about the certificate — click <strong>"Yes."</strong></p>
+<p>The <strong>Windows Server 2022 desktop</strong> opens in your Remote Desktop window. You are now inside your Windows VM running in Microsoft's data center.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 35 — Explore the Windows Server desktop</p>
+<p>Look around the desktop:
+- Open <strong>Server Manager</strong> (opens automatically) — this is the main admin tool for Windows Server
+- Open <strong>Task Manager</strong> (<code>Ctrl + Shift + Esc</code>) — see the 2 vCPUs and ~4 GB RAM
+- Open <strong>PowerShell</strong> and run <code>ipconfig</code> — you'll see the private IP address (10.0.x.x)
+- Open <strong>Internet Explorer</strong> or <strong>Edge</strong> and visit <code>http://whatismyip.com</code> — it shows your VM's public IP, confirming your browser traffic exits from Azure, not your local machine</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 36 — Disconnect and deallocate</p>
+<p>To disconnect from RDP without shutting down: click the <strong>X</strong> on the Remote Desktop window title bar, or press <strong><code>Win + D</code></strong> then close. The VM keeps running.</p>
+<p>To deallocate: in the Azure Portal, open <code>windows-demo-vm01</code> → click <strong>"Stop"</strong> → confirm deallocation.</p>
+<blockquote>
+<p>Always deallocate Windows VMs immediately after practice — the Windows Server license fee keeps accruing while the VM is in a stopped (not deallocated) state.</p>
+</blockquote>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Connecting from macOS or Linux</p>
+<p>Windows Remote Desktop is not built into macOS or Linux. Options:
+- <strong>macOS:</strong> Download <strong>Microsoft Remote Desktop</strong> (free) from the Mac App Store — opens <code>.rdp</code> files natively
+- <strong>Linux:</strong> Use <strong>Remmina</strong> (open source RDP client) or <code>xfreerdp</code> from the terminal
+- <strong>Any OS:</strong> Use <strong>Azure Bastion</strong> (covered on Day 3) — browser-based RDP with no client software needed</p>
+</div>
+<hr />
+<h2 id="summary">Summary</h2>
+<pre class="mermaid"><code>graph TD
+    VM["Azure Virtual Machine\nRenting compute in Microsoft's DC"]
+    VM --&gt; SERIES["VM Series\nB · D · F · E · N · H · M"]
+    VM --&gt; PRICING["Pricing Models\nPAYG · Reserved · Spot"]
+    VM --&gt; OS["OS + Marketplace\nUbuntu · Windows Server\nRHEL · Custom Images"]
+    VM --&gt; DISKS["Managed Disks\nOS Disk + Data Disks\nHDD → SSD → Premium → Ultra"]
+    VM --&gt; NETWORK["Networking\nPublic IP · DNS Label\nNSG Rules"]
+    VM --&gt; STATES["VM States\nRunning → Stopped → Deallocated\nOnly deallocated stops compute billing"]</code></pre>
+<p>You've gone from zero to a live Ubuntu server in Microsoft's data center — created, configured, connected to over SSH, explored from the inside, and shut down correctly. These are the fundamental mechanics you'll use for every VM in this course.</p>
+<p><strong>What's next on Day 3:</strong> Availability Sets, Availability Zones, VM Scale Sets, VM backups, Azure Bastion, and custom script extensions. Same service, much more power.</p>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<table>
+<thead>
+<tr>
+<th>Concept</th>
+<th>What to remember</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Virtual Machines</td>
+<td>Software-defined computers in Microsoft's data centers — you control the OS; Azure controls the hardware</td>
+</tr>
+<tr>
+<td>B-series (B1s)</td>
+<td>Burstable, cheapest series — Free Tier includes 750 hrs/month</td>
+</tr>
+<tr>
+<td>D-series</td>
+<td>General purpose — balanced CPU/memory — most common choice for production</td>
+</tr>
+<tr>
+<td>Pay-as-you-go</td>
+<td>Charged per second, no commitment, most expensive per hour</td>
+</tr>
+<tr>
+<td>Reserved Instances</td>
+<td>1-year saves ~37%; 3-year saves ~57% — commit when workloads are stable</td>
+</tr>
+<tr>
+<td>Spot VMs</td>
+<td>Up to 90% cheaper — evicted with 30s notice — batch and fault-tolerant workloads only</td>
+</tr>
+<tr>
+<td>OS Disk</td>
+<td>Where the OS lives — never store app data here</td>
+</tr>
+<tr>
+<td>Data Disks</td>
+<td>Separate storage for app data, databases, logs — survives VM recreation if detached first</td>
+</tr>
+<tr>
+<td>Standard SSD vs Premium SSD</td>
+<td>Standard SSD for dev/test; Premium SSD for production databases</td>
+</tr>
+<tr>
+<td>Public IP</td>
+<td>Dynamic (changes on deallocate) or Static (fixed) — use DNS labels to abstract IP changes</td>
+</tr>
+<tr>
+<td>NSG</td>
+<td>Layer 4 firewall — lower priority number = higher precedence — default deny-all protects your VM</td>
+</tr>
+<tr>
+<td>Stopped ≠ Deallocated</td>
+<td>Stopped VM still bills for compute — always use Stop (Deallocate) or auto-shutdown</td>
+</tr>
+<tr>
+<td>Boot diagnostics</td>
+<td>Enable it — your only way to see what a headless VM is doing if it fails to boot</td>
+</tr>
+<tr>
+<td>Auto-shutdown</td>
+<td>Enable on every learning VM — automatically deallocates nightly so you're never accidentally billed overnight</td>
+</tr>
+<tr>
+<td>SSH key auth</td>
+<td>More secure than passwords — download and safeguard your .pem file; it cannot be recovered</td>
+</tr>
+<tr>
+<td>Windows VMs</td>
+<td>Use Windows Server for .NET, IIS, AD workloads — carry an OS license fee even on Free Tier</td>
+</tr>
+<tr>
+<td>RDP</td>
+<td>Remote Desktop Protocol on port 3389 — gives a full graphical desktop — open in NSG before connecting</td>
+</tr>
+<tr>
+<td>RDP file</td>
+<td>Download from the portal Connect blade — double-click to launch Remote Desktop Connection on Windows</td>
+</tr>
+<tr>
+<td>macOS/Linux RDP</td>
+<td>Use Microsoft Remote Desktop (Mac App Store) or Remmina (Linux) — or use Azure Bastion from any browser</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<p><a href="../day02_fundamentals/"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg></span> Previous: Day 2 — Azure Fundamentals</a> &nbsp;&nbsp; <a href="day04_vms_part2.md"><span class="twemoji"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg></span> Next: Day 4 — Virtual Machines Part 2</a></p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../day02_fundamentals/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Day 2 — Core Concepts &amp; Portal">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Day 2 — Core Concepts & Portal
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../day04_web_hosting_architecture/" class="md-footer__link md-footer__link--next" aria-label="Next: Day 4 — Web Servers on Azure VMs: Architecture + IIS &amp; Nginx">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

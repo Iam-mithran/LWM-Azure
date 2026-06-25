@@ -1,0 +1,1997 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A complete beginner's guide to Azure Cloud and Azure DevOps — 29 days, zero assumed cloud knowledge.">
+      
+      
+      
+        <link rel="canonical" href="https://iam-mithran.github.io/LWM-Azure/day09_intro_to_networking/">
+      
+      
+        <link rel="prev" href="../day08_storage_files_queue_tables/">
+      
+      
+        <link rel="next" href="../day10_virtual_network/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes - LearnWithMithran — Azure Complete Beginner's Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#day-9-introduction-to-networking-ip-addresses-binary-cidr-subnet-classes" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-header__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LearnWithMithran — Azure Complete Beginner's Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-nav__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LearnWithMithran — Azure Complete Beginner's Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day01_account_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day02_fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day03_vms_part1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day04_web_hosting_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day05_vms_part3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day06_app_service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day07_storage_account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day08_storage_files_queue_tables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-what-is-an-ip-address" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — What Is an IP Address?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — What Is an IP Address?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-basic-idea" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Basic Idea
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ipv4-the-format-youll-see-everywhere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IPv4 — The Format You'll See Everywhere
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-bits-bytes-binary-the-language-behind-every-ip-address" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Bits, Bytes &amp; Binary: The Language Behind Every IP Address
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Bits, Bytes &amp; Binary: The Language Behind Every IP Address">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-bit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Bit?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-byte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Byte?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-binary-to-decimal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From Binary to Decimal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-every-octet-maxes-out-at-255" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Every Octet Maxes Out at 255
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#putting-it-all-together-a-32-bit-address" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Putting It All Together: A 32-Bit Address
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-public-ip-vs-private-ip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Public IP vs Private IP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Public IP vs Private IP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#public-ip-addresses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public IP Addresses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#private-ip-addresses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Private IP Addresses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-three-reserved-private-ip-ranges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Three Reserved Private IP Ranges
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-do-private-devices-reach-the-internet-nat-briefly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Do Private Devices Reach the Internet? (NAT, Briefly)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-view-public-and-private-ips-on-an-existing-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: View Public and Private IPs on an Existing VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-ip-address-classes-classful-addressing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — IP Address Classes (Classful Addressing)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — IP Address Classes (Classful Addressing)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-bit-of-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A Bit of History
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-classful-addressing-existed-and-why-it-was-a-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Classful Addressing Existed — and Why It Was a Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-classes-still-matter-today" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Classes Still Matter Today
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-cidr-classless-inter-domain-routing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — CIDR: Classless Inter-Domain Routing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — CIDR: Classless Inter-Domain Routing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-cidr-solves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What CIDR Solves
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-subnet-mask-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Subnet Mask Connection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calculating-the-number-of-addresses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Calculating the Number of Addresses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-address-broadcast-address-usable-hosts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Network Address, Broadcast Address &amp; Usable Hosts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-256-minus-the-mask-trick" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The "256 Minus the Mask" Trick
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-watch-azure-calculate-cidr-live" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Watch Azure Calculate CIDR Live
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day10_virtual_network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day11_vnet_advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day12_load_balancer_vmss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-what-is-an-ip-address" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — What Is an IP Address?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — What Is an IP Address?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-basic-idea" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Basic Idea
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ipv4-the-format-youll-see-everywhere" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        IPv4 — The Format You'll See Everywhere
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-bits-bytes-binary-the-language-behind-every-ip-address" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Bits, Bytes &amp; Binary: The Language Behind Every IP Address
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Bits, Bytes &amp; Binary: The Language Behind Every IP Address">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-bit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Bit?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-is-a-byte" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is a Byte?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#from-binary-to-decimal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From Binary to Decimal
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-every-octet-maxes-out-at-255" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Every Octet Maxes Out at 255
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#putting-it-all-together-a-32-bit-address" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Putting It All Together: A 32-Bit Address
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-public-ip-vs-private-ip" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Public IP vs Private IP
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Public IP vs Private IP">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#public-ip-addresses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public IP Addresses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#private-ip-addresses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Private IP Addresses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-three-reserved-private-ip-ranges" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Three Reserved Private IP Ranges
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-do-private-devices-reach-the-internet-nat-briefly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Do Private Devices Reach the Internet? (NAT, Briefly)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-view-public-and-private-ips-on-an-existing-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: View Public and Private IPs on an Existing VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-ip-address-classes-classful-addressing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — IP Address Classes (Classful Addressing)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — IP Address Classes (Classful Addressing)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-bit-of-history" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A Bit of History
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-classful-addressing-existed-and-why-it-was-a-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Classful Addressing Existed — and Why It Was a Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#why-classes-still-matter-today" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Classes Still Matter Today
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-cidr-classless-inter-domain-routing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — CIDR: Classless Inter-Domain Routing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — CIDR: Classless Inter-Domain Routing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-cidr-solves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What CIDR Solves
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-subnet-mask-connection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Subnet Mask Connection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calculating-the-number-of-addresses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Calculating the Number of Addresses
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#network-address-broadcast-address-usable-hosts" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Network Address, Broadcast Address &amp; Usable Hosts
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-256-minus-the-mask-trick" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The "256 Minus the Mask" Trick
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-watch-azure-calculate-cidr-live" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Watch Azure Calculate CIDR Live
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="day-9-introduction-to-networking-ip-addresses-binary-cidr-subnet-classes">Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR &amp; Subnet Classes</h1>
+<p><strong>Phase 2 — Networking</strong></p>
+<blockquote>
+<p>Before we touch a single Azure networking service, we need to talk about something that has nothing to do with Azure at all: how computers address each other on a network. Every Azure networking concept you're about to learn — Virtual Networks, subnets, address spaces, peering, even firewall rules — is built on one foundation: the <strong>IP address</strong> and a notation called <strong>CIDR</strong>. If a block like <code>10.0.1.0/24</code> currently looks like a string of random numbers to you, that's exactly what this video fixes. By the end, you'll be able to look at any CIDR block and instantly know how many addresses it contains, where it starts, and where it ends — because that skill is the single most useful thing you can carry into the rest of this networking phase.</p>
+</blockquote>
+<hr />
+<h2 id="what-youll-learn">What You'll Learn</h2>
+<ul>
+<li>What an IP address actually is and why every device needs one</li>
+<li>Bits, bytes, and binary — the language computers use to represent numbers, and why it matters for IP addresses</li>
+<li>How a 32-bit IPv4 address becomes the familiar <code>10.0.1.5</code> format</li>
+<li>The difference between a <strong>public IP</strong> and a <strong>private IP</strong> — and the exact private IP ranges every cloud network uses</li>
+<li>IP address <strong>classes</strong> (A, B, C, D, E) — where they came from, and why you still see their fingerprints everywhere</li>
+<li><strong>CIDR notation</strong> — what <code>/16</code>, <code>/24</code>, <code>/28</code> actually mean, and a simple trick to calculate address ranges in your head</li>
+<li>How to read the Azure Portal's live address-space calculator (a sneak peek at what's coming in Day 10)</li>
+</ul>
+<hr />
+<h2 id="before-we-begin">Before We Begin</h2>
+<p>Today is <strong>100% conceptual and 100% free</strong>. There's no resource creation required — we'll spend most of our time on the whiteboard (so to speak), with one short trip into the Azure Portal just to look at IP addresses on resources you may have already created in earlier days, and to preview a tool you'll use heavily in Day 10.</p>
+<p>If you skipped earlier days and don't have any resources deployed yet, that's fine — everything here stands on its own, and the portal walkthrough is purely observational.</p>
+<hr />
+<h2 id="part-1-what-is-an-ip-address">Part 1 — What Is an IP Address?</h2>
+<h3 id="the-basic-idea">The Basic Idea</h3>
+<p>Every device that communicates on a network — your laptop, your phone, a web server, an Azure virtual machine — needs a unique address so that other devices know where to send data. That address is called an <strong>IP address</strong> (IP stands for <strong>Internet Protocol</strong>).</p>
+<p>Think of it like a street address. If you want a letter to reach your house, the postal system needs a unique address to route it to. If a packet of data wants to reach your virtual machine, the network needs a unique IP address to route it to. No address, no delivery.</p>
+<h3 id="ipv4-the-format-youll-see-everywhere">IPv4 — The Format You'll See Everywhere</h3>
+<p>There are two versions of IP addressing in use today: <strong>IPv4</strong> and <strong>IPv6</strong>. IPv6 exists because the world is running out of IPv4 addresses (we'll see exactly why later in this video), but IPv4 is still what you'll work with for the vast majority of this course — and for the vast majority of real-world Azure networking. Every VNet, subnet, and NSG rule you'll configure uses IPv4 addressing, so that's our focus today.</p>
+<p>An IPv4 address looks like this:</p>
+<div class="highlight"><pre><span></span><code>10.0.1.5
+</code></pre></div>
+<p>Four numbers, separated by dots, each between <strong>0 and 255</strong>. This format is called <strong>dotted decimal notation</strong>. But here's the thing — your computer doesn't actually think in decimal. It thinks in <strong>binary</strong>. The dotted decimal format is just a human-friendly translation of what's really a 32-bit binary number. To understand <em>why</em> the numbers are limited to 0–255, why CIDR notation works the way it does, and why the private IP ranges look so oddly specific, we need to drop down one level — to bits and bytes.</p>
+<hr />
+<h2 id="part-2-bits-bytes-binary-the-language-behind-every-ip-address">Part 2 — Bits, Bytes &amp; Binary: The Language Behind Every IP Address</h2>
+<h3 id="what-is-a-bit">What Is a Bit?</h3>
+<p>A <strong>bit</strong> (short for "binary digit") is the smallest unit of data a computer works with. A bit can only be one of two values: <strong>0</strong> or <strong>1</strong>. On or off. Yes or no. That's it.</p>
+<h3 id="what-is-a-byte">What Is a Byte?</h3>
+<p>A <strong>byte</strong> is a group of <strong>8 bits</strong>. In IP addressing, a byte is also called an <strong>octet</strong> — you'll hear both terms, and they mean exactly the same thing in this context: 8 bits, grouped together.</p>
+<h3 id="from-binary-to-decimal">From Binary to Decimal</h3>
+<p>Each bit in a byte represents a power of 2, depending on its position. Reading from left (most significant) to right (least significant), the position values are:</p>
+<table>
+<thead>
+<tr>
+<th>Bit position</th>
+<th>7</th>
+<th>6</th>
+<th>5</th>
+<th>4</th>
+<th>3</th>
+<th>2</th>
+<th>1</th>
+<th>0</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Value</strong></td>
+<td>128</td>
+<td>64</td>
+<td>32</td>
+<td>16</td>
+<td>8</td>
+<td>4</td>
+<td>2</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+<p>To convert a binary byte to decimal, you add up the position values wherever there's a <code>1</code>.</p>
+<p><strong>Example:</strong> Let's convert <code>00001010</code> to decimal.</p>
+<table>
+<thead>
+<tr>
+<th>128</th>
+<th>64</th>
+<th>32</th>
+<th>16</th>
+<th>8</th>
+<th>4</th>
+<th>2</th>
+<th>1</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+<td>1</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>Add up the columns where there's a <code>1</code>: <code>8 + 2 = 10</code>. So <code>00001010</code> in binary = <code>10</code> in decimal.</p>
+<h3 id="why-every-octet-maxes-out-at-255">Why Every Octet Maxes Out at 255</h3>
+<p>This is the key insight: <strong>8 bits can represent exactly 256 different values</strong> — because each of the 8 positions can independently be a 0 or a 1, giving you 2⁸ = 256 combinations. Those combinations represent the decimal numbers <strong>0 through 255</strong> (256 values total, starting from zero).</p>
+<p>That's why every number in an IP address (<code>10.0.1.5</code>) is between 0 and 255 — each number is one byte, and one byte simply cannot represent anything higher than 255. If you ever see something like <code>10.0.1.300</code> written as an IP address, you know immediately it's invalid — 300 doesn't fit in a byte.</p>
+<h3 id="putting-it-all-together-a-32-bit-address">Putting It All Together: A 32-Bit Address</h3>
+<p>An IPv4 address is <strong>32 bits</strong> total — which is exactly <strong>4 bytes</strong>, or <strong>4 octets</strong>. That's why an IP address has exactly four numbers separated by dots.</p>
+<p>Let's convert the full address <code>10.0.1.5</code> to binary, octet by octet:</p>
+<table>
+<thead>
+<tr>
+<th>Decimal</th>
+<th>Binary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10</td>
+<td><code>00001010</code></td>
+</tr>
+<tr>
+<td>0</td>
+<td><code>00000000</code></td>
+</tr>
+<tr>
+<td>1</td>
+<td><code>00000001</code></td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>00000101</code></td>
+</tr>
+</tbody>
+</table>
+<p>Strung together, the full 32-bit binary representation of <code>10.0.1.5</code> is:</p>
+<div class="highlight"><pre><span></span><code>00001010.00000000.00000001.00000101
+</code></pre></div>
+<p>Your computer, your VM's network interface, and every router in between work with that 32-bit binary string. The dotted decimal notation (<code>10.0.1.5</code>) exists purely so humans don't have to read 32 ones and zeros every time.</p>
+<blockquote>
+<p><strong>Why this matters:</strong> Every CIDR calculation you'll do from here on — figuring out how many addresses are in a <code>/24</code>, or where one subnet ends and the next begins — is really just binary arithmetic on these 32 bits. Once you can see an IP address as "32 bits split into 4 groups of 8," CIDR stops being mysterious.</p>
+</blockquote>
+<hr />
+<h2 id="part-3-public-ip-vs-private-ip">Part 3 — Public IP vs Private IP</h2>
+<p>Now that we know what an IP address <em>is</em>, let's talk about the two flavors every IP address comes in: <strong>public</strong> and <strong>private</strong>.</p>
+<h3 id="public-ip-addresses">Public IP Addresses</h3>
+<p>A <strong>public IP address</strong> is globally unique across the entire internet. No two devices on the public internet can have the same public IP at the same time. These addresses are allocated by regional internet registries and handed out to internet service providers, hosting companies, and cloud providers — including Microsoft for Azure.</p>
+<p>If you want something to be reachable <em>from anywhere on the internet</em> — a website, a public-facing API, a VPN endpoint — it needs a public IP address (or needs to sit behind something that has one, like a load balancer).</p>
+<h3 id="private-ip-addresses">Private IP Addresses</h3>
+<p>A <strong>private IP address</strong> is only meaningful <em>within</em> a specific private network. It's not globally unique — in fact, millions of different private networks around the world are all using the exact same private IP addresses right now, and that's completely fine, because none of those addresses are ever directly reachable from the public internet.</p>
+<p>Your home WiFi router almost certainly hands out addresses like <code>192.168.1.x</code> to your laptop and phone. Your office network might use <code>10.0.x.x</code>. An Azure Virtual Network typically uses <code>10.0.x.x</code> too. All of these can coexist without conflict because private IP ranges are <strong>reserved</strong> specifically for this purpose — they're carved out of the address space and the internet's routers are configured to never forward traffic to them.</p>
+<h3 id="the-three-reserved-private-ip-ranges">The Three Reserved Private IP Ranges</h3>
+<p>There are exactly three blocks of IPv4 addresses set aside for private use (defined in a standard called <strong>RFC 1918</strong>):</p>
+<table>
+<thead>
+<tr>
+<th>Range</th>
+<th>CIDR Notation</th>
+<th>Total Addresses</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>10.0.0.0</code> – <code>10.255.255.255</code></td>
+<td><code>10.0.0.0/8</code></td>
+<td>~16.7 million</td>
+</tr>
+<tr>
+<td><code>172.16.0.0</code> – <code>172.31.255.255</code></td>
+<td><code>172.16.0.0/12</code></td>
+<td>~1 million</td>
+</tr>
+<tr>
+<td><code>192.168.0.0</code> – <code>192.168.255.255</code></td>
+<td><code>192.168.0.0/16</code></td>
+<td>65,536</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Every Azure VNet you ever create will use an address space from one of these three ranges.</strong> This isn't optional — it's a fundamental rule of how private networking works. We'll spend a lot of time with <code>10.0.0.0/16</code> specifically in Day 10, because it's the most common and most flexible choice.</p>
+<h3 id="how-do-private-devices-reach-the-internet-nat-briefly">How Do Private Devices Reach the Internet? (NAT, Briefly)</h3>
+<p>You might be wondering: if private IPs aren't routable on the internet, how does a laptop with the address <code>192.168.1.50</code> ever load a website?</p>
+<p>The answer is a process called <strong>Network Address Translation (NAT)</strong>. Somewhere at the edge of your private network — your home router, or in Azure's case, the platform itself — there's a device with a public IP address. When your laptop sends traffic to the internet, that edge device swaps your private source IP for its own public IP, sends the request out, and when the response comes back, translates it back to your private IP and delivers it to you. Your laptop never needs its own public IP to <em>reach</em> the internet — it just can't be <em>reached from</em> the internet without one.</p>
+<pre class="mermaid"><code>graph LR
+    Laptop["Your Laptop\n192.168.1.50\n(Private IP)"]
+    Router["Router / NAT Gateway"]
+    Internet["🌐 Internet"]
+    Server["Web Server\n20.50.1.10\n(Public IP)"]
+
+    Laptop --&gt;|"Private IP"| Router
+    Router --&gt;|"Translated to a Public IP"| Internet
+    Internet --&gt; Server</code></pre>
+<p>This exact pattern carries straight into Azure: resources inside a VNet get <strong>private IPs</strong> from the VNet's address space by default, and can reach the internet outbound without any extra configuration. If you want something to be reachable <em>from</em> the internet — like a web server — you attach a separate <strong>Public IP</strong> resource to it. Public IP is never something a VNet "gives out" as part of its address space; it's always a distinct resource you opt into.</p>
+<hr />
+<h3 id="hands-on-view-public-and-private-ips-on-an-existing-vm">Hands-On: View Public and Private IPs on an Existing VM</h3>
+<p>Let's make this concrete by looking at real IP addresses on a resource you may have already created.</p>
+<p><strong>✅ Free Tier — follow along</strong></p>
+<p>If you completed Day 3's VM lab, you should have a VM called <code>ubuntu-demo-vm01</code> in the resource group <code>vm-demo-rg</code>. Let's go look at its addresses.</p>
+<ol>
+<li>In the Azure Portal, search for <strong>Virtual machines</strong> and open <code>ubuntu-demo-vm01</code>.</li>
+<li>On the <strong>Overview</strong> page, look for two fields:</li>
+<li><strong>Public IP address</strong> — something like <code>20.84.x.x</code>. This is globally unique and is how you SSH into the VM from your laptop.</li>
+<li><strong>Private IP address</strong> — something like <code>10.0.0.4</code>. Notice this falls inside the <code>10.0.0.0/8</code> private range we just covered.</li>
+<li>Click <strong>Networking</strong> in the left menu. You'll see the network interface attached to the VM, and you can confirm the same private IP listed there.</li>
+</ol>
+<p>Take a moment to actually look at those two numbers side by side. The public IP is what the <em>internet</em> uses to find this VM. The private IP is what <em>other resources inside the same VNet</em> use to find it. They serve completely different purposes, and from Day 10 onward, you'll be designing the address ranges that private IPs like <code>10.0.0.4</code> come from.</p>
+<p>If you don't have a VM deployed, that's fine — just keep this exercise in mind, and revisit it once you've built your VNet in Day 10.</p>
+<hr />
+<h2 id="part-4-ip-address-classes-classful-addressing">Part 4 — IP Address Classes (Classful Addressing)</h2>
+<h3 id="a-bit-of-history">A Bit of History</h3>
+<p>Back in the early days of the internet (the 1980s), IPv4 addresses weren't assigned with the flexible CIDR notation we use today. Instead, the entire address space was divided into rigid categories called <strong>classes</strong>, based on the value of the <em>first</em> octet. This system is called <strong>classful addressing</strong>.</p>
+<p>There are five classes — A through E:</p>
+<table>
+<thead>
+<tr>
+<th>Class</th>
+<th>First Octet Range</th>
+<th>Default Subnet Mask</th>
+<th>Default Prefix</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Class A</strong></td>
+<td>1 – 126</td>
+<td><code>255.0.0.0</code></td>
+<td><code>/8</code></td>
+<td>Huge networks (~16.7 million hosts each)</td>
+</tr>
+<tr>
+<td><strong>Class B</strong></td>
+<td>128 – 191</td>
+<td><code>255.255.0.0</code></td>
+<td><code>/16</code></td>
+<td>Medium networks (~65,536 hosts each)</td>
+</tr>
+<tr>
+<td><strong>Class C</strong></td>
+<td>192 – 223</td>
+<td><code>255.255.255.0</code></td>
+<td><code>/24</code></td>
+<td>Small networks (254 hosts each)</td>
+</tr>
+<tr>
+<td><strong>Class D</strong></td>
+<td>224 – 239</td>
+<td>—</td>
+<td>—</td>
+<td>Multicast (not for regular hosts)</td>
+</tr>
+<tr>
+<td><strong>Class E</strong></td>
+<td>240 – 255</td>
+<td>—</td>
+<td>—</td>
+<td>Reserved / experimental</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>You might notice <code>127</code> is missing from the Class A range above. That's intentional — <code>127.0.0.0/8</code> is reserved entirely for <strong>loopback</strong> addresses (<code>127.0.0.1</code> is "localhost" — your own machine talking to itself).</p>
+</blockquote>
+<h3 id="why-classful-addressing-existed-and-why-it-was-a-problem">Why Classful Addressing Existed — and Why It Was a Problem</h3>
+<p>The idea was simple: if you ran a small business and needed, say, 300 IP addresses for your computers, you'd be assigned a Class B network — giving you 65,536 addresses. You'd use 300 of them and the other <strong>65,236 would sit completely unused</strong>, unable to be assigned to anyone else, because the whole Class B block belonged to you.</p>
+<p>Multiply that waste across every organization on the early internet, and you can see the problem: the IPv4 address space (about 4.3 billion addresses total) was being exhausted at an alarming rate — not because the addresses were truly <em>needed</em>, but because the classful system forced allocations in huge, wasteful chunks.</p>
+<h3 id="why-classes-still-matter-today">Why Classes Still Matter Today</h3>
+<p>Classful addressing was officially replaced by CIDR back in 1993 (more on that in a moment), and modern networks — including every Azure VNet — don't think in terms of "Class A" or "Class B" anymore. So why are we covering this at all?</p>
+<p>Two reasons:</p>
+<ol>
+<li><strong>The private IP ranges are direct descendants of the class system.</strong> <code>10.0.0.0/8</code> is <em>exactly</em> the old Class A private block. <code>192.168.0.0/16</code> is 256 contiguous Class C blocks reserved for private use. <code>172.16.0.0/12</code> is a slice of the old Class B range. Understanding classes explains <em>why</em> these specific, oddly-shaped ranges were chosen.</li>
+<li><strong>You'll still hear the terminology.</strong> Experienced engineers will casually say "give it a /24" or "that's basically a Class C-sized network." Knowing what that means — even though it's informal — helps you follow real-world conversations and documentation.</li>
+</ol>
+<p>So: classes are history, but their fingerprints are everywhere. CIDR is what you'll actually <em>use</em>.</p>
+<hr />
+<h2 id="part-5-cidr-classless-inter-domain-routing">Part 5 — CIDR: Classless Inter-Domain Routing</h2>
+<h3 id="what-cidr-solves">What CIDR Solves</h3>
+<p><strong>CIDR</strong> stands for <strong>Classless Inter-Domain Routing</strong>. As the name suggests, it throws out the rigid class system entirely and replaces it with something far more flexible: you can define a network of <em>almost any size</em>, not just /8, /16, or /24.</p>
+<p>CIDR notation looks like this:</p>
+<div class="highlight"><pre><span></span><code>10.0.1.0/24
+</code></pre></div>
+<p>The number after the slash — the <strong>prefix length</strong> — tells you how many of the 32 bits (reading left to right) are "fixed" as the <strong>network portion</strong>. The remaining bits are available for <strong>host addresses</strong> within that network.</p>
+<h3 id="the-subnet-mask-connection">The Subnet Mask Connection</h3>
+<p>Every CIDR prefix has an equivalent <strong>subnet mask</strong> — a 32-bit number where the network bits are all <code>1</code>s and the host bits are all <code>0</code>s, written in the same dotted-decimal format as an IP address.</p>
+<p>For <code>/24</code>:</p>
+<div class="highlight"><pre><span></span><code>Prefix:      24 bits of 1s, then 8 bits of 0s
+Binary:      11111111.11111111.11111111.00000000
+Decimal:     255  .  255  .  255  .   0
+</code></pre></div>
+<p>So <code>/24</code> and <code>255.255.255.0</code> mean exactly the same thing — they're just two different ways of writing "the first 24 bits are the network, the last 8 bits are for hosts."</p>
+<h3 id="calculating-the-number-of-addresses">Calculating the Number of Addresses</h3>
+<p>Since the host portion has <code>(32 − prefix length)</code> bits, and each bit doubles the number of possible combinations, the formula is:</p>
+<div class="highlight"><pre><span></span><code>Number of addresses = 2^(32 − prefix length)
+</code></pre></div>
+<p>Here's a reference table covering the prefixes you'll encounter most often in Azure:</p>
+<table>
+<thead>
+<tr>
+<th>CIDR</th>
+<th>Subnet Mask</th>
+<th>Host Bits</th>
+<th>Total Addresses</th>
+<th>Typical Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/8</code></td>
+<td><code>255.0.0.0</code></td>
+<td>24</td>
+<td>16,777,216</td>
+<td>Entire private Class A block</td>
+</tr>
+<tr>
+<td><code>/16</code></td>
+<td><code>255.255.0.0</code></td>
+<td>16</td>
+<td>65,536</td>
+<td>Standard VNet address space</td>
+</tr>
+<tr>
+<td><code>/20</code></td>
+<td><code>255.255.240.0</code></td>
+<td>12</td>
+<td>4,096</td>
+<td>Large subnet</td>
+</tr>
+<tr>
+<td><code>/24</code></td>
+<td><code>255.255.255.0</code></td>
+<td>8</td>
+<td>256</td>
+<td>Typical subnet</td>
+</tr>
+<tr>
+<td><code>/26</code></td>
+<td><code>255.255.255.192</code></td>
+<td>6</td>
+<td>64</td>
+<td>Minimum size for AzureBastionSubnet</td>
+</tr>
+<tr>
+<td><code>/28</code></td>
+<td><code>255.255.255.240</code></td>
+<td>4</td>
+<td>16</td>
+<td>Small subnet (e.g., gateway)</td>
+</tr>
+<tr>
+<td><code>/29</code></td>
+<td><code>255.255.255.248</code></td>
+<td>3</td>
+<td>8</td>
+<td>Very small subnet</td>
+</tr>
+<tr>
+<td><code>/30</code></td>
+<td><code>255.255.255.252</code></td>
+<td>2</td>
+<td>4</td>
+<td>Point-to-point link</td>
+</tr>
+<tr>
+<td><code>/32</code></td>
+<td><code>255.255.255.255</code></td>
+<td>0</td>
+<td>1</td>
+<td>A single, specific host</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>Notice the pattern: every time the prefix length goes up by 1, the total number of addresses is cut in half. Going from <code>/24</code> (256) to <code>/25</code> gives you 128, then <code>/26</code> gives you 64, and so on.</p>
+</blockquote>
+<h3 id="network-address-broadcast-address-usable-hosts">Network Address, Broadcast Address &amp; Usable Hosts</h3>
+<p>Within any CIDR block, two addresses are special and can't be assigned to a device:</p>
+<ul>
+<li>The <strong>network address</strong> — the very first address in the block. It identifies the network itself, not a host.</li>
+<li>The <strong>broadcast address</strong> — the very last address in the block. It's used to send a message to <em>every</em> device on that network at once.</li>
+</ul>
+<p>So for a generic <code>/24</code> network like <code>192.168.1.0/24</code>:</p>
+<ul>
+<li><strong>Network address:</strong> <code>192.168.1.0</code></li>
+<li><strong>Usable host range:</strong> <code>192.168.1.1</code> through <code>192.168.1.254</code> (254 usable addresses)</li>
+<li><strong>Broadcast address:</strong> <code>192.168.1.255</code></li>
+</ul>
+<p>That's <code>256 − 2 = 254</code> usable addresses for a <code>/24</code>. This network/broadcast reservation applies to on-premises and traditional networking. (Azure adds a few of its own reservations on top of this for VNet subnets — we'll cover exactly what those are and why, with real numbers, in Day 10.)</p>
+<h3 id="the-256-minus-the-mask-trick">The "256 Minus the Mask" Trick</h3>
+<p>Here's the single most useful shortcut for reading CIDR blocks at a glance — especially for subnets sized <code>/24</code> through <code>/30</code>, which is what you'll be creating constantly in Azure.</p>
+<p><strong>The trick:</strong> Look at the subnet mask octet that isn't <code>0</code> or <code>255</code>. Subtract it from <code>256</code>. That's your <strong>block size</strong> — the interval at which new networks of that size begin.</p>
+<p><strong>Example — <code>/26</code> (mask <code>255.255.255.192</code>):</strong></p>
+<div class="highlight"><pre><span></span><code>256 − 192 = 64
+</code></pre></div>
+<p>So <code>/26</code> networks start at multiples of 64 in the last octet: <code>.0</code>, <code>.64</code>, <code>.128</code>, <code>.192</code>. If someone gives you <code>10.0.1.64/26</code>, you instantly know:</p>
+<ul>
+<li>It starts at <code>10.0.1.64</code></li>
+<li>The next block starts at <code>10.0.1.128</code></li>
+<li>So this block covers <code>10.0.1.64</code> through <code>10.0.1.127</code> (64 addresses)</li>
+</ul>
+<p><strong>Example — <code>/28</code> (mask <code>255.255.255.240</code>):</strong></p>
+<div class="highlight"><pre><span></span><code>256 − 240 = 16
+</code></pre></div>
+<p><code>/28</code> networks start at multiples of 16: <code>.0</code>, <code>.16</code>, <code>.32</code>, <code>.48</code>, ... <code>10.0.1.0/28</code> covers <code>10.0.1.0</code> through <code>10.0.1.15</code>.</p>
+<p><strong>Example — <code>/24</code> (mask <code>255.255.255.0</code>):</strong></p>
+<div class="highlight"><pre><span></span><code>256 − 0 = 256
+</code></pre></div>
+<p>A block size of 256 means the <em>entire</em> last octet belongs to one network — which is exactly why <code>/24</code> networks are written as <code>x.x.x.0</code> and contain addresses <code>.0</code> through <code>.255</code>. This is also why <code>/24</code> subnets are so common: each one cleanly maps to "one full value of the last octet," which is easy for humans to reason about.</p>
+<p>Keep this trick in your back pocket — you'll use it every time you look at a subnet's address range in the Azure Portal.</p>
+<hr />
+<h3 id="hands-on-watch-azure-calculate-cidr-live">Hands-On: Watch Azure Calculate CIDR Live</h3>
+<p>You don't actually need to memorize all of this math, because <strong>the Azure Portal does it for you in real time</strong>. Let's take a quick look — without creating anything yet, since we'll do that properly in Day 10.</p>
+<p><strong>✅ Free Tier — exploration only, nothing is created</strong></p>
+<ol>
+<li>In the Azure Portal, search for <strong>Virtual networks</strong> and click <strong>+ Create</strong>.</li>
+<li>Fill in any resource group and name just to get to the next tab — don't worry about getting these "right," we're only exploring.</li>
+<li>Click <strong>Next: IP Addresses</strong>.</li>
+<li>You'll see a default address space already populated: <code>10.0.0.0/16</code>, with Azure helpfully showing <strong>"65,536 addresses"</strong> next to it. That number should look familiar — it's exactly what our table above predicted for a <code>/16</code>.</li>
+<li>Click <strong>+ Add a subnet</strong>. Give it any name, and try changing the <strong>Subnet address range</strong> field:</li>
+<li>Set it to a <code>/24</code> — Azure will show <strong>256 addresses</strong>.</li>
+<li>Change it to a <code>/28</code> — Azure recalculates to <strong>16 addresses</strong>.</li>
+<li>Try a <code>/26</code> — <strong>64 addresses</strong>.</li>
+<li>Watch how Azure also adjusts the starting address as you change the prefix, snapping to the "block size" boundaries we just discussed.</li>
+<li>Once you're done exploring, click <strong>Cancel</strong> (or just navigate away) — we have not created anything, and there's nothing to clean up.</li>
+</ol>
+<p>This little calculator is going to be your best friend throughout Day 10 and beyond. Every time you're unsure how many addresses a CIDR block gives you, you can open this screen, type the prefix, and read the answer directly — but now you also understand <em>why</em> the number is what it is.</p>
+<hr />
+<h2 id="summary">Summary</h2>
+<p>Let's bring it all together. Here's the foundation we built today:</p>
+<p>An <strong>IP address</strong> is a unique identifier for a device on a network — for IPv4, it's a <strong>32-bit number</strong> written as four decimal numbers (octets) separated by dots, like <code>10.0.1.5</code>.</p>
+<p><strong>Bits and bytes</strong> are the language underneath: a bit is a single 0 or 1, a byte (or octet) is 8 bits, and 8 bits can represent exactly 256 values (0–255) — which is why every number in an IP address falls in that range.</p>
+<p>A <strong>public IP</strong> is globally unique and reachable from the internet. A <strong>private IP</strong> comes from one of three reserved ranges — <code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>, and <code>192.168.0.0/16</code> — and is only meaningful inside its own private network. <strong>NAT</strong> is the mechanism that lets private-IP devices reach the internet without needing a public IP of their own.</p>
+<p><strong>IP address classes</strong> (A through E) were the original, rigid way of carving up the address space — and while they're no longer used for routing, they directly explain why our private IP ranges look the way they do.</p>
+<p><strong>CIDR</strong> replaced classes with flexible, arbitrary-sized network blocks written as <code>/n</code>. The prefix length tells you how many bits are fixed; the formula <code>2^(32 − n)</code> tells you how many addresses you get; and the <strong>"256 minus the mask"</strong> trick lets you instantly figure out where a block starts and ends.</p>
+<h3 id="whats-next">What's Next</h3>
+<p>In <strong>Day 10 — Azure Virtual Network: Address Spaces, Subnets &amp; NSGs</strong>, we put all of this to work. You'll create your first VNet, choose its address space using exactly the CIDR knowledge from today, carve it into subnets for different purposes, and attach Network Security Groups to control traffic. Everything that felt abstract today — <code>/16</code>, <code>/24</code>, "65,536 addresses" — is about to become a real, working network you built yourself.</p>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<ul>
+<li>An <strong>IPv4 address</strong> is a 32-bit number, written as 4 decimal octets (0–255), separated by dots — each octet is exactly 1 byte (8 bits)</li>
+<li>8 bits = 256 possible values (0–255), which is <em>why</em> IP address numbers never exceed 255</li>
+<li><strong>Public IPs</strong> are globally unique and internet-routable; <strong>private IPs</strong> come from <code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>, or <code>192.168.0.0/16</code> and are reused across countless private networks via <strong>NAT</strong></li>
+<li><strong>IP classes (A–E)</strong> are historical, but they explain the shape of today's private IP ranges and live on in informal terminology ("a /24" ≈ "a Class C")</li>
+<li><strong>CIDR notation (<code>/n</code>)</strong> defines a network's size by specifying how many of the 32 bits are fixed; total addresses = <code>2^(32 − n)</code></li>
+<li>The <strong>"256 minus the subnet mask"</strong> trick instantly tells you the block size and boundaries of any <code>/24</code>–<code>/30</code> network</li>
+<li>The Azure Portal's VNet creation screen calculates CIDR address counts live — use it whenever you need a quick answer</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../day08_storage_files_queue_tables/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Day 8 — Azure Storage: Files, Queues, Tables &amp; Storage Explorer">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../day10_virtual_network/" class="md-footer__link md-footer__link--next" aria-label="Next: Day 10 — Azure Virtual Network: Address Spaces, Subnets &amp; NSGs">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

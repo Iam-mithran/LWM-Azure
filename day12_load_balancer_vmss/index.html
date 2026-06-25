@@ -1,0 +1,1889 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A complete beginner's guide to Azure Cloud and Azure DevOps — 29 days, zero assumed cloud knowledge.">
+      
+      
+      
+        <link rel="canonical" href="https://iam-mithran.github.io/LWM-Azure/day12_load_balancer_vmss/">
+      
+      
+        <link rel="prev" href="../day11_vnet_advanced/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Day 12 — Load Balancer, VM Scale Sets & Application Gateway - LearnWithMithran — Azure Complete Beginner's Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#day-12-load-balancer-vm-scale-sets-application-gateway-distributing-traffic-at-scale" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-header__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LearnWithMithran — Azure Complete Beginner's Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-nav__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LearnWithMithran — Azure Complete Beginner's Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day01_account_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day02_fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day03_vms_part1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day04_web_hosting_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day05_vms_part3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day06_app_service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day07_storage_account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day08_storage_files_queue_tables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day09_intro_to_networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day10_virtual_network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day11_vnet_advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-why-you-need-a-load-balancer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Why You Need a Load Balancer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Why You Need a Load Balancer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-one-vm-is-a-single-point-of-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem: One VM Is a Single Point of Failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#azure-load-balancer-layer-4-traffic-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Load Balancer — Layer 4 Traffic Distribution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-building-blocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Building Blocks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#public-vs-internal-load-balancer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public vs Internal Load Balancer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session-persistence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session Persistence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-build-the-lab-network-and-two-plain-vms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Build the Lab Network and Two Plain VMs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-vm-scale-sets-vmss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — VM Scale Sets (VMSS)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — VM Scale Sets (VMSS)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-with-managing-vms-by-hand" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem With Managing VMs by Hand
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-a-vm-scale-set-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a VM Scale Set Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#autoscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Autoscale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update-policy-and-overprovisioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update Policy and Overprovisioning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-with-load-balancer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration with Load Balancer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-build-a-vm-scale-set-with-an-integrated-load-balancer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Build a VM Scale Set with an Integrated Load Balancer
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-application-gateway-routing-by-url-not-just-by-port" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Application Gateway: Routing by URL, Not Just by Port
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Application Gateway: Routing by URL, Not Just by Port">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-load-balancer-cant-see-inside-the-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem: Load Balancer Can't See Inside the Request
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#application-gateway-layer-7-httphttps-routing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application Gateway — Layer 7 HTTP/HTTPS Routing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SKUs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-build-an-application-gateway-with-path-based-routing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Build an Application Gateway with Path-Based Routing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-why-you-need-a-load-balancer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Why You Need a Load Balancer
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Why You Need a Load Balancer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-one-vm-is-a-single-point-of-failure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem: One VM Is a Single Point of Failure
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#azure-load-balancer-layer-4-traffic-distribution" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Load Balancer — Layer 4 Traffic Distribution
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-building-blocks" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Building Blocks
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#public-vs-internal-load-balancer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Public vs Internal Load Balancer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#session-persistence" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Session Persistence
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-build-the-lab-network-and-two-plain-vms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Build the Lab Network and Two Plain VMs
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-vm-scale-sets-vmss" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — VM Scale Sets (VMSS)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — VM Scale Sets (VMSS)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-with-managing-vms-by-hand" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem With Managing VMs by Hand
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-a-vm-scale-set-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a VM Scale Set Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#autoscale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Autoscale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#update-policy-and-overprovisioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Update Policy and Overprovisioning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#integration-with-load-balancer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Integration with Load Balancer
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-build-a-vm-scale-set-with-an-integrated-load-balancer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Build a VM Scale Set with an Integrated Load Balancer
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-application-gateway-routing-by-url-not-just-by-port" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Application Gateway: Routing by URL, Not Just by Port
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Application Gateway: Routing by URL, Not Just by Port">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-load-balancer-cant-see-inside-the-request" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem: Load Balancer Can't See Inside the Request
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#application-gateway-layer-7-httphttps-routing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application Gateway — Layer 7 HTTP/HTTPS Routing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#skus" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SKUs
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-build-an-application-gateway-with-path-based-routing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Build an Application Gateway with Path-Based Routing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="day-12-load-balancer-vm-scale-sets-application-gateway-distributing-traffic-at-scale">Day 12 — Load Balancer, VM Scale Sets &amp; Application Gateway: Distributing Traffic at Scale</h1>
+<p><strong>Phase 3 — Networking</strong></p>
+<blockquote>
+<p>Every VM you've deployed so far in this course has been a single box. It has one public IP, it does one job, and if it goes down — or simply gets overwhelmed by traffic — your application goes down with it. That's fine for a lab. It's not fine for anything real. Today we fix that problem from three different angles: <strong>Azure Load Balancer</strong>, which spreads incoming traffic across multiple VMs at the network layer so no single machine is a bottleneck or a single point of failure; <strong>VM Scale Sets (VMSS)</strong>, which let Azure automatically add and remove VMs based on actual demand instead of you guessing capacity up front; and <strong>Application Gateway</strong>, which does the same job as Load Balancer but one layer up — understanding HTTP itself, so it can route by URL path, terminate SSL, and host multiple sites behind one IP. Together, these three are the standard pattern behind almost every scalable compute workload in Azure — and a heavily tested area on both the <strong>AZ-104 (Administrator)</strong> and <strong>AZ-305 (Solutions Architect)</strong> exams, so we'll call out exam-relevant details as we go. As with Day 11, today's lab builds its own VNet and resources from scratch so it's fully self-contained.</p>
+</blockquote>
+<hr />
+<h2 id="what-youll-learn">What You'll Learn</h2>
+<ul>
+<li><strong>Azure Load Balancer</strong> — Layer 4 (TCP/UDP) traffic distribution: frontend IPs, backend pools, health probes, load balancing rules, and inbound NAT rules</li>
+<li>Hands-on: build a resource group and VNet, deploy two plain VMs by hand, and wire up a Standard Load Balancer in front of them so you understand every moving part before automation takes over</li>
+<li>Public vs Internal Load Balancers, and SKU differences (Basic vs Standard — and why Basic no longer exists as an option)</li>
+<li><strong>VM Scale Sets (VMSS)</strong> — managing a fleet of identical VMs as a single resource, Uniform vs Flexible orchestration modes</li>
+<li>Hands-on: build a VMSS with an integrated Standard Load Balancer, install a web server fleet-wide with a custom script extension, and prove traffic is actually being distributed</li>
+<li><strong>Autoscale</strong> — scale-out and scale-in rules driven by real metrics, and watching a scale event happen live</li>
+<li><strong>Application Gateway</strong> — Layer 7 (HTTP/HTTPS) routing: listeners, routing rules, URL path-based routing, multi-site hosting, and SSL termination</li>
+<li>Hands-on: build an Application Gateway v2 with two backend pools and a path-based routing rule, and prove two different sites are served from one public IP</li>
+<li>How exam questions frame Load Balancer vs Application Gateway, and the decision points the AZ-104/AZ-305 exams like to test</li>
+</ul>
+<hr />
+<h2 id="before-we-begin">Before We Begin</h2>
+<p>A fully paid lab today — Load Balancer, VM Scale Set instances, and Application Gateway all carry a cost. We'll delete everything at the end.</p>
+<ul>
+<li><strong>Standard Load Balancer</strong>: ~$0.025/hour for the load balancer resource itself, plus ~$0.005/hour per load balancing rule and a small per-GB data processing charge. <strong>💳 Paid</strong>, but only a few cents for a short lab session.</li>
+<li><strong>VM Scale Set instances</strong> on <code>Standard_B1s</code>: same billing as any VM. The Free Tier's 750 B-series hours/month can cover a couple of instances for a short demo, but running several VMSS instances simultaneously alongside other VMs you may have left running elsewhere can exceed that allowance fast — budget for <strong>💳 small paid usage</strong> today.</li>
+<li><strong>Application Gateway v2</strong>: billed per gateway-hour (~$0.246/hour for Standard_v2) plus capacity units consumed. There's no way around this cost to even create one — <strong>💳 instructor demo</strong>, delete immediately after.</li>
+<li><strong>Public IP addresses</strong>: a Standard SKU public IP costs a small hourly amount once it's no longer attached to a running resource — we'll clean these up at the end.</li>
+<li>Everything else (the VNet, subnets, NSGs, autoscale rules themselves) is <strong>✅ free</strong>.</li>
+</ul>
+<blockquote>
+<p><strong>A note on Basic Load Balancer:</strong> if you've seen older tutorials mention a free "Basic" SKU, it no longer exists as a deployment option — Microsoft retired Basic Load Balancer on <strong>September 30, 2025</strong>. Every Load Balancer you create today, and from now on, is <strong>Standard SKU</strong>. This matters for the exam: Standard SKU is secure by default (closed unless you explicitly allow traffic via an NSG) and requires VMs in its backend pool to have Standard SKU public IPs or no public IP at all — mixing Basic and Standard resources together simply isn't possible anymore.</p>
+</blockquote>
+<hr />
+<h2 id="part-1-why-you-need-a-load-balancer">Part 1 — Why You Need a Load Balancer</h2>
+<h3 id="the-problem-one-vm-is-a-single-point-of-failure">The Problem: One VM Is a Single Point of Failure</h3>
+<p>Imagine you've built a web app on a single VM. Two things will eventually go wrong:</p>
+<ol>
+<li><strong>Traffic outgrows the VM.</strong> One <code>Standard_B1s</code> VM can only serve so many concurrent requests before response times degrade or the VM falls over entirely.</li>
+<li><strong>The VM fails.</strong> Hardware issues, OS crashes, a bad deployment — when there's only one VM, any failure is a full outage.</li>
+</ol>
+<p>The fix for both is the same: <strong>run more than one VM</strong>, and put something in front of them that spreads traffic across all of them and stops sending traffic to any VM that's unhealthy. That "something" is <strong>Azure Load Balancer</strong>.</p>
+<h3 id="azure-load-balancer-layer-4-traffic-distribution">Azure Load Balancer — Layer 4 Traffic Distribution</h3>
+<p>Azure Load Balancer operates at <strong>Layer 4</strong> of the OSI model — it works with TCP and UDP, routing based on IP addresses and ports. It has no awareness of HTTP, cookies, URL paths, or anything above the transport layer. (That's the job of <strong>Application Gateway</strong>, which we'll build later today in Part 3 — Layer 4 vs Layer 7 is exactly the line between the two services, and a favorite distinction on the exams.)</p>
+<p><strong>How traffic gets distributed:</strong> Azure Load Balancer uses a <strong>5-tuple hash</strong> to decide which backend VM gets a given connection:</p>
+<div class="highlight"><pre><span></span><code>(Source IP, Source Port, Destination IP, Destination Port, Protocol)
+</code></pre></div>
+<p>Because the hash is calculated per-connection, the same client will usually land on the same backend VM for the duration of one TCP connection, but a new connection (even from the same client) can land on a different VM. There's no central "traffic cop" making smart decisions — it's a deterministic hash, which is why Load Balancer can operate at such high throughput with very low latency.</p>
+<h3 id="the-building-blocks">The Building Blocks</h3>
+<p>Every Azure Load Balancer is made of four pieces:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Frontend IP configuration</strong></td>
+<td>The IP address clients connect to — public (internet-facing) or private (internal to a VNet)</td>
+</tr>
+<tr>
+<td><strong>Backend pool</strong></td>
+<td>The group of VMs (or VMSS instances) that receive distributed traffic</td>
+</tr>
+<tr>
+<td><strong>Health probe</strong></td>
+<td>A periodic check (TCP or HTTP/HTTPS) against each backend VM; any VM that fails the probe is automatically pulled out of rotation until it passes again</td>
+</tr>
+<tr>
+<td><strong>Load balancing rule</strong></td>
+<td>Ties it together — "traffic arriving on frontend port X, protocol Y, gets sent to backend port Z, using health probe P"</td>
+</tr>
+</tbody>
+</table>
+<p>There's a fifth, optional piece:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Inbound NAT rule</strong></td>
+<td>Forwards a specific frontend port to a specific <em>individual</em> backend VM — used for direct management access (e.g., SSH to VM #2 specifically), bypassing the load-balanced pool entirely</td>
+</tr>
+</tbody>
+</table>
+<pre class="mermaid"><code>graph TD
+    Client["Client"]
+    FE["Frontend IP\n(Public, port 80)"]
+    LBR["Load Balancing Rule"]
+    Probe["Health Probe\n(HTTP :80/)"]
+    Pool["Backend Pool"]
+    VM1["VM 1"]
+    VM2["VM 2"]
+
+    Client --&gt; FE --&gt; LBR --&gt; Pool
+    Pool --&gt; VM1
+    Pool --&gt; VM2
+    Probe -.-&gt;|"checks health"| VM1
+    Probe -.-&gt;|"checks health"| VM2</code></pre>
+<h3 id="public-vs-internal-load-balancer">Public vs Internal Load Balancer</h3>
+<ul>
+<li>A <strong>Public Load Balancer</strong> has a public frontend IP — it's how internet traffic reaches your backend VMs. This is what we're building today.</li>
+<li>An <strong>Internal Load Balancer (ILB)</strong> has a private frontend IP from inside your VNet — used to distribute traffic <em>between tiers</em>, e.g. a web tier load-balancing requests to an internal app tier, with no public exposure at all.</li>
+</ul>
+<blockquote>
+<p><strong>Exam tip:</strong> if a scenario describes load-balancing traffic that should never touch the public internet — e.g., between an app tier and a database tier inside the same VNet — that's an Internal Load Balancer, not a Public one. Same component, different frontend IP type.</p>
+</blockquote>
+<h3 id="session-persistence">Session Persistence</h3>
+<p>By default, Load Balancer has <strong>no session persistence (None)</strong> — each new connection can land anywhere, based on the 5-tuple hash. You can also configure <strong>Client IP</strong> affinity (also called source IP affinity), which forces all connections from the same client IP to the same backend VM. This matters for applications that store session state locally on each VM instead of in a shared store like Redis — without persistence, a stateful app could send a user's second request to a different VM that knows nothing about their session.</p>
+<hr />
+<h3 id="hands-on-build-the-lab-network-and-two-plain-vms">Hands-On: Build the Lab Network and Two Plain VMs</h3>
+<p><strong>✅ Free Tier — networking and the VMs themselves are within free-tier limits</strong></p>
+<p>Before we let VM Scale Sets automate everything, let's build a Load Balancer by hand in front of two ordinary VMs — this is the only way to actually see every component (frontend IP, backend pool, health probe, rule) as a distinct, individually-configured piece, the way the exam expects you to understand them.</p>
+<p><strong>Step 1 — Create the resource group and VNet:</strong></p>
+<ol>
+<li>Search for <strong>Resource groups</strong> → <strong>+ Create</strong> → name it <code>rg-day12-demo</code>, region <strong>East US</strong> → <strong>Create</strong>.</li>
+<li>Search for <strong>Virtual networks</strong> → <strong>+ Create</strong>.</li>
+<li><strong>Resource group:</strong> <code>rg-day12-demo</code></li>
+<li><strong>Name:</strong> <code>vnet-day12</code></li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>Next: IP Addresses</strong> → set the address space to <code>10.0.0.0/16</code>, replace the default subnet with <strong>subnet-app</strong> → <code>10.0.1.0/24</code>.</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+</ol>
+<p><strong>Step 2 — Create an NSG allowing HTTP and SSH, attach it to <code>subnet-app</code>:</strong></p>
+<ol>
+<li>Search for <strong>Network security groups</strong> → <strong>+ Create</strong> → <strong>Resource group:</strong> <code>rg-day12-demo</code>, <strong>Name:</strong> <code>nsg-day12</code>, region East US → <strong>Create</strong>.</li>
+<li>Open <code>nsg-day12</code> → <strong>Inbound security rules</strong> → <strong>+ Add</strong> → <strong>Service:</strong> HTTP, <strong>Priority:</strong> 100, <strong>Name:</strong> <code>Allow-HTTP</code> → <strong>Add</strong>.</li>
+<li>Add a second rule: <strong>Service:</strong> SSH, <strong>Priority:</strong> 110, <strong>Name:</strong> <code>Allow-SSH</code> → <strong>Add</strong>.</li>
+<li>Go to <strong>Subnets</strong> → <strong>Associate</strong> → <strong>Virtual network:</strong> <code>vnet-day12</code>, <strong>Subnet:</strong> <code>subnet-app</code> → <strong>OK</strong>.</li>
+</ol>
+<p><strong>Step 3 — Deploy two plain VMs (no public IP — they'll only be reachable through the Load Balancer):</strong></p>
+<ol>
+<li>Search for <strong>Virtual machines</strong> → <strong>+ Create</strong> → <strong>Azure virtual machine</strong>.</li>
+<li><strong>Resource group:</strong> <code>rg-day12-demo</code></li>
+<li><strong>VM name:</strong> <code>vm-web-1</code></li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>Image:</strong> Ubuntu Server 24.04 LTS</li>
+<li><strong>Size:</strong> Standard_B1s</li>
+<li><strong>Authentication:</strong> SSH public key (or password)</li>
+<li>On <strong>Networking</strong>: <strong>Virtual network:</strong> <code>vnet-day12</code>, <strong>Subnet:</strong> <code>subnet-app</code>, <strong>Public IP:</strong> <strong>None</strong> (these VMs will only be reachable through the Load Balancer we're about to build), <strong>NIC network security group:</strong> None.</li>
+<li>On <strong>Advanced</strong>, scroll to <strong>Custom data</strong> and paste this cloud-init script so the VM is web-serving the moment it boots:
+   <div class="highlight"><pre><span></span><code><span class="c1">#cloud-config</span>
+<span class="nt">package_update</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">packages</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span>
+<span class="nt">runcmd</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello from $(hostname)&quot; &gt; /var/www/html/index.html</span>
+</code></pre></div></li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+<li>Repeat for a second VM named <code>vm-web-2</code> — same settings, same custom data (its <code>$(hostname)</code> will print <code>vm-web-2</code> instead, so you can tell them apart later).</li>
+</ol>
+<p><strong>Step 4 — Build the Standard Load Balancer:</strong></p>
+<ol>
+<li>Search for <strong>Load balancers</strong> → <strong>+ Create</strong>.</li>
+<li><strong>Resource group:</strong> <code>rg-day12-demo</code></li>
+<li><strong>Name:</strong> <code>lb-day12</code></li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>SKU:</strong> Standard</li>
+<li><strong>Type:</strong> Public</li>
+<li>On <strong>Frontend IP configuration</strong> → <strong>+ Add a frontend IP</strong>:</li>
+<li><strong>Name:</strong> <code>fe-day12</code></li>
+<li><strong>Public IP address:</strong> Create new → name <code>pip-lb-day12</code>, SKU Standard</li>
+<li>On <strong>Backend pools</strong> → <strong>+ Add a backend pool</strong>:</li>
+<li><strong>Name:</strong> <code>bep-day12</code></li>
+<li><strong>Virtual network:</strong> <code>vnet-day12</code></li>
+<li>Under <strong>IP version: IPv4</strong>, click <strong>+ Add</strong> and select both <code>vm-web-1</code> and <code>vm-web-2</code></li>
+<li>On <strong>Inbound rules</strong> → <strong>+ Add a load balancing rule</strong>:</li>
+<li><strong>Name:</strong> <code>lbr-http</code></li>
+<li><strong>Frontend IP address:</strong> <code>fe-day12</code></li>
+<li><strong>Backend pool:</strong> <code>bep-day12</code></li>
+<li><strong>Health probe:</strong> click <strong>Create new</strong> → <strong>Name:</strong> <code>probe-http</code>, <strong>Protocol:</strong> HTTP, <strong>Path:</strong> <code>/</code>, <strong>Port:</strong> 80, <strong>Interval:</strong> 5 seconds</li>
+<li><strong>Port:</strong> 80 → <strong>Backend port:</strong> 80</li>
+<li><strong>Session persistence:</strong> None</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+</ol>
+<p><strong>Step 5 — Add an inbound NAT rule to reach <code>vm-web-2</code> directly:</strong></p>
+<ol>
+<li>Go to <code>lb-day12</code> → <strong>Inbound NAT rules</strong> → <strong>+ Add</strong>.</li>
+<li><strong>Name:</strong> <code>nat-ssh-vm2</code>, <strong>Target virtual machine:</strong> <code>vm-web-2</code>, <strong>Network IP configuration:</strong> its only NIC, <strong>Frontend port:</strong> <code>50022</code>, <strong>Backend port:</strong> <code>22</code>.</li>
+<li><strong>OK</strong>.</li>
+</ol>
+<p><strong>Step 6 — Test it:</strong></p>
+<ol>
+<li>Go to <code>lb-day12</code> → <strong>Overview</strong>, copy the <strong>Public IP address</strong>.</li>
+<li>From your local machine, run <code>curl http://&lt;public-ip&gt;</code> repeatedly (or refresh in a browser several times). You'll see the response alternate between <code>Hello from vm-web-1</code> and <code>Hello from vm-web-2</code> — that's the 5-tuple hash spreading separate connections across the backend pool.</li>
+<li>SSH directly to <code>vm-web-2</code> specifically — bypassing the pool entirely — using the inbound NAT rule's frontend port: <code>ssh -p 50022 azureuser@&lt;public-ip&gt;</code>.</li>
+</ol>
+<p>You've now manually assembled every component the exam will ask about: a frontend IP, a backend pool, a health probe, a load balancing rule, and an inbound NAT rule for direct access to one specific VM.</p>
+<blockquote>
+<p><strong>Exam tip:</strong> if a health probe fails for a VM, Load Balancer stops sending it <em>new</em> traffic immediately, but it does <strong>not</strong> terminate that VM's existing connections. Health probes affect new connection placement only.</p>
+</blockquote>
+<hr />
+<h2 id="part-2-vm-scale-sets-vmss">Part 2 — VM Scale Sets (VMSS)</h2>
+<h3 id="the-problem-with-managing-vms-by-hand">The Problem With Managing VMs by Hand</h3>
+<p>What you just did — building two identical VMs and registering them with a Load Balancer — doesn't scale. If traffic doubles, you'd manually create a third VM, configure it identically, and manually add it to the backend pool. If traffic drops at 2 AM, those VMs sit there costing money for no reason. <strong>VM Scale Sets</strong> automate all of that.</p>
+<h3 id="what-a-vm-scale-set-is">What a VM Scale Set Is</h3>
+<p>A <strong>VM Scale Set (VMSS)</strong> is a single Azure resource that represents a <em>group</em> of identical VM instances. Instead of managing N separate VM resources, you manage one VMSS resource and tell it how many instances you want — or let autoscale decide.</p>
+<p><strong>Orchestration modes:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>What it means</th>
+<th>Best for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Uniform</strong></td>
+<td>Every instance is identical — same image, same size, deployed from one model</td>
+<td>Stateless, horizontally-scaled workloads: web servers, batch processing nodes</td>
+</tr>
+<tr>
+<td><strong>Flexible</strong></td>
+<td>Mix of VM sizes and configurations within the same scale set, instances behave more like individually manageable VMs</td>
+<td>Workloads needing instance-level customization, or mixing VM sizes/Spot and on-demand instances together</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Exam tip:</strong> Microsoft now recommends <strong>Flexible</strong> orchestration for new deployments in most scenarios (it supports features Uniform doesn't, like mixing VM sizes), but <strong>Uniform</strong> is still very much alive and is what most "classic" exam scenarios and existing course material describe — know that both exist and know the differentiator (identical fleet vs flexible/mixed fleet) rather than assuming one has fully replaced the other.</p>
+</blockquote>
+<h3 id="autoscale">Autoscale</h3>
+<p>The entire point of VMSS is <strong>autoscale</strong>: Azure adds or removes instances automatically based on rules you define, instead of you manually resizing the fleet.</p>
+<ul>
+<li><strong>Scale out</strong> — add instances when load increases (e.g., average CPU &gt; 70% for 5 minutes)</li>
+<li><strong>Scale in</strong> — remove instances when load drops (e.g., average CPU &lt; 30% for 10 minutes)</li>
+<li>Rules can be based on <strong>metrics</strong> (CPU, memory, custom Application Insights metrics, queue length) or a <strong>fixed schedule</strong> (e.g., scale to 1 instance overnight, 5 instances during business hours)</li>
+<li>You define a <strong>minimum</strong>, <strong>maximum</strong>, and <strong>default</strong> instance count — autoscale will never go below the minimum or above the maximum, no matter what the metrics say</li>
+</ul>
+<h3 id="update-policy-and-overprovisioning">Update Policy and Overprovisioning</h3>
+<ul>
+<li><strong>Update policy</strong> controls how changes to the scale set's model (a new OS image, a new custom script extension version) roll out to existing instances:</li>
+<li><strong>Manual</strong> — you trigger updates yourself, instance by instance</li>
+<li><strong>Automatic</strong> — Azure updates all instances immediately</li>
+<li><strong>Rolling</strong> — Azure updates instances in batches, keeping the majority of the fleet healthy and serving traffic throughout the rollout</li>
+<li><strong>Overprovisioning</strong> (Uniform mode only): when scaling out, Azure briefly creates <em>more</em> VMs than you asked for, keeps the ones that come up healthy fastest, and deletes the rest. This protects a scale-out operation from being delayed or failed by one slow or unhealthy VM creation.</li>
+</ul>
+<h3 id="integration-with-load-balancer">Integration with Load Balancer</h3>
+<p>This is the piece that makes VMSS genuinely hands-off: when you create a VMSS with an attached Load Balancer (or attach one afterward), <strong>every instance the scale set creates is automatically registered into the Load Balancer's backend pool</strong> — and automatically removed when an instance is deleted during scale-in. You never touch the backend pool manually again.</p>
+<pre class="mermaid"><code>graph TD
+    LB["Standard Load Balancer\nbep-vmss backend pool"]
+    VMSS["VM Scale Set\n(min 2, max 5)"]
+    I1["Instance 1"]
+    I2["Instance 2"]
+    I3["Instance 3 (added by autoscale)"]
+    Autoscale["Autoscale Rule\nCPU &gt; 70% → scale out"]
+
+    Autoscale -.-&gt;|"triggers"| VMSS
+    VMSS --&gt; I1
+    VMSS --&gt; I2
+    VMSS -.-&gt;|"scale-out event"| I3
+    I1 --&gt; LB
+    I2 --&gt; LB
+    I3 --&gt; LB</code></pre>
+<hr />
+<h3 id="hands-on-build-a-vm-scale-set-with-an-integrated-load-balancer">Hands-On: Build a VM Scale Set with an Integrated Load Balancer</h3>
+<p><strong>💳 Paid — VMSS instance hours and the Standard Load Balancer it creates</strong></p>
+<p>We'll build this as its own self-contained VMSS, with Azure creating a fresh Standard Load Balancer for it during the wizard — keeping it cleanly separate from the <code>lb-day12</code> you wired up by hand in Part 1.</p>
+<p><strong>Step 1 — Create the Scale Set:</strong></p>
+<ol>
+<li>Search for <strong>Virtual machine scale sets</strong> → <strong>+ Create</strong>.</li>
+<li><strong>Resource group:</strong> <code>rg-day12-demo</code></li>
+<li><strong>Scale set name:</strong> <code>vmss-day12</code></li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>Orchestration mode:</strong> Uniform</li>
+<li><strong>Image:</strong> Ubuntu Server 24.04 LTS</li>
+<li><strong>Size:</strong> Standard_B1s</li>
+<li><strong>Authentication:</strong> SSH public key</li>
+<li>On <strong>Instance count</strong>, set:</li>
+<li><strong>Initial instance count:</strong> 2</li>
+<li>On <strong>Disks</strong>, leave defaults.</li>
+<li>On <strong>Networking</strong>:</li>
+<li><strong>Virtual network:</strong> <code>vnet-day12</code></li>
+<li><strong>Subnet:</strong> <code>subnet-app</code></li>
+<li><strong>Load balancing options:</strong> Azure load balancer</li>
+<li><strong>Select a load balancer:</strong> Create new → <strong>Name:</strong> <code>lb-vmss-day12</code>, <strong>Type:</strong> Public, <strong>SKU:</strong> Standard</li>
+<li><strong>Backend pool:</strong> Create new → <code>bep-vmss-day12</code></li>
+<li><strong>Health probe:</strong> Create new → <strong>Protocol:</strong> HTTP, <strong>Port:</strong> 80, <strong>Path:</strong> <code>/</code></li>
+<li>On <strong>Scaling</strong>:</li>
+<li><strong>Scaling policy:</strong> leave <strong>Manual</strong> for now — we'll add a custom autoscale rule in Step 3</li>
+<li><strong>Minimum/maximum instances:</strong> Minimum <code>2</code>, Maximum <code>5</code></li>
+<li>On <strong>Advanced</strong> → <strong>Custom data</strong>, paste the same cloud-init script from Part 1:
+   <div class="highlight"><pre><span></span><code><span class="c1">#cloud-config</span>
+<span class="nt">package_update</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">packages</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span>
+<span class="nt">runcmd</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo &quot;Hello from $(hostname)&quot; &gt; /var/www/html/index.html</span>
+</code></pre></div></li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+</ol>
+<p><strong>Step 2 — Verify traffic distribution:</strong></p>
+<ol>
+<li>Go to <code>vmss-day12</code> → <strong>Overview</strong>. Note the <strong>public IP address</strong> of <code>lb-vmss-day12</code> (visible from the scale set's Overview page, or by going to <strong>Load balancers</strong> directly).</li>
+<li>Run <code>curl http://&lt;public-ip&gt;</code> repeatedly — the hostname in the response alternates between your two scale set instances, exactly as it did with the manual setup in Part 1, except this time you never touched a backend pool yourself.</li>
+</ol>
+<p><strong>Step 3 — Configure autoscale rules:</strong></p>
+<ol>
+<li>Go to <code>vmss-day12</code> → <strong>Scaling</strong> (under <strong>Settings</strong>).</li>
+<li>Switch from <strong>Manual scale</strong> to <strong>Custom autoscale</strong>.</li>
+<li>Under the default scale condition, click <strong>+ Add a rule</strong>:</li>
+<li><strong>Metric name:</strong> Percentage CPU</li>
+<li><strong>Operator:</strong> Greater than, <strong>Threshold:</strong> 70, <strong>Duration:</strong> 5 minutes</li>
+<li><strong>Action:</strong> Increase count by 1</li>
+<li>Add a second rule:</li>
+<li><strong>Metric name:</strong> Percentage CPU</li>
+<li><strong>Operator:</strong> Less than, <strong>Threshold:</strong> 30, <strong>Duration:</strong> 10 minutes</li>
+<li><strong>Action:</strong> Decrease count by 1</li>
+<li>Set <strong>Instance limits</strong>: <strong>Minimum:</strong> 2, <strong>Maximum:</strong> 5, <strong>Default:</strong> 2.</li>
+<li><strong>Save</strong>.</li>
+</ol>
+<p><strong>Step 4 — Manually trigger and watch a scale-out:</strong></p>
+<p>Waiting for real CPU load is slow for a demo, so let's force it:</p>
+<ol>
+<li>Go to <code>vmss-day12</code> → <strong>Scaling</strong> → temporarily set <strong>Default</strong> (and minimum) to <code>3</code>, <strong>Save</strong>.</li>
+<li>Go to <strong>Instances</strong> (under <strong>Settings</strong>) and watch a third instance appear — status moves from <strong>Creating</strong> to <strong>Running</strong> over roughly a minute, and it shows up in <code>lb-vmss-day12</code>'s backend pool automatically with zero manual steps.</li>
+<li>Refresh <code>curl http://&lt;public-ip&gt;</code> a few times — you'll now see responses from all three instances.</li>
+<li>Set the minimum back down to <code>2</code> afterward and <strong>Save</strong> — autoscale will scale back in once the extra instance is idle past your scale-in rule's duration.</li>
+</ol>
+<blockquote>
+<p><strong>Exam tip:</strong> autoscale rules act on <strong>aggregated metrics across the whole scale set</strong> (e.g., <em>average</em> CPU across all instances), not any single instance. A scenario describing "one instance is overloaded but the rest are idle" is not a textbook autoscale trigger — that's a sign of an uneven load distribution problem, not a capacity problem.</p>
+</blockquote>
+<p><strong>Step 5 — Leave it running for now:</strong></p>
+<p>Both the Load Balancer and VMSS instances continue to bill by the hour — but we have one more thing to build in the same resource group before we tear everything down, so hold off on deleting anything until the end of Part 3.</p>
+<hr />
+<h2 id="part-3-application-gateway-routing-by-url-not-just-by-port">Part 3 — Application Gateway: Routing by URL, Not Just by Port</h2>
+<h3 id="the-problem-load-balancer-cant-see-inside-the-request">The Problem: Load Balancer Can't See Inside the Request</h3>
+<p>Everything you built in Parts 1 and 2 routes purely on IP and port — Load Balancer has no idea whether a request is for <code>/checkout</code>, <code>/images/logo.png</code>, or <code>shop.example.com</code> vs <code>blog.example.com</code>. Often that's exactly what you want. But sometimes you need <em>smarter</em> routing: send <code>/api/*</code> requests to one set of backend VMs and everything else to another, host two completely different websites behind a single public IP, or terminate SSL/TLS once at the edge instead of on every backend VM. That's what <strong>Application Gateway</strong> is for.</p>
+<h3 id="application-gateway-layer-7-httphttps-routing">Application Gateway — Layer 7 HTTP/HTTPS Routing</h3>
+<p><strong>Application Gateway</strong> is a fully managed <strong>Layer 7</strong> load balancer — it understands HTTP and HTTPS, not just TCP/UDP, which means it can make routing decisions based on the actual content of a request: the URL path, the hostname, request headers, or cookies.</p>
+<p><strong>Core building blocks:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Listener</strong></td>
+<td>Defines how the gateway accepts traffic — a <strong>Basic listener</strong> handles a single site; a <strong>Multi-site listener</strong> distinguishes between multiple hostnames on the same IP/port using the host header</td>
+</tr>
+<tr>
+<td><strong>Backend pool</strong></td>
+<td>The group of targets receiving traffic — and unlike Load Balancer, this can be VMs, VM Scale Sets, <strong>App Service</strong>, raw IP addresses, or even FQDNs, mixed in the same pool</td>
+</tr>
+<tr>
+<td><strong>HTTP settings</strong></td>
+<td>Defines how the gateway talks to the backend — protocol, port, cookie-based affinity, request timeout</td>
+</tr>
+<tr>
+<td><strong>Routing rule</strong></td>
+<td>Binds a listener to a destination — a <strong>Basic rule</strong> sends everything to one backend pool; a <strong>Path-based rule</strong> sends different URL paths to different backend pools via a path map</td>
+</tr>
+<tr>
+<td><strong>Health probe</strong></td>
+<td>A custom HTTP probe checking backend health — same concept as Load Balancer's probe, but it can inspect HTTP status codes and response body content, not just TCP/port reachability</td>
+</tr>
+</tbody>
+</table>
+<pre class="mermaid"><code>graph TD
+    Client["Client"]
+    Listener["Listener\n(Public IP, port 80)"]
+    Rule["Path-Based Routing Rule"]
+    PoolA["Backend Pool: app1\n(/app1/*)"]
+    PoolB["Backend Pool: app2\n(/app2/*)"]
+
+    Client --&gt; Listener --&gt; Rule
+    Rule --&gt;|"/app1/*"| PoolA
+    Rule --&gt;|"/app2/*"| PoolB</code></pre>
+<h3 id="key-features">Key Features</h3>
+<ul>
+<li><strong>URL path-based routing</strong> — <code>/api/*</code> to one backend pool, <code>/images/*</code> to another, <code>/</code> to a third, all through a single public IP and a single gateway</li>
+<li><strong>Multi-site hosting</strong> — host multiple independent websites on one Application Gateway using host-header-based listeners (<code>app1.example.com</code> → Backend Pool A, <code>app2.example.com</code> → Backend Pool B)</li>
+<li><strong>SSL/TLS termination</strong> — decrypt HTTPS once, at the gateway; backend VMs receive plain HTTP, cutting their CPU load and centralizing certificate management to one place instead of every VM</li>
+<li><strong>End-to-end SSL</strong> — optionally re-encrypt traffic between the gateway and the backend for environments that require encryption all the way through, not just at the edge</li>
+<li><strong>Cookie-based session affinity</strong> — route the same user to the same backend instance across multiple requests, configured per HTTP setting</li>
+<li><strong>Autoscaling</strong> — the v2 SKU scales its own gateway capacity automatically based on traffic; you don't size it manually</li>
+<li><strong>Redirection and header rewrite</strong> — redirect HTTP → HTTPS automatically, or rewrite request/response headers (inject CORS headers, strip internal headers) before forwarding</li>
+</ul>
+<h3 id="skus">SKUs</h3>
+<p><strong>Standard_v2</strong> is the current generation and what you should use for any new deployment — it adds autoscaling and zone redundancy over the legacy v1 SKU, which is being phased out. (You'll also see a <strong>WAF_v2</strong> SKU mentioned in documentation — that adds a Web Application Firewall directly on the gateway. We're covering WAF in its own day later in this phase, paired with Azure Front Door, since WAF policies attach to both services the same way.)</p>
+<blockquote>
+<p><strong>Exam tip:</strong> the line between Load Balancer and Application Gateway is the OSI layer. Any scenario describing routing by <strong>URL path</strong>, <strong>hostname</strong>, <strong>cookies</strong>, or needing <strong>SSL termination</strong> is a Layer 7 problem — Application Gateway. Anything that's just "spread TCP/UDP traffic across VMs" with no awareness of HTTP content is Layer 4 — Load Balancer.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Load Balancer</th>
+<th>Application Gateway</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OSI Layer</td>
+<td>Layer 4 (TCP/UDP)</td>
+<td>Layer 7 (HTTP/HTTPS)</td>
+</tr>
+<tr>
+<td>Routing decisions based on</td>
+<td>IP + port (5-tuple hash)</td>
+<td>URL path, host header, cookies</td>
+</tr>
+<tr>
+<td>SSL termination</td>
+<td>No</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Backend pool can include</td>
+<td>VMs, VMSS</td>
+<td>VMs, VMSS, App Service, IPs, FQDNs</td>
+</tr>
+<tr>
+<td>Typical use</td>
+<td>Raw TCP/UDP workloads, or as the backend for VMSS</td>
+<td>Web applications needing path-based routing, SSL offload, or multi-site hosting</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="hands-on-build-an-application-gateway-with-path-based-routing">Hands-On: Build an Application Gateway with Path-Based Routing</h3>
+<p><strong>💳 Paid — Instructor Demo (~$0.246/hour Standard_v2 + capacity units). Delete immediately after.</strong></p>
+<p>We'll point this gateway at two backend pools, each serving different content, and prove path-based routing actually works.</p>
+<p><strong>Step 1 — Reuse <code>vm-web-1</code> and <code>vm-web-2</code> as two distinct "apps":</strong></p>
+<p>To keep this self-contained without deploying more VMs, we'll repurpose the two plain VMs from Part 1 as stand-ins for two different applications.</p>
+<ol>
+<li>SSH into <code>vm-web-1</code> (via the inbound NAT rule pattern from Part 1, or temporarily attach a public IP) and run:
+   <div class="highlight"><pre><span></span><code>echo &quot;Welcome to App 1&quot; | sudo tee /var/www/html/index.html
+</code></pre></div></li>
+<li>SSH into <code>vm-web-2</code> and run:
+   <div class="highlight"><pre><span></span><code>echo &quot;Welcome to App 2&quot; | sudo tee /var/www/html/index.html
+</code></pre></div></li>
+</ol>
+<p><strong>Step 2 — Create the Application Gateway:</strong></p>
+<ol>
+<li>Search for <strong>Application gateways</strong> → <strong>+ Create</strong>.</li>
+<li><strong>Resource group:</strong> <code>rg-day12-demo</code></li>
+<li><strong>Name:</strong> <code>appgw-day12</code></li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>Tier:</strong> Standard V2</li>
+<li><strong>Enable autoscaling:</strong> Yes, <strong>Minimum/Maximum instance count:</strong> 0 / 2</li>
+<li>On <strong>Frontends</strong>: <strong>Frontend IP address type:</strong> Public → Create new → <code>pip-appgw-day12</code>, Standard SKU.</li>
+<li>On <strong>Backends</strong> → <strong>+ Add a backend pool</strong>:</li>
+<li><strong>Name:</strong> <code>bep-app1</code> → add target <code>vm-web-1</code></li>
+<li>Add a second backend pool: <strong>Name:</strong> <code>bep-app2</code> → add target <code>vm-web-2</code>.</li>
+<li>On <strong>Configuration</strong>, add a routing rule:</li>
+<li><strong>Listener name:</strong> <code>listener-day12</code>, <strong>Frontend IP:</strong> Public, <strong>Protocol:</strong> HTTP, <strong>Port:</strong> 80</li>
+<li><strong>Backend targets:</strong> select <code>bep-app1</code> as the default backend pool with a default HTTP setting (<strong>Name:</strong> <code>http-setting-default</code>, <strong>Backend port:</strong> 80)</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>. (This takes 10–15 minutes to provision — Application Gateway is a heavier resource than Load Balancer.)</li>
+</ol>
+<p><strong>Step 3 — Add path-based routing:</strong></p>
+<ol>
+<li>Once deployed, go to <code>appgw-day12</code> → <strong>Rules</strong> → open <code>rule1</code> (the routing rule created during setup).</li>
+<li>Under <strong>Path-based rules</strong>, click <strong>+ Add multi-target</strong>:</li>
+<li><strong>Path:</strong> <code>/app2/*</code></li>
+<li><strong>Backend target:</strong> <code>bep-app2</code>, with a new HTTP setting <code>http-setting-app2</code> (Backend port 80)</li>
+<li><strong>Save</strong> — the default <code>/*</code> path target stays pointed at <code>bep-app1</code>, and now <code>/app2/*</code> is overridden to <code>bep-app2</code>.</li>
+</ol>
+<p><strong>Step 4 — Test path-based routing:</strong></p>
+<ol>
+<li>Go to <code>appgw-day12</code> → <strong>Overview</strong>, copy the <strong>Frontend public IP address</strong>.</li>
+<li>Visit <code>http://&lt;gateway-ip&gt;/</code> in a browser — you get <strong>"Welcome to App 1"</strong> (the default path target, <code>bep-app1</code>).</li>
+<li>Visit <code>http://&lt;gateway-ip&gt;/app2/</code> — you get <strong>"Welcome to App 2"</strong> instead, even though it's the exact same public IP and the exact same gateway. The path in the URL, not the destination IP or port, decided which backend pool answered.</li>
+</ol>
+<p>That's Layer 7 routing in action — something Azure Load Balancer structurally cannot do, no matter how it's configured.</p>
+<p><strong>Step 5 — Final cleanup for today's entire lab:</strong></p>
+<p>Everything from Parts 1–3 lives in one resource group, so this is a single step:</p>
+<ol>
+<li>Search for <strong>Resource groups</strong> → open <code>rg-day12-demo</code> → <strong>Delete resource group</strong>.</li>
+<li>Confirm by typing the resource group name, then <strong>Delete</strong>.</li>
+</ol>
+<p>This removes the VNet, both lab VMs, <code>lb-day12</code> and its public IP, the VMSS and its instances, <code>lb-vmss-day12</code> and its public IP, <code>appgw-day12</code> and its public IP — every paid resource from today, in one step.</p>
+<hr />
+<h2 id="summary">Summary</h2>
+<p><strong>Azure Load Balancer</strong> operates at Layer 4, distributing TCP/UDP traffic across a backend pool using a 5-tuple hash. You built one by hand — a frontend IP, a backend pool, a health probe, and a load balancing rule — plus an inbound NAT rule to reach one specific VM directly. Since September 30, 2025, Standard SKU is the only option; there's no more Basic SKU to choose between.</p>
+<p><strong>VM Scale Sets</strong> turn a fleet of identical VMs into a single manageable resource. Uniform orchestration deploys identical instances from one model; Flexible orchestration allows mixed VM sizes and configurations. When a VMSS is attached to a Load Balancer, every instance registers and deregisters from the backend pool automatically as the fleet scales — no manual pool management, ever again.</p>
+<p><strong>Autoscale</strong> is what makes this genuinely automatic: rules based on CPU (or other metrics) trigger scale-out and scale-in within a minimum/maximum instance range you define, and you watched a scale-out happen live, with the new instance picked up by the Load Balancer with zero manual steps.</p>
+<p><strong>Application Gateway</strong> does the job Load Balancer structurally can't — Layer 7 routing based on the actual content of an HTTP request. You built one with two backend pools and a path-based routing rule, and proved that <code>/</code> and <code>/app2/*</code> on the exact same public IP serve completely different backends, purely because of the URL path. SSL termination, multi-site hosting, and cookie-based affinity all follow from that same Layer 7 awareness.</p>
+<h3 id="whats-next">What's Next</h3>
+<p>Coming up: <strong>VPN Gateway &amp; ExpressRoute</strong> — connecting your Azure VNet privately to on-premises networks, the other major networking topic in this phase. After that, we round out the phase with <strong>Azure DNS</strong>, and <strong>Traffic Manager, Front Door, CDN &amp; WAF</strong> — where the Web Application Firewall you'd expect alongside Application Gateway gets its full treatment, paired with Front Door since WAF policies attach to both the same way.</p>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<ul>
+<li>Azure Load Balancer is <strong>Layer 4</strong> — it routes based on a <strong>5-tuple hash</strong> (source/destination IP, source/destination port, protocol) and has no awareness of HTTP, paths, or cookies</li>
+<li>The four core components are <strong>frontend IP</strong>, <strong>backend pool</strong>, <strong>health probe</strong>, and <strong>load balancing rule</strong>; <strong>inbound NAT rules</strong> are an optional fifth piece for direct access to one specific backend VM</li>
+<li><strong>Standard SKU</strong> is the only Load Balancer SKU available since Basic was retired on September 30, 2025 — Standard is secure-by-default (NSG required to allow traffic) and requires Standard SKU public IPs on backend VMs</li>
+<li><strong>Public Load Balancer</strong> = internet-facing frontend IP; <strong>Internal Load Balancer</strong> = private VNet frontend IP for tier-to-tier traffic that should never touch the internet</li>
+<li>Health probe failures stop <em>new</em> connections to a VM — they don't terminate existing ones</li>
+<li><strong>VM Scale Sets</strong> manage a fleet of VMs as one resource — <strong>Uniform</strong> mode for identical instances, <strong>Flexible</strong> mode for mixed sizes/configurations</li>
+<li>A VMSS attached to a Load Balancer <strong>auto-registers and auto-deregisters</strong> instances from the backend pool as it scales — no manual backend pool management</li>
+<li><strong>Autoscale</strong> rules act on aggregated metrics across the whole scale set (e.g., average CPU), trigger scale-out/scale-in within a minimum/maximum instance range, and can also run on a fixed schedule</li>
+<li><strong>Overprovisioning</strong> (Uniform mode) creates extra VMs during scale-out and keeps only the fastest-healthy ones, protecting against a single slow VM delaying the whole scale event</li>
+<li><strong>Application Gateway</strong> is <strong>Layer 7</strong> — it understands HTTP/HTTPS, enabling URL path-based routing, multi-site hosting via host-header listeners, and SSL termination, none of which Load Balancer can do</li>
+<li>Application Gateway's backend pool can mix VMs, VM Scale Sets, App Service, raw IPs, and FQDNs — far more flexible than Load Balancer's VM/VMSS-only pool</li>
+<li><strong>Standard_v2</strong> is the current Application Gateway SKU, with built-in autoscaling; WAF is a separate add-on covered in its own day later in this phase</li>
+<li>Load Balancer vs Application Gateway is fundamentally an OSI-layer decision: anything involving URL-path routing, hostname-based routing, cookies, or SSL termination means Application Gateway, not Load Balancer</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../day11_vnet_advanced/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Day 11 — VNet Advanced: Peering, Service &amp; Private Endpoints, and Bastion">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+              </div>
+            </div>
+          </a>
+        
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
