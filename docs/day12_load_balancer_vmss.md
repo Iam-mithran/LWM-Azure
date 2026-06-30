@@ -28,9 +28,12 @@ A fully paid lab today — Load Balancer, VM Scale Set instances, and Applicatio
 - **VM Scale Set instances** on `Standard_B1s`: same billing as any VM. The Free Tier's 750 B-series hours/month can cover a couple of instances for a short demo, but running several VMSS instances simultaneously alongside other VMs you may have left running elsewhere can exceed that allowance fast — budget for **💳 small paid usage** today.
 - **Application Gateway v2**: billed per gateway-hour (~$0.246/hour for Standard_v2) plus capacity units consumed. There's no way around this cost to even create one — **💳 instructor demo**, delete immediately after.
 - **Public IP addresses**: a Standard SKU public IP costs a small hourly amount once it's no longer attached to a running resource — we'll clean these up at the end.
+- **NAT Gateway**: ~$0.045/hour plus a small per-GB data processing charge — we deploy one briefly in Part 1 purely so our backend VMs can reach the internet during setup. **💳 Paid**, deleted with everything else at the end.
 - Everything else (the VNet, subnets, NSGs, autoscale rules themselves) is **✅ free**.
 
 > **A note on Basic Load Balancer:** if you've seen older tutorials mention a free "Basic" SKU, it no longer exists as a deployment option — Microsoft retired Basic Load Balancer on **September 30, 2025**. Every Load Balancer you create today, and from now on, is **Standard SKU**. This matters for the exam: Standard SKU is secure by default (closed unless you explicitly allow traffic via an NSG) and requires VMs in its backend pool to have Standard SKU public IPs or no public IP at all — mixing Basic and Standard resources together simply isn't possible anymore.
+
+> **A note on private subnets by default:** since **March 31, 2026**, every new subnet defaults to **no outbound internet access** — removing a VM's public IP (as we do for both backend VMs today) removes its outbound path too, not just its inbound exposure, unless you explicitly grant one (a public IP, a NAT Gateway, or a Load Balancer outbound rule — see Day 11). This matters today specifically because of *when* it bites: the cloud-init script we use to install nginx runs once, at first boot — and if the VM has no outbound path at that moment, the install fails silently and you're left with a health probe that never turns healthy, with nothing in the Load Balancer's own configuration to explain why. That's why Part 1 deploys a small NAT Gateway **before** the VMs, not after.
 
 ---
 
@@ -127,7 +130,22 @@ Before we let VM Scale Sets automate everything, let's build a Load Balancer by 
 3. Add a second rule: **Service:** SSH, **Priority:** 110, **Name:** `Allow-SSH` → **Add**.
 4. Go to **Subnets** → **Associate** → **Virtual network:** `vnet-day12`, **Subnet:** `subnet-app` → **OK**.
 
-**Step 3 — Deploy two plain VMs (no public IP — they'll only be reachable through the Load Balancer):**
+**Step 3 — Deploy a NAT Gateway so `subnet-app` has outbound internet access:**
+
+Our backend VMs in Step 4 get **no public IP** — by design, they should only be reachable through the Load Balancer. But with private subnets now the default (see the note above), that also means *zero outbound* access unless we explicitly grant one. We need that outbound path to exist **before** the VMs boot, so cloud-init can actually install nginx — a NAT Gateway is the cleanest way to give a whole subnet that path without putting a public IP on any individual VM.
+
+1. Search for **Public IP addresses** → **+ Create** → **Name:** `pip-natgw-day12`, **SKU:** Standard, **Resource group:** `rg-day12-demo`, region East US → **Create**.
+2. Search for **NAT gateways** → **+ Create**.
+   - **Resource group:** `rg-day12-demo`
+   - **Name:** `natgw-day12`
+   - **Region:** East US
+3. On **Outbound IP** → select `pip-natgw-day12`.
+4. On **Subnet** → **Virtual network:** `vnet-day12`, check **subnet-app**.
+5. **Review + create** → **Create**.
+
+> **Exam tip:** NAT Gateway and Standard Load Balancer outbound rules can't coexist on the same subnet — pick one mechanism. We're using NAT Gateway here because it has to exist *before* the VMs boot (for cloud-init to succeed), while a Load Balancer outbound rule can only be configured *after* the Load Balancer and its backend pool already exist — wrong order for what we need today.
+
+**Step 4 — Deploy two plain VMs (no public IP — they'll only be reachable through the Load Balancer):**
 
 1. Search for **Virtual machines** → **+ Create** → **Azure virtual machine**.
    - **Resource group:** `rg-day12-demo`
@@ -149,7 +167,7 @@ Before we let VM Scale Sets automate everything, let's build a Load Balancer by 
 4. **Review + create** → **Create**.
 5. Repeat for a second VM named `vm-web-2` — same settings, same custom data (its `$(hostname)` will print `vm-web-2` instead, so you can tell them apart later).
 
-**Step 4 — Build the Standard Load Balancer:**
+**Step 5 — Build the Standard Load Balancer:**
 
 1. Search for **Load balancers** → **+ Create**.
    - **Resource group:** `rg-day12-demo`
@@ -173,13 +191,13 @@ Before we let VM Scale Sets automate everything, let's build a Load Balancer by 
    - **Session persistence:** None
 5. **Review + create** → **Create**.
 
-**Step 5 — Add an inbound NAT rule to reach `vm-web-2` directly:**
+**Step 6 — Add an inbound NAT rule to reach `vm-web-2` directly:**
 
 1. Go to `lb-day12` → **Inbound NAT rules** → **+ Add**.
 2. **Name:** `nat-ssh-vm2`, **Target virtual machine:** `vm-web-2`, **Network IP configuration:** its only NIC, **Frontend port:** `50022`, **Backend port:** `22`.
 3. **OK**.
 
-**Step 6 — Test it:**
+**Step 7 — Test it:**
 
 1. Go to `lb-day12` → **Overview**, copy the **Public IP address**.
 2. From your local machine, run `curl http://<public-ip>` repeatedly (or refresh in a browser several times). You'll see the response alternate between `Hello from vm-web-1` and `Hello from vm-web-2` — that's the 5-tuple hash spreading separate connections across the backend pool.
@@ -256,6 +274,8 @@ graph TD
 **💳 Paid — VMSS instance hours and the Standard Load Balancer it creates**
 
 We'll build this as its own self-contained VMSS, with Azure creating a fresh Standard Load Balancer for it during the wizard — keeping it cleanly separate from the `lb-day12` you wired up by hand in Part 1.
+
+> Note: these instances land in `subnet-app`, the same subnet `natgw-day12` already covers from Part 1 — so their cloud-init script gets the same outbound path for free and nginx installs correctly with no extra setup.
 
 **Step 1 — Create the Scale Set:**
 
@@ -393,7 +413,18 @@ graph TD
 
 We'll point this gateway at two backend pools, each serving different content, and prove path-based routing actually works.
 
-**Step 1 — Reuse `vm-web-1` and `vm-web-2` as two distinct "apps":**
+**Step 1 — Create a dedicated subnet for Application Gateway, and extend the NAT Gateway to cover it:**
+
+Application Gateway requires its own **dedicated subnet** — it can't share `subnet-app` with the VMs or VMSS. And the Standard_v2 SKU has a hard platform requirement for **outbound internet access from that subnet** just to provision and run at all — this isn't an NSG nuance, it's how the gateway talks to Azure's control plane. With private subnets now the default, a freshly created subnet has no outbound path unless we grant one, same as Part 1.
+
+1. Search for **Virtual networks** → `vnet-day12` → **Subnets** → **+ Subnet**.
+   - **Name:** `subnet-appgw`
+   - **Subnet address range:** `10.0.3.0/24`
+   - Leave **Enable private subnet (no default outbound access)** ticked (it's the default) — we'll fix outbound the same way as Part 1.
+   - **Save**.
+2. Go to `natgw-day12` → **Subnets** → **+ Associate** → select `subnet-appgw` → **Associate**. One NAT Gateway can serve multiple subnets in the same VNet, so there's no need to deploy a second one.
+
+**Step 2 — Reuse `vm-web-1` and `vm-web-2` as two distinct "apps":**
 
 To keep this self-contained without deploying more VMs, we'll repurpose the two plain VMs from Part 1 as stand-ins for two different applications.
 
@@ -406,7 +437,7 @@ To keep this self-contained without deploying more VMs, we'll repurpose the two 
    echo "Welcome to App 2" | sudo tee /var/www/html/index.html
    ```
 
-**Step 2 — Create the Application Gateway:**
+**Step 3 — Create the Application Gateway:**
 
 1. Search for **Application gateways** → **+ Create**.
    - **Resource group:** `rg-day12-demo`
@@ -414,6 +445,7 @@ To keep this self-contained without deploying more VMs, we'll repurpose the two 
    - **Region:** East US
    - **Tier:** Standard V2
    - **Enable autoscaling:** Yes, **Minimum/Maximum instance count:** 0 / 2
+   - **Virtual network:** `vnet-day12`, **Subnet:** `subnet-appgw` (the dedicated subnet from Step 1 — Application Gateway will refuse any subnet that already has other resources in it)
 2. On **Frontends**: **Frontend IP address type:** Public → Create new → `pip-appgw-day12`, Standard SKU.
 3. On **Backends** → **+ Add a backend pool**:
    - **Name:** `bep-app1` → add target `vm-web-1`
@@ -423,7 +455,7 @@ To keep this self-contained without deploying more VMs, we'll repurpose the two 
    - **Backend targets:** select `bep-app1` as the default backend pool with a default HTTP setting (**Name:** `http-setting-default`, **Backend port:** 80)
 6. **Review + create** → **Create**. (This takes 10–15 minutes to provision — Application Gateway is a heavier resource than Load Balancer.)
 
-**Step 3 — Add path-based routing:**
+**Step 4 — Add path-based routing:**
 
 1. Once deployed, go to `appgw-day12` → **Rules** → open `rule1` (the routing rule created during setup).
 2. Under **Path-based rules**, click **+ Add multi-target**:
@@ -431,7 +463,7 @@ To keep this self-contained without deploying more VMs, we'll repurpose the two 
    - **Backend target:** `bep-app2`, with a new HTTP setting `http-setting-app2` (Backend port 80)
 3. **Save** — the default `/*` path target stays pointed at `bep-app1`, and now `/app2/*` is overridden to `bep-app2`.
 
-**Step 4 — Test path-based routing:**
+**Step 5 — Test path-based routing:**
 
 1. Go to `appgw-day12` → **Overview**, copy the **Frontend public IP address**.
 2. Visit `http://<gateway-ip>/` in a browser — you get **"Welcome to App 1"** (the default path target, `bep-app1`).
@@ -439,14 +471,14 @@ To keep this self-contained without deploying more VMs, we'll repurpose the two 
 
 That's Layer 7 routing in action — something Azure Load Balancer structurally cannot do, no matter how it's configured.
 
-**Step 5 — Final cleanup for today's entire lab:**
+**Step 6 — Final cleanup for today's entire lab:**
 
 Everything from Parts 1–3 lives in one resource group, so this is a single step:
 
 1. Search for **Resource groups** → open `rg-day12-demo` → **Delete resource group**.
 2. Confirm by typing the resource group name, then **Delete**.
 
-This removes the VNet, both lab VMs, `lb-day12` and its public IP, the VMSS and its instances, `lb-vmss-day12` and its public IP, `appgw-day12` and its public IP — every paid resource from today, in one step.
+This removes the VNet, both lab VMs, `natgw-day12` and its public IP, `lb-day12` and its public IP, the VMSS and its instances, `lb-vmss-day12` and its public IP, `appgw-day12` and its public IP — every paid resource from today, in one step.
 
 ---
 
@@ -473,6 +505,9 @@ Coming up: **VPN Gateway & ExpressRoute** — connecting your Azure VNet private
 - **Standard SKU** is the only Load Balancer SKU available since Basic was retired on September 30, 2025 — Standard is secure-by-default (NSG required to allow traffic) and requires Standard SKU public IPs on backend VMs
 - **Public Load Balancer** = internet-facing frontend IP; **Internal Load Balancer** = private VNet frontend IP for tier-to-tier traffic that should never touch the internet
 - Health probe failures stop *new* connections to a VM — they don't terminate existing ones
+- Since **March 31, 2026**, new subnets default to **no outbound internet access** — a VM with no public IP (like our backend VMs) also has no outbound path unless you explicitly grant one via a public IP, **NAT Gateway**, or Load Balancer outbound rule; without it, a cloud-init script that needs to download packages fails silently at first boot, which looks identical to a networking/probe problem unless you know to check it
+- NAT Gateway and Standard Load Balancer outbound rules **can't coexist on the same subnet** — and NAT Gateway has to be in place *before* VMs boot if cloud-init depends on outbound access, since a Load Balancer outbound rule can only be added after the Load Balancer and backend pool already exist
+- **Application Gateway always needs its own dedicated subnet**, and the Standard_v2 SKU has a hard requirement for outbound internet access from that subnet to provision and run — under the new private-subnet default, that means extending a NAT Gateway (or otherwise granting outbound) to the gateway's subnet too, not just to your backend VMs' subnet
 - **VM Scale Sets** manage a fleet of VMs as one resource — **Uniform** mode for identical instances, **Flexible** mode for mixed sizes/configurations
 - A VMSS attached to a Load Balancer **auto-registers and auto-deregisters** instances from the backend pool as it scales — no manual backend pool management
 - **Autoscale** rules act on aggregated metrics across the whole scale set (e.g., average CPU), trigger scale-out/scale-in within a minimum/maximum instance range, and can also run on a fixed schedule
