@@ -460,8 +460,12 @@ To keep this self-contained without deploying more VMs, we'll repurpose the two 
 1. Once deployed, go to `appgw-day12` → **Rules** → open `rule1` (the routing rule created during setup).
 2. Under **Path-based rules**, click **+ Add multi-target**:
    - **Path:** `/app2/*`
-   - **Backend target:** `bep-app2`, with a new HTTP setting `http-setting-app2` (Backend port 80)
+   - **Backend target:** `bep-app2`
+   - **HTTP setting:** Create a new setting — **Name:** `http-setting-app2`, **Backend port:** 80
+   - Still inside the new HTTP setting, expand **Additional settings** and set **Override backend path** to `/`
 3. **Save** — the default `/*` path target stays pointed at `bep-app1`, and now `/app2/*` is overridden to `bep-app2`.
+
+> **Why the Override backend path matters:** without it, Application Gateway forwards the full incoming path — `/app2/` — to the backend VM as-is. Nginx then looks for a file at `/var/www/html/app2/`, finds nothing there, and returns a **404 Not Found**. Setting **Override backend path** to `/` tells the gateway to rewrite the path to `/` before forwarding the request, so nginx receives a plain root request and serves `/var/www/html/index.html` correctly. Any time a backend serves content at a different path than what the gateway listener exposes — whether the mismatch is intentional (a path-based rule) or accidental — this is the knob to fix it.
 
 **Step 5 — Test path-based routing:**
 
