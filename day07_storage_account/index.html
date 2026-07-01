@@ -1,0 +1,2186 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A complete beginner's guide to Azure Cloud and Azure DevOps — 29 days, zero assumed cloud knowledge.">
+      
+      
+      
+        <link rel="canonical" href="https://iam-mithran.github.io/LWM-Azure/day07_storage_account/">
+      
+      
+        <link rel="prev" href="../day06_app_service/">
+      
+      
+        <link rel="next" href="../day08_storage_files_queue_tables/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning - LearnWithMithran — Azure Complete Beginner's Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#day-7-azure-storage-account-blob-storage-static-websites-versioning" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-header__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LearnWithMithran — Azure Complete Beginner's Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-nav__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LearnWithMithran — Azure Complete Beginner's Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day01_account_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day02_fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day03_vms_part1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day04_web_hosting_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day05_vms_part3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day06_app_service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-what-is-an-azure-storage-account" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — What Is an Azure Storage Account?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — What Is an Azure Storage Account?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-unified-storage-namespace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Unified Storage Namespace
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Tiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#replication-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Replication Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-storage-account" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a Storage Account
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-blob-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Blob Storage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Blob Storage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-blob-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Blob Storage?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#three-blob-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three Blob Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-container-and-upload-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a Container and Upload Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-access-tiers-and-lifecycle-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Access Tiers and Lifecycle Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Access Tiers and Lifecycle Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#blob-access-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Blob Access Tiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-change-a-blobs-access-tier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Change a Blob's Access Tier
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle-management-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle Management Policies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-lifecycle-management-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a Lifecycle Management Policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-shared-access-signatures-sas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Shared Access Signatures (SAS)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Shared Access Signatures (SAS)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-generate-a-sas-url-for-a-blob" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Generate a SAS URL for a Blob
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-static-website-hosting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — Static Website Hosting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — Static Website Hosting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#serving-a-website-directly-from-blob-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serving a Website Directly From Blob Storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-enable-static-website-hosting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Enable Static Website Hosting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-blob-versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6 — Blob Versioning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6 — Blob Versioning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#protecting-against-overwrites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protecting Against Overwrites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-enable-versioning-and-restore-a-previous-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Enable Versioning and Restore a Previous Version
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleaning-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning Up
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-and-whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary and What's Next
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day08_storage_files_queue_tables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day09_intro_to_networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day10_virtual_network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day11_vnet_advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day12_load_balancer_vmss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-what-is-an-azure-storage-account" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — What Is an Azure Storage Account?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — What Is an Azure Storage Account?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-unified-storage-namespace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Unified Storage Namespace
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#performance-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Performance Tiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#replication-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Replication Options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-storage-account" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a Storage Account
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-blob-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Blob Storage
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Blob Storage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-blob-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is Blob Storage?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#three-blob-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three Blob Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-container-and-upload-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a Container and Upload Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-access-tiers-and-lifecycle-management" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Access Tiers and Lifecycle Management
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Access Tiers and Lifecycle Management">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#blob-access-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Blob Access Tiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-change-a-blobs-access-tier" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Change a Blob's Access Tier
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#lifecycle-management-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Lifecycle Management Policies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-lifecycle-management-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a Lifecycle Management Policy
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-shared-access-signatures-sas" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Shared Access Signatures (SAS)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Shared Access Signatures (SAS)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-generate-a-sas-url-for-a-blob" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Generate a SAS URL for a Blob
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-static-website-hosting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — Static Website Hosting
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — Static Website Hosting">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#serving-a-website-directly-from-blob-storage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serving a Website Directly From Blob Storage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-enable-static-website-hosting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Enable Static Website Hosting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-blob-versioning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6 — Blob Versioning
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6 — Blob Versioning">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#protecting-against-overwrites" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Protecting Against Overwrites
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-enable-versioning-and-restore-a-previous-version" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Enable Versioning and Restore a Previous Version
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleaning-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning Up
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-and-whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary and What's Next
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="day-7-azure-storage-account-blob-storage-static-websites-versioning">Day 7 — Azure Storage Account: Blob Storage, Static Websites &amp; Versioning</h1>
+<p><strong>Phase 3 — Storage, Databases &amp; Global Delivery</strong></p>
+<blockquote>
+<p>Every application needs somewhere to put its data — user profile pictures, log files, database backups, configuration files, static website assets. In Azure, the answer to almost all of those is a single service: the Azure Storage Account. One account, four completely different storage services, one bill. Today we focus on Blob Storage — the most widely used of the four — plus two powerful Blob features you'll use in real projects: Static Website Hosting and Blob Versioning.</p>
+</blockquote>
+<hr />
+<h2 id="what-youll-learn">What You'll Learn</h2>
+<ul>
+<li>What an Azure Storage Account is — the unified namespace concept</li>
+<li>Performance tiers — Standard vs Premium</li>
+<li>Replication options — LRS, ZRS, GRS, GZRS and what they protect against</li>
+<li>Blob Storage — containers, blobs, three blob types, and when to use each</li>
+<li>Access tiers — Hot, Cool, Cold, and Archive — how cost shifts as data ages</li>
+<li>Shared Access Signatures (SAS) — generate a time-limited URL for secure file sharing</li>
+<li>Lifecycle management policies — automatically move blobs between tiers as they age</li>
+<li>Static Website Hosting — serve HTML, CSS, and JavaScript directly from a blob container with no server</li>
+<li>Blob Versioning — automatically save every version of a file and restore previous versions</li>
+</ul>
+<hr />
+<h2 id="before-we-begin">Before We Begin</h2>
+<p>All demos today use the <strong>Azure Free Tier</strong>. Microsoft gives you 5 GB of Blob Storage (LRS, Hot tier) free for 12 months — more than enough for everything we'll do today.</p>
+<p><strong>✅ Free Tier</strong> — all demos today.</p>
+<hr />
+<h2 id="part-1-what-is-an-azure-storage-account">Part 1 — What Is an Azure Storage Account?</h2>
+<h3 id="the-unified-storage-namespace">The Unified Storage Namespace</h3>
+<p>When you create an <strong>Azure Storage Account</strong>, you are creating a single, named container in Azure that gives you access to four completely different storage services — all under one account name, one set of access keys, and one monthly bill.</p>
+<pre class="mermaid"><code>graph TD
+    SA["Azure Storage Account\nmystorageaccount"]
+    SA --&gt; BLOB["Blob Storage\nFiles, images, videos, backups"]
+    SA --&gt; FILES["Azure Files\nSMB/NFS file shares"]
+    SA --&gt; QUEUE["Queue Storage\nMessages between services"]
+    SA --&gt; TABLE["Table Storage\nNoSQL key-value data"]</code></pre>
+<p>Your storage account name becomes part of the URL for every service inside it:</p>
+<table>
+<thead>
+<tr>
+<th>Service</th>
+<th>URL format</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Blob</td>
+<td><code>https://mystorageaccount.blob.core.windows.net</code></td>
+</tr>
+<tr>
+<td>Files</td>
+<td><code>https://mystorageaccount.file.core.windows.net</code></td>
+</tr>
+<tr>
+<td>Queue</td>
+<td><code>https://mystorageaccount.queue.core.windows.net</code></td>
+</tr>
+<tr>
+<td>Table</td>
+<td><code>https://mystorageaccount.table.core.windows.net</code></td>
+</tr>
+</tbody>
+</table>
+<p>This is why the account name must be <strong>globally unique</strong> across all of Azure — it becomes a public DNS name.</p>
+<hr />
+<h3 id="performance-tiers">Performance Tiers</h3>
+<p>When creating a storage account, you choose a performance tier that determines the underlying hardware and which services are available.</p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Hardware</th>
+<th>Supported Services</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Standard</strong></td>
+<td>Magnetic HDD-backed</td>
+<td>Blob, Files, Queue, Table</td>
+<td>General-purpose — covers almost all scenarios</td>
+</tr>
+<tr>
+<td><strong>Premium</strong></td>
+<td>SSD-backed</td>
+<td>Blob (block only) OR Files OR Page Blobs — separate account per type</td>
+<td>Low-latency, high-throughput workloads</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>For this course, always use <strong>Standard</strong>. Premium is for databases and workloads that need sub-millisecond latency — not typical application storage.</p>
+</blockquote>
+<hr />
+<h3 id="replication-options">Replication Options</h3>
+<p>Azure always stores multiple copies of your data. You choose how many copies and how far apart they are.</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Full Name</th>
+<th>Copies</th>
+<th>What it protects against</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>LRS</strong></td>
+<td>Locally Redundant Storage</td>
+<td>3 copies</td>
+<td>Hardware failure in one rack — all 3 copies in one data center</td>
+</tr>
+<tr>
+<td><strong>ZRS</strong></td>
+<td>Zone-Redundant Storage</td>
+<td>3 copies</td>
+<td>Data center failure — one copy in each of 3 availability zones</td>
+</tr>
+<tr>
+<td><strong>GRS</strong></td>
+<td>Geo-Redundant Storage</td>
+<td>6 copies</td>
+<td>Regional disaster — LRS in primary region + async copy to paired region</td>
+</tr>
+<tr>
+<td><strong>GZRS</strong></td>
+<td>Geo-Zone-Redundant Storage</td>
+<td>6 copies</td>
+<td>Both zone and regional failure — ZRS in primary + copy to paired region</td>
+</tr>
+</tbody>
+</table>
+<pre class="mermaid"><code>graph TD
+    LRS["LRS\n3 copies\nOne data center"] --&gt; ZRS["ZRS\n3 copies\n3 Availability Zones"]
+    ZRS --&gt; GRS["GRS\n6 copies\nLRS + paired region"]
+    GRS --&gt; GZRS["GZRS\n6 copies\nZRS + paired region\nHighest durability"]</code></pre>
+<p><strong>Cost increases as redundancy increases</strong> — GRS stores twice the data of LRS and replicates to another region, so it costs roughly twice as much.</p>
+<p><strong>For this demo:</strong> use <strong>LRS</strong> — cheapest, still 3 copies, and sufficient for learning.</p>
+<hr />
+<h3 id="demo-create-a-storage-account">Demo — Create a Storage Account</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Search for Storage accounts</p>
+<p>In the Azure Portal search bar, type <strong>"Storage accounts"</strong> → click the result → <strong>"+ Create."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Fill in the Basics tab</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Subscription</td>
+<td><em>(your subscription)</em></td>
+</tr>
+<tr>
+<td>Resource group</td>
+<td>Create new → <code>storage-demo-rg</code></td>
+</tr>
+<tr>
+<td>Storage account name</td>
+<td><code>lwmstorage&lt;yourname&gt;</code> <em>(lowercase letters and numbers only, globally unique)</em></td>
+</tr>
+<tr>
+<td>Region</td>
+<td><em>(same region you've been using)</em></td>
+</tr>
+<tr>
+<td>Performance</td>
+<td><strong>Standard</strong></td>
+</tr>
+<tr>
+<td>Redundancy</td>
+<td><strong>Locally-redundant storage (LRS)</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Next: Advanced."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Review the Advanced tab</p>
+<p>Notice <strong>"Allow enabling public access on containers"</strong> — this controls whether blobs can be made publicly readable. Leave it enabled for this demo; in production you'd evaluate this carefully.</p>
+<p>Also notice <strong>"Minimum TLS version"</strong> — leave at TLS 1.2.</p>
+<p>Click <strong>"Next: Networking."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Networking tab</p>
+<p>Leave <strong>"Enable public access from all networks"</strong> selected. In production you'd lock this to specific VNets or private endpoints — we'll cover that in the networking days.</p>
+<p>Click <strong>"Review + create"</strong> → <strong>"Create."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 5 — Go to your storage account</p>
+<p>Once deployed, click <strong>"Go to resource."</strong> Take a moment to look at the left menu — you'll see <strong>Containers</strong> (Blob), <strong>File shares</strong>, <strong>Queues</strong>, and <strong>Tables</strong> — all four services in one account.</p>
+</div>
+<hr />
+<h2 id="part-2-blob-storage">Part 2 — Blob Storage</h2>
+<h3 id="what-is-blob-storage">What Is Blob Storage?</h3>
+<p><strong>Blob</strong> stands for <strong>Binary Large Object</strong> — it's Azure's object storage service for storing any kind of unstructured data: images, videos, PDFs, log files, database backups, application installers, static website assets.</p>
+<p>Blob Storage is organized in two levels:</p>
+<pre class="mermaid"><code>graph TD
+    SA["Storage Account"] --&gt; C1["Container: profile-pictures"]
+    SA --&gt; C2["Container: app-backups"]
+    SA --&gt; C3["Container: logs"]
+    C1 --&gt; B1["user-001.jpg"]
+    C1 --&gt; B2["user-002.jpg"]
+    C2 --&gt; B3["backup-2026-05-01.bak"]
+    C3 --&gt; B4["app-error-2026-05-25.log"]</code></pre>
+<ul>
+<li><strong>Container</strong> — like a folder at the top level. You can't nest containers inside containers.</li>
+<li><strong>Blob</strong> — the actual file stored inside a container.</li>
+</ul>
+<p>Every blob gets its own URL:
+<code>https://lwmstoragedemo.blob.core.windows.net/profile-pictures/user-001.jpg</code></p>
+<hr />
+<h3 id="three-blob-types">Three Blob Types</h3>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>What it's for</th>
+<th>How writes work</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Block Blob</strong></td>
+<td>General files — images, videos, documents, backups</td>
+<td>Data written in blocks; blocks committed together. The default type.</td>
+</tr>
+<tr>
+<td><strong>Append Blob</strong></td>
+<td>Log files and audit streams</td>
+<td>New data can only be appended to the end — cannot modify existing content</td>
+</tr>
+<tr>
+<td><strong>Page Blob</strong></td>
+<td>Azure VM managed disks</td>
+<td>Optimized for random read/write operations across 512-byte pages</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>When you upload a file via the portal, Azure creates a Block Blob by default. You'll almost always use Block Blobs. Page Blobs are used internally by Azure for managed disks — you rarely create them directly.</p>
+</blockquote>
+<hr />
+<h3 id="demo-create-a-container-and-upload-files">Demo — Create a Container and Upload Files</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open Containers</p>
+<p>In your storage account → left menu → <strong>"Containers"</strong> → <strong>"+ Container."</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td><code>my-uploads</code></td>
+</tr>
+<tr>
+<td>Public access level</td>
+<td><strong>Private (no anonymous access)</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Create."</strong></p>
+<blockquote>
+<p><strong>Public access levels:</strong>
+- <strong>Private</strong> — no one can read blobs without authenticating
+- <strong>Blob</strong> — anyone with the blob URL can read the file, but they can't list what's in the container
+- <strong>Container</strong> — anyone can both read files AND list all contents</p>
+</blockquote>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Upload a file</p>
+<p>Click on <code>my-uploads</code> to open it → <strong>"Upload."</strong></p>
+<p>Drag any file from your laptop — a photo, a PDF, anything. In the upload panel:</p>
+<ul>
+<li><strong>Files:</strong> select your file</li>
+<li><strong>Advanced → Blob type:</strong> Block blob <em>(default)</em></li>
+<li><strong>Advanced → Access tier:</strong> Hot <em>(default)</em></li>
+</ul>
+<p>Click <strong>"Upload."</strong></p>
+<p>The file appears in the container with its name, size, and last-modified time.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — View the blob URL</p>
+<p>Click on the uploaded blob. On the blob's properties page, find the <strong>URL</strong> field:
+<code>https://lwmstoragedemo.blob.core.windows.net/my-uploads/yourfile.jpg</code></p>
+<p>Copy the URL and try to open it in a browser. You'll get a <strong>ResourceNotFound</strong> or <strong>PublicAccessNotPermitted</strong> error — because the container is set to <strong>Private</strong>. Good. That's the correct behaviour. You need to authenticate to access it.</p>
+<blockquote>
+<p>We'll fix this in the SAS demo next.</p>
+</blockquote>
+</div>
+<hr />
+<h2 id="part-3-access-tiers-and-lifecycle-management">Part 3 — Access Tiers and Lifecycle Management</h2>
+<h3 id="blob-access-tiers">Blob Access Tiers</h3>
+<p>Not all data is accessed equally. A backup from today gets opened frequently. A backup from last year might sit untouched for 11 months. Azure lets you move data between <strong>access tiers</strong> to pay less for data you access less.</p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Access frequency</th>
+<th>Storage cost</th>
+<th>Access cost</th>
+<th>Retrieval time</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Hot</strong></td>
+<td>Frequent (daily)</td>
+<td>Highest</td>
+<td>Lowest</td>
+<td>Immediate</td>
+</tr>
+<tr>
+<td><strong>Cool</strong></td>
+<td>Infrequent (monthly)</td>
+<td>Lower</td>
+<td>Higher</td>
+<td>Immediate</td>
+</tr>
+<tr>
+<td><strong>Cold</strong></td>
+<td>Rare (quarterly)</td>
+<td>Lower still</td>
+<td>Higher</td>
+<td>Immediate</td>
+</tr>
+<tr>
+<td><strong>Archive</strong></td>
+<td>Almost never (annual compliance)</td>
+<td>Lowest</td>
+<td>Very high + rehydration fee</td>
+<td>1–15 hours</td>
+</tr>
+</tbody>
+</table>
+<pre class="mermaid"><code>graph LR
+    HOT["Hot\nHigh storage cost\nLow access cost\nFrequent access"] --&gt; COOL["Cool\nMedium storage\nMedium access\nMonthly access"]
+    COOL --&gt; COLD["Cold\nLow storage\nHigher access\nQuarterly access"]
+    COLD --&gt; ARCH["Archive\nLowest storage\nHighest access fee\nHours to retrieve"]</code></pre>
+<p><strong>Key rule:</strong> Archive blobs are <strong>offline</strong> — before you can read an Archive blob, you must <strong>rehydrate</strong> it (move it to Hot or Cool), which takes up to 15 hours and costs extra. Never archive data you might need urgently.</p>
+<p><strong>Setting tiers:</strong> You can set the tier per-blob at upload time, or change it on any individual blob after upload, or use <strong>lifecycle management policies</strong> to automate transitions.</p>
+<hr />
+<h3 id="demo-change-a-blobs-access-tier">Demo — Change a Blob's Access Tier</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open the blob</p>
+<p>In your <code>my-uploads</code> container → click your uploaded blob.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Change the tier</p>
+<p>On the blob's overview page, click <strong>"Change tier."</strong></p>
+<p>You'll see the four options — Hot, Cool, Cold, Archive. Select <strong>"Cool"</strong> → <strong>"Save."</strong></p>
+<p>The blob is now on the Cool tier. Accessing it less frequently means you're paying less per GB per month to store it.</p>
+<blockquote>
+<p>Change it back to <strong>Hot</strong> for the rest of the demos.</p>
+</blockquote>
+</div>
+<hr />
+<h3 id="lifecycle-management-policies">Lifecycle Management Policies</h3>
+<p>Instead of manually changing blob tiers, you can write rules that do it automatically:</p>
+<ul>
+<li><em>"Move blobs to Cool tier if they haven't been accessed in 30 days"</em></li>
+<li><em>"Move blobs to Archive if they haven't been accessed in 90 days"</em></li>
+<li><em>"Delete blobs that are older than 365 days"</em></li>
+</ul>
+<p>This is <strong>Lifecycle Management</strong> — a set of JSON rules evaluated daily that automatically manage blob tiers and deletion based on age or last-access time.</p>
+<hr />
+<h3 id="demo-create-a-lifecycle-management-policy">Demo — Create a Lifecycle Management Policy</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open Lifecycle management</p>
+<p>In your storage account → left menu → <strong>"Data management"</strong> → <strong>"Lifecycle management"</strong> → <strong>"+ Add a rule."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Name the rule</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rule name</td>
+<td><code>auto-tier-rule</code></td>
+</tr>
+<tr>
+<td>Rule scope</td>
+<td>Apply rule to all blobs in storage account</td>
+</tr>
+<tr>
+<td>Blob type</td>
+<td>Block blobs</td>
+</tr>
+<tr>
+<td>Blob subtype</td>
+<td>Base blobs</td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Next: Base blobs."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Define the transitions</p>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Base blobs last modified more than <strong>30</strong> days ago</td>
+<td><strong>Move to cool storage</strong></td>
+</tr>
+<tr>
+<td>Base blobs last modified more than <strong>90</strong> days ago</td>
+<td><strong>Move to archive storage</strong></td>
+</tr>
+<tr>
+<td>Base blobs last modified more than <strong>365</strong> days ago</td>
+<td><strong>Delete the blob</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Check all three boxes and set the day values as above.</p>
+<p>Click <strong>"Add."</strong></p>
+<blockquote>
+<p>The policy is now saved. Azure evaluates it once per day. Any blob untouched for 30 days automatically drops to Cool. Any blob untouched for 90 days drops to Archive. After a year, it's deleted. You never need to think about it again.</p>
+</blockquote>
+</div>
+<hr />
+<h2 id="part-4-shared-access-signatures-sas">Part 4 — Shared Access Signatures (SAS)</h2>
+<h3 id="the-problem">The Problem</h3>
+<p>Your blobs are private — no one can access them without authenticating as your storage account. But what if you need to share a specific file with someone temporarily — a client, a contractor, a partner — without giving them your account key?</p>
+<p>A <strong>Shared Access Signature (SAS)</strong> is a signed URL that grants specific, time-limited access to a blob, container, or service. You control exactly what they can do and for how long.</p>
+<p><strong>A SAS URL looks like this:</strong>
+<div class="highlight"><pre><span></span><code>https://lwmstoragedemo.blob.core.windows.net/my-uploads/report.pdf
+  ?sv=2023-11-03
+  &amp;se=2026-05-26T10%3A00%3A00Z
+  &amp;sr=b
+  &amp;sp=r
+  &amp;sig=AbCdEf1234...
+</code></pre></div></p>
+<p>The query parameters encode:
+- <strong><code>se</code></strong> — expiry time (this URL stops working after this timestamp)
+- <strong><code>sr</code></strong> — resource type (<code>b</code> = blob, <code>c</code> = container)
+- <strong><code>sp</code></strong> — permissions (<code>r</code> = read only, <code>w</code> = write, <code>d</code> = delete)
+- <strong><code>sig</code></strong> — the cryptographic signature that proves Azure generated it</p>
+<p>If someone modifies any part of the URL, the signature check fails and access is denied.</p>
+<hr />
+<h3 id="demo-generate-a-sas-url-for-a-blob">Demo — Generate a SAS URL for a Blob</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open the blob</p>
+<p>In <code>my-uploads</code> → click your uploaded blob.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Generate SAS</p>
+<p>In the blob's left menu → <strong>"Generate SAS."</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Signing method</td>
+<td><strong>Account key</strong></td>
+</tr>
+<tr>
+<td>Permissions</td>
+<td><strong>Read</strong> <em>(untick everything else)</em></td>
+</tr>
+<tr>
+<td>Expiry</td>
+<td>Set to <strong>tomorrow's date and time</strong></td>
+</tr>
+<tr>
+<td>Allowed protocols</td>
+<td><strong>HTTPS only</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Generate SAS token and URL."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Test the URL</p>
+<p>Copy the <strong>Blob SAS URL</strong> (the full URL, not just the token). Open it in a browser — your file loads successfully.</p>
+<p>Now try modifying the URL — change any character in the <code>sig</code> parameter. Reload the page — you get an <strong>AuthenticationFailed</strong> error. The signature check caught the tampering.</p>
+<blockquote>
+<p>After the expiry time you set passes, the URL will stop working entirely — even without modification.</p>
+</blockquote>
+</div>
+<hr />
+<h2 id="part-5-static-website-hosting">Part 5 — Static Website Hosting</h2>
+<h3 id="serving-a-website-directly-from-blob-storage">Serving a Website Directly From Blob Storage</h3>
+<p>Blob Storage isn't just for storing files your application downloads — you can serve an entire website from it. Azure Storage has a built-in <strong>Static Website Hosting</strong> feature that turns a blob container into a web host for HTML, CSS, JavaScript, and image files.</p>
+<p>When you enable static website hosting, Azure:
+- Creates a special container called <code>$web</code> in your storage account
+- Gives you a public endpoint URL — e.g., <code>https://lwmstoragedemo.z13.web.core.windows.net</code>
+- Serves files from <code>$web</code> at that URL — no VM, no App Service, no compute charge</p>
+<p><strong>When to use it:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Good fit?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Marketing or landing page</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td>Documentation site</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td>React / Vue / Angular app (build output is static files)</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td>Any site that needs server-side code or database calls from the server</td>
+<td>❌ No — use App Service or Azure Functions</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Cost:</strong> You pay only for the storage (fractions of a cent per GB) and bandwidth. There is no compute charge — no server is running. For a small site with modest traffic, monthly cost is effectively zero.</p>
+<p><strong>Static Website vs App Service:</strong>
+- <strong>App Service</strong> runs server-side code — .NET, Node.js, Python — and handles the request on the server before sending a response
+- <strong>Static Website Hosting</strong> just serves files. The browser downloads the HTML, CSS, and JS and runs everything client-side
+- A common pattern: host your React frontend on Static Website, and have it call an Azure Functions backend API. Best of both — no servers for the frontend, pay-per-execution for the backend</p>
+<hr />
+<h3 id="demo-enable-static-website-hosting">Demo — Enable Static Website Hosting</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Enable Static Website</p>
+<p>In your storage account → left menu → <strong>"Data management"</strong> → <strong>"Static website."</strong></p>
+<p>Toggle <strong>Static website</strong> to <strong>Enabled.</strong></p>
+<p>Fill in:
+- <strong>Index document name:</strong> <code>index.html</code>
+- <strong>Error document path:</strong> <code>404.html</code></p>
+<p>Click <strong>"Save."</strong></p>
+<p>Azure shows you two important URLs:
+- <strong>Primary endpoint:</strong> <code>https://&lt;accountname&gt;.z13.web.core.windows.net</code> — this is your site's public address
+- A <code>$web</code> container has been created automatically in your storage account</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Create a simple HTML page</p>
+<p>On your laptop, create a file called <code>index.html</code> with this content:</p>
+<div class="highlight"><pre><span></span><code><span class="cp">&lt;!DOCTYPE html&gt;</span>
+<span class="p">&lt;</span><span class="nt">html</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">head</span><span class="p">&gt;&lt;</span><span class="nt">title</span><span class="p">&gt;</span>My Azure Site<span class="p">&lt;/</span><span class="nt">title</span><span class="p">&gt;&lt;/</span><span class="nt">head</span><span class="p">&gt;</span>
+  <span class="p">&lt;</span><span class="nt">body</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">h1</span><span class="p">&gt;</span>Hello from Azure Blob Storage!<span class="p">&lt;/</span><span class="nt">h1</span><span class="p">&gt;</span>
+    <span class="p">&lt;</span><span class="nt">p</span><span class="p">&gt;</span>This page is hosted entirely in a Storage Account — no server running anywhere.<span class="p">&lt;/</span><span class="nt">p</span><span class="p">&gt;</span>
+  <span class="p">&lt;/</span><span class="nt">body</span><span class="p">&gt;</span>
+<span class="p">&lt;/</span><span class="nt">html</span><span class="p">&gt;</span>
+</code></pre></div>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Upload to the $web container</p>
+<p>In the portal → <strong>Containers</strong> → click the <strong><code>$web</code></strong> container.</p>
+<p>Click <strong>"Upload"</strong> → select your <code>index.html</code> → click <strong>"Upload."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Visit your site</p>
+<p>Go back to <strong>Static website</strong> settings and copy the <strong>Primary endpoint</strong> URL.</p>
+<p>Open it in your browser. Your page loads — no VM, no App Service, no server running anywhere.</p>
+<blockquote>
+<p><strong>Custom domain:</strong> The default URL looks like <code>https://&lt;accountname&gt;.z13.web.core.windows.net</code>. For a real domain (e.g., <code>www.yoursite.com</code>), create a CNAME DNS record at your registrar pointing to this URL, then configure it under <strong>Networking → Custom domain</strong> in the storage account. Azure also integrates with Azure CDN to add HTTPS to custom domains on static sites.</p>
+</blockquote>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 5 — Test the error page</p>
+<p>In your browser, navigate to a page that doesn't exist under your site URL — e.g., <code>https://&lt;accountname&gt;.z13.web.core.windows.net/nonexistent</code>.</p>
+<p>You'll get a 404 response. Azure serves your <code>404.html</code> if you created one and uploaded it to <code>$web</code>, otherwise a generic error. This is where you'd upload a branded error page for a real site.</p>
+</div>
+<hr />
+<h2 id="part-6-blob-versioning">Part 6 — Blob Versioning</h2>
+<h3 id="protecting-against-overwrites">Protecting Against Overwrites</h3>
+<p>SAS tokens control who can access blobs. Lifecycle policies manage cost. But what protects you from accidentally overwriting a critical file with corrupted or incorrect data?</p>
+<p><strong>Blob Versioning</strong> is a data protection feature that automatically creates and stores a copy of every blob each time it is overwritten or deleted. Each version has the same blob name but a different <strong>version ID</strong> — a timestamp-based identifier. You can view the full history of a blob, restore any previous version, or download a specific version.</p>
+<p><strong>How it differs from Soft Delete:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Protects against</th>
+<th>How it works</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Soft Delete</strong></td>
+<td>Accidental <em>deletion</em></td>
+<td>Keeps deleted blobs in a hidden state for a retention period</td>
+</tr>
+<tr>
+<td><strong>Versioning</strong></td>
+<td>Accidental <em>overwrite</em></td>
+<td>Saves a copy automatically every time a blob is modified</td>
+</tr>
+</tbody>
+</table>
+<p>You can — and should — enable both together for maximum protection.</p>
+<p><strong>Cost consideration:</strong> Every version is billed as its own blob. If a 10 MB file is overwritten 20 times, you're storing 200 MB total. Use lifecycle management rules to auto-delete old versions after a set number of days.</p>
+<hr />
+<h3 id="demo-enable-versioning-and-restore-a-previous-version">Demo — Enable Versioning and Restore a Previous Version</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Enable Blob Versioning</p>
+<p>In your storage account → left menu → <strong>"Data management"</strong> → <strong>"Data protection."</strong></p>
+<p>Under <strong>Recovery</strong>, check <strong>"Enable versioning for blobs."</strong></p>
+<p>Click <strong>"Save."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Upload Version 1</p>
+<p>Create a plain text file on your laptop called <code>notes.txt</code> with the content:
+<div class="highlight"><pre><span></span><code>Version 1 — original content
+</code></pre></div></p>
+<p>Go to <strong>Containers</strong> → <code>my-uploads</code> → <strong>"Upload"</strong> → select <code>notes.txt</code> → <strong>"Upload."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Overwrite with Version 2</p>
+<p>Edit your <code>notes.txt</code> locally. Change the content to:
+<div class="highlight"><pre><span></span><code>Version 2 — updated content
+</code></pre></div></p>
+<p>Upload the file again — <strong>same filename</strong> <code>notes.txt</code> → <strong>"Upload."</strong></p>
+<p>Azure keeps both copies. The current blob is now Version 2. Version 1 is stored as a historical version with a different version ID.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — View the versions</p>
+<p>Click on <code>notes.txt</code> in the container.</p>
+<p>On the blob's overview page, look for the <strong>"Versions"</strong> tab or click <strong>"Show versions"</strong> in the container list toolbar.</p>
+<p>You'll see two entries: the current version and the original, each showing its version ID (a timestamp string) and when it was created.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 5 — Restore Version 1</p>
+<p>Click the older version in the list.</p>
+<p>Click <strong>"Make current version"</strong> (or copy this version over the current blob).</p>
+<p>Download <code>notes.txt</code> — it now contains <code>Version 1 — original content</code>. The accidental overwrite is reversed.</p>
+<blockquote>
+<p><strong>Production tip:</strong> Enable versioning at account creation time. It only protects blobs created or modified <em>after</em> it is enabled — retroactive enabling does not version-stamp existing blobs. Also create a lifecycle rule to delete versions older than 90 days to keep storage costs under control.</p>
+</blockquote>
+</div>
+<hr />
+<h2 id="cleaning-up">Cleaning Up</h2>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition warning">
+<p class="admonition-title">Delete the resource group</p>
+<p>Go to <strong>Resource groups</strong> → <code>storage-demo-rg</code> → <strong>"Delete resource group"</strong> → type the name to confirm → <strong>"Delete."</strong></p>
+<p>This removes the storage account and all data inside it — blobs, the <code>$web</code> container, all versions — in one step.</p>
+<blockquote>
+<p>The Free Tier gives you 5 GB of Blob Storage free for 12 months, so there is no charge from this demo.</p>
+</blockquote>
+</div>
+<hr />
+<h2 id="summary-and-whats-next">Summary and What's Next</h2>
+<p>Today you built a solid foundation in Azure Blob Storage.</p>
+<p><strong>The Storage Account</strong> is the unified namespace for four different storage engines. Today's focus was on the one you'll use most: <strong>Blob Storage</strong>.</p>
+<p><strong>Blob Storage</strong> is where unstructured data lives — images, backups, log files, anything that's a file. Block Blobs for general files, Append Blobs for logs, Page Blobs for VM disks. The four access tiers (Hot, Cool, Cold, Archive) let you cut costs as data ages, and lifecycle management policies automate those transitions.</p>
+<p><strong>SAS tokens</strong> give you surgical access control — a time-limited, permission-scoped URL you can share with anyone without exposing your account key. Tamper with the URL and the cryptographic signature check fails instantly.</p>
+<p><strong>Static Website Hosting</strong> turns your storage account into a zero-server web host. HTML, CSS, and JavaScript files in the <code>$web</code> container are served at a public URL — no compute charge, no infrastructure to maintain. Perfect for frontend apps, landing pages, and documentation sites.</p>
+<p><strong>Blob Versioning</strong> is your safety net for overwrites. Every time a blob is modified, Azure silently saves the previous copy. One click to restore. Combine it with Soft Delete and lifecycle policies for a complete data protection strategy.</p>
+<p><strong>Coming up next — Day 8:</strong> We finish the storage picture with <strong>Azure Files</strong> (mount a cloud file share on any VM or laptop), <strong>Queue Storage</strong> (decouple your application components with messages), and <strong>Table Storage</strong> (simple schemaless NoSQL for structured data), plus <strong>Azure Storage Explorer</strong> for managing everything from your desktop.</p>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<ul>
+<li><strong>Storage Account = one account, four services</strong> — Blob, Files, Queue, Table all share one account name and one bill</li>
+<li><strong>Account name is globally unique</strong> — it becomes the DNS name for all four service endpoints</li>
+<li><strong>Standard vs Premium</strong> — Standard covers almost every use case. Premium is for sub-millisecond latency requirements</li>
+<li><strong>LRS</strong> — 3 copies in one data center. <strong>ZRS</strong> — 3 copies across zones. <strong>GRS</strong> — 6 copies across two regions. <strong>GZRS</strong> — maximum durability</li>
+<li><strong>Block Blob</strong> — general files. <strong>Append Blob</strong> — logs only. <strong>Page Blob</strong> — VM disks</li>
+<li><strong>Hot → Cool → Cold → Archive</strong> — storage cost drops, access cost rises, retrieval time increases. Archive takes up to 15 hours to rehydrate</li>
+<li><strong>SAS tokens</strong> — time-limited, permission-scoped URLs. Tampering with any part of the URL breaks the signature and returns AuthenticationFailed</li>
+<li><strong>Lifecycle management</strong> — rules evaluated daily that automatically move or delete blobs based on age. Set once, forget</li>
+<li><strong>Static Website Hosting</strong> — enable on the storage account, upload files to <code>$web</code>, get a public URL — no server, no compute charge</li>
+<li><strong>Blob Versioning</strong> — every overwrite creates a stored version with a unique version ID. Enable at account creation; add a lifecycle rule to delete old versions to control cost</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../day06_app_service/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../day08_storage_files_queue_tables/" class="md-footer__link md-footer__link--next" aria-label="Next: Day 8 — Azure Storage: Files, Queues, Tables &amp; Storage Explorer">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

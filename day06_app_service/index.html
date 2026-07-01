@@ -1,0 +1,2361 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A complete beginner's guide to Azure Cloud and Azure DevOps — 29 days, zero assumed cloud knowledge.">
+      
+      
+      
+        <link rel="canonical" href="https://iam-mithran.github.io/LWM-Azure/day06_app_service/">
+      
+      
+        <link rel="prev" href="../day05_vms_part3/">
+      
+      
+        <link rel="next" href="../day07_storage_account/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers - LearnWithMithran — Azure Complete Beginner's Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#day-6-azure-app-service-deploy-web-apps-without-managing-servers" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-header__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LearnWithMithran — Azure Complete Beginner's Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-nav__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LearnWithMithran — Azure Complete Beginner's Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day01_account_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day02_fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day03_vms_part1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day04_web_hosting_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day05_vms_part3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-what-is-azure-app-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — What Is Azure App Service?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — What Is Azure App Service?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#from-vms-to-platform-as-a-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From VMs to Platform-as-a-Service
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-an-app-service-plan-and-web-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create an App Service Plan and Web App
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-app-service-plans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — App Service Plans
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — App Service Plans">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-an-app-service-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is an App Service Plan?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#app-service-plan-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        App Service Plan Tiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-explore-the-app-service-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Explore the App Service Plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-supported-runtimes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Supported Runtimes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-deploying-your-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Deploying Your Code
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Deploying Your Code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deployment-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-deploy-a-nodejs-app-via-zip-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Deploy a Node.js App via ZIP Deploy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Demo — Deploy a Node.js App via ZIP Deploy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-a-create-the-app-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step A — Create the App Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-b-deploy-via-the-portal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step B — Deploy via the Portal
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-application-settings-and-environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — Application Settings and Environment Variables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — Application Settings and Environment Variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-not-hardcode-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Not Hardcode Configuration?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-add-an-application-setting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Add an Application Setting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-custom-domains-and-ssl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6 — Custom Domains and SSL
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6 — Custom Domains and SSL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-domains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Domains
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssl-https" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SSL / HTTPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-7-deployment-slots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 7 — Deployment Slots
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 7 — Deployment Slots">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-with-deploying-directly-to-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem with Deploying Directly to Production
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-are-deployment-slots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Are Deployment Slots?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-staging-slot-and-swap-to-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a Staging Slot and Swap to Production
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-8-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 8 — Scaling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 8 — Scaling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#manual-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual Scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-manual-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Manual Scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auto-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auto-Scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-configure-auto-scale-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Configure Auto-Scale Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleaning-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning Up
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-and-whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary and What's Next
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day07_storage_account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day08_storage_files_queue_tables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day09_intro_to_networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day10_virtual_network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day11_vnet_advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day12_load_balancer_vmss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-what-is-azure-app-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — What Is Azure App Service?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — What Is Azure App Service?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#from-vms-to-platform-as-a-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        From VMs to Platform-as-a-Service
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-an-app-service-plan-and-web-app" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create an App Service Plan and Web App
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-app-service-plans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — App Service Plans
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — App Service Plans">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-an-app-service-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is an App Service Plan?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#app-service-plan-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        App Service Plan Tiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-explore-the-app-service-plan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Explore the App Service Plan
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-supported-runtimes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Supported Runtimes
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-deploying-your-code" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Deploying Your Code
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Deploying Your Code">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#deployment-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Deployment Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-deploy-a-nodejs-app-via-zip-deploy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Deploy a Node.js App via ZIP Deploy
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Demo — Deploy a Node.js App via ZIP Deploy">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#step-a-create-the-app-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step A — Create the App Files
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-b-deploy-via-the-portal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step B — Deploy via the Portal
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-application-settings-and-environment-variables" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — Application Settings and Environment Variables
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — Application Settings and Environment Variables">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-not-hardcode-configuration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Not Hardcode Configuration?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-add-an-application-setting" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Add an Application Setting
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-custom-domains-and-ssl" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6 — Custom Domains and SSL
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6 — Custom Domains and SSL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#custom-domains" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Domains
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ssl-https" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SSL / HTTPS
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-7-deployment-slots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 7 — Deployment Slots
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 7 — Deployment Slots">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-with-deploying-directly-to-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem with Deploying Directly to Production
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-are-deployment-slots" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Are Deployment Slots?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-create-a-staging-slot-and-swap-to-production" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Create a Staging Slot and Swap to Production
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-8-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 8 — Scaling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 8 — Scaling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#manual-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Manual Scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-manual-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Manual Scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auto-scale" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auto-Scale
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#demo-configure-auto-scale-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Demo — Configure Auto-Scale Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleaning-up" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleaning Up
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary-and-whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary and What's Next
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="day-6-azure-app-service-deploy-web-apps-without-managing-servers">Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers</h1>
+<p><strong>Phase 1 — Compute</strong></p>
+<blockquote>
+<p>In Day 4 you hosted a website on a VM. You created the VM, opened port 80, installed IIS or Nginx, put your HTML file in the right folder, and managed the firewall rules yourself. That's fine for learning — but in the real world, companies deploy dozens of applications. Repeating that setup for every app would be slow, error-prone, and expensive to maintain. Today you'll learn a smarter way: Azure App Service. You bring the code. Azure handles everything else.</p>
+</blockquote>
+<hr />
+<h2 id="what-youll-learn">What You'll Learn</h2>
+<ul>
+<li>What Azure App Service is and why companies choose it over VMs for web applications</li>
+<li>App Service Plans — the four tiers and what each unlocks</li>
+<li>Supported runtimes — Node.js, Python, Java, .NET, PHP, and more</li>
+<li>Deployment methods — ZIP deploy, GitHub Actions, Local Git, FTP</li>
+<li>Application settings and environment variables — how to configure apps without hardcoding values</li>
+<li>Custom domains and SSL certificates</li>
+<li>Deployment slots — staging environments with zero-downtime production swaps</li>
+<li>Scaling — manual scale on Basic, auto-scale rules on Standard</li>
+</ul>
+<hr />
+<h2 id="part-1-what-is-azure-app-service">Part 1 — What Is Azure App Service?</h2>
+<h3 id="from-vms-to-platform-as-a-service">From VMs to Platform-as-a-Service</h3>
+<p>In Day 3 and Day 4, you worked with <strong>Virtual Machines</strong> — Azure's Infrastructure-as-a-Service (IaaS) offering. With a VM, you rent a virtual computer and take responsibility for everything that runs on it: the OS, the web server, the runtime, the patches, the SSL certificates, the scaling logic.</p>
+<p><strong>Azure App Service</strong> is a different model. It is Microsoft's <strong>Platform-as-a-Service (PaaS)</strong> offering for web applications. You give Azure your code — a zip file, a git repo, a container image — and Azure takes care of:</p>
+<ul>
+<li>The underlying OS and its patches</li>
+<li>The web server (IIS on Windows, Nginx/Apache on Linux)</li>
+<li>Runtime installation and upgrades</li>
+<li>Load balancing across instances</li>
+<li>SSL termination</li>
+<li>Health monitoring and automatic restarts</li>
+</ul>
+<pre class="mermaid"><code>graph TD
+    subgraph VM["Virtual Machine — IaaS\n(You manage everything)"]
+        OS["Operating System\n(you patch it)"]
+        WS["Web Server — IIS / Nginx\n(you install it)"]
+        RT["Runtime — Node.js / Python\n(you install it)"]
+        APP1["Your Code"]
+    end
+
+    subgraph AS["App Service — PaaS\n(Azure manages everything below your code)"]
+        APP2["Your Code ← only this is yours"]
+        MANAGED["OS + Web Server + Runtime + Patching\n(fully managed by Azure)"]
+    end</code></pre>
+<p><strong>When to choose App Service over a VM:</strong></p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Virtual Machine</th>
+<th>App Service</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>You manage</td>
+<td>OS, runtime, web server, patches</td>
+<td>Only your code</td>
+</tr>
+<tr>
+<td>Setup time</td>
+<td>15–30 min per app</td>
+<td>2–3 min</td>
+</tr>
+<tr>
+<td>Scaling</td>
+<td>Manual or VMSS (complex)</td>
+<td>One slider or auto-scale rules</td>
+</tr>
+<tr>
+<td>Cost model</td>
+<td>Pay per hour even when idle</td>
+<td>Pay per plan (shared across apps)</td>
+</tr>
+<tr>
+<td>Best for</td>
+<td>Full OS control, legacy apps</td>
+<td>Web apps, REST APIs, mobile backends</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>App Service runs your code, not your OS. The moment you need to SSH into a machine and install something, a VM is the right choice. For most web apps and APIs, App Service is faster and cheaper to operate.</p>
+</blockquote>
+<hr />
+<h3 id="demo-create-an-app-service-plan-and-web-app">Demo — Create an App Service Plan and Web App</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Search for App Services</p>
+<p>In the Azure Portal search bar, type <strong>"App Services"</strong> and click the result.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Create a new Web App</p>
+<p>Click <strong>"+ Create"</strong> → <strong>"Web App."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Fill in the Basics tab</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Subscription</td>
+<td><em>(your subscription)</em></td>
+</tr>
+<tr>
+<td>Resource group</td>
+<td>Create new → <code>appservice-demo-rg</code></td>
+</tr>
+<tr>
+<td>Name</td>
+<td><code>myapp-lwm-demo</code> <em>(must be globally unique — this becomes your URL)</em></td>
+</tr>
+<tr>
+<td>Publish</td>
+<td><strong>Code</strong></td>
+</tr>
+<tr>
+<td>Runtime stack</td>
+<td><strong>Node.js 20 LTS</strong></td>
+</tr>
+<tr>
+<td>Operating system</td>
+<td><strong>Linux</strong></td>
+</tr>
+<tr>
+<td>Region</td>
+<td><em>(same region you've been using)</em></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Configure the App Service Plan</p>
+<p>Under <strong>Pricing plan</strong>, click <strong>"Create new."</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td><code>my-free-plan</code></td>
+</tr>
+<tr>
+<td>Pricing tier</td>
+<td>Click <strong>"Explore pricing plans"</strong> → select <strong>Free F1</strong> → <strong>"Select"</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"OK."</strong></p>
+<blockquote>
+<p><strong>What is an App Service Plan?</strong> It defines the underlying compute resources your app runs on — how many CPUs, how much RAM, and which features are available. Multiple apps can share one plan. We'll cover plans in detail in the next section.</p>
+</blockquote>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 5 — Review + Create</p>
+<p>Leave all other tabs at defaults → click <strong>"Review + create"</strong> → <strong>"Create."</strong></p>
+<p>Deployment takes about 30–60 seconds. Once complete, click <strong>"Go to resource."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 6 — Visit your app</p>
+<p>On the App Service overview page, find the <strong>URL</strong> — it looks like <code>https://myapp-lwm-demo.azurewebsites.net</code>.</p>
+<p>Click the URL. You'll see Azure's default "Your web app is running and waiting for your content" page. The app is live — we just haven't deployed any code yet.</p>
+</div>
+<hr />
+<h2 id="part-2-app-service-plans">Part 2 — App Service Plans</h2>
+<h3 id="what-is-an-app-service-plan">What Is an App Service Plan?</h3>
+<p>An <strong>App Service Plan</strong> is the compute layer that your web apps run on. It defines:
+- How many virtual cores and GB of RAM are allocated
+- Whether your app runs on shared or dedicated hardware
+- Which features are available (auto-scale, deployment slots, custom domains, etc.)
+- How many apps can share the plan</p>
+<p><strong>Multiple apps on one plan:</strong> You can run 10 different web apps on a single App Service Plan and they all share the same compute. If the plan has 2 vCPUs and 7 GB RAM, all 10 apps share that pool. This makes plans cost-effective for teams running many small services.</p>
+<h3 id="app-service-plan-tiers">App Service Plan Tiers</h3>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Examples</th>
+<th>Hardware</th>
+<th>Key Features</th>
+<th>Cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Free</strong></td>
+<td>F1</td>
+<td>Shared</td>
+<td>60 min compute/day, <code>*.azurewebsites.net</code> only</td>
+<td>Free</td>
+</tr>
+<tr>
+<td><strong>Basic</strong></td>
+<td>B1, B2, B3</td>
+<td>Dedicated</td>
+<td>Custom domains, SSL, manual scale</td>
+<td>~$13–$52/mo</td>
+</tr>
+<tr>
+<td><strong>Standard</strong></td>
+<td>S1, S2, S3</td>
+<td>Dedicated</td>
+<td>Auto-scale, deployment slots (5), daily backups</td>
+<td>~$70–$300/mo</td>
+</tr>
+<tr>
+<td><strong>Premium</strong></td>
+<td>P1v3, P2v3</td>
+<td>Dedicated</td>
+<td>Faster compute, VNet integration, 20 slots</td>
+<td>~$150–$600/mo</td>
+</tr>
+<tr>
+<td><strong>Isolated</strong></td>
+<td>I1v2, I2v2</td>
+<td>Dedicated VNet</td>
+<td>Runs in your own VNet, fully isolated</td>
+<td>~$400+/mo</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Free tier limitations to know:</strong>
+- 60 CPU minutes per day — enough for demos and learning
+- No custom domain (only <code>*.azurewebsites.net</code>)
+- No SSL on custom domain
+- App goes to sleep after 20 minutes of inactivity (cold start on next request)</p>
+<pre class="mermaid"><code>graph TD
+    FREE["Free F1\n60 CPU min/day\nShared hardware"] --&gt; BASIC["Basic B1–B3\nDedicated compute\nCustom domain + SSL"]
+    BASIC --&gt; STD["Standard S1–S3\nAuto-scale\nDeployment slots"]
+    STD --&gt; PREM["Premium P1v3–P3v3\nFaster + VNet integration"]
+    PREM --&gt; ISO["Isolated I1v2–I2v2\nDedicated VNet\nFully isolated"]</code></pre>
+<hr />
+<h3 id="demo-explore-the-app-service-plan">Demo — Explore the App Service Plan</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open your App Service Plan</p>
+<p>In the Azure Portal, search <strong>"App Service plans"</strong> and click your <code>my-free-plan</code>.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — View the Apps tab</p>
+<p>In the left menu, click <strong>"Apps."</strong> Your web app appears here. Any additional apps you add to this plan will also show up here — they all share the same resources.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Scale up to see tier options</p>
+<p>In the left menu, click <strong>"Scale up (App Service plan)."</strong></p>
+<p>You'll see all the pricing tiers laid out — Free, Basic, Standard, Premium, Isolated. Each tier shows the vCPU count, RAM, and available features.</p>
+<blockquote>
+<p>We're not upgrading — just exploring what's available. Click <strong>"Cancel"</strong> or navigate away.</p>
+</blockquote>
+</div>
+<hr />
+<h2 id="part-3-supported-runtimes">Part 3 — Supported Runtimes</h2>
+<p>Azure App Service can host applications written in any of these languages natively — no VM, no runtime installation required:</p>
+<table>
+<thead>
+<tr>
+<th>Runtime</th>
+<th>Versions available</th>
+<th>Common use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Node.js</strong></td>
+<td>18, 20, 22 LTS</td>
+<td>REST APIs, React/Vue/Next.js SSR</td>
+</tr>
+<tr>
+<td><strong>Python</strong></td>
+<td>3.9, 3.10, 3.11, 3.12</td>
+<td>Flask, FastAPI, Django apps</td>
+</tr>
+<tr>
+<td><strong>.NET</strong></td>
+<td>6, 7, 8</td>
+<td>ASP.NET Core APIs and MVC apps</td>
+</tr>
+<tr>
+<td><strong>Java</strong></td>
+<td>8, 11, 17, 21</td>
+<td>Spring Boot, Tomcat, JBoss</td>
+</tr>
+<tr>
+<td><strong>PHP</strong></td>
+<td>8.0, 8.1, 8.2</td>
+<td>WordPress, Laravel</td>
+</tr>
+<tr>
+<td><strong>Ruby</strong></td>
+<td>3.2</td>
+<td>Rails applications (Linux only)</td>
+</tr>
+</tbody>
+</table>
+<p>You pick the runtime when creating the Web App. Azure installs it, keeps it updated, and knows how to start your app automatically based on the runtime you chose.</p>
+<blockquote>
+<p><strong>What about static sites?</strong> For a purely static HTML/CSS/JS site with no server-side code, <strong>Azure Static Web Apps</strong> (a separate service) is the better choice. App Service is for applications with server-side logic. We'll cover Static Web Apps separately.</p>
+</blockquote>
+<hr />
+<h2 id="part-4-deploying-your-code">Part 4 — Deploying Your Code</h2>
+<h3 id="deployment-methods">Deployment Methods</h3>
+<p>There are four main ways to get your code into App Service:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>How it works</th>
+<th>Best for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>ZIP Deploy</strong></td>
+<td>Upload a <code>.zip</code> of your app folder via the portal or CLI</td>
+<td>Quick demos, one-off deploys</td>
+</tr>
+<tr>
+<td><strong>GitHub Actions</strong></td>
+<td>Push to GitHub → CI/CD pipeline automatically deploys to App Service</td>
+<td>Teams, production workflows</td>
+</tr>
+<tr>
+<td><strong>Azure DevOps Pipelines</strong></td>
+<td>Same as GitHub Actions but using Azure DevOps</td>
+<td>Enterprise teams using ADO</td>
+</tr>
+<tr>
+<td><strong>Local Git</strong></td>
+<td>Push to a Git URL hosted by App Service itself</td>
+<td>Developers who prefer Git push</td>
+</tr>
+</tbody>
+</table>
+<p>Today we use <strong>ZIP Deploy</strong> — it's the simplest and works entirely in the browser.</p>
+<hr />
+<h3 id="demo-deploy-a-nodejs-app-via-zip-deploy">Demo — Deploy a Node.js App via ZIP Deploy</h3>
+<p><strong>✅ Free Tier</strong></p>
+<p>We're going to create a simple two-file Node.js app, zip it, and deploy it to App Service.</p>
+<h4 id="step-a-create-the-app-files">Step A — Create the App Files</h4>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Create a project folder on your laptop</p>
+<p>Create a new folder on your desktop called <code>nodeapp</code>. Inside it, create two files:</p>
+<p><strong><code>server.js</code></strong>
+<div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">http</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;http&#39;</span><span class="p">);</span>
+<span class="kd">const</span><span class="w"> </span><span class="nx">port</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">PORT</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="mf">8080</span><span class="p">;</span>
+
+<span class="kd">const</span><span class="w"> </span><span class="nx">server</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">http</span><span class="p">.</span><span class="nx">createServer</span><span class="p">((</span><span class="nx">req</span><span class="p">,</span><span class="w"> </span><span class="nx">res</span><span class="p">)</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="kd">const</span><span class="w"> </span><span class="nx">appName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">APP_NAME</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s1">&#39;Azure App Service&#39;</span><span class="p">;</span>
+<span class="w">    </span><span class="nx">res</span><span class="p">.</span><span class="nx">writeHead</span><span class="p">(</span><span class="mf">200</span><span class="p">,</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s1">&#39;Content-Type&#39;</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;text/html&#39;</span><span class="w"> </span><span class="p">});</span>
+<span class="w">    </span><span class="nx">res</span><span class="p">.</span><span class="nx">end</span><span class="p">(</span><span class="sb">`</span>
+<span class="sb">        &lt;!DOCTYPE html&gt;</span>
+<span class="sb">        &lt;html lang=&quot;en&quot;&gt;</span>
+<span class="sb">        &lt;head&gt;</span>
+<span class="sb">            &lt;meta charset=&quot;UTF-8&quot;&gt;</span>
+<span class="sb">            &lt;title&gt;</span><span class="si">${</span><span class="nx">appName</span><span class="si">}</span><span class="sb">&lt;/title&gt;</span>
+<span class="sb">            &lt;style&gt;</span>
+<span class="sb">                body { font-family: Arial, sans-serif; display: flex; justify-content: center;</span>
+<span class="sb">                       align-items: center; height: 100vh; margin: 0;</span>
+<span class="sb">                       background: #0078d4; color: white; text-align: center; }</span>
+<span class="sb">                .card { background: rgba(255,255,255,0.15); padding: 40px 60px; border-radius: 12px; }</span>
+<span class="sb">                h1 { font-size: 2.5em; margin-bottom: 10px; }</span>
+<span class="sb">                p { font-size: 1.2em; opacity: 0.9; }</span>
+<span class="sb">            &lt;/style&gt;</span>
+<span class="sb">        &lt;/head&gt;</span>
+<span class="sb">        &lt;body&gt;</span>
+<span class="sb">            &lt;div class=&quot;card&quot;&gt;</span>
+<span class="sb">                &lt;h1&gt;Hello from </span><span class="si">${</span><span class="nx">appName</span><span class="si">}</span><span class="sb">!&lt;/h1&gt;</span>
+<span class="sb">                &lt;p&gt;Deployed via ZIP Deploy — no VM, no Nginx, no setup.&lt;/p&gt;</span>
+<span class="sb">                &lt;p&gt;Platform: &lt;strong&gt;Azure App Service&lt;/strong&gt;&lt;/p&gt;</span>
+<span class="sb">            &lt;/div&gt;</span>
+<span class="sb">        &lt;/body&gt;</span>
+<span class="sb">        &lt;/html&gt;</span>
+<span class="sb">    `</span><span class="p">);</span>
+<span class="p">});</span>
+
+<span class="nx">server</span><span class="p">.</span><span class="nx">listen</span><span class="p">(</span><span class="nx">port</span><span class="p">,</span><span class="w"> </span><span class="p">()</span><span class="w"> </span><span class="p">=&gt;</span><span class="w"> </span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s1">&#39;Server running on port &#39;</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="nx">port</span><span class="p">));</span>
+</code></pre></div></p>
+<p><strong><code>package.json</code></strong>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;azure-appservice-demo&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;version&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1.0.0&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;scripts&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;start&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;node server.js&quot;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Zip the folder contents</p>
+<p>Select <strong>both files</strong> inside the <code>nodeapp</code> folder (not the folder itself — select <code>server.js</code> and <code>package.json</code>), right-click → <strong>"Compress to ZIP"</strong> (Windows 11) or <strong>"Send to → Compressed folder"</strong> (Windows 10).</p>
+<p>Name the zip file <code>nodeapp.zip</code>.</p>
+<blockquote>
+<p><strong>Important:</strong> The zip must contain the files at the root level, not inside a subfolder. If you zip the folder itself, the deploy will fail because App Service won't find <code>package.json</code> at the root.</p>
+</blockquote>
+</div>
+<h4 id="step-b-deploy-via-the-portal">Step B — Deploy via the Portal</h4>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Open your Web App</p>
+<p>Go to <strong>App Services</strong> → your <code>myapp-lwm-demo</code> app.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Open the ZIP Deploy tool</p>
+<p>In the left menu, under <strong>Development Tools</strong>, click <strong>"Advanced Tools"</strong> → <strong>"Go."</strong></p>
+<p>This opens <strong>Kudu</strong> — App Service's deployment and diagnostic console — in a new tab.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 5 — Upload the ZIP</p>
+<p>In the Kudu toolbar, click <strong>"Tools"</strong> → <strong>"Zip Push Deploy."</strong></p>
+<p>Drag and drop your <code>nodeapp.zip</code> onto the page, or click to browse for it. Kudu unpacks the zip into <code>/home/site/wwwroot/</code>.</p>
+<p>You'll see a <code>200 OK</code> response when the deployment completes.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 6 — Restart the app and visit the URL</p>
+<p>Go back to your App Service in the portal → click <strong>"Restart"</strong> in the toolbar → confirm.</p>
+<p>Wait 20–30 seconds, then click your app's URL (<code>https://myapp-lwm-demo.azurewebsites.net</code>). Your custom page loads — <strong>"Hello from Azure App Service!"</strong> — served directly by the platform, no web server configuration needed.</p>
+</div>
+<hr />
+<h2 id="part-5-application-settings-and-environment-variables">Part 5 — Application Settings and Environment Variables</h2>
+<h3 id="why-not-hardcode-configuration">Why Not Hardcode Configuration?</h3>
+<p>In <code>server.js</code> you'll notice this line:
+<div class="highlight"><pre><span></span><code><span class="kd">const</span><span class="w"> </span><span class="nx">appName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nx">process</span><span class="p">.</span><span class="nx">env</span><span class="p">.</span><span class="nx">APP_NAME</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="s1">&#39;Azure App Service&#39;</span><span class="p">;</span>
+</code></pre></div></p>
+<p>This reads a value from an <strong>environment variable</strong> instead of hardcoding it. This is a critical best practice:</p>
+<ul>
+<li><strong>Secrets</strong> (database passwords, API keys) must never be in your code — they'd appear in your git history and be visible to anyone with repo access</li>
+<li><strong>Environment-specific values</strong> (dev URL vs prod URL) change per deployment but your code stays the same</li>
+<li><strong>Changing a config value</strong> should not require redeploying your code</li>
+</ul>
+<p>Azure App Service injects environment variables into your app at runtime via <strong>Application Settings</strong>.</p>
+<hr />
+<h3 id="demo-add-an-application-setting">Demo — Add an Application Setting</h3>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open Configuration</p>
+<p>Go to your App Service → left menu → <strong>"Configuration."</strong></p>
+<p>You'll see two tabs: <strong>Application settings</strong> and <strong>Connection strings</strong>. Application settings are for general config values. Connection strings are specifically for database connection strings (same concept, just separated for clarity).</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — Add a new setting</p>
+<p>Under <strong>Application settings</strong>, click <strong>"+ New application setting."</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td><code>APP_NAME</code></td>
+</tr>
+<tr>
+<td>Value</td>
+<td><code>LearnWithMithran Demo</code></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"OK."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 3 — Save</p>
+<p>Click <strong>"Save"</strong> at the top → <strong>"Continue"</strong> to confirm. App Service restarts to apply the new settings.</p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 4 — Verify the change</p>
+<p>Wait 20–30 seconds for the restart, then refresh your app URL. The heading now reads <strong>"Hello from LearnWithMithran Demo!"</strong> — the app read the environment variable from Application Settings.</p>
+<blockquote>
+<p>The code didn't change. The zip didn't change. Only the environment variable changed — and the app behaviour updated instantly.</p>
+</blockquote>
+</div>
+<hr />
+<h2 id="part-6-custom-domains-and-ssl">Part 6 — Custom Domains and SSL</h2>
+<h3 id="custom-domains">Custom Domains</h3>
+<p>By default, every App Service gets a free subdomain: <code>yourappname.azurewebsites.net</code>. For a real product, you want your own domain — <code>www.yourcompany.com</code>.</p>
+<p><strong>To add a custom domain (Basic plan and above):</strong>
+1. Buy a domain from any registrar (GoDaddy, Namecheap, Azure itself via App Service Domains)
+2. In App Service → <strong>Custom domains</strong> → <strong>Add custom domain</strong>
+3. Azure gives you a TXT or CNAME record to add to your DNS provider — this proves you own the domain
+4. Once verified, Azure binds the domain to your app</p>
+<h3 id="ssl-https">SSL / HTTPS</h3>
+<p>App Service automatically provides a free <strong>managed SSL certificate</strong> for:
+- Your <code>*.azurewebsites.net</code> subdomain — HTTPS works out of the box, zero configuration
+- Your custom domain — App Service can issue and renew a free certificate via <strong>App Service Managed Certificate</strong> (Basic+ plan)</p>
+<p><strong>Managed Certificate:</strong> Azure creates, installs, and auto-renews the SSL certificate for your custom domain. You don't touch <code>openssl</code>, you don't manage certificate expiry — it just works.</p>
+<blockquote>
+<p>Free (F1) plan does not support custom domains or custom SSL. You need at least Basic (B1) for that.</p>
+</blockquote>
+<hr />
+<h2 id="part-7-deployment-slots">Part 7 — Deployment Slots</h2>
+<h3 id="the-problem-with-deploying-directly-to-production">The Problem with Deploying Directly to Production</h3>
+<p>When you deploy a new version of your app directly to production:
+- There's a brief moment where the old code is shutting down and the new code is starting
+- If the new version has a bug, your production users hit it immediately
+- Rolling back means redeploying the old version — another deployment, another disruption</p>
+<h3 id="what-are-deployment-slots">What Are Deployment Slots?</h3>
+<p>A <strong>deployment slot</strong> is a separate, live instance of your app running alongside production on the same App Service Plan. It has its own URL, its own settings, and its own deployed code.</p>
+<p>The typical workflow:
+1. Deploy your new version to the <strong>staging</strong> slot
+2. Test it at the staging URL (<code>myapp-lwm-demo-staging.azurewebsites.net</code>)
+3. When ready, <strong>swap</strong> staging and production — the two slots exchange their code and settings instantly
+4. Production is now running the new version. The old version is now in the staging slot — if something breaks, one click swaps back.</p>
+<pre class="mermaid"><code>graph LR
+    DEV["Developer\npushes new code"] --&gt; STAGING["Staging Slot\nmyapp-staging.azurewebsites.net\n(test here first)"]
+    STAGING --&gt;|"Swap — instant, zero downtime"| PROD["Production Slot\nmyapp.azurewebsites.net\n(users hit this)"]
+    PROD --&gt;|"Swap back if bug found"| STAGING</code></pre>
+<p><strong>Why zero downtime?</strong> Azure warms up the new slot before the swap — it sends HTTP requests to the new version and waits until it responds before completing the swap. Users never hit a cold-starting instance.</p>
+<blockquote>
+<p>Deployment slots require <strong>Standard plan or higher</strong>. Free and Basic plans do not support slots.</p>
+</blockquote>
+<hr />
+<h3 id="demo-create-a-staging-slot-and-swap-to-production">Demo — Create a Staging Slot and Swap to Production</h3>
+<p><strong>💳 Paid — Instructor Demo (Standard S1 plan)</strong></p>
+<blockquote>
+<p>Deployment slots require a Standard plan (~$70/mo). This is an instructor demo — students watch the workflow. The concept is the same whether you follow along or not.</p>
+</blockquote>
+<div class="admonition info">
+<p class="admonition-title">Step 1 — Upgrade the plan to Standard</p>
+<p>Go to your App Service → left menu → <strong>"Scale up (App Service plan)"</strong> → select <strong>S1 Standard</strong> → <strong>"Apply."</strong></p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Step 2 — Create a staging slot</p>
+<p>Left menu → <strong>"Deployment slots"</strong> → <strong>"+ Add slot."</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Name</td>
+<td><code>staging</code></td>
+</tr>
+<tr>
+<td>Clone settings from</td>
+<td><em>(your production app)</em></td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Add."</strong> A new slot appears: <code>myapp-lwm-demo-staging.azurewebsites.net</code>.</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Step 3 — Deploy new code to staging</p>
+<p>Click on the <code>staging</code> slot to open it. Go to <strong>Advanced Tools</strong> → <strong>Kudu</strong> → <strong>Zip Push Deploy.</strong></p>
+<p>Upload a modified zip with an updated <code>server.js</code> — change the background colour to orange (<code>#e95420</code>) or the text to <code>"Version 2 — Staging"</code> so you can visually see the difference.</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Step 4 — Test the staging slot</p>
+<p>Visit <code>https://myapp-lwm-demo-staging.azurewebsites.net</code>. The new version is running. Production (<code>https://myapp-lwm-demo.azurewebsites.net</code>) still shows the original version — users are unaffected.</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Step 5 — Swap staging to production</p>
+<p>Go back to the production app → <strong>"Deployment slots"</strong> → <strong>"Swap."</strong></p>
+<ul>
+<li>Source: <code>staging</code></li>
+<li>Target: <code>production</code></li>
+</ul>
+<p>Click <strong>"Swap."</strong> Azure warms up the staging slot, then swaps. In about 30 seconds, production is now running Version 2 and staging holds Version 1.</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Step 6 — Instant rollback</p>
+<p>If Version 2 has a bug, click <strong>"Swap"</strong> again — production immediately reverts to Version 1.</p>
+</div>
+<div class="admonition warning">
+<p class="admonition-title">Scale back down after demo</p>
+<p>Standard S1 costs ~$70/mo. Go to <strong>Scale up</strong> → select <strong>Free F1</strong> to scale back down after the demo.</p>
+</div>
+<hr />
+<h2 id="part-8-scaling">Part 8 — Scaling</h2>
+<h3 id="manual-scale">Manual Scale</h3>
+<p>On the <strong>Basic plan and above</strong>, you can manually set how many instances (copies) of your app run simultaneously.</p>
+<p>Go to your App Service → left menu → <strong>"Scale out (App Service plan)"</strong> → drag the instance count slider.</p>
+<p>Each instance is an identical copy of your app running in parallel. The built-in load balancer distributes requests across all instances. If one instance crashes, the others keep serving traffic.</p>
+<hr />
+<h3 id="demo-manual-scale">Demo — Manual Scale</h3>
+<p><strong>✅ Free Tier</strong> <em>(Basic plan needed for more than 1 instance — Free plan shows the UI but limits to 1)</em></p>
+<div class="admonition success">
+<p class="admonition-title">Step 1 — Open Scale out</p>
+<p>Go to your App Service → <strong>"Scale out (App Service plan)."</strong></p>
+</div>
+<div class="admonition success">
+<p class="admonition-title">Step 2 — View the instance slider</p>
+<p>On the <strong>Manual</strong> tab, you'll see the instance count slider — currently set to 1. On a Basic or Standard plan, you'd drag this to 2, 3, or more and click <strong>"Save"</strong> to immediately spin up additional instances.</p>
+<blockquote>
+<p>On the Free F1 plan the slider is locked to 1. This is just to show where the setting lives.</p>
+</blockquote>
+</div>
+<hr />
+<h3 id="auto-scale">Auto-Scale</h3>
+<p>On <strong>Standard plan and above</strong>, you can define rules that automatically add or remove instances based on metrics.</p>
+<p>An auto-scale rule has two parts:
+- <strong>Scale-out rule:</strong> if average CPU &gt; 70% for 5 minutes, add 1 instance
+- <strong>Scale-in rule:</strong> if average CPU &lt; 30% for 10 minutes, remove 1 instance</p>
+<p>You also set:
+- <strong>Minimum instances:</strong> e.g., 2 — never drop below 2 even at 2 AM
+- <strong>Maximum instances:</strong> e.g., 10 — cap cost at 10 instances
+- <strong>Default instances:</strong> where to start</p>
+<pre class="mermaid"><code>graph TD
+    M["Azure Monitor\nwatches CPU / memory / requests"] --&gt;|"CPU &gt; 70%\nfor 5 min"| SO["Scale Out\nadd 1 instance"]
+    M --&gt;|"CPU &lt; 30%\nfor 10 min"| SI["Scale In\nremove 1 instance"]
+    SO --&gt; APP["App Service\n(2 → 3 instances)"]
+    SI --&gt; APP2["App Service\n(3 → 2 instances)"]</code></pre>
+<hr />
+<h3 id="demo-configure-auto-scale-rules">Demo — Configure Auto-Scale Rules</h3>
+<p><strong>💳 Paid — Instructor Demo (Standard plan)</strong></p>
+<div class="admonition info">
+<p class="admonition-title">Step 1 — Open Scale out on Standard plan</p>
+<p>With the app on a Standard plan → <strong>"Scale out (App Service plan)"</strong> → select the <strong>"Custom autoscale"</strong> tab.</p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Step 2 — Set instance limits</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Minimum</td>
+<td>1</td>
+</tr>
+<tr>
+<td>Maximum</td>
+<td>5</td>
+</tr>
+<tr>
+<td>Default</td>
+<td>1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Step 3 — Add a scale-out rule</p>
+<p>Click <strong>"+ Add a rule."</strong></p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Metric source</td>
+<td>Current resource</td>
+</tr>
+<tr>
+<td>Metric name</td>
+<td>CPU Percentage</td>
+</tr>
+<tr>
+<td>Operator</td>
+<td>Greater than</td>
+</tr>
+<tr>
+<td>Threshold</td>
+<td>70</td>
+</tr>
+<tr>
+<td>Duration</td>
+<td>5 minutes</td>
+</tr>
+<tr>
+<td>Action</td>
+<td>Increase count by 1</td>
+</tr>
+<tr>
+<td>Cool down</td>
+<td>5 minutes</td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Add."</strong></p>
+</div>
+<div class="admonition info">
+<p class="admonition-title">Step 4 — Add a scale-in rule</p>
+<p>Click <strong>"+ Add a rule"</strong> again.</p>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Metric name</td>
+<td>CPU Percentage</td>
+</tr>
+<tr>
+<td>Operator</td>
+<td>Less than</td>
+</tr>
+<tr>
+<td>Threshold</td>
+<td>30</td>
+</tr>
+<tr>
+<td>Duration</td>
+<td>10 minutes</td>
+</tr>
+<tr>
+<td>Action</td>
+<td>Decrease count by 1</td>
+</tr>
+<tr>
+<td>Cool down</td>
+<td>5 minutes</td>
+</tr>
+</tbody>
+</table>
+<p>Click <strong>"Add"</strong> → <strong>"Save."</strong></p>
+<p>App Service will now automatically scale between 1 and 5 instances based on CPU load — no manual intervention required.</p>
+</div>
+<hr />
+<h2 id="cleaning-up">Cleaning Up</h2>
+<p><strong>✅ Free Tier</strong></p>
+<div class="admonition warning">
+<p class="admonition-title">Delete the resource group when done</p>
+<p>Go to <strong>Resource groups</strong> → <code>appservice-demo-rg</code> → <strong>"Delete resource group"</strong> → type the name to confirm → <strong>"Delete."</strong></p>
+<p>This removes the App Service, App Service Plan, and all associated resources in one step.</p>
+<blockquote>
+<p>The Free F1 plan has no compute charge, but it's good practice to clean up demo resources so they don't count against your subscription quotas.</p>
+</blockquote>
+</div>
+<hr />
+<h2 id="summary-and-whats-next">Summary and What's Next</h2>
+<p>Today you moved from manually managing web servers to a fully managed platform.</p>
+<p><strong>App Service</strong> removes the need to install, patch, or manage a web server. You deploy code — Azure runs it. App Service Plans define the compute tier — Free for learning, Basic for custom domains, Standard for auto-scale and deployment slots.</p>
+<p>You deployed a real Node.js app via <strong>ZIP Deploy</strong> through the Kudu console. You configured an <strong>Application Setting</strong> and watched the app pick up the new value without a redeploy. You saw how <strong>deployment slots</strong> let you test in staging and swap to production in seconds with instant rollback. And you understood how <strong>auto-scale</strong> adds and removes instances automatically based on CPU load.</p>
+<p><strong>Coming up next:</strong> Day 7 moves into <strong>Networking</strong> — specifically <strong>Azure Virtual Networks (VNet)</strong>. Until now, Azure has been handling networking automatically in the background. In Day 7, you'll take control of it: define your own private network, create subnets, control traffic flow with NSGs, and understand how VMs and App Services connect to each other securely.</p>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<ul>
+<li><strong>App Service is PaaS</strong> — you manage only your code. Azure manages OS, web server, runtime, patching, and load balancing.</li>
+<li><strong>App Service Plan = the compute</strong> — multiple apps share one plan and its resources.</li>
+<li><strong>Free F1</strong> — great for learning; 60 CPU min/day, no custom domain, app sleeps after 20 min idle.</li>
+<li><strong>Basic B1+</strong> — dedicated compute, custom domains, SSL, manual scale.</li>
+<li><strong>Standard S1+</strong> — auto-scale rules, deployment slots, daily backups.</li>
+<li><strong>ZIP Deploy</strong> — simplest deployment method; select both files (not the folder), zip them, upload via Kudu.</li>
+<li><strong>Application Settings</strong> — inject environment variables at runtime. Never hardcode secrets in code.</li>
+<li><strong>Deployment slots</strong> — staging environment on the same plan; swap to production is instant and zero-downtime. Requires Standard+.</li>
+<li><strong>Auto-scale</strong> — define CPU/memory thresholds; App Service adds or removes instances automatically. Requires Standard+.</li>
+<li><strong>Managed SSL certificate</strong> — App Service issues and renews free SSL for custom domains on Basic+. No manual certificate management.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../day05_vms_part3/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Day 5 — VM Management, Availability, Bastion &amp; Backup">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Day 5 — VM Management, Availability, Bastion & Backup
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../day07_storage_account/" class="md-footer__link md-footer__link--next" aria-label="Next: Day 7 — Azure Storage Account: Blob Storage, Static Websites &amp; Versioning">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>

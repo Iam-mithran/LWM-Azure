@@ -1,0 +1,2037 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A complete beginner's guide to Azure Cloud and Azure DevOps — 29 days, zero assumed cloud knowledge.">
+      
+      
+      
+        <link rel="canonical" href="https://iam-mithran.github.io/LWM-Azure/day10_virtual_network/">
+      
+      
+        <link rel="prev" href="../day09_intro_to_networking/">
+      
+      
+        <link rel="next" href="../day11_vnet_advanced/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.6">
+    
+    
+      
+        <title>Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs - LearnWithMithran — Azure Complete Beginner's Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.484c7ddc.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#day-10-azure-virtual-network-address-spaces-subnets-network-security-groups" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-header__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LearnWithMithran — Azure Complete Beginner's Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-nav__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LearnWithMithran — Azure Complete Beginner's Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day01_account_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day02_fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day03_vms_part1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day04_web_hosting_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day05_vms_part3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day06_app_service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day07_storage_account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day08_storage_files_queue_tables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day09_intro_to_networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-what-is-a-virtual-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — What Is a Virtual Network?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — What Is a Virtual Network?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#your-private-cloud-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Your Private Cloud Network
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-choosing-your-vnets-address-space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Choosing Your VNet's Address Space
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Choosing Your VNet&#39;s Address Space">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#applying-cidr-to-real-network-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Applying CIDR to Real Network Design
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-azure-reserves-in-every-subnet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Azure Reserves in Every Subnet
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-subnets-segmenting-your-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Subnets — Segmenting Your Network
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Subnets — Segmenting Your Network">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-divide-a-vnet-at-all" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Divide a VNet at All?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-a-vnet-with-two-subnets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create a VNet with Two Subnets
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-network-security-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Network Security Groups
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Network Security Groups">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-an-nsg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is an NSG?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-do-you-attach-an-nsg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where Do You Attach an NSG?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-an-nsg-and-add-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create an NSG and Add Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-proving-it-with-real-vms-public-subnet-vs-private-subnet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — Proving It With Real VMs: Public Subnet vs. Private Subnet
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — Proving It With Real VMs: Public Subnet vs. Private Subnet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-this-demo-matters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why This Demo Matters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-add-an-rdp-rule-to-the-public-nsg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Add an RDP Rule to the Public NSG
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-deploy-the-public-vms-public-ip-in-public-subnet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Deploy the Public VMs (Public IP, in public-subnet)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-deploy-the-private-vms-no-public-ip-in-private-subnet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Deploy the Private VMs (No Public IP, in private-subnet)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-confirm-the-public-vm-is-directly-reachable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Confirm the Public VM Is Directly Reachable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-confirm-the-private-vm-is-not-directly-reachable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Confirm the Private VM Is NOT Directly Reachable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-reach-the-private-vm-from-the-public-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Reach the Private VM From the Public VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-nat-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6 — NAT Gateway
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6 — NAT Gateway">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-default-outbound-access-isnt-production-grade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem: Default Outbound Access Isn't Production-Grade
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nat-gateway-managed-scalable-outbound-nat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NAT Gateway — Managed, Scalable Outbound NAT
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-deploy-a-nat-gateway-for-private-subnet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Deploy a NAT Gateway for private-subnet
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day11_vnet_advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day12_load_balancer_vmss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-what-is-a-virtual-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — What Is a Virtual Network?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — What Is a Virtual Network?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#your-private-cloud-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Your Private Cloud Network
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-choosing-your-vnets-address-space" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Choosing Your VNet's Address Space
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Choosing Your VNet&#39;s Address Space">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#applying-cidr-to-real-network-design" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Applying CIDR to Real Network Design
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-azure-reserves-in-every-subnet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Azure Reserves in Every Subnet
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-subnets-segmenting-your-network" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Subnets — Segmenting Your Network
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Subnets — Segmenting Your Network">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-divide-a-vnet-at-all" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why Divide a VNet at All?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-a-vnet-with-two-subnets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create a VNet with Two Subnets
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-network-security-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Network Security Groups
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Network Security Groups">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-is-an-nsg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Is an NSG?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#where-do-you-attach-an-nsg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where Do You Attach an NSG?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-an-nsg-and-add-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create an NSG and Add Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-proving-it-with-real-vms-public-subnet-vs-private-subnet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — Proving It With Real VMs: Public Subnet vs. Private Subnet
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — Proving It With Real VMs: Public Subnet vs. Private Subnet">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#why-this-demo-matters" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why This Demo Matters
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-1-add-an-rdp-rule-to-the-public-nsg" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 1 — Add an RDP Rule to the Public NSG
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-2-deploy-the-public-vms-public-ip-in-public-subnet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 2 — Deploy the Public VMs (Public IP, in public-subnet)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-3-deploy-the-private-vms-no-public-ip-in-private-subnet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 3 — Deploy the Private VMs (No Public IP, in private-subnet)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-4-confirm-the-public-vm-is-directly-reachable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 4 — Confirm the Public VM Is Directly Reachable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-5-confirm-the-private-vm-is-not-directly-reachable" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 5 — Confirm the Private VM Is NOT Directly Reachable
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#step-6-reach-the-private-vm-from-the-public-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Step 6 — Reach the Private VM From the Public VM
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-nat-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6 — NAT Gateway
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6 — NAT Gateway">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-default-outbound-access-isnt-production-grade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem: Default Outbound Access Isn't Production-Grade
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#nat-gateway-managed-scalable-outbound-nat" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        NAT Gateway — Managed, Scalable Outbound NAT
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-deploy-a-nat-gateway-for-private-subnet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Deploy a NAT Gateway for private-subnet
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="day-10-azure-virtual-network-address-spaces-subnets-network-security-groups">Day 10 — Azure Virtual Network: Address Spaces, Subnets &amp; Network Security Groups</h1>
+<p><strong>Phase 2 — Networking</strong></p>
+<blockquote>
+<p>In Day 9, we learned the language every Azure network speaks: bits, bytes, IP addresses, public vs private, and CIDR notation. Today we put that language to work. Every resource you've deployed so far — your VMs, your App Service, your storage account — lives somewhere. But where, exactly? They all live inside a network. Azure doesn't just drop your resources onto the internet and hope for the best. Every resource gets placed into a private, isolated network that you fully control. That network is called a <strong>Virtual Network</strong>, or VNet. Today you're going to design one from scratch using the CIDR knowledge from Day 9, carve it into subnets, and lock it down with firewall rules.</p>
+</blockquote>
+<hr />
+<h2 id="what-youll-learn">What You'll Learn</h2>
+<ul>
+<li>What a Virtual Network is and why every Azure resource lives inside one</li>
+<li>How to choose your VNet's <strong>address space</strong> using CIDR — and exactly which addresses Azure reserves for itself</li>
+<li><strong>Subnets</strong> — how to segment resources into logical groups for security and organisation</li>
+<li>Hands-on: building a VNet with two subnets from scratch</li>
+<li><strong>Network Security Groups (NSGs)</strong> — the firewall rules that control exactly what traffic is allowed</li>
+<li>Hands-on: writing NSG rules and attaching them to a subnet</li>
+<li>Hands-on: deploying real VMs (Windows <strong>and</strong> Linux) into the public and private subnets, and proving public vs. private reachability with your own hands</li>
+<li><strong>NAT Gateway</strong> — giving private-subnet resources a stable, scalable outbound path to the internet without ever giving them a public IP (💳 Paid)</li>
+<li>Hands-on: deploying a NAT Gateway and proving <code>private-subnet</code>'s outbound traffic now uses a stable static IP</li>
+</ul>
+<hr />
+<h2 id="before-we-begin">Before We Begin</h2>
+<p>Most of today is <strong>free tier</strong>. VNets, subnets, and NSGs cost nothing — you only pay for the compute, storage, or other resources you place <em>inside</em> them. The one exception is the <strong>NAT Gateway</strong> demo in Part 6, which runs about <strong>$0.045/hr</strong> plus a small per-GB data processing charge — marked <strong>💳</strong> below, and we'll delete it immediately after.</p>
+<hr />
+<h2 id="part-1-what-is-a-virtual-network">Part 1 — What Is a Virtual Network?</h2>
+<h3 id="your-private-cloud-network">Your Private Cloud Network</h3>
+<p>When you sign up for Azure and start creating resources, Azure doesn't just expose them directly to the internet. Every resource needs a home — a private, isolated network that belongs to you. That is a <strong>Virtual Network</strong>, or <strong>VNet</strong>.</p>
+<p>Think of a VNet like the network inside a physical office building. The building has a certain number of rooms, each room has a phone extension, and people in the building can call each other without going through the public phone system. From outside the building, no one can reach an internal extension unless you deliberately set up a way for them to.</p>
+<p>A VNet is exactly that — your private network inside Azure. Resources inside the VNet can talk to each other freely. Nothing from the internet gets in unless you explicitly open a door.</p>
+<pre class="mermaid"><code>graph TD
+    Internet["🌐 Internet"]
+    VNet["Azure Virtual Network\n10.0.0.0/16"]
+    SubA["public-subnet\n10.0.1.0/24\n(Web Servers)"]
+    SubB["private-subnet\n10.0.2.0/24\n(Databases)"]
+    VM1["VM — Web Server"]
+    VM2["VM — Database"]
+
+    Internet --&gt;|"Allowed through NSG"| SubA
+    SubA --&gt; VM1
+    VM1 --&gt;|"Internal traffic"| VM2
+    VM2 --&gt; SubB
+    Internet -.-x|"Blocked by NSG"| SubB</code></pre>
+<hr />
+<h2 id="part-2-choosing-your-vnets-address-space">Part 2 — Choosing Your VNet's Address Space</h2>
+<h3 id="applying-cidr-to-real-network-design">Applying CIDR to Real Network Design</h3>
+<p>Back in Day 9, we learned that a CIDR block like <code>10.0.0.0/16</code> defines <code>2^(32-16) = 65,536</code> addresses, that it falls inside the private range <code>10.0.0.0/8</code>, and that the "256 minus the mask" trick tells you exactly where each block starts and ends. Now we apply all of that to an actual decision: <strong>how big should your VNet be?</strong></p>
+<p>When you create a VNet, the first thing you choose is the <strong>address space</strong> — the pool of private IP addresses available for everything you'll ever put inside it. Here's a quick recap of the sizes you'll most often consider:</p>
+<table>
+<thead>
+<tr>
+<th>CIDR</th>
+<th>Number of Addresses</th>
+<th>Typical Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>/8</code></td>
+<td>16,777,216</td>
+<td>Huge enterprise networks</td>
+</tr>
+<tr>
+<td><code>/16</code></td>
+<td>65,536</td>
+<td>Standard VNet address space — plenty of room</td>
+</tr>
+<tr>
+<td><code>/24</code></td>
+<td>256</td>
+<td>Typical subnet size</td>
+</tr>
+<tr>
+<td><code>/28</code></td>
+<td>16</td>
+<td>Small subnet (e.g., gateway subnet)</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>For almost every scenario in this course, use <code>10.0.0.0/16</code> as your VNet address space. It gives you 65,536 addresses — far more than you'll ever use in a learning environment — and plenty of room to carve out multiple <code>/24</code> subnets without ever running out of space or having to redesign later.</p>
+</blockquote>
+<p><strong>Why not pick something smaller, like a <code>/24</code> for the whole VNet?</strong> You technically could — but a <code>/16</code> costs you nothing extra, and it gives you room to grow. If you start with a <code>/24</code> (256 addresses) and later need three more subnets for a multi-tier app, you might run out of room or end up with awkward, oddly-sized subnets. Starting big and <em>subdividing</em> is almost always easier than starting small and trying to expand.</p>
+<p><strong>Remember from Day 9:</strong> Azure VNets always use an address space from one of the three RFC 1918 private ranges — <code>10.0.0.0/8</code>, <code>172.16.0.0/12</code>, or <code>192.168.0.0/16</code>. Resources inside a VNet never get public IP addresses from the VNet itself. Public IPs are a separate resource you can optionally attach to a VM or a load balancer, exactly as we discussed with NAT in Day 9.</p>
+<h3 id="what-azure-reserves-in-every-subnet">What Azure Reserves in Every Subnet</h3>
+<p>In Day 9, we calculated that a generic <code>/24</code> network gives you 254 usable host addresses (256 total, minus the network address and the broadcast address). Azure subnets follow that same rule, but reserve <strong>three additional addresses</strong> on top of it for platform use. In total, <strong>every Azure subnet reserves 5 addresses</strong>, regardless of its size:</p>
+<table>
+<thead>
+<tr>
+<th>Address</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>x.x.x.0</code></td>
+<td>Network address (standard — identifies the subnet itself)</td>
+</tr>
+<tr>
+<td><code>x.x.x.1</code></td>
+<td>Reserved by Azure for the <strong>default gateway</strong></td>
+</tr>
+<tr>
+<td><code>x.x.x.2</code> and <code>x.x.x.3</code></td>
+<td>Reserved by Azure to map the <strong>Azure DNS</strong> service into your VNet</td>
+</tr>
+<tr>
+<td><code>x.x.x.255</code> (last address)</td>
+<td>Broadcast address (standard)</td>
+</tr>
+</tbody>
+</table>
+<p>So for a <code>/24</code> subnet (256 total addresses), you actually get <strong>251 usable addresses</strong> — <code>256 − 5</code>. For a <code>/28</code> (16 total), you get <strong>11 usable</strong>. This is why, when you're sizing a small subnet (like the <code>/26</code> minimum required for Azure Bastion, which we'll meet in Day 11), you should always subtract 5 from the raw CIDR total to know how many resources you can actually place in it.</p>
+<p>You won't run into this limit in any demo in this course — but it's exactly the kind of detail that trips people up in real-world designs, so it's worth knowing now.</p>
+<hr />
+<h2 id="part-3-subnets-segmenting-your-network">Part 3 — Subnets — Segmenting Your Network</h2>
+<h3 id="why-divide-a-vnet-at-all">Why Divide a VNet at All?</h3>
+<p>A <strong>subnet</strong> is a subdivision of your VNet. You carve up your VNet's address space into smaller chunks and place different resources into different subnets.</p>
+<p>Why does this matter? Two big reasons:</p>
+<p><strong>1. Security.</strong> You can attach different firewall rules (NSGs) to different subnets. Your web servers can be in a subnet that allows inbound HTTP traffic from the internet. Your databases can be in a completely separate subnet that doesn't accept any internet traffic at all. Even though both subnets are inside the same VNet, the database subnet is completely isolated from the internet.</p>
+<p><strong>2. Organisation.</strong> In a real architecture, you separate concerns: web tier, application tier, database tier. Subnets let you draw those boundaries clearly.</p>
+<p>A simple two-tier design looks like this:</p>
+<table>
+<thead>
+<tr>
+<th>Subnet</th>
+<th>CIDR</th>
+<th>Total Addresses</th>
+<th>Usable (after Azure reserves 5)</th>
+<th>What Goes Here</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>public-subnet</code></td>
+<td><code>10.0.1.0/24</code></td>
+<td>256</td>
+<td>251</td>
+<td>Web servers, load balancers — things that talk to the internet</td>
+</tr>
+<tr>
+<td><code>private-subnet</code></td>
+<td><code>10.0.2.0/24</code></td>
+<td>256</td>
+<td>251</td>
+<td>Databases, backend services — things that should never be publicly reachable</td>
+</tr>
+</tbody>
+</table>
+<p>Notice both subnets are <code>/24</code> blocks carved out of our <code>10.0.0.0/16</code> VNet — and using the "256 minus the mask" trick from Day 9, you know immediately that <code>10.0.1.0/24</code> covers <code>.1.0</code>–<code>.1.255</code> and <code>10.0.2.0/24</code> covers <code>.2.0</code>–<code>.2.255</code>. They don't overlap, and there's room for dozens more <code>/24</code> subnets within the same <code>/16</code> if needed.</p>
+<blockquote>
+<p>You'll notice the terms "public subnet" and "private subnet" — this is convention only. No subnet in Azure is automatically public or private based on its name. What makes a subnet reachable from the internet is whether the resources inside it have a public IP and whether the NSG allows inbound traffic. The names just help you remember the intent.</p>
+</blockquote>
+<hr />
+<h3 id="hands-on-create-a-vnet-with-two-subnets">Hands-On: Create a VNet with Two Subnets</h3>
+<p>Let's build the foundation. You'll create a VNet and two subnets inside it.</p>
+<p><strong>✅ Free Tier — follow along</strong></p>
+<ol>
+<li>In the Azure Portal, search for <strong>Virtual networks</strong> and click <strong>+ Create</strong>.</li>
+<li>On the <strong>Basics</strong> tab:</li>
+<li><strong>Subscription:</strong> your subscription</li>
+<li><strong>Resource group:</strong> create a new one called <code>rg-networking-demo</code> (keeping networking resources together)</li>
+<li><strong>Virtual network name:</strong> <code>vnet-demo</code></li>
+<li><strong>Region:</strong> East US (or your preferred region — just be consistent across today's demos)</li>
+<li>Click <strong>Next: IP Addresses</strong>.</li>
+<li>You'll see a default address space already populated — <code>10.0.0.0/16</code>. Leave it as-is.</li>
+<li><strong>Delete the default subnet</strong> that Azure pre-creates (click the trash icon). You'll add your own with meaningful names.</li>
+<li>Click <strong>+ Add a subnet</strong> to create the first subnet:</li>
+<li><strong>Name:</strong> <code>public-subnet</code></li>
+<li><strong>Subnet address range:</strong> <code>10.0.1.0/24</code></li>
+<li>Leave everything else as default</li>
+<li>Click <strong>Add</strong></li>
+<li>Click <strong>+ Add a subnet</strong> again for the second subnet:</li>
+<li><strong>Name:</strong> <code>private-subnet</code></li>
+<li><strong>Subnet address range:</strong> <code>10.0.2.0/24</code></li>
+<li>Click <strong>Add</strong></li>
+<li>Click <strong>Review + create</strong>, then <strong>Create</strong>.</li>
+</ol>
+<p>Wait about 30 seconds. Once the deployment completes, click <strong>Go to resource</strong>. You'll see your VNet with both subnets listed under <strong>Subnets</strong> in the left menu. Click on <code>public-subnet</code> — notice the <strong>Available IP addresses</strong> count shows <strong>251</strong>, not 256. That's the 5 Azure-reserved addresses we just discussed, subtracted automatically. Right now, nothing is deployed into either subnet — those slots are all available.</p>
+<p>That's your private network. Now let's control the traffic into it.</p>
+<hr />
+<h2 id="part-4-network-security-groups">Part 4 — Network Security Groups</h2>
+<h3 id="what-is-an-nsg">What Is an NSG?</h3>
+<p>A <strong>Network Security Group</strong> (NSG) is a set of inbound and outbound security rules — think of it as a firewall you attach to a subnet or a network interface card.</p>
+<p>Every rule in an NSG has five things:</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Priority</strong></td>
+<td>A number from 100 to 4096. Lower number = evaluated first. First matching rule wins.</td>
+</tr>
+<tr>
+<td><strong>Name</strong></td>
+<td>Descriptive label — what does this rule do?</td>
+</tr>
+<tr>
+<td><strong>Protocol</strong></td>
+<td>TCP, UDP, ICMP, or Any</td>
+</tr>
+<tr>
+<td><strong>Port range</strong></td>
+<td>A single port (80), a range (1024-65535), or * for any</td>
+</tr>
+<tr>
+<td><strong>Action</strong></td>
+<td>Allow or Deny</td>
+</tr>
+</tbody>
+</table>
+<p>Rules are evaluated in priority order. The moment a rule matches, Azure applies the action and stops. If no rule matches, Azure applies a default deny at the end.</p>
+<p>Azure gives you a set of <strong>default rules</strong> in every NSG that you can't delete. These ensure basic connectivity works without configuration:</p>
+<p><strong>Default inbound rules:</strong>
+- Allow all traffic from within the VNet (priority 65000)
+- Allow traffic from Azure Load Balancer (priority 65001)
+- Deny everything else (priority 65500)</p>
+<p><strong>Default outbound rules:</strong>
+- Allow all outbound to within the VNet (priority 65000)
+- Allow all outbound to the internet (priority 65001)
+- Deny everything else (priority 65500)</p>
+<p>By default, resources inside a VNet can reach each other and the internet, but nothing from the internet can reach your resources. You add rules to open specific inbound ports.</p>
+<h3 id="where-do-you-attach-an-nsg">Where Do You Attach an NSG?</h3>
+<p>You can attach an NSG to a <strong>subnet</strong> or to an individual <strong>network interface card (NIC)</strong> on a VM.</p>
+<ul>
+<li><strong>Subnet-level NSG:</strong> applies to all resources in that subnet. Best for broad rules — "allow HTTP into the public subnet."</li>
+<li><strong>NIC-level NSG:</strong> applies to a single VM. Best for fine-grained rules — "this specific VM also needs port 8080 open."</li>
+</ul>
+<p>If you attach an NSG to both the subnet and the NIC, traffic must pass both sets of rules. Inbound: subnet rules run first, then NIC rules. Outbound: NIC rules run first, then subnet rules.</p>
+<blockquote>
+<p>Best practice: use subnet-level NSGs for your network-wide policy and avoid NIC-level NSGs unless you have a genuine need for per-VM overrides. Fewer NSGs = less complexity.</p>
+</blockquote>
+<hr />
+<h3 id="hands-on-create-an-nsg-and-add-rules">Hands-On: Create an NSG and Add Rules</h3>
+<p>Let's create an NSG for the public subnet that allows SSH (so you can manage your servers) and HTTP (so the web server is reachable).</p>
+<p><strong>✅ Free Tier — follow along</strong></p>
+<p><strong>Step 1 — Create the NSG:</strong></p>
+<ol>
+<li>In the portal, search for <strong>Network security groups</strong> and click <strong>+ Create</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Resource group:</strong> <code>rg-networking-demo</code></li>
+<li><strong>Name:</strong> <code>nsg-public-subnet</code></li>
+<li><strong>Region:</strong> East US</li>
+<li>Click <strong>Review + create</strong>, then <strong>Create</strong>.</li>
+<li>Go to the resource once deployed.</li>
+</ol>
+<p><strong>Step 2 — Add an inbound rule for SSH (port 22):</strong></p>
+<ol>
+<li>In the NSG blade, click <strong>Inbound security rules</strong> in the left menu.</li>
+<li>You'll see the three default rules listed with priorities 65000, 65001, 65500.</li>
+<li>Click <strong>+ Add</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Source:</strong> Any (for demo — in production, lock this to your IP)</li>
+<li><strong>Source port ranges:</strong> * (outbound port of the caller — always * for inbound rules)</li>
+<li><strong>Destination:</strong> Any</li>
+<li><strong>Service:</strong> SSH (this auto-fills port 22 / TCP)</li>
+<li><strong>Action:</strong> Allow</li>
+<li><strong>Priority:</strong> 100</li>
+<li><strong>Name:</strong> <code>Allow-SSH</code></li>
+<li>Click <strong>Add</strong>.</li>
+</ol>
+<p><strong>Step 3 — Add an inbound rule for HTTP (port 80):</strong></p>
+<ol>
+<li>Click <strong>+ Add</strong> again.</li>
+<li>Fill in:</li>
+<li><strong>Source:</strong> Any</li>
+<li><strong>Source port ranges:</strong> *</li>
+<li><strong>Destination:</strong> Any</li>
+<li><strong>Service:</strong> HTTP (auto-fills port 80 / TCP)</li>
+<li><strong>Action:</strong> Allow</li>
+<li><strong>Priority:</strong> 110</li>
+<li><strong>Name:</strong> <code>Allow-HTTP</code></li>
+<li>Click <strong>Add</strong>.</li>
+</ol>
+<p>Your inbound rules now show both custom rules at priority 100 and 110, followed by the three Azure defaults.</p>
+<p><strong>Step 4 — Associate the NSG to the public subnet:</strong></p>
+<p>An NSG does nothing until you attach it to something.</p>
+<ol>
+<li>In the NSG blade, click <strong>Subnets</strong> in the left menu.</li>
+<li>Click <strong>+ Associate</strong>.</li>
+<li>Select:</li>
+<li><strong>Virtual network:</strong> <code>vnet-demo</code></li>
+<li><strong>Subnet:</strong> <code>public-subnet</code></li>
+<li>Click <strong>OK</strong>.</li>
+</ol>
+<p>Done. Every resource you deploy into <code>public-subnet</code> is now protected by these rules. The private subnet has no NSG yet — we'll leave it that way for now. Nothing from the internet can reach <code>private-subnet</code> because resources there have no public IP, and we won't create any.</p>
+<blockquote>
+<p><strong>Tip:</strong> After attaching the NSG, go to your VNet → Subnets. You'll see <code>nsg-public-subnet</code> listed next to <code>public-subnet</code>. Private-subnet shows "—" for NSG, which is fine for a backend subnet that's only accessed from within the VNet.</p>
+</blockquote>
+<hr />
+<h2 id="part-5-proving-it-with-real-vms-public-subnet-vs-private-subnet">Part 5 — Proving It With Real VMs: Public Subnet vs. Private Subnet</h2>
+<h3 id="why-this-demo-matters">Why This Demo Matters</h3>
+<p>Everything so far has been address spaces and firewall rules on a screen. Let's make the public-vs-private distinction <em>real</em> by deploying actual VMs and trying to connect to them — exactly the way you'll be tested on this in the AZ-104 exam, and exactly the way you'll design real environments on the job.</p>
+<p>We're going to build the classic pattern: one VM with a <strong>public IP</strong> sitting in <code>public-subnet</code>, directly reachable from the internet, and one VM with <strong>no public IP at all</strong> sitting in <code>private-subnet</code>, completely unreachable from the internet — reachable only from inside the VNet. We'll do this for <strong>both Windows and Linux</strong>, because the exam (and real environments) expect you to be comfortable connecting to either.</p>
+<pre class="mermaid"><code>graph LR
+    You["💻 Your Laptop"]
+    Internet["🌐 Internet"]
+    PubVM["vm-public-linux / vm-public-win\npublic-subnet — 10.0.1.x\nHAS a public IP"]
+    PrivVM["vm-private-linux / vm-private-win\nprivate-subnet — 10.0.2.x\nNO public IP"]
+
+    You --&gt;|"SSH / RDP to Public IP"| Internet --&gt; PubVM
+    You -.-x|"SSH / RDP to Private IP — fails, no route"| PrivVM
+    PubVM --&gt;|"SSH / RDP to Private IP — works, same VNet"| PrivVM</code></pre>
+<h3 id="step-1-add-an-rdp-rule-to-the-public-nsg">Step 1 — Add an RDP Rule to the Public NSG</h3>
+<p>Our <code>nsg-public-subnet</code> already allows SSH (22) and HTTP (80) from earlier in this video. If you want to demo the Windows VM too, add one more rule:</p>
+<p><strong>✅ Free Tier</strong></p>
+<ol>
+<li>Go to <code>nsg-public-subnet</code> → <strong>Inbound security rules</strong> → <strong>+ Add</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Source:</strong> Any (demo only — lock this to your own IP in production)</li>
+<li><strong>Service:</strong> RDP (auto-fills port 3389 / TCP)</li>
+<li><strong>Action:</strong> Allow</li>
+<li><strong>Priority:</strong> 120</li>
+<li><strong>Name:</strong> <code>Allow-RDP</code></li>
+<li>Click <strong>Add</strong>.</li>
+</ol>
+<p><code>public-subnet</code> can now accept SSH, HTTP, and RDP. <code>private-subnet</code> still has no NSG attached at all — which matters in a moment.</p>
+<h3 id="step-2-deploy-the-public-vms-public-ip-in-public-subnet">Step 2 — Deploy the Public VMs (Public IP, in <code>public-subnet</code>)</h3>
+<p>Create one or both of these — do both if you want the full Windows + Linux comparison.</p>
+<p><strong>✅ Free Tier — both VM sizes below are B1s, eligible for the Azure free tier's 750 free hours/month for 12 months. Stop/deallocate VMs you're not actively using to stay within that limit.</strong></p>
+<p><strong>Linux public VM:</strong></p>
+<ol>
+<li><strong>Virtual machines</strong> → <strong>+ Create</strong> → <strong>Azure virtual machine</strong>.</li>
+<li><strong>Resource group:</strong> <code>rg-networking-demo</code></li>
+<li><strong>VM name:</strong> <code>vm-public-linux</code></li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>Image:</strong> Ubuntu Server 24.04 LTS</li>
+<li><strong>Size:</strong> Standard_B1s</li>
+<li><strong>Authentication type:</strong> SSH public key (generate a new key pair if you don't have one)</li>
+<li><strong>Username:</strong> <code>azureuser</code></li>
+<li>On the <strong>Networking</strong> tab:</li>
+<li><strong>Virtual network:</strong> <code>vnet-demo</code></li>
+<li><strong>Subnet:</strong> <code>public-subnet</code></li>
+<li><strong>Public IP:</strong> Create new</li>
+<li><strong>NIC network security group:</strong> None (the subnet-level NSG already covers this VM)</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>. Download the private key when prompted — you'll need it to SSH in.</li>
+</ol>
+<p><strong>Windows public VM:</strong></p>
+<ol>
+<li><strong>Virtual machines</strong> → <strong>+ Create</strong> → <strong>Azure virtual machine</strong>.</li>
+<li><strong>Resource group:</strong> <code>rg-networking-demo</code></li>
+<li><strong>VM name:</strong> <code>vm-public-win</code></li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>Image:</strong> Windows Server 2022 Datacenter</li>
+<li><strong>Size:</strong> Standard_B1s</li>
+<li><strong>Authentication type:</strong> Password — set a username (e.g. <code>azureadmin</code>) and a strong password</li>
+<li>On the <strong>Networking</strong> tab:</li>
+<li><strong>Virtual network:</strong> <code>vnet-demo</code></li>
+<li><strong>Subnet:</strong> <code>public-subnet</code></li>
+<li><strong>Public IP:</strong> Create new</li>
+<li><strong>NIC network security group:</strong> None</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+</ol>
+<h3 id="step-3-deploy-the-private-vms-no-public-ip-in-private-subnet">Step 3 — Deploy the Private VMs (No Public IP, in <code>private-subnet</code>)</h3>
+<p><strong>✅ Free Tier</strong></p>
+<p><strong>Linux private VM:</strong></p>
+<ol>
+<li><strong>Virtual machines</strong> → <strong>+ Create</strong> → <strong>Azure virtual machine</strong>.</li>
+<li><strong>VM name:</strong> <code>vm-private-linux</code>, same resource group and region.</li>
+<li><strong>Image:</strong> Ubuntu Server 24.04 LTS, <strong>Size:</strong> Standard_B1s</li>
+<li><strong>Authentication type:</strong> SSH public key — you can reuse the same key pair from <code>vm-public-linux</code></li>
+<li>On the <strong>Networking</strong> tab:</li>
+<li><strong>Virtual network:</strong> <code>vnet-demo</code></li>
+<li><strong>Subnet:</strong> <code>private-subnet</code></li>
+<li><strong>Public IP:</strong> <strong>None</strong> ← this is the entire point of this VM</li>
+<li><strong>NIC network security group:</strong> None</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+</ol>
+<p><strong>Windows private VM:</strong></p>
+<ol>
+<li><strong>VM name:</strong> <code>vm-private-win</code>, same resource group and region.</li>
+<li><strong>Image:</strong> Windows Server 2022 Datacenter, <strong>Size:</strong> Standard_B1s</li>
+<li><strong>Authentication type:</strong> Password — reuse or set a new username/password.</li>
+<li>On the <strong>Networking</strong> tab:</li>
+<li><strong>Virtual network:</strong> <code>vnet-demo</code></li>
+<li><strong>Subnet:</strong> <code>private-subnet</code></li>
+<li><strong>Public IP:</strong> <strong>None</strong></li>
+<li><strong>NIC network security group:</strong> None</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+</ol>
+<p>Once all four are deployed, note each VM's <strong>private IP</strong> from its Overview page — something like <code>10.0.1.4</code> and <code>10.0.1.5</code> for the two public-subnet VMs, <code>10.0.2.4</code> and <code>10.0.2.5</code> for the two private-subnet VMs. The public VMs will also show a <strong>public IP</strong> like <code>20.x.x.x</code>; the private VMs will show <strong>no public IP field at all</strong> — there's nothing to show, because none was ever attached.</p>
+<h3 id="step-4-confirm-the-public-vm-is-directly-reachable">Step 4 — Confirm the Public VM Is Directly Reachable</h3>
+<p><strong>✅ Free Tier</strong></p>
+<p>From your own laptop, <strong>not</strong> through the Azure Portal:</p>
+<ul>
+<li><strong>Linux:</strong> Open a terminal and run <code>ssh azureuser@&lt;public-IP-of-vm-public-linux&gt;</code> (using the private key you downloaded). You should land at a shell prompt in seconds.</li>
+<li><strong>Windows:</strong> Open <strong>Remote Desktop Connection</strong> (<code>mstsc</code>) on your laptop and connect to <code>&lt;public-IP-of-vm-public-win&gt;</code>. Enter the username/password you set. You should see the Windows desktop.</li>
+</ul>
+<p>Both connections work because each VM has two things at once: a <strong>public IP</strong> (so the internet can route to it) and an <strong>NSG rule allowing the relevant port</strong> (22 for SSH, 3389 for RDP). Take away either one and this stops working.</p>
+<h3 id="step-5-confirm-the-private-vm-is-not-directly-reachable">Step 5 — Confirm the Private VM Is NOT Directly Reachable</h3>
+<p><strong>✅ Free Tier</strong></p>
+<p>Now try the exact same thing, but aim at the <em>private</em> VMs' addresses:</p>
+<ul>
+<li>Try <code>ssh azureuser@10.0.2.4</code> (or whatever <code>vm-private-linux</code>'s private IP is) directly from your laptop.</li>
+<li>Try RDP'ing from <code>mstsc</code> on your laptop straight to <code>10.0.2.5</code> (or whatever <code>vm-private-win</code>'s private IP is).</li>
+</ul>
+<p>Both attempts will simply time out — not "connection refused," but no response at all. This isn't an NSG blocking you (in fact, <code>private-subnet</code> has no NSG attached at all, so there's nothing actively denying the request). It's simpler and more fundamental than that: <code>10.0.2.4</code> is a private IP. The public internet has no route to it whatsoever — your laptop's request never even reaches Azure. This is the exact NAT/private-IP concept from Day 9 working in your favour: a VM with no public IP is unreachable from outside the VNet, full stop, regardless of any NSG rule.</p>
+<h3 id="step-6-reach-the-private-vm-from-the-public-vm">Step 6 — Reach the Private VM <em>From</em> the Public VM</h3>
+<p><strong>✅ Free Tier</strong></p>
+<p>This is the payoff: the private VMs aren't reachable from the internet, but they're fully reachable from anything else <em>inside</em> the same VNet — because the default NSG rule we saw earlier ("Allow all traffic from within the VNet," priority 65000) permits it.</p>
+<p><strong>Linux → Linux:</strong></p>
+<ol>
+<li>SSH into <code>vm-public-linux</code> from your laptop, exactly as in Step 4.</li>
+<li>From <em>inside</em> that SSH session (you're now on the public VM, not your laptop), run: <code>ssh azureuser@10.0.2.4</code> (the private IP of <code>vm-private-linux</code>).</li>
+<li>You'll need the private key available on the public VM to do this — either copy it over securely, or generate a fresh key pair on the public VM and add its public half to <code>vm-private-linux</code>'s authorized keys via the Portal's <strong>Reset password</strong> → <strong>Add SSH key</strong> option.</li>
+<li>You should land inside <code>vm-private-linux</code> — a hop the internet could never make directly.</li>
+</ol>
+<p><strong>Windows → Windows:</strong></p>
+<ol>
+<li>RDP into <code>vm-public-win</code> from your laptop, exactly as in Step 4.</li>
+<li><em>Inside</em> that remote desktop session, open <strong>Remote Desktop Connection</strong> again (yes, RDP from inside an RDP session) and connect to <code>10.0.2.5</code>, the private IP of <code>vm-private-win</code>.</li>
+<li>Enter <code>vm-private-win</code>'s credentials. You're now remoted two layers deep — your laptop → the public VM → the private VM — entirely over Azure's private network for the second hop.</li>
+</ol>
+<p>You can mix and match too (e.g., SSH from the public Linux VM into a private Windows VM isn't possible without an RDP client installed on the Linux box, but SSH-to-SSH and RDP-to-RDP both work cleanly as shown above).</p>
+<blockquote>
+<p><strong>This is called a "jump box" or "bastion host" pattern</strong> — a publicly reachable VM that acts as the one doorway into an otherwise unreachable private network. It's exactly what you just built by hand. In Day 11, you'll meet <strong>Azure Bastion</strong>, which is Microsoft's fully managed version of this same idea — same outcome (reach a VM with no public IP), but without needing a separate VM, an open SSH/RDP port on a public IP, or any of the manual key-juggling you just did.</p>
+</blockquote>
+<hr />
+<h2 id="part-6-nat-gateway">Part 6 — NAT Gateway</h2>
+<h3 id="the-problem-default-outbound-access-isnt-production-grade">The Problem: Default Outbound Access Isn't Production-Grade</h3>
+<p>Back in Day 9, and again in Part 5 of today's video, you saw that VMs with no public IP can still reach the internet <em>outbound</em> by default. What we didn't dig into is <strong>how</strong> — and why you shouldn't lean on it for anything serious.</p>
+<p>That mechanism is called <strong>default outbound access</strong>, and it has real limitations:</p>
+<ul>
+<li>The source IP used is <strong>not guaranteed or stable</strong> — it's an arbitrary Microsoft-owned address, and it can change.</li>
+<li>It allows only a <strong>small number of outbound connections per VM</strong> (a low SNAT port limit), so it falls over under real load.</li>
+<li>Microsoft has been phasing it out for new deployments — it's meant for quick dev/test only, never for production.</li>
+</ul>
+<p>If you need private resources to make <strong>reliable, scalable outbound</strong> connections — calling a third-party API, downloading updates, reaching a partner service that whitelists your IP — you need something deliberate.</p>
+<h3 id="nat-gateway-managed-scalable-outbound-nat">NAT Gateway — Managed, Scalable Outbound NAT</h3>
+<p>A <strong>NAT Gateway</strong> is a fully managed PaaS resource that gives every resource in an associated subnet a stable outbound path to the internet through one or more <strong>static public IP addresses</strong> you control — with up to <strong>64,512 SNAT ports</strong> available, vastly more than default outbound access offers.</p>
+<p><strong>Key characteristic: NAT Gateway is outbound-only.</strong> It does not let the internet initiate connections in. Your <code>private-subnet</code> VMs still have zero inbound exposure — exactly like earlier in this video — but now their <em>outbound</em> requests go out through a known, fixed public IP instead of an unpredictable platform-assigned one.</p>
+<pre class="mermaid"><code>graph LR
+    PrivVM1["vm-private-linux\n10.0.2.4\nno public IP"]
+    PrivVM2["vm-private-win\n10.0.2.5\nno public IP"]
+    NATGW["NAT Gateway\nnatgw-demo"]
+    PIP["Static Public IP\n20.x.x.x"]
+    Internet["🌐 Internet"]
+
+    PrivVM1 --&gt;|"Outbound only"| NATGW
+    PrivVM2 --&gt;|"Outbound only"| NATGW
+    NATGW --&gt; PIP --&gt; Internet
+    Internet -.-x|"No inbound path"| PrivVM1</code></pre>
+<h3 id="hands-on-deploy-a-nat-gateway-for-private-subnet">Hands-On: Deploy a NAT Gateway for <code>private-subnet</code></h3>
+<p><strong>💳 Small cost (~$0.045/hr plus data processing) — delete immediately after this demo</strong></p>
+<p><strong>Step 1 — Create a static public IP for the gateway:</strong></p>
+<ol>
+<li>Search for <strong>Public IP addresses</strong> → <strong>+ Create</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Resource group:</strong> <code>rg-networking-demo</code></li>
+<li><strong>Name:</strong> <code>pip-natgw-demo</code></li>
+<li><strong>SKU:</strong> Standard (NAT Gateway requires Standard SKU)</li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+</ol>
+<p><strong>Step 2 — Create the NAT Gateway:</strong></p>
+<ol>
+<li>Search for <strong>NAT gateways</strong> → <strong>+ Create</strong>.</li>
+<li>On <strong>Basics</strong>:</li>
+<li><strong>Resource group:</strong> <code>rg-networking-demo</code></li>
+<li><strong>Name:</strong> <code>natgw-demo</code></li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>Idle timeout:</strong> leave default (4 minutes)</li>
+<li>On <strong>Outbound IP</strong>:</li>
+<li><strong>Public IP addresses:</strong> select <code>pip-natgw-demo</code></li>
+<li>On <strong>Subnet</strong>:</li>
+<li><strong>Virtual network:</strong> <code>vnet-demo</code></li>
+<li><strong>Subnets:</strong> check <code>private-subnet</code></li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+</ol>
+<p><strong>Step 3 — Verify it from inside the private VM:</strong></p>
+<ol>
+<li>Reach <code>vm-private-linux</code> the same way you did earlier in Part 5 — jump through <code>vm-public-linux</code> via SSH, then SSH from there to <code>10.0.2.4</code>.</li>
+<li>From inside <code>vm-private-linux</code>, run <code>curl ifconfig.me</code> (or any "what's my IP" check).</li>
+<li>The IP returned should now match <code>pip-natgw-demo</code>'s address — not a random platform IP. Every resource in <code>private-subnet</code> now shares this one stable, static outbound identity.</li>
+</ol>
+<p><code>vm-private-linux</code> still has <strong>no public IP</strong> and is still <strong>completely unreachable from the internet inbound</strong> — NAT Gateway changes nothing about that. It only gives outbound traffic a stable, scalable exit path.</p>
+<p><strong>Step 4 — Clean up:</strong></p>
+<ol>
+<li>Search for <strong>NAT gateways</strong>, find <code>natgw-demo</code> → <strong>Delete</strong>.</li>
+<li>Search for <strong>Public IP addresses</strong>, find <code>pip-natgw-demo</code> → <strong>Delete</strong>.</li>
+</ol>
+<blockquote>
+<p><strong>Exam tip:</strong> NAT Gateway, Load Balancer outbound rules, and a VM's own public IP are the three ways a resource gets outbound internet access in Azure beyond default outbound access. NAT Gateway is the modern, recommended choice for subnet-wide outbound NAT — and it cannot be used on a subnet that also contains a Bastion host or that already has outbound rules from a Standard Load Balancer; pick one mechanism per subnet.</p>
+</blockquote>
+<p><strong>Step 5 — Keep your four VMs:</strong></p>
+<p>Don't delete <code>vm-public-linux</code>, <code>vm-public-win</code>, <code>vm-private-linux</code>, or <code>vm-private-win</code> yet — you'll tag these same VMs into Application Security Groups in Day 11. If you want to conserve free-tier hours in the meantime, select all four in <strong>Virtual machines</strong> and click <strong>Stop</strong> to deallocate them (keeps the disks, stops compute billing) without losing the setup.</p>
+<hr />
+<h2 id="summary">Summary</h2>
+<p>Let's bring it all together. Here's what you built today and why it matters:</p>
+<p>A <strong>Virtual Network</strong> is the private, isolated network that every Azure resource lives in. Building on the CIDR knowledge from Day 9, you defined its <strong>address space</strong> — <code>10.0.0.0/16</code> gives you 65,536 addresses to work with. You carved that address space into <strong>subnets</strong> to separate concerns: a <code>public-subnet</code> for internet-facing resources and a <code>private-subnet</code> for backend services — and you saw firsthand that Azure reserves 5 addresses per subnet (<code>.0</code>, <code>.1</code>, <code>.2</code>, <code>.3</code>, and <code>.255</code>), turning a <code>/24</code>'s 256 addresses into 251 usable ones.</p>
+<p><strong>Network Security Groups</strong> are the firewall that protects those subnets. Rules have priorities — the lowest number wins. You explicitly allowed SSH, HTTP, and RDP; everything else is denied by default. You attached the NSG to the subnet, and every resource inside inherits those rules.</p>
+<p>Then you <strong>proved it with real VMs</strong>. A Windows and a Linux VM in <code>public-subnet</code>, each with a public IP, were directly reachable from your laptop over SSH and RDP. A Windows and a Linux VM in <code>private-subnet</code>, each with <strong>no</strong> public IP, were completely unreachable from the internet — not because of an NSG, but because a private IP simply has no route from outside the VNet. The only way in was through the public VM, hopping over the private backbone to the private VM's private IP — the classic <strong>jump box</strong> pattern.</p>
+<p>Finally, you deployed a <strong>NAT Gateway</strong> for <code>private-subnet</code>, giving every resource in it a stable, scalable outbound path to the internet through a static public IP — fixing the unpredictability and SNAT-port limits of Azure's default outbound access, without ever exposing those VMs to inbound traffic.</p>
+<h3 id="whats-next">What's Next</h3>
+<p>In <strong>Day 11 — VNet Advanced: Peering, Service &amp; Private Endpoints, and Azure Bastion</strong>, we go beyond a single VNet. You'll connect two separate VNets together with VNet Peering, securely reach Azure PaaS services like Storage from inside your VNet using Service Endpoints and Private Endpoints, access your VMs through the browser with Azure Bastion — no public IP or open SSH port required — and come back to tag today's VMs into <strong>Application Security Groups</strong> so NSG rules can target a role instead of a fragile IP. (Azure DNS — both public domain hosting and private name resolution inside your VNet — gets its own dedicated day later in the course.)</p>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<ul>
+<li>A <strong>VNet</strong> is your private network in Azure — all resources communicate through it, nothing gets in unless you allow it</li>
+<li><strong><code>10.0.0.0/16</code></strong> is the recommended default address space — 65,536 addresses, plenty of room to subdivide</li>
+<li>Azure reserves <strong>5 addresses per subnet</strong> (<code>.0</code>, <code>.1</code>, <code>.2</code>, <code>.3</code>, and the last address <code>.255</code>) — a <code>/24</code> gives you 251 usable addresses, not 256</li>
+<li><strong>Subnets</strong> divide your VNet's address space into segments for security and organisation — "public" and "private" are naming conventions, not technical guarantees</li>
+<li><strong>NSGs</strong> are evaluated by priority (lowest first); the first matching rule wins; Azure's default rules allow intra-VNet traffic and deny all internet inbound</li>
+<li>NSGs can attach to a <strong>subnet</strong> (broad policy) or a <strong>NIC</strong> (per-VM overrides) — prefer subnet-level for simplicity</li>
+<li>A VM with a <strong>public IP</strong> + an NSG rule allowing the port is directly reachable from the internet, for both Windows (RDP) and Linux (SSH)</li>
+<li>A VM with <strong>no public IP</strong> is unreachable from the internet regardless of NSG rules — there's no route in, not just a blocked one — but it's fully reachable from other resources inside the same VNet</li>
+<li>Connecting through a public VM to reach a private VM is the <strong>jump box / bastion host</strong> pattern — the manual version of what Azure Bastion (Day 11) automates</li>
+<li>Azure's <strong>default outbound access</strong> (no NAT Gateway, no public IP, no load balancer) is unreliable and dev/test-only — don't rely on it for anything production-grade</li>
+<li>A <strong>NAT Gateway</strong> gives a subnet's private resources a stable, scalable outbound-only path to the internet via a static public IP (up to 64,512 SNAT ports) — it never enables inbound access and doesn't mix with Bastion or Standard Load Balancer outbound rules on the same subnet</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../day09_intro_to_networking/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR &amp; Subnet Classes">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../day11_vnet_advanced/" class="md-footer__link md-footer__link--next" aria-label="Next: Day 11 — VNet Advanced: Peering, Service &amp; Private Endpoints, and Bastion">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.79ae519e.min.js"></script>
+      
+    
+  </body>
+</html>
