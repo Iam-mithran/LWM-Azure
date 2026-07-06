@@ -59,3 +59,6 @@ nav:
   - "Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs": day10_virtual_network.md
   - "Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion": day11_vnet_advanced.md
   - "Day 12 — Load Balancer, VM Scale Sets & Application Gateway": day12_load_balancer_vmss.md
+  - "Day 13 — Azure DNS: Public & Private Zones": day13_azure_dns.md
+  - "Day 14 — Traffic Manager, Front Door, CDN & WAF": day14_traffic_frontdoor_cdn_waf.md
+  - "Day 15 — VPN Gateway & ExpressRoute": day15_vpn_expressroute.md

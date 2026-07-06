@@ -20,6 +20,9 @@
 | Day 10 | Azure Virtual Network: Address Spaces, Subnets & NSGs | `docs/day10_virtual_network.md` |
 | Day 11 | VNet Advanced: Peering, Service & Private Endpoints, and Bastion | `docs/day11_vnet_advanced.md` |
 | Day 12 | Load Balancer, VM Scale Sets & Application Gateway | `docs/day12_load_balancer_vmss.md` |
+| Day 13 | Azure DNS — Public & Private Zones | `docs/day13_azure_dns.md` |
+| Day 14 | Traffic Manager, Front Door, CDN & WAF | `docs/day14_traffic_frontdoor_cdn_waf.md` |
+| Day 15 | VPN Gateway & ExpressRoute | `docs/day15_vpn_expressroute.md` |
 
 ---
 
@@ -27,21 +30,13 @@
 
 Day numbers are fixed by `course_outline.md`. Record in order — dependencies are already baked into the numbering. Where a phase has no internal ordering constraint, that's noted below.
 
-### Phase 3 — Networking (continued)
-
-| Day | Topic | File | Depends On |
-|-----|-------|------|------------|
-| **Day 13 (next)** | VPN Gateway & ExpressRoute | `vpn_expressroute.md` | Days 10–12 ✅ |
-| Day 14 | Azure DNS — Public & Private Zones | `azure_dns.md` | Days 10–11 ✅ |
-| Day 15 | Traffic Manager, Front Door, CDN & WAF | `traffic_frontdoor_cdn.md` + `application_gateway.md` (WAF section) | Day 12 ✅ (Application Gateway, for WAF context) |
-
-> Day 13 (VPN/ExpressRoute) is being held back for a future session — it was judged too advanced to record right after Day 11, so Day 12 picked up Load Balancer, VM Scale Sets & Application Gateway instead. WAF was pulled out of the old standalone Application Gateway day and now lives in Day 15, alongside Front Door — which also attaches WAF policies. Days 14–15 have no ordering constraint relative to each other or to Day 13.
+Phase 3 — Networking is now fully recorded (Days 9–15). Next up:
 
 ### Phase 4 — Serverless & Databases
 
 | Day | Topic | File | Depends On |
 |-----|-------|------|------------|
-| Day 16 | Azure Functions & Serverless | `functions.md` | Day 6 ✅ (App Service recommended); slotted here so Compute wraps up after Networking |
+| **Day 16 (next)** | Azure Functions & Serverless | `functions.md` | Day 6 ✅ (App Service recommended); slotted here so Compute wraps up after Networking |
 | Day 17 | Azure SQL Database + Other Databases | `sql_database.md` | None |
 
 ### Phase 5 — Identity, Security & Monitoring
@@ -97,4 +92,4 @@ Day numbers are fixed by `course_outline.md`. Record in order — dependencies a
 
 ## What's Next to Record
 
-**Day 13 — VPN Gateway & ExpressRoute** (`days/vpn_expressroute.md`) — next up once it's ready to record.
+**Day 16 — Azure Functions & Serverless** (`days/functions.md`) — next up now that Phase 3 (Networking) is fully recorded.

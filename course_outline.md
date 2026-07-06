@@ -86,9 +86,9 @@
 | Day 10 | Azure Virtual Network: Address Spaces, Subnets & NSGs | VNet, Address Space (CIDR), Subnets, Azure-Reserved Addresses, Network Security Groups, Application Security Groups (ASGs) | ✅ |
 | Day 11 | VNet Advanced: Peering, Service & Private Endpoints, and Bastion | VNet Peering, Service Endpoints, Private Endpoints, **Azure Bastion**, Route Tables (UDR), **NAT Gateway** | ✅ / 💳 |
 | Day 12 | Load Balancer, VM Scale Sets & Application Gateway | **Azure Load Balancer** (Standard), Frontend IP, Backend Pools, Health Probes, Inbound NAT Rules, VMSS Autoscale, **Application Gateway v2**, Path-based routing, Multi-site hosting, SSL termination | 💳 |
-| Day 13 | VPN Gateway & ExpressRoute | VPN Gateway, Site-to-Site VPN, Point-to-Site VPN, ExpressRoute, Azure Virtual WAN | 💳 |
-| Day 14 | Azure DNS: Public & Private Zones | Azure DNS Public Zones, DNS Record Types, TTL, Azure DNS Private Zones, VNet Links & Autoregistration, Custom DNS | ✅ |
-| Day 15 | Traffic Manager, Front Door, CDN & WAF | **Azure Traffic Manager**, **Azure Front Door**, **Azure CDN**, global routing methods, edge caching, **Web Application Firewall (WAF)**, OWASP CRS | 💳 |
+| Day 13 | Azure DNS: Public & Private Zones | Azure DNS Public Zones, DNS Record Types, TTL, Alias Records, Azure DNS Private Zones, VNet Links & Autoregistration, Azure DNS Private Resolver, DNSSEC | ✅ |
+| Day 14 | Traffic Manager, Front Door, CDN & WAF | **Azure Traffic Manager**, **Azure Front Door**, **Azure CDN**, global routing methods, edge caching, **Web Application Firewall (WAF)**, OWASP CRS | 💳 |
+| Day 15 | VPN Gateway & ExpressRoute | VPN Gateway, Site-to-Site VPN, Point-to-Site VPN, ExpressRoute, Azure Virtual WAN | 💳 |
 
 ### Phase 4 — Serverless & Databases
 
@@ -161,19 +161,19 @@
 | Microsoft Entra ID | Day 18 |
 | Azure Monitor | Day 21 |
 | Application Gateway | Day 12 |
-| WAF (Web Application Firewall) | Day 15 |
+| WAF (Web Application Firewall) | Day 14 |
 | Load Balancer | Day 12 |
 | VM Scale Sets (VMSS) | Day 5 + Day 12 |
-| Traffic Manager | Day 15 |
-| Azure Front Door | Day 15 |
+| Traffic Manager | Day 14 |
+| Azure Front Door | Day 14 |
 | Azure SQL Database | Day 17 |
-| Azure CDN | Day 15 |
+| Azure CDN | Day 14 |
 | Key Vault | Day 20 |
 | Backup Service (Azure Backup) | Day 5 |
 | Function App | Day 16 |
 | ARM Templates | Day 27 |
-| Azure DNS | Day 14 |
-| VPN Gateway / ExpressRoute | Day 13 |
+| Azure DNS | Day 13 |
+| VPN Gateway / ExpressRoute | Day 15 |
 | Azure Kubernetes Service | Day 30–31 |
 | Containers / ACR | Day 29 |
 | Azure DevOps | Day 22–26 |
@@ -197,4 +197,4 @@ When starting a new session to write course content:
 
 ---
 
-*Last updated: June 2026 | LearnWithMithran | Azure Cloud + Azure DevOps Course*
+*Last updated: July 2026 | LearnWithMithran | Azure Cloud + Azure DevOps Course*
