@@ -9,12 +9,14 @@
 ## What You'll Learn
 
 - **DNS fundamentals** — what a hostname-to-IP lookup actually does, and why every cloud platform needs a DNS service
+- **How DNS resolution actually works** — the full recursive lookup chain from your browser, to a recursive resolver, to root servers, to `.com`'s TLD servers, to Azure — walked through step by step with a real example
 - **DNS record types** — A, AAAA, CNAME, MX, TXT, NS, SOA, and what each one is actually for
-- **TTL (Time to Live)** — how long resolvers cache an answer, and the trade-off between "fast and cheap" and "changes propagate quickly"
+- **TTL (Time to Live)** — how long resolvers cache an answer, the trade-off between "fast and cheap" and "changes propagate quickly," and a worked migration-cutover example showing exactly when to lower and raise it
 - **Azure DNS Public Zones** — hosting a domain's records at global scale, and delegating a real domain to Azure via NS records at your registrar
 - **Alias records** — Azure's DNS enhancement that keeps a record pointed at a resource (not just an IP), even after the resource's IP changes
 - **DNSSEC** — signing a public zone so resolvers can cryptographically verify your DNS answers haven't been tampered with
 - Hands-on: create a Public DNS Zone, add A/CNAME/MX/TXT records, and query Azure's name servers directly to prove resolution works
+- **Live example:** actually delegating a real, registered domain (`learnwithmithran.com`, bought at GoDaddy) to Azure DNS and proving the entire internet — not just Azure — resolves it
 - **Azure DNS Private Zones** — internal-only DNS that resolves inside a VNet (or across several, once linked)
 - **VNet links & autoregistration** — link a Private Zone to a VNet and every VM gets a hostname automatically, no manual record-keeping
 - Hands-on: build a fresh VNet and VM, create a Private Zone, link it, and prove autoregistration + manual records both resolve correctly
@@ -29,6 +31,7 @@
 DNS is one of the cheapest services in all of Azure. Today is almost entirely **✅ free tier**, with one **💳 instructor-only** section near the end.
 
 - **Azure DNS Public Zone:** roughly **$0.50/month** per zone, plus a small per-query charge (roughly $0.40 per million queries for the first billion queries/month). At the volume we'll generate today, this is effectively **✅ free** — a few cents at most. Delete the zone when you're done if you want to avoid even that.
+- **The live delegation example** (later in Part 2) creates a *second* Public Zone for a real, registered domain — same pricing shape as above, so still effectively **✅ free**, but it's a **💳 instructor demo** because it uses a domain (`learnwithmithran.com`, bought at GoDaddy) that only the instructor owns. You don't need your own domain to get everything from today's lesson.
 - **Azure DNS Private Zone:** same pricing shape as a Public Zone — **✅ effectively free** for a demo.
 - **DNS records** (A, CNAME, MX, TXT, etc.) inside a zone: **✅ free** — no per-record charge.
 - **Alias records:** **✅ free** — no additional charge over a normal record.
@@ -64,6 +67,44 @@ A DNS zone is made up of individual **records**, each one answering a specific t
 
 Every zone gets an **SOA** and a set of **NS** records automatically the moment you create it — you don't add those yourself.
 
+### How DNS Resolution Actually Works, Step by Step
+
+Every time you type a hostname into a browser, it doesn't turn into an IP address by magic — it walks through a specific chain of servers, each holding one piece of the answer, until something *authoritative* finally responds. Let's trace the exact path for `www.learnwithmithran.com`, assuming this is the very first time anyone, anywhere, has looked it up (a "cold cache").
+
+Two kinds of query happen along this chain:
+
+- **Recursive query** — "Give me the final answer, I don't care how many hops it takes you." This is the query your laptop or phone sends to its configured resolver.
+- **Iterative query** — "Here's my best answer; if you need more, ask that server next." This is how the recursive resolver talks to root, TLD, and authoritative servers — each one hands back a referral, not the final answer.
+
+```mermaid
+sequenceDiagram
+    participant You as Your Laptop
+    participant Resolver as Recursive Resolver (e.g. 8.8.8.8)
+    participant Root as Root Name Server
+    participant TLD as .com TLD Name Server
+    participant Azure as Azure DNS<br/>(authoritative for learnwithmithran.com)
+
+    You->>Resolver: Recursive query: "IP for www.learnwithmithran.com?"
+    Resolver->>Root: Iterative query: "Who's authoritative for .com?"
+    Root-->>Resolver: "Ask the .com TLD servers"
+    Resolver->>TLD: Iterative query: "Who's authoritative for learnwithmithran.com?"
+    TLD-->>Resolver: "Ask Azure's 4 name servers (via NS delegation)"
+    Resolver->>Azure: Iterative query: "What's the A record for www.learnwithmithran.com?"
+    Azure-->>Resolver: "20.42.73.11, TTL 3600"
+    Resolver-->>You: "20.42.73.11" (and caches it for 3600s)
+```
+
+Step by step, in plain language:
+
+1. **Browser/OS cache check.** Before any network traffic happens at all, your browser and operating system check their own local DNS cache. If a still-valid (within-TTL) answer for `www.learnwithmithran.com` is already sitting there from a previous lookup, it's returned instantly — zero network round trips, zero servers involved.
+2. **Ask the recursive resolver.** Cache miss? Your device sends a recursive query to whichever resolver it's configured to use — your ISP's resolver, or a public one like Google's `8.8.8.8` or Cloudflare's `1.1.1.1`. This resolver now does all the remaining legwork on your behalf.
+3. **Resolver asks a root name server.** If the resolver's own cache is also cold, it starts at the very top of the DNS hierarchy: one of the 13 logical **root name servers**. The root server has never heard of `learnwithmithran.com` specifically, but it knows who's authoritative for `.com` — so it refers the resolver there.
+4. **Resolver asks a `.com` TLD name server.** The TLD server doesn't know `www.learnwithmithran.com`'s IP either — but it does hold the **NS records** for `learnwithmithran.com`, which is exactly the delegation you set up by pointing your registrar's nameserver settings at Azure (Part 2). So it refers the resolver to Azure's four name servers.
+5. **Resolver asks Azure DNS directly.** This is the first server in the whole chain that's actually **authoritative** for the zone — it holds the real record. Azure answers with the A record's value (`20.42.73.11`) and its **TTL** (say, 3600 seconds).
+6. **Resolver caches the answer, then replies.** The recursive resolver stores that answer for 3600 seconds and hands it back to your device, which may cache it too. Everyone else using that same resolver (e.g., everyone on the same ISP) who looks up `www.learnwithmithran.com` in the next hour gets the cached answer instantly — none of steps 3–5 happen again until the TTL expires.
+
+That's the entire chain, and it's exactly why **delegation** (Part 2) and **TTL** (next) matter so much: delegation is what makes step 4 point at Azure at all, and TTL is what determines how often steps 3–5 have to repeat, versus how much of the internet is running on a cached — and possibly stale — answer.
+
 ### TTL — Time to Live
 
 Every DNS record has a **TTL**, measured in seconds, telling any resolver that caches the answer how long it's allowed to keep using that cached answer before asking again.
@@ -72,6 +113,31 @@ Every DNS record has a **TTL**, measured in seconds, telling any resolver that c
 - **Long TTL** (e.g., 86400 seconds / 24 hours): far fewer repeat queries, cheaper and faster for everyone downstream — but if you need to change the record (say, during a migration or an incident), it can take up to that long for every cached resolver worldwide to pick up the new value.
 
 **Practical pattern:** keep a long TTL during steady-state operation, and deliberately lower it in the days *before* a planned migration or cutover, so the eventual real change propagates fast. Raise it back up again afterward.
+
+#### Worked Example: Changing an IP Without Breaking Anyone
+
+Say `www.learnwithmithran.com`'s A record has been sitting at TTL `86400` (24 hours) for months, pointing at `20.42.73.11`. You're migrating to a new VM at `40.90.23.5` this Thursday.
+
+If you just changed the IP on Thursday and left the TTL at 86400, here's what actually happens: every resolver that cached the *old* IP any time in the previous 24 hours keeps serving `20.42.73.11` — some visitors could keep hitting the decommissioned VM for up to a full day after cutover, because their resolver has no reason to ask again until its cached copy expires.
+
+The standard fix:
+
+1. **Two days before cutover (Tuesday):** lower the TTL on the existing record to `300` (5 minutes) — leave the IP unchanged for now.
+2. **Wait at least one full day.** This guarantees every resolver worldwide has, at some point, re-queried and picked up the new, short TTL — so nobody is still holding a stale 24-hour cache entry.
+3. **Thursday — perform the actual cutover:** update the IP to `40.90.23.5`. Because the TTL is now only 300 seconds, resolvers refresh within 5 minutes of their existing cache expiring. Instead of "up to 24 hours to fully propagate," you're looking at "essentially done in under 5 minutes."
+4. **Once the new VM is confirmed stable** (say, the following Monday): raise the TTL back to `86400`. There's no reason to keep every resolver on Earth re-querying every 5 minutes once things are stable again — and on Azure DNS, more queries means a (small) increase in your per-query billing.
+
+#### Typical TTL Values in Practice
+
+| TTL | Seconds | When You'd Use It |
+|---|---|---|
+| 1 minute | 60 | Active migration/cutover window, or a record behind DNS-based failover (e.g. Traffic Manager) that needs to react fast if an endpoint goes down |
+| 5 minutes | 300 | The "lowered ahead of a planned change" TTL — short enough to propagate fast, long enough not to hammer your query count |
+| 1 hour | 3600 | Sensible default for most records during steady-state — Azure's own portal defaults new records to this |
+| 24 hours | 86400 | Stable, rarely-changing records — MX records, SOA, records for services that never move |
+| 48 hours | 172800 | Occasionally seen on NS records at the registrar level — outside Azure's control, but it's exactly why *nameserver* changes (as opposed to individual record changes) can take the longest to propagate globally |
+
+Notice how this ties directly back to the resolution chain from the previous section: a resolver only repeats steps 3–5 (root → TLD → authoritative) once its cached copy's TTL has expired. Shrink the TTL, and you shrink how long any single resolver can keep serving a stale answer — at the cost of it asking Azure more often.
 
 ---
 
@@ -200,9 +266,54 @@ Because delegation only matters for the *rest of the internet* finding your zone
    ```
 3. You'll get back `20.42.73.11` — proof that Azure is correctly answering for records inside this zone, entirely independent of whether any registrar points at it yet.
 
-**Step 8 — (Reference only) What real delegation looks like:**
+**Step 8 — What real delegation looks like:**
 
 If `learnwithmithran-demo.com` were a domain you actually registered, the remaining step would be: log into your registrar's dashboard, find the **nameserver settings**, and replace the registrar's default name servers with the four Azure gave you in Step 2. Propagation across the internet's resolvers typically takes anywhere from a few minutes to 48 hours, governed by the **TTL** of the parent zone's own NS records.
+
+That's not hypothetical for this course — the next section does exactly that, for real, using a domain actually registered at GoDaddy.
+
+---
+
+### Live Example: Delegating a Real, Registered Domain
+
+**💳 Instructor Demo — uses a real domain purchased at GoDaddy. You don't need to own a domain to get everything from this course; this section exists so you can watch full, genuine end-to-end delegation happen, not just Azure answering for its own zone.**
+
+Steps 1–7 above work with any name you type in — Azure doesn't check whether you actually own it, which is exactly why it's a safe, free, repeatable lab for every student. But there's a real difference between "Azure answers correctly when *you* query its name servers directly" and "the entire internet, using its own default resolvers, finds your domain with zero help from you." Delegation is what bridges that gap, and the only way to really see it happen is with a domain that's registered somewhere for real.
+
+For this course, that domain is `learnwithmithran.com`, registered at GoDaddy and not yet pointed at anything — so there's no existing email or website to worry about breaking.
+
+**Step 1 — Create a Public DNS Zone for the real domain:**
+
+1. Search for **DNS zones** → **+ Create**.
+2. Fill in:
+   - **Resource group:** `rg-day13-demo` (or a dedicated `rg-learnwithmithran-dns` if you'd like it to outlive this lab's cleanup)
+   - **Name:** `learnwithmithran.com` *(the real, registered domain this time — not a placeholder)*
+3. **Review + create** → **Create**.
+4. Open the zone and note its four assigned name servers — exactly like Step 2 earlier, except this time they're about to matter to the rest of the internet.
+
+**Step 2 — Add one real record to prove the point:**
+
+1. **+ Record set** → **Name:** `www`, **Type:** A, **TTL:** `3600`, **IP address:** any reachable placeholder IP — nothing needs to actually be listening yet, since the goal here is proving resolution, not serving traffic.
+2. Click **Add**.
+
+**Step 3 — Delegate at GoDaddy:**
+
+1. Log into GoDaddy → **My Products** → find `learnwithmithran.com` → **DNS** → **Nameservers**.
+2. Choose **Change Nameservers** → **Enter my own nameservers (custom)**.
+3. Enter all **four** name servers Azure assigned in Step 1 — GoDaddy will accept as few as two, but use all four Azure gave you.
+4. Save. GoDaddy will warn that this hands off DNS management for the domain entirely — that's expected, and exactly the point: Azure is now authoritative for `learnwithmithran.com`.
+
+**Step 4 — Wait for propagation, then verify from the public internet (no name server specified):**
+
+Unlike Step 7 above — where you queried Azure's name servers directly — this time run the lookup with **no server specified**, so it uses your machine's normal default resolver. This proves the *entire* chain from earlier in this Part (root → `.com` TLD → Azure) actually works, not just Azure answering for itself:
+
+```
+nslookup www.learnwithmithran.com
+```
+
+Propagation here is governed by the **TTL on the `.com` TLD's own NS delegation** — typically up to 48 hours, though often much faster in practice. This is the one TTL in the whole chain that neither you nor Azure controls; it belongs to the registry operating `.com`.
+
+Once it resolves, that's the complete loop closed: a real, publicly registered domain, delegated to Azure, resolving through the exact same recursive chain every visitor on Earth uses for every domain — not a shortcut, the real thing.
 
 ---
 
@@ -378,7 +489,9 @@ The two endpoints are independent — you can deploy just an inbound endpoint if
 
 Let's bring it all together. Today you covered the two sides of Azure DNS — the world reaching you, and your resources reaching each other.
 
-**Azure DNS Public Zones** host your domain's records at global scale, on Azure's anycast name server network. Every zone gets NS and SOA records automatically; delegating a real domain means updating your registrar's name servers to point at Azure's four — but you can always query Azure's name servers directly to verify records, delegated or not, exactly like you did today. **Alias records** solve the zone-apex and "IP keeps changing" problems by pointing at an Azure resource instead of a static value, and **DNSSEC** lets you cryptographically sign a zone so resolvers can verify your answers haven't been tampered with — at no extra cost.
+Along the way you traced the full **DNS resolution chain** — browser/OS cache, recursive resolver, root name servers, `.com` TLD servers, and finally Azure's authoritative name servers — and saw exactly where **TTL** governs how long each hop's cached answer stays trustworthy, including a worked migration-cutover example showing when to lower a TTL and when to raise it back.
+
+**Azure DNS Public Zones** host your domain's records at global scale, on Azure's anycast name server network. Every zone gets NS and SOA records automatically; delegating a real domain means updating your registrar's name servers to point at Azure's four — but you can always query Azure's name servers directly to verify records, delegated or not, exactly like you did today. You then went further and did it for real, delegating the actually-registered `learnwithmithran.com` at GoDaddy to Azure DNS and confirming public resolvers worldwide — not just Azure — resolve it correctly. **Alias records** solve the zone-apex and "IP keeps changing" problems by pointing at an Azure resource instead of a static value, and **DNSSEC** lets you cryptographically sign a zone so resolvers can verify your answers haven't been tampered with — at no extra cost.
 
 **Azure DNS Private Zones** give your VNet internal name resolution that never touches the public internet. Link a zone to a VNet, flip on autoregistration, and every VM gets a hostname with zero manual record-keeping — exactly what you proved with `vm-dns-demo` today, alongside a manually created record and normal public resolution, all served transparently by Azure's built-in resolver at `168.63.129.16`.
 
@@ -394,8 +507,10 @@ You now have a complete picture of Azure-native DNS: hosting a public domain, gi
 
 - **DNS** maps human-readable hostnames to IP addresses so nothing ever has to hard-code an address that might change
 - Core record types: **A/AAAA** (hostname → IP), **CNAME** (hostname → hostname), **MX** (mail routing), **TXT** (verification/SPF/DKIM), **NS** (delegation), **SOA** (zone metadata) — NS and SOA are created automatically
-- **TTL** controls the cache/propagation trade-off — lower it before a planned change, raise it back up after
+- **DNS resolution** is a chain, not a single lookup: browser/OS cache → recursive resolver → root name servers → TLD name servers → the authoritative name servers (Azure, once delegated) — each hop is skipped if a still-valid cached answer already exists
+- **TTL** controls the cache/propagation trade-off — lower it before a planned change (e.g., a migration cutover), raise it back up after; shorter TTL means faster propagation but more resolver queries (and slightly higher Azure DNS billing)
 - **Azure DNS Public Zones** get four Azure-assigned name servers automatically; delegating a real domain means pointing your registrar's NS records at them — but you can query Azure's name servers directly to verify records without ever delegating
+- **Live example:** `learnwithmithran.com`, registered at GoDaddy, was actually delegated to an Azure Public DNS Zone and verified resolving through a default public resolver — proof the full resolution chain works end-to-end, not just against Azure's own name servers
 - **Alias records** point at an Azure resource (Public IP, Traffic Manager, Front Door, CDN) instead of a static value, auto-updating if the resource's IP changes, and are the only record type allowed at a zone's apex besides A/AAAA
 - **DNSSEC** cryptographically signs a zone (free to enable) — publish the generated DS record at your registrar to complete the trust chain
 - **Azure DNS Private Zones** resolve only inside VNets you explicitly link to them — link + enable **autoregistration** and every VM gets a hostname automatically, with zero manual record-keeping
