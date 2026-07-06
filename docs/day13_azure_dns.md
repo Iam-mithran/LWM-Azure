@@ -15,8 +15,8 @@
 - **Azure DNS Public Zones** — hosting a domain's records at global scale, and delegating a real domain to Azure via NS records at your registrar
 - **Alias records** — Azure's DNS enhancement that keeps a record pointed at a resource (not just an IP), even after the resource's IP changes
 - **DNSSEC** — signing a public zone so resolvers can cryptographically verify your DNS answers haven't been tampered with
-- Hands-on: create a Public DNS Zone, add A/CNAME/MX/TXT records, and query Azure's name servers directly to prove resolution works
-- **Live example:** actually delegating a real, registered domain (`learnwithmithran.com`, bought at GoDaddy) to Azure DNS and proving the entire internet — not just Azure — resolves it
+- Hands-on: deploy a real Ubuntu VM running nginx, create a Public DNS Zone, add A/CNAME/MX/TXT records pointing at it, and query Azure's name servers directly to prove resolution works
+- **Live example:** actually delegating a real, registered domain (`learnwithmithran.com`, bought at GoDaddy) to that same zone and watching a browser load the nginx page through the real domain, end to end
 - **Azure DNS Private Zones** — internal-only DNS that resolves inside a VNet (or across several, once linked)
 - **VNet links & autoregistration** — link a Private Zone to a VNet and every VM gets a hostname automatically, no manual record-keeping
 - Hands-on: build a fresh VNet and VM, create a Private Zone, link it, and prove autoregistration + manual records both resolve correctly
@@ -30,13 +30,13 @@
 
 DNS is one of the cheapest services in all of Azure. Today is almost entirely **✅ free tier**, with one **💳 instructor-only** section near the end.
 
-- **Azure DNS Public Zone:** roughly **$0.50/month** per zone, plus a small per-query charge (roughly $0.40 per million queries for the first billion queries/month). At the volume we'll generate today, this is effectively **✅ free** — a few cents at most. Delete the zone when you're done if you want to avoid even that.
-- **The live delegation example** (later in Part 2) creates a *second* Public Zone for a real, registered domain — same pricing shape as above, so still effectively **✅ free**, but it's a **💳 instructor demo** because it uses a domain (`learnwithmithran.com`, bought at GoDaddy) that only the instructor owns. You don't need your own domain to get everything from today's lesson.
+- **Azure DNS Public Zone:** roughly **$0.50/month** per zone, plus a small per-query charge (roughly $0.40 per million queries for the first billion queries/month). At the volume we'll generate today, this is effectively **✅ free** — a few cents at most. Delete the zone when you're done if you want to avoid even that. This zone happens to be named after a domain (`learnwithmithran.com`, bought at GoDaddy) that only the instructor owns, but creating and using the zone itself is identical, and free, regardless of whether you own the name you type in.
+- **Delegating that zone to the real domain at GoDaddy** (the last step of Part 2's hands-on) is a **💳 instructor demo** for that reason alone — not because of any extra Azure cost, just because it needs a domain only the instructor owns. You don't need your own domain to get everything else from today's lesson.
 - **Azure DNS Private Zone:** same pricing shape as a Public Zone — **✅ effectively free** for a demo.
 - **DNS records** (A, CNAME, MX, TXT, etc.) inside a zone: **✅ free** — no per-record charge.
 - **Alias records:** **✅ free** — no additional charge over a normal record.
 - **DNSSEC signing:** **✅ free** — no extra charge to sign a zone.
-- **One test VM** (`Standard_B1s`): **✅ free** — covered by the Free Tier's 750 B-series hours/month.
+- **Two test VMs** (`Standard_B1s` each — one running nginx in Part 2, one in Part 3): **✅ free** — both comfortably covered by the Free Tier's 750 B-series hours/month, shared across everything you deploy that month.
 - **Azure DNS Private Resolver:** billed per inbound and outbound endpoint, roughly **$180/month per endpoint** (prorated to the hour if deleted early), plus a small charge per forwarding ruleset. A minimum working setup needs both an inbound and an outbound endpoint, so this is a real recurring cost — **💳 instructor demo only**. We'll tour the portal and explain the architecture rather than leave it running. Always check the [Azure DNS pricing page](https://azure.microsoft.com/en-us/pricing/details/dns/) for current rates before deploying this yourself.
 
 ---
@@ -160,7 +160,7 @@ graph LR
     AzureDNS -->|"Authoritative answer"| Resolver
 ```
 
-You do **not** need to own or delegate a real domain to follow today's hands-on demo — Azure lets you create a zone for any name you type in, and you can query its assigned name servers directly to prove resolution works, without touching a registrar at all. We'll do exactly that.
+You do **not** need to own or delegate a real domain to follow today's hands-on demo — Azure lets you create a zone for any name you type in, and you can query its assigned name servers directly to prove resolution works, without touching a registrar at all. To make that as concrete as possible, we're going to point today's DNS record at a genuine Ubuntu VM running nginx, so you can actually watch a browser load a page through it — not just prove an IP address resolves — and then, as a bonus, delegate a real registered domain to it for real.
 
 ### Alias Records
 
@@ -192,9 +192,9 @@ There's no extra charge to sign a zone with DNSSEC. It's a one-way trust upgrade
 
 ---
 
-### Hands-On: Create a Public DNS Zone and Add Records
+### Hands-On: Deploy a Real Web Server, Host Its DNS in Azure, and Delegate a Real Domain
 
-**✅ Free Tier — follow along. No real domain or registrar required.**
+**Mostly ✅ Free Tier — you'll deploy a genuine Ubuntu VM running nginx and host its DNS in Azure. The final step, delegating a real domain at a registrar, is 💳 Instructor Demo (it needs `learnwithmithran.com`, registered at GoDaddy) — everything before it works identically with any name you type in, owned or not.**
 
 **Step 1 — Create the resource group:**
 
@@ -203,117 +203,87 @@ There's no extra charge to sign a zone with DNSSEC. It's a one-way trust upgrade
 3. **Region:** East US
 4. **Review + create** → **Create**.
 
-**Step 2 — Create the Public DNS Zone:**
+**Step 2 — Deploy an Ubuntu VM running nginx:**
+
+This VM is the real thing our DNS record is going to point at — once it's up, you'll be able to open a browser and actually watch it serve a page, instead of only proving an IP address resolves.
+
+1. Search for **Virtual machines** → **+ Create** → **Azure virtual machine**.
+2. Fill in:
+   - **Resource group:** `rg-day13-demo`
+   - **VM name:** `vm-web-day13`
+   - **Region:** East US
+   - **Image:** Ubuntu Server 24.04 LTS
+   - **Size:** Standard_B1s
+   - **Authentication:** SSH public key (or password)
+   - **Public inbound ports:** Allow selected ports → **SSH (22)**, **HTTP (80)**
+3. On **Networking**, leave the auto-created VNet/subnet as-is, and confirm **Public IP** is set to **Create new** — this VM needs a real, internet-reachable address for the DNS record to mean anything.
+4. On **Advanced**, scroll to **Custom data** and paste this cloud-init script so nginx is installed and serving the moment the VM boots:
+   ```yaml
+   #cloud-config
+   package_update: true
+   packages:
+     - nginx
+   runcmd:
+     - echo "<h1>Hello from learnwithmithran.com — served by $(hostname)</h1>" > /var/www/html/index.html
+   ```
+5. **Review + create** → **Create**.
+6. Once deployed, copy the VM's **public IP address** from its Overview page, and browse to `http://<vm-public-ip>` — confirm you see the nginx page *before* touching DNS at all. This isolates "is the server actually working" from "is DNS pointing at it correctly," which is exactly how you'd debug a real outage.
+
+**Step 3 — Create the Public DNS Zone:**
 
 1. Search for **DNS zones** → **+ Create**.
 2. Fill in:
    - **Resource group:** `rg-day13-demo`
-   - **Name:** `learnwithmithran-demo.com` *(any name works — this doesn't need to be a domain you actually own for this lab)*
+   - **Name:** `learnwithmithran.com` *(this is the real domain we'll delegate for real in Step 7 — if you don't own a domain yourself, any name works exactly the same way through Step 6; only the actual registrar delegation needs real ownership)*
    - **Resource group location:** East US
 3. **Review + create** → **Create**.
 
-Once it's deployed, open the zone. You'll immediately see two records already created for you: an **NS** record listing four Azure-assigned name servers, and an **SOA** record. Note down the four name servers — you'll use them directly in a moment.
+Once it's deployed, open the zone. You'll immediately see two records already created for you: an **NS** record listing four Azure-assigned name servers, and an **SOA** record. Note down the four name servers — you'll use them directly in a moment, and again at the registrar later.
 
-**Step 3 — Add an A record:**
+**Step 4 — Add an A record pointing at your real VM:**
 
 1. Click **+ Record set**.
 2. Fill in:
    - **Name:** `www`
    - **Type:** A
    - **TTL:** 3600 (1 hour)
-   - **IP address:** `20.42.73.11` *(any placeholder IP — we're demonstrating the mechanism, not routing to a real server)*
+   - **IP address:** the **real public IP** of `vm-web-day13` from Step 2 — not a placeholder this time
 3. Click **Add**.
 
-**Step 4 — Add a CNAME record:**
+**Step 5 — Add a CNAME, MX, and TXT record (same record types as before, illustrative values):**
 
-1. Click **+ Record set**.
-2. Fill in:
-   - **Name:** `blog`
-   - **Type:** CNAME
-   - **TTL:** 3600
-   - **Alias:** `learnwithmithran-demo.com` *(pointing at the zone's own apex, just to demonstrate a CNAME hop — in a real setup this would point at another hostname entirely, like an App Service default hostname)*
-3. Click **Add**.
+1. **CNAME:** **Name:** `blog`, **Type:** CNAME, **TTL:** 3600, **Alias:** `learnwithmithran.com` *(pointing at the zone's own apex, just to demonstrate a CNAME hop — in a real setup this would point at another hostname entirely, like an App Service default hostname)* → **Add**.
+2. **MX:** **Name:** `@` (the zone apex), **Type:** MX, **TTL:** 3600, **Mail Exchange:** `mail.learnwithmithran.com`, **Preference:** 10 → **Add**.
+3. **TXT:** **Name:** `@`, **Type:** TXT, **TTL:** 3600, **Value:** `v=spf1 -all` *(a real SPF record would list your actual mail providers — this is a placeholder showing the format)* → **Add**.
 
-**Step 5 — Add an MX record:**
+**Step 6 — Query Azure's name servers directly (no registrar needed):**
 
-1. Click **+ Record set**.
-2. Fill in:
-   - **Name:** `@` (the zone apex)
-   - **Type:** MX
-   - **TTL:** 3600
-   - **Mail Exchange:** `mail.learnwithmithran-demo.com`
-   - **Preference:** 10
-3. Click **Add**.
-
-**Step 6 — Add a TXT record:**
-
-1. Click **+ Record set**.
-2. Fill in:
-   - **Name:** `@`
-   - **Type:** TXT
-   - **TTL:** 3600
-   - **Value:** `v=spf1 -all` *(a real SPF record would list your actual mail providers — this is a placeholder showing the format)*
-3. Click **Add**.
-
-**Step 7 — Query Azure's name servers directly (no registrar needed):**
-
-Because delegation only matters for the *rest of the internet* finding your zone automatically, you can always query Azure's assigned name servers **directly** to prove your records resolve — this is exactly how you'd debug delegation issues on a real domain too.
+Because delegation only matters for the *rest of the internet* finding your zone automatically, you can always query Azure's assigned name servers **directly** to prove your records resolve — this works whether or not you own the domain you typed in, and it's exactly how you'd debug delegation issues on a real domain too.
 
 1. Open **Cloud Shell** (or any terminal with `nslookup`/`dig`).
-2. Run, substituting one of the four name servers you noted in Step 2:
+2. Run, substituting one of the four name servers you noted in Step 3:
    ```
-   nslookup -type=A www.learnwithmithran-demo.com <name-server-from-your-zone>
+   nslookup -type=A www.learnwithmithran.com <name-server-from-your-zone>
    ```
-3. You'll get back `20.42.73.11` — proof that Azure is correctly answering for records inside this zone, entirely independent of whether any registrar points at it yet.
+3. You'll get back `vm-web-day13`'s real public IP — proof that Azure is correctly answering for records inside this zone, entirely independent of whether any registrar points at it yet. If you don't actually own the domain you typed in, this is as far as you can take it — and that's fine, you've already proven the exact mechanism a real delegation relies on.
 
-**Step 8 — What real delegation looks like:**
+**Step 7 — Delegate at GoDaddy, then watch it resolve for real:**
 
-If `learnwithmithran-demo.com` were a domain you actually registered, the remaining step would be: log into your registrar's dashboard, find the **nameserver settings**, and replace the registrar's default name servers with the four Azure gave you in Step 2. Propagation across the internet's resolvers typically takes anywhere from a few minutes to 48 hours, governed by the **TTL** of the parent zone's own NS records.
-
-That's not hypothetical for this course — the next section does exactly that, for real, using a domain actually registered at GoDaddy.
-
----
-
-### Live Example: Delegating a Real, Registered Domain
-
-**💳 Instructor Demo — uses a real domain purchased at GoDaddy. You don't need to own a domain to get everything from this course; this section exists so you can watch full, genuine end-to-end delegation happen, not just Azure answering for its own zone.**
-
-Steps 1–7 above work with any name you type in — Azure doesn't check whether you actually own it, which is exactly why it's a safe, free, repeatable lab for every student. But there's a real difference between "Azure answers correctly when *you* query its name servers directly" and "the entire internet, using its own default resolvers, finds your domain with zero help from you." Delegation is what bridges that gap, and the only way to really see it happen is with a domain that's registered somewhere for real.
-
-For this course, that domain is `learnwithmithran.com`, registered at GoDaddy and not yet pointed at anything — so there's no existing email or website to worry about breaking.
-
-**Step 1 — Create a Public DNS Zone for the real domain:**
-
-1. Search for **DNS zones** → **+ Create**.
-2. Fill in:
-   - **Resource group:** `rg-day13-demo` (or a dedicated `rg-learnwithmithran-dns` if you'd like it to outlive this lab's cleanup)
-   - **Name:** `learnwithmithran.com` *(the real, registered domain this time — not a placeholder)*
-3. **Review + create** → **Create**.
-4. Open the zone and note its four assigned name servers — exactly like Step 2 earlier, except this time they're about to matter to the rest of the internet.
-
-**Step 2 — Add one real record to prove the point:**
-
-1. **+ Record set** → **Name:** `www`, **Type:** A, **TTL:** `3600`, **IP address:** any reachable placeholder IP — nothing needs to actually be listening yet, since the goal here is proving resolution, not serving traffic.
-2. Click **Add**.
-
-**Step 3 — Delegate at GoDaddy:**
+**💳 Instructor Demo — needs a domain actually registered somewhere. For this course, that's `learnwithmithran.com` at GoDaddy, not yet pointed at anything, so there's no existing email or website to break.**
 
 1. Log into GoDaddy → **My Products** → find `learnwithmithran.com` → **DNS** → **Nameservers**.
 2. Choose **Change Nameservers** → **Enter my own nameservers (custom)**.
-3. Enter all **four** name servers Azure assigned in Step 1 — GoDaddy will accept as few as two, but use all four Azure gave you.
+3. Enter all **four** name servers Azure assigned in Step 3 — GoDaddy will accept as few as two, but use all four Azure gave you.
 4. Save. GoDaddy will warn that this hands off DNS management for the domain entirely — that's expected, and exactly the point: Azure is now authoritative for `learnwithmithran.com`.
+5. Wait for propagation — governed by the **TTL on the `.com` TLD's own NS delegation**, typically up to 48 hours though often much faster in practice. This is the one TTL in the whole chain that neither you nor Azure controls; it belongs to the registry operating `.com`.
+6. Once it's propagated, open a plain browser tab — no name server override, no `nslookup`, nothing clever — and go to **http://www.learnwithmithran.com**. You should see the exact same nginx page you already confirmed at the raw IP in Step 2, now served through a real, publicly delegated domain name, resolved by the exact chain traced earlier in this Part: your resolver → root → `.com` TLD → Azure → this VM.
 
-**Step 4 — Wait for propagation, then verify from the public internet (no name server specified):**
+That's the complete loop, closed for real: a genuine web server, its DNS hosted in Azure, delegated from a real registrar, resolving through the exact same recursive chain every visitor on Earth uses for every domain — not a shortcut, the real thing.
 
-Unlike Step 7 above — where you queried Azure's name servers directly — this time run the lookup with **no server specified**, so it uses your machine's normal default resolver. This proves the *entire* chain from earlier in this Part (root → `.com` TLD → Azure) actually works, not just Azure answering for itself:
+**Step 8 — Clean up:**
 
-```
-nslookup www.learnwithmithran.com
-```
-
-Propagation here is governed by the **TTL on the `.com` TLD's own NS delegation** — typically up to 48 hours, though often much faster in practice. This is the one TTL in the whole chain that neither you nor Azure controls; it belongs to the registry operating `.com`.
-
-Once it resolves, that's the complete loop closed: a real, publicly registered domain, delegated to Azure, resolving through the exact same recursive chain every visitor on Earth uses for every domain — not a shortcut, the real thing.
+1. Stop/deallocate or delete `vm-web-day13` if you're done experimenting — but if you delegated a real domain to it, remember that leaves `www` pointing at a dead IP until you update the A record or redeploy the VM.
+2. Keep the DNS zone around if you want to keep building on it later (a Public Zone at this volume is effectively free) — or delete the whole `rg-day13-demo` resource group in one step to remove everything.
 
 ---
 
@@ -491,7 +461,7 @@ Let's bring it all together. Today you covered the two sides of Azure DNS — th
 
 Along the way you traced the full **DNS resolution chain** — browser/OS cache, recursive resolver, root name servers, `.com` TLD servers, and finally Azure's authoritative name servers — and saw exactly where **TTL** governs how long each hop's cached answer stays trustworthy, including a worked migration-cutover example showing when to lower a TTL and when to raise it back.
 
-**Azure DNS Public Zones** host your domain's records at global scale, on Azure's anycast name server network. Every zone gets NS and SOA records automatically; delegating a real domain means updating your registrar's name servers to point at Azure's four — but you can always query Azure's name servers directly to verify records, delegated or not, exactly like you did today. You then went further and did it for real, delegating the actually-registered `learnwithmithran.com` at GoDaddy to Azure DNS and confirming public resolvers worldwide — not just Azure — resolve it correctly. **Alias records** solve the zone-apex and "IP keeps changing" problems by pointing at an Azure resource instead of a static value, and **DNSSEC** lets you cryptographically sign a zone so resolvers can verify your answers haven't been tampered with — at no extra cost.
+**Azure DNS Public Zones** host your domain's records at global scale, on Azure's anycast name server network. Every zone gets NS and SOA records automatically; delegating a real domain means updating your registrar's name servers to point at Azure's four — but you can always query Azure's name servers directly to verify records, delegated or not. Today you proved that against something real: you stood up an actual Ubuntu VM running nginx, pointed a Public DNS Zone's A record at its genuine public IP, verified it against Azure's own name servers, then delegated the real, GoDaddy-registered `learnwithmithran.com` and watched a browser load that same nginx page through the fully delegated domain — the entire recursion chain, end to end, not a shortcut. **Alias records** solve the zone-apex and "IP keeps changing" problems by pointing at an Azure resource instead of a static value, and **DNSSEC** lets you cryptographically sign a zone so resolvers can verify your answers haven't been tampered with — at no extra cost.
 
 **Azure DNS Private Zones** give your VNet internal name resolution that never touches the public internet. Link a zone to a VNet, flip on autoregistration, and every VM gets a hostname with zero manual record-keeping — exactly what you proved with `vm-dns-demo` today, alongside a manually created record and normal public resolution, all served transparently by Azure's built-in resolver at `168.63.129.16`.
 
@@ -510,7 +480,7 @@ You now have a complete picture of Azure-native DNS: hosting a public domain, gi
 - **DNS resolution** is a chain, not a single lookup: browser/OS cache → recursive resolver → root name servers → TLD name servers → the authoritative name servers (Azure, once delegated) — each hop is skipped if a still-valid cached answer already exists
 - **TTL** controls the cache/propagation trade-off — lower it before a planned change (e.g., a migration cutover), raise it back up after; shorter TTL means faster propagation but more resolver queries (and slightly higher Azure DNS billing)
 - **Azure DNS Public Zones** get four Azure-assigned name servers automatically; delegating a real domain means pointing your registrar's NS records at them — but you can query Azure's name servers directly to verify records without ever delegating
-- **Live example:** `learnwithmithran.com`, registered at GoDaddy, was actually delegated to an Azure Public DNS Zone and verified resolving through a default public resolver — proof the full resolution chain works end-to-end, not just against Azure's own name servers
+- **Live example:** an A record was pointed at a real Ubuntu VM running nginx, then `learnwithmithran.com` (registered at GoDaddy) was actually delegated to that same Azure Public DNS Zone — proving, by loading the nginx page in a plain browser at `www.learnwithmithran.com`, that the full resolution chain works end-to-end, not just against Azure's own name servers
 - **Alias records** point at an Azure resource (Public IP, Traffic Manager, Front Door, CDN) instead of a static value, auto-updating if the resource's IP changes, and are the only record type allowed at a zone's apex besides A/AAAA
 - **DNSSEC** cryptographically signs a zone (free to enable) — publish the generated DS record at your registrar to complete the trust chain
 - **Azure DNS Private Zones** resolve only inside VNets you explicitly link to them — link + enable **autoregistration** and every VM gets a hostname automatically, with zero manual record-keeping
