@@ -26,7 +26,7 @@
 Everything meaningful today has a real cost — this is a **💳 instructor-demo-heavy day**. Delete everything at the end.
 
 - **Azure Traffic Manager:** a small monthly charge per DNS zone (roughly $0.54/month) plus a small charge per million DNS queries received. At demo volume, a few cents. **💳**
-- **Two backend endpoints for Traffic Manager** (App Service Basic tier, or VMs): this is the real cost driver, not Traffic Manager itself. **💳**
+- **Two backend endpoints for Traffic Manager** (two B1s VMs, one per region): this is the real cost driver, not Traffic Manager itself. **💳**
 - **Azure Front Door (Standard tier):** billed on a consumption model — a base platform fee plus usage (data transfer, requests, routing rules). Budget roughly $35–$40/month if left running for a full month; a short demo session costs a small fraction of that. **💳**
 - **WAF Policy attached to Front Door Standard/Premium:** included in the Front Door Standard/Premium price — no separate WAF charge on these tiers. **💳** (bundled into the Front Door cost above)
 - **Blob Storage static website** (today's Front Door origin): **✅ free** at this scale — same static website hosting feature from Day 7.
@@ -81,21 +81,40 @@ A **health probe** runs continuously against every endpoint on a path/port/inter
 
 ### Hands-On: Build a Traffic Manager Profile and Force a Failover
 
-**💳 Instructor demo — App Service plans in two regions are the real cost driver here**
+**💳 Instructor demo — two VMs in different regions are the real cost driver here**
 
-**Step 1 — Create two App Service web apps in different regions:**
+We're using plain VMs as endpoints instead of App Service. The reason matters: Traffic Manager never rewrites the `Host` header, so a request still arrives at the origin addressed to `lwm-tm-demo.trafficmanager.net`. App Service's shared front-end routes by hostname, so it needs that Traffic Manager hostname explicitly bound as a **custom domain** on the app — a binding that Free tier can't do at all, and that's fussy to set up even on Basic tier. A VM has no such routing layer in front of it — Traffic Manager just resolves to its public IP directly, so there's nothing to bind.
 
-1. Search for **App Services** → **+ Create** → **Web App**.
+**Step 1 — Create two VMs in different regions:**
+
+1. Search for **Virtual machines** → **+ Create** → **Azure virtual machine**.
 2. Fill in:
    - **Resource group:** `rg-day14-demo`
-   - **Name:** `lwm-tm-eastus-<yourname>`
-   - **Region:** East US
-   - **Runtime stack:** any (e.g., .NET or Node — the default landing page is enough to prove routing)
-   - **Pricing plan:** Basic B1
+   - **Name:** `lwm-tm-india`
+   - **Region:** Central India
+   - **Image:** Ubuntu Server (latest LTS)
+   - **Size:** B1s
+   - **Inbound ports:** allow HTTP (80) and SSH (22)
 3. **Review + create** → **Create**.
-4. Repeat with **Name:** `lwm-tm-westeu-<yourname>`, **Region:** West Europe.
+4. Repeat with **Name:** `lwm-tm-centralus`, **Region:** Central US.
+5. Once each VM is running, connect via SSH and install a web server with a distinct page so routing is visually obvious:
+   ```bash
+   sudo apt update && sudo apt install -y nginx
+   echo "Hello from Central India" | sudo tee /var/www/html/index.nginx-debian.html
+   ```
+   (On `lwm-tm-centralus`, use `"Hello from Central US"` instead.)
 
-**Step 2 — Create the Traffic Manager profile:**
+**Step 2 — Give each VM's public IP a DNS name label (this is the FQDN step):**
+
+Traffic Manager's "Public IP address" endpoint type works by pointing DNS at the IP's FQDN, not the raw IP — so the public IP resource **must** have a DNS name label before Traffic Manager will let you pick it. This is almost certainly the "asking for an FQDN" prompt you hit.
+
+1. Open the VM `lwm-tm-india` → **Networking** → click the public IP resource link (e.g. `lwm-tm-india-ip`).
+2. Go to **Settings → Configuration**.
+3. Under **DNS name label**, enter something unique, e.g. `lwm-tm-india-<yourname>`.
+4. **Save** — this generates an FQDN like `lwm-tm-india-<yourname>.centralindia.cloudapp.azure.com`.
+5. Repeat for `lwm-tm-centralus`'s public IP with a label like `lwm-tm-centralus-<yourname>`.
+
+**Step 3 — Create the Traffic Manager profile:**
 
 1. Search for **Traffic Manager profiles** → **+ Create**.
 2. Fill in:
@@ -104,27 +123,27 @@ A **health probe** runs continuously against every endpoint on a path/port/inter
    - **Resource group:** `rg-day14-demo`
 3. **Create**.
 
-**Step 3 — Add both App Services as endpoints:**
+**Step 4 — Add both VM public IPs as endpoints:**
 
 1. Open `lwm-tm-demo` → **Endpoints** → **+ Add**.
-2. **Type:** Azure endpoint, **Target resource type:** App Service, select `lwm-tm-eastus-<yourname>` → **Add**.
-3. Repeat for `lwm-tm-westeu-<yourname>`.
+2. **Type:** Azure endpoint, **Target resource type:** Public IP address, select `lwm-tm-india-ip` (now selectable because it has a DNS name label / FQDN) → **Add**.
+3. Repeat for `lwm-tm-centralus-ip`.
 
-**Step 4 — Verify routing:**
+**Step 5 — Verify routing:**
 
-1. Open `lwm-tm-demo.trafficmanager.net` in a browser — you'll land on whichever region's App Service is closest to you, based on the Performance routing method.
+1. Open `lwm-tm-demo.trafficmanager.net` in a browser — you'll land on whichever region's VM is closest to you, based on the Performance routing method, and see its distinct "Hello from..." page.
 2. Check **Endpoints** in the portal — both should show **Monitor status: Online**.
 
-**Step 5 — Force a failover and watch it happen:**
+**Step 6 — Force a failover and watch it happen:**
 
-1. Go to `lwm-tm-eastus-<yourname>` → **Stop** (stops the app without deleting it).
-2. Back in `lwm-tm-demo` → **Endpoints**, wait for the health probe interval to elapse (default 30 seconds) — `lwm-tm-eastus-<yourname>` flips to **Degraded**.
-3. Refresh `lwm-tm-demo.trafficmanager.net` — you now land on `lwm-tm-westeu-<yourname>` instead, automatically, with no DNS record edited by hand.
-4. Start `lwm-tm-eastus-<yourname>` back up when you're done to restore normal routing.
+1. Go to `lwm-tm-india` → **Stop** (deallocate).
+2. Back in `lwm-tm-demo` → **Endpoints**, wait for the health probe interval to elapse (default 30 seconds) — `lwm-tm-india-ip` flips to **Degraded**.
+3. Refresh `lwm-tm-demo.trafficmanager.net` — you now see the Central US page instead, automatically, with no DNS record edited by hand.
+4. Start `lwm-tm-india` back up when you're done to restore normal routing.
 
-**Step 6 — Clean up:**
+**Step 7 — Clean up:**
 
-Delete `rg-day14-demo`'s App Services when finished with this part, or leave them running into Part 2 if you want a live origin to point Front Door at (optional).
+Delete `rg-day14-demo`'s VMs when finished with this part, or leave them running into Part 2 if you want a live origin to point Front Door at (optional).
 
 ---
 
@@ -297,8 +316,8 @@ This pairs with something you already learned on Day 12: **Application Gateway v
 
 **Step 5 — Clean up:**
 
-1. Delete `lwm-waf-policy-demo`, `lwm-frontdoor-demo`, and the Traffic Manager profile/App Services from Part 1.
-2. Check for any leftover storage accounts, App Service plans, or public IPs in `rg-day14-demo` — or delete the whole resource group in one step to remove everything built today.
+1. Delete `lwm-waf-policy-demo`, `lwm-frontdoor-demo`, and the Traffic Manager profile/VMs from Part 1.
+2. Check for any leftover storage accounts, VMs, disks, or public IPs in `rg-day14-demo` — or delete the whole resource group in one step to remove everything built today.
 
 ---
 
