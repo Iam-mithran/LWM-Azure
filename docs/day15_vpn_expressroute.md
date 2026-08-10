@@ -137,23 +137,32 @@ flowchart LR
     subgraph LEFT["VNet: vnet-azure-side — 10.0.0.0/16"]
         direction TB
         LVM["VM<br/>10.0.1.4<br/>subnet-demo"]
-        LGW["vgw-azure-side<br/>VpnGw1AZ<br/>GatewaySubnet"]
-        LPIP(["pip-vgw-azure-side<br/>public IP"])
-        LVM --- LGW --- LPIP
+        LGW["vgw-azure-side<br/>VpnGw1AZ · active-active<br/>GatewaySubnet"]
+        LPIP1(["pip-vgw-azure-side-1<br/>instance 1"])
+        LPIP2(["pip-vgw-azure-side-2<br/>instance 2"])
+        LVM --- LGW
+        LGW --- LPIP1
+        LGW --- LPIP2
     end
 
     subgraph RIGHT["VNet: vnet-onprem-side — 192.168.0.0/16<br/>(standing in for a real office)"]
         direction TB
-        RPIP(["pip-vgw-onprem-side<br/>public IP"])
-        RGW["vgw-onprem-side<br/>VpnGw1AZ<br/>GatewaySubnet"]
+        RPIP1(["pip-vgw-onprem-side-1<br/>instance 1"])
+        RPIP2(["pip-vgw-onprem-side-2<br/>instance 2"])
+        RGW["vgw-onprem-side<br/>VpnGw1AZ · active-active<br/>GatewaySubnet"]
         RVM["VM<br/>192.168.1.4<br/>subnet-demo"]
-        RPIP --- RGW --- RVM
+        RPIP1 --- RGW
+        RPIP2 --- RGW
+        RGW --- RVM
     end
 
-    LPIP <==>|"encrypted IPsec / IKE tunnel<br/>authenticated by shared key"| RPIP
+    LPIP1 <==>|"encrypted IPsec / IKE tunnel<br/>authenticated by shared key<br/>— the leg we build —"| RPIP1
+    LPIP2 -.-|"second instance: live, but<br/>outside this lab's connection"| RPIP2
 
     style LGW fill:#0078d4,color:#fff
     style RGW fill:#0078d4,color:#fff
+    style LPIP2 fill:#f5f5f5,stroke-dasharray: 4 4
+    style RPIP2 fill:#f5f5f5,stroke-dasharray: 4 4
 ```
 
 **Step 1 — Create two non-overlapping VNets:**
@@ -178,21 +187,40 @@ flowchart LR
    - **VPN type:** Route-based
    - **SKU:** VpnGw1AZ
    - **Virtual network:** `vnet-azure-side`
-   - **Public IP:** Create new, name it `pip-vgw-azure-side` (Standard SKU, zone-redundant)
+   - **Active-active mode:** **Enabled** — this is the portal's default on the AZ SKUs, and it's why the blade asks you for **two** public IPs instead of one. Don't fight it; it's the production-correct choice and I'll unpack it in a moment.
+   - **Public IP:** Create new, name it `pip-vgw-azure-side-1` (Standard SKU, zone-redundant)
+   - **Second public IP:** Create new, name it `pip-vgw-azure-side-2`
 3. **Review + create** → **Create**. This takes **30–45 minutes** — start the second one in parallel rather than waiting.
-4. Repeat with **Name:** `vgw-onprem-side`, same SKU, attached to `vnet-onprem-side`, public IP `pip-vgw-onprem-side`.
+4. Repeat with **Name:** `vgw-onprem-side`, same SKU, attached to `vnet-onprem-side`, public IPs `pip-vgw-onprem-side-1` and `pip-vgw-onprem-side-2`.
+
+**Why two public IPs? Active-active vs. active-standby.**
+
+Every VPN Gateway is really **two** VM instances under the hood — you never see them, and the gateway is billed as one resource either way. What this setting controls is what the second instance *does*:
+
+- **Active-standby** — one instance carries all traffic, one sits idle. If the active one fails or Azure patches it, the standby takes over. Failover is a **10–15 second** blip for planned maintenance, and can stretch to **1–3 minutes** for an unplanned failure. One public IP, one tunnel.
+- **Active-active** (what we're deploying) — **both** instances carry traffic simultaneously from separate availability zones, each with its own public IP and its own tunnel to the far end. Lose an instance, lose an entire zone, or lose one tunnel, and the other keeps forwarding with **no failover gap at all**. This is what you want for anything business-critical, and it's why the portal now leads with it.
+
+So the second public IP isn't a mistake or an upsell — it's the address of the second live gateway instance. Both are real, both are reachable, and both will build tunnels.
+
+The one wrinkle to keep in your head for the next step: a **Local Network Gateway holds exactly one IP address**. It cannot describe a two-IP far end on its own.
 
 **Step 4 — Create Local Network Gateways (each side describing "the other network"):**
 
 A **Local Network Gateway** is how Azure represents whatever's on the far end of a Site-to-Site tunnel — normally your office's public IP and address range. Here, we'll point each side's Local Network Gateway at the *other VNet's* gateway.
 
+Remember the wrinkle: an LNG holds **one** IP address, but each of our gateways now has two. **We're going to use the `-1` address on each side and leave the `-2` address out of the lab.** That's not a workaround — it's exactly how Azure models "my active-active gateway talks to a single remote VPN device." Both of your local instances will still build tunnels toward that one remote address, so you get redundancy on your own side. I'll show you what full redundancy on *both* sides would look like right after.
+
 1. Search for **Local network gateways** → **+ Create**.
 2. Fill in:
    - **Name:** `lng-onprem-side` (this represents `vnet-onprem-side`, as seen from the Azure side)
-   - **IP address:** the public IP of `pip-vgw-onprem-side` (note it once that gateway finishes deploying)
+   - **IP address:** the address of `pip-vgw-onprem-side-1` (note it down once that gateway finishes deploying)
    - **Address space:** `192.168.0.0/16`
 3. **Review + create** → **Create**.
-4. Repeat with **Name:** `lng-azure-side`, **IP address:** the public IP of `pip-vgw-azure-side`, **Address space:** `10.0.0.0/16`.
+4. Repeat with **Name:** `lng-azure-side`, **IP address:** the address of `pip-vgw-azure-side-1`, **Address space:** `10.0.0.0/16`.
+
+⚠️ **Write down which IP you used on each side.** With four public IPs floating around, mixing up a `-1` and a `-2` is the single most common reason a connection in this lab sits at **Connecting** forever.
+
+**What full dual-redundancy would look like in production** (worth describing on camera, not worth building here): you'd create a *second* Local Network Gateway on each side — `lng-onprem-side-2` pointing at `pip-vgw-onprem-side-2` — and a *second* Connection bound to it. Four LNGs and four Connections across both sides, yielding a full mesh where any single gateway instance, tunnel, or availability zone can drop without interrupting traffic. In a real hybrid setup this is the same pattern, except the second address belongs to your **second on-premises VPN device** sitting in a different rack or building. We're building one leg of that mesh because one leg teaches the entire concept.
 
 **Step 5 — Create the connections (both directions):**
 
@@ -212,14 +240,14 @@ flowchart TB
         direction TB
         A1["vgw-azure-side<br/>the real VPN Gateway"]
         A2["Connection<br/>type: Site-to-site IPsec<br/>shared key: Demo-PSK-2026!"]
-        A3["lng-onprem-side<br/>Local Network Gateway<br/>─────────────<br/>IP: far side's public IP<br/>Address space: 192.168.0.0/16"]
+        A3["lng-onprem-side<br/>Local Network Gateway<br/>─────────────<br/>IP: pip-vgw-onprem-side-1<br/>Address space: 192.168.0.0/16"]
         A1 -->|"has a"| A2
         A2 -->|"points at"| A3
     end
 
     subgraph OPSIDE["Configured on the other side — mirrored"]
         direction TB
-        B3["lng-azure-side<br/>Local Network Gateway<br/>─────────────<br/>IP: Azure side's public IP<br/>Address space: 10.0.0.0/16"]
+        B3["lng-azure-side<br/>Local Network Gateway<br/>─────────────<br/>IP: pip-vgw-azure-side-1<br/>Address space: 10.0.0.0/16"]
         B2["Connection<br/>type: Site-to-site IPsec<br/>shared key: Demo-PSK-2026!"]
         B1["vgw-onprem-side<br/>the real VPN Gateway"]
         B1 -->|"has a"| B2
@@ -277,7 +305,7 @@ This is the complete mechanic behind a real Site-to-Site connection to an actual
 
 **Step 8 — Clean up:**
 
-VPN Gateways bill by the hour regardless of traffic — delete both (`vgw-azure-side`, `vgw-onprem-side`), both Local Network Gateways, both public IPs, and the two VNets when you're done, or delete the whole `rg-day15-demo` resource group in one step.
+VPN Gateways bill by the hour regardless of traffic — delete both (`vgw-azure-side`, `vgw-onprem-side`), both Local Network Gateways, **all four public IPs** (`pip-vgw-azure-side-1/-2`, `pip-vgw-onprem-side-1/-2` — active-active means twice as many to clean up, and the `-2` addresses are easy to forget because nothing in the lab ever referenced them), and the two VNets when you're done. Deleting the whole `rg-day15-demo` resource group in one step catches all of it and is the safer habit.
 
 ---
 
@@ -474,6 +502,7 @@ You've now covered the complete Azure networking phase: addressing fundamentals,
 - **Site-to-Site (S2S)** connects an entire remote network to a VNet; **Point-to-Site (P2S)** connects a single device — and only P2S can be demoed for real without any on-premises infrastructure, since it was never about a "site"
 - A **Local Network Gateway** represents whatever's on the far end of a Site-to-Site tunnel — Azure doesn't care whether that's a physical office router or another Azure VPN Gateway, which is exactly why a VNet-to-VNet setup exercises the real mechanics
 - **VPN Gateway SKUs are fully zone-redundant now** — Basic SKU (and Basic-SKU public IPs) retired end of June 2026; legacy Standard/High Performance SKUs deprecated the same date and auto-migrated to VpnGw1AZ/VpnGw2AZ; only **VpnGw1AZ–VpnGw5AZ** are deployable today
+- **Active-active mode is the portal default** on the AZ SKUs and asks for **two public IPs** — one per gateway instance, both live in separate availability zones, eliminating the 10-second-to-3-minute failover gap of active-standby; a **Local Network Gateway holds only one IP**, so full dual-redundancy means one LNG and one Connection per far-side address
 - **Point-to-Site now favors Microsoft Entra ID authentication** over manual certificates — bringing Conditional Access and MFA to VPN access, with a Microsoft-registered App ID removing the old manual app-registration step
 - The **Azure VPN Client for Linux retires August 31, 2026** — plan accordingly if Linux P2S clients are part of your design
 - **ExpressRoute** never touches the public internet — **Private Peering** reaches your VNets, **Microsoft Peering** reaches Microsoft's public services directly
