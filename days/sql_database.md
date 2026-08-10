@@ -1,6 +1,6 @@
-# Day 10 — Azure SQL Database — Managed Relational Database
+# Day 16 — Azure SQL Database — Managed Relational Database
 
-> Phase 3 — Storage + Databases
+> Phase 4 — Databases
 
 ## Goal
 

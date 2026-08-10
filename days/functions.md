@@ -1,6 +1,6 @@
-# Day 5 — Azure Functions — Serverless Computing
+# Day 34 (Optional) — Azure Functions — Serverless Computing
 
-> Phase 1 — Compute
+> Bonus Day — Optional
 
 ## Goal
 

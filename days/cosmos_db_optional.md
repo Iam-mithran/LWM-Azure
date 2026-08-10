@@ -1,10 +1,10 @@
-# Day 29 (Optional) — Azure Cosmos DB — NoSQL at Global Scale
+# Day 33 (Optional) — Azure Cosmos DB — NoSQL at Global Scale
 
 > Bonus Day — Optional
 
 ## Who This Day Is For
 
-This is an optional bonus session for viewers who want to go beyond the core curriculum. Cosmos DB is a powerful service but is not required for Azure fundamentals or the AZ-900/AZ-104 certifications. Come back to this after completing the main 29-day course.
+This is an optional bonus session for viewers who want to go beyond the core curriculum. Cosmos DB is a powerful service but is not required for Azure fundamentals or the AZ-900/AZ-104 certifications. Come back to this after completing the main 32-day course.
 
 ## Goal
 

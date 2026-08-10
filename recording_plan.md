@@ -23,6 +23,7 @@
 | Day 13 | Azure DNS — Public & Private Zones | `docs/day13_azure_dns.md` |
 | Day 14 | Traffic Manager, Front Door, CDN & WAF | `docs/day14_traffic_frontdoor_cdn_waf.md` |
 | Day 15 | VPN Gateway & ExpressRoute | `docs/day15_vpn_expressroute.md` |
+| Day 16 | Azure SQL Database + Other Databases | `docs/day16_azure_sql_database.md` |
 
 ---
 
@@ -30,66 +31,63 @@
 
 Day numbers are fixed by `course_outline.md`. Record in order — dependencies are already baked into the numbering. Where a phase has no internal ordering constraint, that's noted below.
 
-Phase 3 — Networking is now fully recorded (Days 9–15). Next up:
-
-### Phase 4 — Serverless & Databases
-
-| Day | Topic | File | Depends On |
-|-----|-------|------|------------|
-| **Day 16 (next)** | Azure Functions & Serverless | `functions.md` | Day 6 ✅ (App Service recommended); slotted here so Compute wraps up after Networking |
-| Day 17 | Azure SQL Database + Other Databases | `sql_database.md` | None |
+Phases 3 and 4 are now fully recorded (Days 9–16). Azure Functions and API Management are **not** in the numbered sequence — both live in the Optional Bonus block at the end. Next up:
 
 ### Phase 5 — Identity, Security & Monitoring
 
 | Day | Topic | File | Depends On |
 |-----|-------|------|------------|
-| Day 18 | Microsoft Entra ID | `entra_id.md` | None |
-| Day 19 | Azure RBAC | `rbac.md` | Entra ID |
-| Day 20 | Azure Key Vault | `key_vault.md` | Entra ID |
-| Day 21 | Azure Monitor & Alerts | `azure_monitor.md` | None |
+| **Day 17 (next)** | Microsoft Entra ID | `entra_id.md` | None — but Day 16's database is a good managed-identity demo target |
+| Day 18 | Azure RBAC | `rbac.md` | Entra ID |
+| Day 19 | Azure Key Vault | `key_vault.md` | Entra ID |
+| Day 20 | Azure Monitor & Alerts | `azure_monitor.md` | None |
 
-> Day 19 and Day 20 only depend on Day 18, not on each other — order between them is flexible.
+> Day 18 and Day 19 only depend on Day 17, not on each other — order between them is flexible.
 
 ### Phase 6 — Azure DevOps
 
 | Day | Topic | File | Depends On |
 |-----|-------|------|------------|
-| Day 22 | Azure DevOps Introduction | `devops_intro.md` | None |
-| Day 23 | Azure Repos | `azure_repos.md` | DevOps Intro |
-| Day 24 | Pipelines: CI | `pipelines_ci.md` | Azure Repos |
-| Day 25 | Pipelines: CD | `pipelines_cd.md` | Pipelines CI |
-| Day 26 | Azure Artifacts | `artifacts.md` | DevOps Intro |
+| Day 21 | Azure DevOps Introduction | `devops_intro.md` | None |
+| Day 22 | Azure Repos | `azure_repos.md` | DevOps Intro |
+| Day 23 | Pipelines: CI | `pipelines_ci.md` | Azure Repos |
+| Day 24 | Pipelines: CD | `pipelines_cd.md` | Pipelines CI |
+| Day 25 | Azure Artifacts | `artifacts.md` | DevOps Intro |
 
 ### Phase 7 — Infrastructure as Code
 
 | Day | Topic | File | Depends On |
 |-----|-------|------|------------|
-| Day 27 | ARM Templates & Bicep | `arm_bicep.md` | Phases 1–4 recommended (so demos have services to deploy) |
-| Day 28 | Terraform on Azure | `terraform.md` | ARM & Bicep |
+| Day 26 | ARM Templates & Bicep | `arm_bicep.md` | Phases 1–4 recommended (so demos have services to deploy) |
+| Day 27 | Terraform on Azure | `terraform.md` | ARM & Bicep |
 
 ### Phase 8 — Containers & AKS
 
 | Day | Topic | File | Depends On |
 |-----|-------|------|------------|
-| Day 29 | ACR & Docker | `acr_docker.md` | None |
-| Day 30 | AKS Setup | `aks_setup.md` | ACR & Docker |
-| Day 31 | AKS Advanced | `aks_advanced.md` | AKS Setup |
+| Day 28 | ACR & Docker | `acr_docker.md` | None |
+| Day 29 | AKS Setup | `aks_setup.md` | ACR & Docker |
+| Day 30 | AKS Advanced | `aks_advanced.md` | AKS Setup |
 
 ### Phase 9 — Capstone Project
 
 | Day | Topic | File | Depends On |
 |-----|-------|------|------------|
-| Day 32 | Capstone Part 1 | `capstone_part1.md` | Phases 1–6 |
-| Day 33 | Capstone Part 2 | `capstone_part2.md` | Capstone Part 1 |
+| Day 31 | Capstone Part 1 | `capstone_part1.md` | Phases 1–6 |
+| Day 32 | Capstone Part 2 | `capstone_part2.md` | Capstone Part 1 |
 
 ### Optional Bonus
 
+Record these after Day 32 — no main-course day depends on them.
+
 | Day | Topic | File | Depends On |
 |-----|-------|------|------------|
-| Day 34 | Cosmos DB (Optional) | `cosmos_db_optional.md` | Phase 2 (Storage) |
+| Day 33 | Cosmos DB (Optional) | `cosmos_db_optional.md` | Phase 2 (Storage) |
+| Day 34 | Azure Functions & Serverless (Optional) | `functions.md` | Day 6 (App Service recommended) |
+| Day 35 | Azure API Management (Optional) | `api_management.md` | Day 34 — the APIM demo fronts the Function App built there |
 
 ---
 
 ## What's Next to Record
 
-**Day 16 — Azure Functions & Serverless** (`days/functions.md`) — next up now that Phase 3 (Networking) is fully recorded.
+**Day 17 — Microsoft Entra ID** (`days/entra_id.md`) — next up now that Phase 4 (Databases) is recorded. Day 16 deliberately leaves the SQL database alive so the managed-identity demo has a real backend to connect to without a password.

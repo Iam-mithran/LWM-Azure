@@ -1,6 +1,6 @@
 # Azure Cloud + Azure DevOps — A Complete Beginner's Guide
 
-**LearnWithMithran** · YouTube · 29 Days · Zero assumed cloud knowledge
+**LearnWithMithran** · YouTube · 32 Days + 3 Bonus · Zero assumed cloud knowledge
 
 ---
 
@@ -18,15 +18,16 @@ Starting from absolute zero, this course takes you through every major area of A
 | Phase | Days | Topic |
 |-------|------|-------|
 | **Phase 0** | Day 1 – 2 | Foundations + Account Setup |
-| **Phase 1** | Day 3 – 6 | Compute (VMs, App Service, Functions) |
-| **Phase 2** | Day 7 – 9 | Networking (VNet, Load Balancers, VPN) |
-| **Phase 3** | Day 10 – 13 | Storage, Databases & Global Delivery |
-| **Phase 4** | Day 14 – 17 | Identity, Security + Monitoring |
-| **Phase 5** | Day 18 – 22 | Azure DevOps |
-| **Phase 6** | Day 23 – 24 | Infrastructure as Code (Bicep + Terraform) |
-| **Phase 7** | Day 25 – 27 | Containers + AKS |
-| **Phase 8** | Day 28 – 29 | Capstone Project |
-| **Optional** | Day 30 | Cosmos DB (Bonus) |
+| **Phase 1** | Day 3 – 6 | Compute (VMs & App Service) |
+| **Phase 2** | Day 7 – 8 | Storage |
+| **Phase 3** | Day 9 – 15 | Networking |
+| **Phase 4** | Day 16 | Databases |
+| **Phase 5** | Day 17 – 20 | Identity, Security + Monitoring |
+| **Phase 6** | Day 21 – 25 | Azure DevOps |
+| **Phase 7** | Day 26 – 27 | Infrastructure as Code (Bicep + Terraform) |
+| **Phase 8** | Day 28 – 30 | Containers + AKS |
+| **Phase 9** | Day 31 – 32 | Capstone Project |
+| **Optional** | Day 33 – 35 | Bonus: Cosmos DB, Azure Functions, API Management |
 
 ---
 

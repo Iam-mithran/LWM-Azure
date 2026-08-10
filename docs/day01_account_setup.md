@@ -226,7 +226,7 @@ graph TD
     P0 --> P1 --> P2 --> P3 --> P4 --> P5 --> P6 --> P7 --> P8
 ```
 
-By the end of Day 28, you'll have built and deployed a real multi-component application on Azure — using every major service category in this roadmap.
+By the end of Day 32, you'll have built and deployed a real multi-component application on Azure — using every major service category in this roadmap.
 
 ---
 

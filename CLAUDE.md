@@ -17,7 +17,7 @@ This is the course content repository for **LearnWithMithran — Azure Cloud + A
 ### Session workflow
 
 1. Read `course_outline.md` — teaching philosophy, tier-labeling rules, phase overview.
-2. Read the specific day file from `days/` — e.g., `days/day05_functions.md`.
+2. Read the specific day file from `days/` — e.g., `days/sql_database.md`. Files in `days/` are named by topic, not day number; `recording_plan.md` maps day numbers to these files.
 3. Work on **one day at a time**.
 4. Write the output script to a new file: `dayXX_topic_name.md` (e.g., `day05_azure_functions.md`).
 
@@ -53,14 +53,16 @@ Every day's script must follow this structure:
 
 | Phase | Days | Topic |
 |-------|------|-------|
-| 0 | 0–1 | Foundations + Account Setup |
-| 1 | 2–5 | Compute (VMs, App Service, Functions) |
-| 2 | 6–8 | Networking (VNet, Load Balancers, VPN) |
-| 3 | 9–12 | Storage + Databases |
-| 4 | 13–16 | Identity, Security + Monitoring |
-| 5 | 17–21 | Azure DevOps |
-| 6 | 22–23 | Infrastructure as Code |
-| 7 | 24–26 | Containers + AKS |
-| 8 | 27–28 | Capstone Project |
+| 0 | 1–2 | Foundations + Account Setup |
+| 1 | 3–6 | Compute (VMs & App Service) |
+| 2 | 7–8 | Storage |
+| 3 | 9–15 | Networking |
+| 4 | 16 | Databases |
+| 5 | 17–20 | Identity, Security + Monitoring |
+| 6 | 21–25 | Azure DevOps |
+| 7 | 26–27 | Infrastructure as Code |
+| 8 | 28–30 | Containers + AKS |
+| 9 | 31–32 | Capstone Project |
+| Optional | 33–35 | Bonus: Cosmos DB, Azure Functions, API Management |
 
-Full day details (goals, key topics, demo steps) are in `days/dayXX_*.md`.
+`course_outline.md` is the authority on day numbering — this table is a summary. Full day details (goals, key topics, demo steps) are in `days/*.md`.

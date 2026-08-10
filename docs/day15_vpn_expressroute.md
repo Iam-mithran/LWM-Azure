@@ -69,6 +69,36 @@ There are two distinct connection types, and they solve genuinely different prob
 
 That distinction matters enormously for today's lab: **P2S was never about connecting "a site"** — it connects one device, which is exactly why it's the one part of this topic that needs zero on-premises infrastructure to demo for real.
 
+Here's both connection types on one picture. Notice that **the VPN Gateway is the same resource in both cases** — one gateway can serve Site-to-Site and Point-to-Site connections simultaneously. What changes is what's on the other end of the tunnel, and how that other end proves who it is:
+
+```mermaid
+flowchart LR
+    subgraph OFFICE["🏢 Office / Data Center — 192.168.0.0/16"]
+        SRV["File server<br/>192.168.1.10"]
+        DEV["VPN device<br/>public IP + shared key"]
+        SRV --- DEV
+    end
+
+    subgraph REMOTE["💻 A single remote device"]
+        LAP["Your laptop<br/>Azure VPN Client<br/>signs in with Entra ID"]
+    end
+
+    subgraph AZURE["☁️ Azure VNet — 10.0.0.0/16"]
+        GW["VPN Gateway<br/>lives in GatewaySubnet"]
+        VM["VM<br/>10.0.1.4"]
+        GW --- VM
+    end
+
+    DEV ==>|"SITE-to-Site<br/>IPsec / IKE<br/>an entire network"| GW
+    LAP -.->|"POINT-to-Site<br/>OpenVPN / IKEv2<br/>one device only"| GW
+
+    style GW fill:#0078d4,color:#fff
+    style DEV fill:#e8f4fd
+    style LAP fill:#e8f4fd
+```
+
+Read it this way: **Site-to-Site is a permanent, always-on link between two networks**, authenticated by a shared key configured on a physical device that someone installed in a building. **Point-to-Site is an on-demand link from one machine**, authenticated by a person signing in. That's why S2S needs hardware and P2S needs only an app.
+
 ### VPN Gateway SKUs — What Changed in 2026
 
 This is genuinely current, not textbook trivia. For years, Azure VPN Gateway offered a cheap **Basic** SKU and a set of legacy **Standard/High Performance** SKUs, none of which supported availability-zone redundancy. That's over:
@@ -88,7 +118,7 @@ This is genuinely current, not textbook trivia. For years, Azure VPN Gateway off
 
 ### Point-to-Site Authentication — Also Modernized
 
-Point-to-Site used to lean heavily on certificate-based authentication (generate a root cert, generate client certs, distribute them manually). That still works, but the modern, recommended path is **Microsoft Entra ID authentication** — sign in with the same Entra ID credentials from Day 18, which means **Conditional Access and MFA** apply to VPN access exactly like they do to everything else in your tenant. Azure also now provides a **Microsoft-registered App ID** for the Azure VPN Client, meaning you skip the manual Entra app-registration step that used to be required — configure the gateway to use the published Audience value, and your tenant can use it immediately.
+Point-to-Site used to lean heavily on certificate-based authentication (generate a root cert, generate client certs, distribute them manually). That still works, but the modern, recommended path is **Microsoft Entra ID authentication** — sign in with the same Entra ID credentials from Day 17, which means **Conditional Access and MFA** apply to VPN access exactly like they do to everything else in your tenant. Azure also now provides a **Microsoft-registered App ID** for the Azure VPN Client, meaning you skip the manual Entra app-registration step that used to be required — configure the gateway to use the published Audience value, and your tenant can use it immediately.
 
 **Protocol support:** OpenVPN (SSL/TLS-based, works from Windows, Mac, Linux, iOS, Android) and IKEv2 are the current, actively supported protocols for the Azure VPN Client. If you're on Linux, note that the **Azure VPN Client for Linux is retiring on August 31, 2026** — worth knowing if you're building a hybrid access plan today.
 
@@ -99,6 +129,32 @@ Point-to-Site used to lean heavily on certificate-based authentication (generate
 **💳 Instructor demo — two VPN Gateways, real cost, ~30–45 min provisioning each**
 
 Here's the trick: a **Site-to-Site connection** is really just "my VPN Gateway talks to a device with a public IP on the other end, described to Azure as a **Local Network Gateway** resource." Azure doesn't actually care whether that other end is a physical office router or another Azure VPN Gateway — the configuration is identical either way. So instead of needing a real office, we'll build **two VNets, each with its own VPN Gateway**, and connect them to each other. This is Microsoft's own documented **VNet-to-VNet** pattern, and it exercises the exact same Local Network Gateway / Connection resources a real hybrid setup uses.
+
+**This is what we're about to build** — keep this picture in mind as we go through the steps, because every resource in it maps to one step below:
+
+```mermaid
+flowchart LR
+    subgraph LEFT["VNet: vnet-azure-side — 10.0.0.0/16"]
+        direction TB
+        LVM["VM<br/>10.0.1.4<br/>subnet-demo"]
+        LGW["vgw-azure-side<br/>VpnGw1AZ<br/>GatewaySubnet"]
+        LPIP(["pip-vgw-azure-side<br/>public IP"])
+        LVM --- LGW --- LPIP
+    end
+
+    subgraph RIGHT["VNet: vnet-onprem-side — 192.168.0.0/16<br/>(standing in for a real office)"]
+        direction TB
+        RPIP(["pip-vgw-onprem-side<br/>public IP"])
+        RGW["vgw-onprem-side<br/>VpnGw1AZ<br/>GatewaySubnet"]
+        RVM["VM<br/>192.168.1.4<br/>subnet-demo"]
+        RPIP --- RGW --- RVM
+    end
+
+    LPIP <==>|"encrypted IPsec / IKE tunnel<br/>authenticated by shared key"| RPIP
+
+    style LGW fill:#0078d4,color:#fff
+    style RGW fill:#0078d4,color:#fff
+```
 
 **Step 1 — Create two non-overlapping VNets:**
 
@@ -148,6 +204,39 @@ A **Local Network Gateway** is how Azure represents whatever's on the far end of
 3. **Add**.
 4. Open `vgw-onprem-side` → **Connections** → **+ Add**, mirroring the same configuration: **Local network gateway:** `lng-azure-side`, same **shared key**.
 
+**How those four resources actually relate** — this is the part that trips everyone up, so here it is drawn out. The key insight: a **Local Network Gateway is not a gateway at all.** It's a *description* of the far end — nothing more than a public IP and an address range written down as an Azure resource. The **Connection** is what binds your real gateway to that description:
+
+```mermaid
+flowchart TB
+    subgraph AZSIDE["Configured on the Azure side"]
+        direction TB
+        A1["vgw-azure-side<br/>the real VPN Gateway"]
+        A2["Connection<br/>type: Site-to-site IPsec<br/>shared key: Demo-PSK-2026!"]
+        A3["lng-onprem-side<br/>Local Network Gateway<br/>─────────────<br/>IP: far side's public IP<br/>Address space: 192.168.0.0/16"]
+        A1 -->|"has a"| A2
+        A2 -->|"points at"| A3
+    end
+
+    subgraph OPSIDE["Configured on the other side — mirrored"]
+        direction TB
+        B3["lng-azure-side<br/>Local Network Gateway<br/>─────────────<br/>IP: Azure side's public IP<br/>Address space: 10.0.0.0/16"]
+        B2["Connection<br/>type: Site-to-site IPsec<br/>shared key: Demo-PSK-2026!"]
+        B1["vgw-onprem-side<br/>the real VPN Gateway"]
+        B1 -->|"has a"| B2
+        B2 -->|"points at"| B3
+    end
+
+    A3 -.->|"describes"| B1
+    B3 -.->|"describes"| A1
+
+    style A3 fill:#fff4e5
+    style B3 fill:#fff4e5
+    style A1 fill:#0078d4,color:#fff
+    style B1 fill:#0078d4,color:#fff
+```
+
+The dashed arrows are the thing to internalise: `lng-onprem-side` **describes** the gateway on the other side. In a real deployment, that dashed arrow points at your office firewall instead — and the entire right-hand box stops being Azure resources and becomes configuration your network team enters into that firewall by hand. **The Azure side does not change at all.** That's why this lab teaches the real skill.
+
 **Step 6 — Verify the tunnel comes up:**
 
 1. Give it a few minutes, then open either connection's **Overview** page.
@@ -157,6 +246,32 @@ A **Local Network Gateway** is how Azure represents whatever's on the far end of
 
 1. Deploy one small VM into `subnet-demo` in `vnet-azure-side` (`Standard_B1s`, no public IP needed) and one into `subnet-demo` in `vnet-onprem-side`.
 2. From one VM, ping the other's private IP (`192.168.1.4`, for example). A successful reply proves traffic is flowing through the encrypted Site-to-Site tunnel, across two completely separate VNets that would otherwise have no route to each other at all.
+
+**Follow that ping packet end to end** — this is what your successful reply actually proves happened:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant VM1 as VM 10.0.1.4<br/>azure-side
+    participant GW1 as vgw-azure-side
+    participant NET as Public Internet
+    participant GW2 as vgw-onprem-side
+    participant VM2 as VM 192.168.1.4<br/>onprem-side
+
+    VM1->>GW1: ping 192.168.1.4<br/>route table says: send to gateway
+    Note over GW1: Matches address space<br/>on lng-onprem-side<br/>→ encrypt with shared key
+    GW1->>NET: IPsec-encrypted packet<br/>src/dst = the two public IPs
+    Note over NET: Anyone intercepting sees<br/>only encrypted payload
+    NET->>GW2: arrives at far side's public IP
+    Note over GW2: Decrypt with matching<br/>shared key
+    GW2->>VM2: original ping,<br/>delivered on private IP
+    VM2-->>GW2: ICMP reply
+    GW2-->>NET: encrypted again
+    NET-->>GW1: same path, reversed
+    GW1-->>VM1: reply lands<br/>✅ tunnel confirmed
+```
+
+Two details worth calling out on camera: the packet crosses **the public internet** — this is not a private circuit, which is exactly the distinction we'll draw against ExpressRoute in Part 3. And the VMs themselves know nothing about any of this. Neither VM has a public IP, neither has VPN software installed, and neither was configured for the tunnel. **Routing and encryption happen entirely at the gateway layer**, which is the whole point of doing it this way instead of installing VPN clients on every server.
 
 This is the complete mechanic behind a real Site-to-Site connection to an actual office — the only difference in a real deployment is that `lng-onprem-side` would point at your office firewall's public IP instead of another Azure VPN Gateway, and the office-side device (not Azure) would hold the matching configuration.
 
@@ -171,6 +286,36 @@ VPN Gateways bill by the hour regardless of traffic — delete both (`vgw-azure-
 **💳 Instructor demo — reuses one VPN Gateway; genuinely practical with just your own machine**
 
 This is the one demo today that was never about a "site" in the first place — P2S connects a single device, and your own laptop is a perfectly legitimate example of that device. No office, no second location, no pretending required.
+
+**What we're building this time.** Compare it against the Site-to-Site picture above and notice everything that's *missing*: no second VNet, no Local Network Gateway, no shared key, no device with a static public IP. Your laptop can be on hotel wifi with an address that changes every hour, and it still works — because P2S doesn't identify you by IP address, it identifies you by **who you sign in as**:
+
+```mermaid
+flowchart LR
+    subgraph HOME["💻 Wherever you happen to be"]
+        direction TB
+        LAP["Your laptop<br/>Azure VPN Client"]
+        POOL["Gets issued<br/>172.16.0.x<br/>from the address pool"]
+        LAP -.-> POOL
+    end
+
+    ENTRA{{"Microsoft Entra ID<br/>─────────────<br/>sign-in + MFA<br/>+ Conditional Access"}}
+
+    subgraph AZURE["☁️ vnet-azure-side — 10.0.0.0/16"]
+        direction TB
+        GW["vgw-azure-side<br/>P2S enabled<br/>OpenVPN / IKEv2"]
+        VM["VM<br/>10.0.1.4"]
+        GW --- VM
+    end
+
+    LAP ==>|"1 · authenticate"| ENTRA
+    ENTRA ==>|"2 · token issued"| LAP
+    LAP ==>|"3 · encrypted tunnel"| GW
+
+    style GW fill:#0078d4,color:#fff
+    style ENTRA fill:#fff4e5
+```
+
+That middle box is the whole reason Entra ID authentication is the recommended path. With certificate-based P2S, revoking someone's access means managing a certificate revocation list. With Entra ID, you disable their account — or just remove them from a group — and their VPN access is gone at the next connection attempt, alongside their access to everything else. **Identity becomes the single control point**, which is the theme that Day 17 picks up in full.
 
 **Step 1 — Configure Point-to-Site on an existing gateway:**
 
@@ -199,6 +344,34 @@ You can reuse `vgw-azure-side` from the previous demo if it's still running, or 
 1. From your laptop's terminal, ping the private IP of the VM you deployed in `vnet-azure-side` earlier.
 2. A successful reply means your own physical machine — wherever you're sitting right now — is privately reachable from, and to, an Azure VNet, over an encrypted tunnel, authenticated with your Entra ID identity. No office network, no VPN appliance, no physical hardware anywhere in this picture.
 
+**The full connection sequence**, from clicking Connect to a working ping:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant U as You
+    participant C as Azure VPN Client<br/>on your laptop
+    participant E as Microsoft Entra ID
+    participant G as vgw-azure-side<br/>P2S enabled
+    participant V as VM 10.0.1.4
+
+    U->>C: Click Connect
+    C->>E: Redirect to sign-in<br/>(using the profile's Audience + Issuer)
+    E->>U: Prompt for credentials
+    U->>E: Username + password
+    E->>U: MFA challenge<br/>(if Conditional Access requires it)
+    U->>E: Approve
+    E->>C: Access token
+    C->>G: Establish OpenVPN tunnel<br/>presenting the token
+    Note over G: Validate token against<br/>configured tenant + audience
+    G->>C: Assign IP from pool<br/>172.16.0.4
+    Note over C: Laptop now has a route<br/>into 10.0.0.0/16
+    C->>V: ping 10.0.1.4 through tunnel
+    V-->>C: reply ✅
+```
+
+Step 5 is the one to pause on while recording. **An MFA prompt appearing during a VPN connection is the entire value proposition in a single screen** — the same Conditional Access policies protecting your portal sign-in are now protecting network-level access to your VNet. That was simply not achievable with certificate-based VPN authentication.
+
 **Step 5 — Disconnect and clean up:**
 
 1. Disconnect in the Azure VPN Client.
@@ -215,8 +388,8 @@ You can reuse `vgw-azure-side` from the previous demo if it's still running, or 
 ```mermaid
 graph LR
     OnPrem["Your On-Premises Network"]
-    Provider["Connectivity Provider\n(e.g., a carrier/colo partner)"]
-    MSEE["Microsoft Enterprise Edge (MSEE)\nrouters"]
+    Provider["Connectivity Provider<br/>e.g. a carrier or colo partner"]
+    MSEE["Microsoft Enterprise Edge<br/>MSEE routers"]
     Azure["Your Azure VNet(s)"]
 
     OnPrem -->|"Private physical circuit"| Provider --> MSEE --> Azure
@@ -291,7 +464,7 @@ Today closed out the hybrid networking picture — connecting Azure to whatever 
 
 ### What's Next
 
-You've now covered the complete Azure networking phase: addressing fundamentals, VNets and NSGs, peering and private connectivity, load balancing and global routing, DNS, and hybrid connectivity to the outside world. From here, the course moves into Phase 4: **Azure Functions & Serverless** — shifting from "how traffic moves" to "how your code runs without you managing a server at all."
+You've now covered the complete Azure networking phase: addressing fundamentals, VNets and NSGs, peering and private connectivity, load balancing and global routing, DNS, and hybrid connectivity to the outside world. From here, the course moves into Phase 4: **Azure SQL Database and the managed database family** — shifting from "how traffic moves" to "where your data actually lives, and who runs the database engine for you."
 
 ---
 

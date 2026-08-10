@@ -7,7 +7,7 @@
 
 - **Channel:** LearnWithMithran (YouTube)
 - **Course:** Azure Cloud + Azure DevOps — A Complete Beginner's Guide
-- **Total Videos:** 33 (Day 1 through Day 33) + 1 Optional Bonus (Day 34 — Cosmos DB)
+- **Total Videos:** 32 (Day 1 through Day 32) + 3 Optional Bonus (Day 33 — Cosmos DB, Day 34 — Azure Functions, Day 35 — API Management)
 - **Total Phases:** 10 (Phase 0 through Phase 9) + Optional Bonus
 - **Max Video Length:** 2 hours per video
 - **Target Audience:** Complete beginners to cloud — no prior AWS, GCP, or on-premise experience assumed. Also suitable for viewers with some prior cloud background.
@@ -43,13 +43,13 @@
 | Phase 1 | Day 3 – Day 6 | Compute (VMs & App Service) |
 | Phase 2 | Day 7 – Day 8 | Storage |
 | Phase 3 | Day 9 – Day 15 | Networking |
-| Phase 4 | Day 16 – Day 17 | Serverless & Databases |
-| Phase 5 | Day 18 – Day 21 | Identity, Security + Monitoring |
-| Phase 6 | Day 22 – Day 26 | Azure DevOps |
-| Phase 7 | Day 27 – Day 28 | Infrastructure as Code (IaC) |
-| Phase 8 | Day 29 – Day 31 | Containers + AKS |
-| Phase 9 | Day 32 – Day 33 | Capstone Project |
-| Optional | Day 34 | Cosmos DB (Bonus — Optional) |
+| Phase 4 | Day 16 | Databases |
+| Phase 5 | Day 17 – Day 20 | Identity, Security + Monitoring |
+| Phase 6 | Day 21 – Day 25 | Azure DevOps |
+| Phase 7 | Day 26 – Day 27 | Infrastructure as Code (IaC) |
+| Phase 8 | Day 28 – Day 30 | Containers + AKS |
+| Phase 9 | Day 31 – Day 32 | Capstone Project |
+| Optional | Day 33 – Day 35 | Bonus — Cosmos DB, Azure Functions & Serverless, API Management |
 
 ---
 
@@ -90,59 +90,64 @@
 | Day 14 | Traffic Manager, Front Door, CDN & WAF | **Azure Traffic Manager**, **Azure Front Door**, **Azure CDN**, global routing methods, edge caching, **Web Application Firewall (WAF)**, OWASP CRS | 💳 |
 | Day 15 | VPN Gateway & ExpressRoute | VPN Gateway, Site-to-Site VPN, Point-to-Site VPN, ExpressRoute, Azure Virtual WAN | 💳 |
 
-### Phase 4 — Serverless & Databases
+### Phase 4 — Databases
 
 | Day | Title | Key Services | Tier |
 |-----|-------|-------------|------|
-| Day 16 | Azure Functions & Serverless | Function App, Triggers, Bindings, Consumption plan, Durable Functions | ✅ |
-| Day 17 | Azure SQL Database + Other Databases | Azure SQL (Serverless), Elastic Pools, Managed Instance, **PostgreSQL & MySQL Flexible Server (overview)** | ✅ |
+| Day 16 | Azure SQL Database + Other Databases | Azure SQL (Serverless), Elastic Pools, Managed Instance, **PostgreSQL & MySQL Flexible Server (overview)** | ✅ |
 
 ### Phase 5 — Identity, Security + Monitoring
 
 | Day | Title | Key Services | Tier |
 |-----|-------|-------------|------|
-| Day 18 | Microsoft Entra ID | Users, Groups, MFA, Conditional Access, App Registrations, Managed Identities | ✅ |
-| Day 19 | Azure RBAC | Roles, Assignments, Custom Roles, Privileged Identity Management (PIM) | ✅ |
-| Day 20 | Azure Key Vault | Secrets, Keys, Certificates, Access Policies, RBAC, Soft Delete, Private Endpoints | ✅ |
-| Day 21 | Azure Monitor & Alerts | Log Analytics, Metrics, Alerts, Action Groups, Application Insights, Workbooks | ✅ |
+| Day 17 | Microsoft Entra ID | Users, Groups, MFA, Conditional Access, App Registrations, Managed Identities | ✅ |
+| Day 18 | Azure RBAC | Roles, Assignments, Custom Roles, Privileged Identity Management (PIM) | ✅ |
+| Day 19 | Azure Key Vault | Secrets, Keys, Certificates, Access Policies, RBAC, Soft Delete, Private Endpoints | ✅ |
+| Day 20 | Azure Monitor & Alerts | Log Analytics, Metrics, Alerts, Action Groups, Application Insights, Workbooks | ✅ |
 
 ### Phase 6 — Azure DevOps
 
 | Day | Title | Key Services | Tier |
 |-----|-------|-------------|------|
-| Day 22 | Azure DevOps Introduction | Organizations, Projects, Boards, Agile workflow | ✅ |
-| Day 23 | Azure Repos | Git repos, Branches, Pull Requests, Branch policies | ✅ |
-| Day 24 | Azure Pipelines — CI | Build pipelines, YAML, triggers, agents, artifacts | ✅ |
-| Day 25 | Azure Pipelines — CD | Release pipelines, deployment gates, environments, approvals | ✅ |
-| Day 26 | Azure Artifacts | Feed creation, npm/NuGet packages, upstream sources | ✅ |
+| Day 21 | Azure DevOps Introduction | Organizations, Projects, Boards, Agile workflow | ✅ |
+| Day 22 | Azure Repos | Git repos, Branches, Pull Requests, Branch policies | ✅ |
+| Day 23 | Azure Pipelines — CI | Build pipelines, YAML, triggers, agents, artifacts | ✅ |
+| Day 24 | Azure Pipelines — CD | Release pipelines, deployment gates, environments, approvals | ✅ |
+| Day 25 | Azure Artifacts | Feed creation, npm/NuGet packages, upstream sources | ✅ |
 
 ### Phase 7 — Infrastructure as Code
 
 | Day | Title | Key Services | Tier |
 |-----|-------|-------------|------|
-| Day 27 | ARM Templates & Bicep | ARM JSON templates, Bicep language, parameters, modules, what-if deployments | ✅ |
-| Day 28 | Terraform on Azure | Terraform CLI, AzureRM provider, state management, plan/apply/destroy | ✅ |
+| Day 26 | ARM Templates & Bicep | ARM JSON templates, Bicep language, parameters, modules, what-if deployments | ✅ |
+| Day 27 | Terraform on Azure | Terraform CLI, AzureRM provider, state management, plan/apply/destroy | ✅ |
 
 ### Phase 8 — Containers + AKS
 
 | Day | Title | Key Services | Tier |
 |-----|-------|-------------|------|
-| Day 29 | Azure Container Registry & Docker | ACR, Docker images, push/pull, tasks, geo-replication | ✅ / 💳 |
-| Day 30 | AKS Setup | Azure Kubernetes Service, node pools, kubectl, deployments, services | 💳 |
-| Day 31 | AKS Advanced | Ingress, HPA, cluster autoscaler, Azure Monitor for containers, RBAC | 💳 |
+| Day 28 | Azure Container Registry & Docker | ACR, Docker images, push/pull, tasks, geo-replication | ✅ / 💳 |
+| Day 29 | AKS Setup | Azure Kubernetes Service, node pools, kubectl, deployments, services | 💳 |
+| Day 30 | AKS Advanced | Ingress, HPA, cluster autoscaler, Azure Monitor for containers, RBAC | 💳 |
 
 ### Phase 9 — Capstone Project
 
 | Day | Title | Key Services | Tier |
 |-----|-------|-------------|------|
-| Day 32 | Capstone Part 1 — Architecture & Build | Multi-tier app: VNet + VM/App Service + SQL Database + Key Vault + Blob Storage | 💳 |
-| Day 33 | Capstone Part 2 — DevOps + IaC | CI/CD pipeline, Bicep/Terraform deployment, monitoring, alerts, cleanup | 💳 |
+| Day 31 | Capstone Part 1 — Architecture & Build | Multi-tier app: VNet + VM/App Service + SQL Database + Key Vault + Blob Storage | 💳 |
+| Day 32 | Capstone Part 2 — DevOps + IaC | CI/CD pipeline, Bicep/Terraform deployment, monitoring, alerts, cleanup | 💳 |
 
 ### Optional Bonus
 
+These days sit outside the core 32-day curriculum. They are not required for AZ-900 or AZ-104, and none of the main-course days depend on them. Record and release them after Day 32.
+
 | Day | Title | Key Services | Tier |
 |-----|-------|-------------|------|
-| Day 34 | Cosmos DB — NoSQL at Global Scale (Optional) | Cosmos DB Core (SQL) API, Free Tier, global replication, RUs, partitioning | ✅ |
+| Day 33 | Cosmos DB — NoSQL at Global Scale (Optional) | Cosmos DB Core (SQL) API, Free Tier, global replication, RUs, partitioning | ✅ |
+| Day 34 | Azure Functions & Serverless (Optional) | Function App, Triggers, Bindings, Consumption plan, Durable Functions | ✅ |
+| Day 35 | Azure API Management (Optional) | APIM, Products & Subscriptions, Subscription Keys, Policies (rate limiting, quotas, JWT validation, caching, transformation), Developer Portal, Versions & Revisions, Consumption vs Developer tier, Self-hosted Gateway | ✅ / 💳 |
+
+> **Day 35 depends on Day 34** — the APIM demo fronts the Function App built in the Functions bonus day. Record them in that order.
 
 ---
 
@@ -158,26 +163,28 @@
 | Application Security Groups (ASGs) | Day 10 |
 | Route Tables / User Defined Routes (UDR) | Day 11 |
 | NAT Gateway | Day 11 |
-| Microsoft Entra ID | Day 18 |
-| Azure Monitor | Day 21 |
+| Microsoft Entra ID | Day 17 |
+| Azure Monitor | Day 20 |
 | Application Gateway | Day 12 |
 | WAF (Web Application Firewall) | Day 14 |
 | Load Balancer | Day 12 |
 | VM Scale Sets (VMSS) | Day 5 + Day 12 |
 | Traffic Manager | Day 14 |
 | Azure Front Door | Day 14 |
-| Azure SQL Database | Day 17 |
+| Azure SQL Database | Day 16 |
 | Azure CDN | Day 14 |
-| Key Vault | Day 20 |
+| Key Vault | Day 19 |
 | Backup Service (Azure Backup) | Day 5 |
-| Function App | Day 16 |
-| ARM Templates | Day 27 |
+| ARM Templates | Day 26 |
 | Azure DNS | Day 13 |
 | VPN Gateway / ExpressRoute | Day 15 |
-| Azure Kubernetes Service | Day 30–31 |
-| Containers / ACR | Day 29 |
-| Azure DevOps | Day 22–26 |
-| Bicep / Terraform | Day 27–28 |
+| Azure Kubernetes Service | Day 29–30 |
+| Containers / ACR | Day 28 |
+| Azure DevOps | Day 21–25 |
+| Bicep / Terraform | Day 26–27 |
+| Cosmos DB | Day 33 (Optional Bonus) |
+| Function App / Serverless | Day 34 (Optional Bonus) |
+| API Management (API Gateway) | Day 35 (Optional Bonus) |
 
 ---
 
@@ -197,4 +204,4 @@ When starting a new session to write course content:
 
 ---
 
-*Last updated: July 2026 | LearnWithMithran | Azure Cloud + Azure DevOps Course*
+*Last updated: August 2026 | LearnWithMithran | Azure Cloud + Azure DevOps Course*

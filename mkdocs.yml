@@ -1,5 +1,5 @@
 site_name: LearnWithMithran — Azure Complete Beginner's Guide
-site_description: A complete beginner's guide to Azure Cloud and Azure DevOps — 29 days, zero assumed cloud knowledge.
+site_description: A complete beginner's guide to Azure Cloud and Azure DevOps — 32 days plus bonus content, zero assumed cloud knowledge.
 site_url: https://iam-mithran.github.io/LWM-Azure/
 repo_url: https://github.com/Iam-mithran/LWM-Azure
 repo_name: Iam-mithran/LWM-Azure
@@ -62,3 +62,4 @@ nav:
   - "Day 13 — Azure DNS: Public & Private Zones": day13_azure_dns.md
   - "Day 14 — Traffic Manager, Front Door, CDN & WAF": day14_traffic_frontdoor_cdn_waf.md
   - "Day 15 — VPN Gateway & ExpressRoute": day15_vpn_expressroute.md
+  - "Day 16 — Azure SQL Database + Other Databases": day16_azure_sql_database.md
