@@ -63,3 +63,4 @@ nav:
   - "Day 14 — Traffic Manager, Front Door, CDN & WAF": day14_traffic_frontdoor_cdn_waf.md
   - "Day 15 — VPN Gateway & ExpressRoute": day15_vpn_expressroute.md
   - "Day 16 — Azure SQL Database + Other Databases": day16_azure_sql_database.md
+  - "Day 17 — Microsoft Entra ID": day17_entra_id.md

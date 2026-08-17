@@ -24,6 +24,7 @@
 | Day 14 | Traffic Manager, Front Door, CDN & WAF | `docs/day14_traffic_frontdoor_cdn_waf.md` |
 | Day 15 | VPN Gateway & ExpressRoute | `docs/day15_vpn_expressroute.md` |
 | Day 16 | Azure SQL Database + Other Databases | `docs/day16_azure_sql_database.md` |
+| Day 17 | Microsoft Entra ID | `docs/day17_entra_id.md` |
 
 ---
 
@@ -31,14 +32,13 @@
 
 Day numbers are fixed by `course_outline.md`. Record in order — dependencies are already baked into the numbering. Where a phase has no internal ordering constraint, that's noted below.
 
-Phases 3 and 4 are now fully recorded (Days 9–16). Azure Functions and API Management are **not** in the numbered sequence — both live in the Optional Bonus block at the end. Next up:
+Phases 3 and 4 are now fully recorded (Days 9–16), and Day 17 (Entra ID) is written. Azure Functions and API Management are **not** in the numbered sequence — both live in the Optional Bonus block at the end. Next up:
 
 ### Phase 5 — Identity, Security & Monitoring
 
 | Day | Topic | File | Depends On |
 |-----|-------|------|------------|
-| **Day 17 (next)** | Microsoft Entra ID | `entra_id.md` | None — but Day 16's database is a good managed-identity demo target |
-| Day 18 | Azure RBAC | `rbac.md` | Entra ID |
+| **Day 18 (next)** | Azure RBAC | `rbac.md` | Entra ID |
 | Day 19 | Azure Key Vault | `key_vault.md` | Entra ID |
 | Day 20 | Azure Monitor & Alerts | `azure_monitor.md` | None |
 
@@ -90,4 +90,4 @@ Record these after Day 32 — no main-course day depends on them.
 
 ## What's Next to Record
 
-**Day 17 — Microsoft Entra ID** (`days/entra_id.md`) — next up now that Phase 4 (Databases) is recorded. Day 16 deliberately leaves the SQL database alive so the managed-identity demo has a real backend to connect to without a password.
+**Day 18 — Azure RBAC** (`days/rbac.md`) — next up now that Day 17 (Entra ID) is written. Day 17 deliberately leaves the user `Priya Sharma`, the group `grp-finance-team`, and the SQL database `db-lwm-demo` alive: Priya ends Day 17 authenticated but with zero permissions, which is the exact opening for the RBAC lesson. Day 17 also stops short on PIM (mentioned only) so Day 18 owns it.
