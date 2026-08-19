@@ -58,11 +58,11 @@ Every day's script must follow this structure:
 | 2 | 7–8 | Storage |
 | 3 | 9–15 | Networking |
 | 4 | 16 | Databases |
-| 5 | 17–20 | Identity, Security + Monitoring |
-| 6 | 21–25 | Azure DevOps |
-| 7 | 26–27 | Infrastructure as Code |
-| 8 | 28–30 | Containers + AKS |
-| 9 | 31–32 | Capstone Project |
-| Optional | 33–35 | Bonus: Cosmos DB, Azure Functions, API Management |
+| 5 | 17–19 | Identity, Security + Monitoring |
+| 6 | 20–24 | Azure DevOps |
+| 7 | 25–26 | Infrastructure as Code |
+| 8 | 27–29 | Containers + AKS |
+| 9 | 30–31 | Capstone Project |
+| Optional | 32–34 | Bonus: Cosmos DB, Azure Functions, API Management |
 
-`course_outline.md` is the authority on day numbering — this table is a summary. Full day details (goals, key topics, demo steps) are in `days/*.md`.
+`course_outline.md` is the authority on day numbering — this table is a summary. The course is **31 days + 3 optional bonus days**. Full day details (goals, key topics, demo steps) are in `days/*.md`.

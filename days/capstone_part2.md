@@ -1,6 +1,6 @@
-# Day 28 — Capstone Part 2: CI/CD Pipeline, Monitoring & Course Wrap-Up
+# Day 31 — Capstone Part 2: CI/CD Pipeline, Monitoring & Course Wrap-Up
 
-> Phase 8 — Capstone Project
+> Phase 9 — Capstone Project
 
 ## Goal
 

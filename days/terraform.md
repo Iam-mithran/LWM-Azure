@@ -1,6 +1,6 @@
-# Day 23 — Terraform on Azure
+# Day 26 — Terraform on Azure
 
-> Phase 6 — Infrastructure as Code (IaC)
+> Phase 7 — Infrastructure as Code (IaC)
 
 ## Goal
 

@@ -1,4 +1,4 @@
-# Day 34 (Optional) — Azure Functions — Serverless Computing
+# Day 33 (Optional) — Azure Functions — Serverless Computing
 
 > Bonus Day — Optional
 

@@ -1,6 +1,6 @@
-# Day 18 — Azure Repos — Git Version Control in Azure DevOps
+# Day 21 — Azure Repos — Git Version Control in Azure DevOps
 
-> Phase 5 — Azure DevOps
+> Phase 6 — Azure DevOps
 
 ## Goal
 

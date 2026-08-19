@@ -1,6 +1,6 @@
-# Day 20 — Azure Pipelines — CD (Continuous Delivery/Deployment)
+# Day 23 — Azure Pipelines — CD (Continuous Delivery/Deployment)
 
-> Phase 5 — Azure DevOps
+> Phase 6 — Azure DevOps
 
 ## Goal
 

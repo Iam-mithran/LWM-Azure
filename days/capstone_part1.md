@@ -1,6 +1,6 @@
-# Day 27 — Capstone Part 1: Architecture Design & Infrastructure Setup
+# Day 30 — Capstone Part 1: Architecture Design & Infrastructure Setup
 
-> Phase 8 — Capstone Project
+> Phase 9 — Capstone Project
 
 ## Goal
 

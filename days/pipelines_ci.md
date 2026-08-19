@@ -1,6 +1,6 @@
-# Day 19 — Azure Pipelines — CI (Continuous Integration)
+# Day 22 — Azure Pipelines — CI (Continuous Integration)
 
-> Phase 5 — Azure DevOps
+> Phase 6 — Azure DevOps
 
 ## Goal
 

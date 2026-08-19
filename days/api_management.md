@@ -1,4 +1,4 @@
-# Day 35 (Optional) — Azure API Management — The API Gateway
+# Day 34 (Optional) — Azure API Management — The API Gateway
 
 > Bonus Day — Optional
 

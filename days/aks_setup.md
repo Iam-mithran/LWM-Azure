@@ -1,6 +1,6 @@
-# Day 25 — Azure Kubernetes Service (AKS) — Setup & Core Concepts
+# Day 28 — Azure Kubernetes Service (AKS) — Setup & Core Concepts
 
-> Phase 7 — Containers + AKS
+> Phase 8 — Containers + AKS
 
 ## Goal
 

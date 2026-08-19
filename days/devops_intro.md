@@ -1,6 +1,6 @@
-# Day 17 — Azure DevOps Introduction & Organization Setup
+# Day 20 — Azure DevOps Introduction & Organization Setup
 
-> Phase 5 — Azure DevOps
+> Phase 6 — Azure DevOps
 
 ## Goal
 

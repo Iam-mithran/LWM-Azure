@@ -1,6 +1,6 @@
-# Day 24 — Azure Container Registry (ACR) & Docker on Azure
+# Day 27 — Azure Container Registry (ACR) & Docker on Azure
 
-> Phase 7 — Containers + AKS
+> Phase 8 — Containers + AKS
 
 ## Goal
 

@@ -1,6 +1,6 @@
-# Day 26 — AKS Advanced — Scaling, Ingress & CI/CD Integration
+# Day 29 — AKS Advanced — Scaling, Ingress & CI/CD Integration
 
-> Phase 7 — Containers + AKS
+> Phase 8 — Containers + AKS
 
 ## Goal
 

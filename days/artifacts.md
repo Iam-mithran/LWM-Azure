@@ -1,6 +1,6 @@
-# Day 21 — Azure Artifacts & Pipeline Best Practices
+# Day 24 — Azure Artifacts & Pipeline Best Practices
 
-> Phase 5 — Azure DevOps
+> Phase 6 — Azure DevOps
 
 ## Goal
 

@@ -14,7 +14,7 @@ Master Microsoft Azure from absolute zero — no prior cloud experience needed.
 
 This is a complete, hands-on Azure course covering every major service category: Compute, Networking, Storage, Databases, Identity, Security, Monitoring, Azure DevOps, Infrastructure as Code, and Containers. Every concept is taught through the Azure Portal (GUI-first), and every demo step is clearly labeled so you know exactly what's free and what costs money.
 
-📚 What you'll learn across 29 days:
+📚 What you'll learn across 31 days:
 • Cloud computing fundamentals — what the cloud is and why it matters
 • Azure account setup, free tier, and cost management
 • Virtual Machines, App Service, and Azure Functions (Compute)

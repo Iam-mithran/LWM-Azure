@@ -923,7 +923,7 @@ Today you covered the full VM management picture.
 
 **Azure Backup** with Recovery Services Vault provides scheduled, managed backup with tiered daily, weekly, and monthly retention and four restore options.
 
-> **Monitoring and alerts** are covered in full on Day 20 — Azure Monitor, metrics, dashboards, and alert rules all using a VM as the example resource.
+> **Monitoring and alerts** are covered in full on Day 19 — Azure Monitor, metrics, dashboards, and alert rules all using a VM as the example resource.
 
 **Coming up next:** Day 6 moves to **Azure App Service** — Microsoft's fully managed platform for hosting web applications. Instead of managing the OS, web server, and patches yourself, App Service handles all of that. You deploy your code, Azure runs it.
 
@@ -945,4 +945,4 @@ Today you covered the full VM management picture.
 - **A Sunday backup tagged as weekly is not deleted when its daily tag expires** — the weekly tag keeps it alive until its own retention window closes.
 - **Four restore options:** Replace existing VM, Create new VM, Restore disks, File-level recovery.
 - **Always stop backup before deleting a VM** — orphaned recovery points continue charging.
-- **VM alerts and monitoring** — covered in Day 20 with the full Azure Monitor deep dive.
+- **VM alerts and monitoring** — covered in Day 19 with the full Azure Monitor deep dive.

@@ -1,6 +1,6 @@
-# Day 22 — ARM Templates & Bicep
+# Day 25 — ARM Templates & Bicep
 
-> Phase 6 — Infrastructure as Code (IaC)
+> Phase 7 — Infrastructure as Code (IaC)
 
 ## Goal
 

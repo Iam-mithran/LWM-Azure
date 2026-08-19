@@ -1,4 +1,4 @@
-# Day 33 (Optional) — Azure Cosmos DB — NoSQL at Global Scale
+# Day 32 (Optional) — Azure Cosmos DB — NoSQL at Global Scale
 
 > Bonus Day — Optional
 

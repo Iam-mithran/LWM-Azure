@@ -1,6 +1,6 @@
 # Azure Cloud + Azure DevOps — A Complete Beginner's Guide
 
-**LearnWithMithran** · YouTube · 32 Days + 3 Bonus · Zero assumed cloud knowledge
+**LearnWithMithran** · YouTube · 31 Days + 3 Bonus · Zero assumed cloud knowledge
 
 ---
 
@@ -22,12 +22,12 @@ Starting from absolute zero, this course takes you through every major area of A
 | **Phase 2** | Day 7 – 8 | Storage |
 | **Phase 3** | Day 9 – 15 | Networking |
 | **Phase 4** | Day 16 | Databases |
-| **Phase 5** | Day 17 – 20 | Identity, Security + Monitoring |
-| **Phase 6** | Day 21 – 25 | Azure DevOps |
-| **Phase 7** | Day 26 – 27 | Infrastructure as Code (Bicep + Terraform) |
-| **Phase 8** | Day 28 – 30 | Containers + AKS |
-| **Phase 9** | Day 31 – 32 | Capstone Project |
-| **Optional** | Day 33 – 35 | Bonus: Cosmos DB, Azure Functions, API Management |
+| **Phase 5** | Day 17 – 19 | Identity, Security + Monitoring |
+| **Phase 6** | Day 20 – 24 | Azure DevOps |
+| **Phase 7** | Day 25 – 26 | Infrastructure as Code (Bicep + Terraform) |
+| **Phase 8** | Day 27 – 29 | Containers + AKS |
+| **Phase 9** | Day 30 – 31 | Capstone Project |
+| **Optional** | Day 32 – 34 | Bonus: Cosmos DB, Azure Functions, API Management |
 
 ---
 
