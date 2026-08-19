@@ -100,11 +100,13 @@
 
 | Day | Title | Key Services | Tier |
 |-----|-------|-------------|------|
-| Day 17 | Microsoft Entra ID & Azure RBAC | **Identity:** Tenants, Users, Groups, MFA, SSPR, Conditional Access, App Registrations & Service Principals, Managed Identities. **Authorisation:** Role definitions, Role assignments, Scope & inheritance, Control plane vs data plane, Entra roles vs Azure roles, Custom roles, Deny assignments, PIM, Azure Policy | ✅ / 💳 |
+| Day 17 | Microsoft Entra ID & Azure RBAC | **Identity:** Tenants, Users, Groups, MFA & Security Defaults, SSPR, App Registrations & Service Principals, Managed Identities. **Authorisation:** Entra roles vs Azure roles, Role assignments (principal/role/scope), Scope & inheritance, Role definitions, Control plane vs data plane, Custom roles, Azure Policy. *Concept-only (paid):* Conditional Access, dynamic groups, PIM | ✅ |
 | Day 18 | Azure Key Vault | Secrets, Keys, Certificates, Access Policies, RBAC, Soft Delete, Private Endpoints | ✅ |
 | Day 19 | Azure Monitor & Alerts | Log Analytics, Metrics, Alerts, Action Groups, Application Insights, Workbooks | ✅ |
 
-> **Day 17 is a combined identity + authorisation video.** Authentication ("who are you?") and authorisation ("what are you allowed to do?") are two halves of one sentence, and splitting them meant the identity day ended with a user who could sign in but do nothing. Teaching them together lets one demo identity — `Priya Sharma` — go from created, to authenticated, to permissioned, to time-bound admin in a single sitting. Expect this to be the longest video in the course. The ✅ / 💳 mix comes from Conditional Access (Entra ID P1) and PIM (Entra ID P2), which are instructor demos.
+> **Day 17 is a combined identity + authorisation video.** Authentication ("who are you?") and authorisation ("what are you allowed to do?") are two halves of one sentence, and splitting them meant the identity day ended with a user who could sign in but do nothing. Teaching them together lets one demo identity — `Priya Sharma` — go from created, to authenticated, to permissioned in a single sitting.
+>
+> **It is scoped for beginners, not as a reference.** 14 parts, ~11,000 words, and **every hands-on step is free tier — there are no paid demos.** Paid features that matter in interviews (Conditional Access, dynamic groups, PIM) are explained as concepts only. Advanced material is deliberately cut: ABAC conditions, constrained delegation, Azure Blueprints, the full RBAC limits table, and Resource Graph auditing.
 
 ### Phase 6 — Azure DevOps
 

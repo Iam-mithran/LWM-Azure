@@ -121,4 +121,4 @@ Day 17 deliberately hands Key Vault a loaded starting position, so lean on it ra
 
 The one genuinely new axis for Day 18 is the **access policy vs RBAC** permission-model choice on the vault itself, plus soft delete, purge protection, and private endpoints.
 
-Recording note: Day 17 runs long (~2.5 h) by design — it is the only over-length video in the course. Days 18 and 19 are back to normal length.
+Recording note: Day 17 was reworked down from 24 parts / 26k words to **14 parts / ~11k words** — roughly 90–100 minutes, inside the 2-hour cap, with **no paid demo steps at all**. Keep Day 18 to the same standard: student-friendly depth, free-tier labs, paid features as concepts only.
