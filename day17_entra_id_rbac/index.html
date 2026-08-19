@@ -1,0 +1,2093 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A complete beginner's guide to Azure Cloud and Azure DevOps — 31 days plus bonus content, zero assumed cloud knowledge.">
+      
+      
+      
+        <link rel="canonical" href="https://iam-mithran.github.io/LWM-Azure/day17_entra_id_rbac/">
+      
+      
+        <link rel="prev" href="../day16_azure_sql_database/">
+      
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Day 17 — Microsoft Entra ID & Azure RBAC - LearnWithMithran — Azure Complete Beginner's Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#day-17-microsoft-entra-id-azure-rbac" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-header__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LearnWithMithran — Azure Complete Beginner's Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Day 17 — Microsoft Entra ID & Azure RBAC
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-nav__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LearnWithMithran — Azure Complete Beginner's Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day01_account_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day02_fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day03_vms_part1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day04_web_hosting_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day05_vms_part3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day06_app_service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day07_storage_account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day08_storage_files_queue_tables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day09_intro_to_networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day10_virtual_network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day11_vnet_advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day12_load_balancer_vmss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day13_azure_dns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 13 — Azure DNS: Public & Private Zones
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day14_traffic_frontdoor_cdn_waf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 14 — Traffic Manager, Front Door, CDN & WAF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day15_vpn_expressroute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 15 — VPN Gateway & ExpressRoute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day16_azure_sql_database/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 16 — Azure SQL Database + Other Databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 17 — Microsoft Entra ID & Azure RBAC
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 17 — Microsoft Entra ID & Azure RBAC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="day-17-microsoft-entra-id-azure-rbac">Day 17 — Microsoft Entra ID &amp; Azure RBAC</h1>
+<p><strong>Phase 5 — Identity, Security + Monitoring</strong></p>
+<blockquote>
+<p>For sixteen days there has been exactly one person allowed to touch anything you built: you. Every click you made in the portal was authorised because of one identity — the account you signed up with on Day 1 — and you never thought about it, because it just worked. Today we open that box. Because the moment a second person joins your project, or an application needs to read your database, "it just works" stops being good enough. You'll learn what happens in the half-second between typing your password and seeing the portal — <strong>and what happens in the half-second after that</strong>, when Azure decides whether you're actually allowed to do the thing you clicked. Two different questions, two different systems, and almost every confusing thing in Azure security comes from mixing them up.</p>
+</blockquote>
+<hr />
+<h2 id="what-youll-learn">What You'll Learn</h2>
+<p><strong>Part One — Identity: who are you?</strong></p>
+<ul>
+<li>What Microsoft Entra ID is, and the <strong>two planes</strong> — the one idea that makes Azure permissions stop being confusing</li>
+<li>Tenant, directory, subscription — and why Entra ID isn't "Active Directory in the cloud"</li>
+<li>Users and groups, and the rule you'll follow for the rest of your career: <strong>never assign permissions to a person</strong></li>
+<li>MFA, security defaults, and where Conditional Access fits</li>
+<li>How applications prove who they are — app registrations, service principals, and <strong>managed identities</strong></li>
+</ul>
+<p><strong>Part Two — Authorisation: what are you allowed to do?</strong></p>
+<ul>
+<li>Entra roles vs Azure roles — why a Global Administrator can't see a single virtual machine</li>
+<li>The three-part sentence every role assignment is made of: <strong>principal + role + scope</strong></li>
+<li>What's actually inside a role definition, and why <strong>Contributor is Owner minus one thing</strong></li>
+<li><strong>Control plane vs data plane</strong> — the most surprising fact in Azure, proved live</li>
+<li>Custom roles, Azure Policy, and PIM</li>
+<li>An interview and exam keyword table for both halves</li>
+</ul>
+<hr />
+<h2 id="before-we-begin">Before We Begin</h2>
+<p><strong>Today costs nothing.</strong> Every single hands-on step in this video is free tier. Identity and access control are where Microsoft gives away the fundamentals and charges only for enterprise-scale controls.</p>
+<table>
+<thead>
+<tr>
+<th>Free — and we'll use all of it</th>
+<th>Paid — explained today, not demonstrated</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Users, groups, security defaults, MFA, SSPR</td>
+<td><strong>Conditional Access</strong> (Entra ID P1)</td>
+</tr>
+<tr>
+<td>App registrations, service principals, B2B guests</td>
+<td><strong>Dynamic group membership</strong> (P1)</td>
+</tr>
+<tr>
+<td><strong>Managed identities</strong> — no cost, ever</td>
+<td><strong>PIM</strong> — just-in-time admin access (P2)</td>
+</tr>
+<tr>
+<td><strong>Azure RBAC in its entirety</strong> — every role assignment, every custom role</td>
+<td>Identity Protection, access reviews (P2)</td>
+</tr>
+<tr>
+<td>Azure Policy built-in definitions</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<p>That second column still matters — it comes up in interviews constantly, and you'll be expected to know what each one does and which licence it needs. So we cover the concepts properly. You just won't be asked to click anything you'd have to pay for.</p>
+<div class="admonition warning">
+<p class="admonition-title">The one thing that can genuinely lock you out</p>
+<p>Identity is the only area of Azure where a mistake can lock <strong>you</strong> out of <strong>your own tenant</strong>, and there's no "delete the resource group" undo for that. Two rules:</p>
+<ol>
+<li>Before you enable MFA on your admin account, <strong>have your phone in your hand</strong> with Microsoft Authenticator installed.</li>
+<li><strong>Never remove your own Owner role assignment</strong> at subscription scope to see what happens. Azure will usually stop you. Don't go looking for the edge case.</li>
+</ol>
+</div>
+<p><strong>Set this up first:</strong></p>
+<ul>
+<li>A resource group called <code>rg-day17-demo</code>.</li>
+<li>The <strong>Microsoft Authenticator</strong> app on your phone (free).</li>
+<li>A <strong>private/incognito window</strong>. We'll be signing in as a test user constantly, and you don't want to keep logging out of your admin session. Genuinely, do this — half the payoff moments of today happen in that window.</li>
+</ul>
+<hr />
+<h1 id="part-one-identity">PART ONE — IDENTITY</h1>
+<h2 id="part-1-what-entra-id-is-and-the-two-planes">Part 1 — What Entra ID Is, and the Two Planes</h2>
+<p>You type <code>portal.azure.com</code>, enter a password, approve a prompt, and the portal loads. In that half-second, two separate questions were answered:</p>
+<ol>
+<li><strong>Who are you?</strong> — <strong>authentication</strong>. Microsoft Entra ID answers this.</li>
+<li><strong>What are you allowed to do?</strong> — <strong>authorisation</strong>. Azure RBAC answers this.</li>
+</ol>
+<p>Every security problem in every cloud reduces to those two questions. <strong>Microsoft Entra ID is Microsoft's cloud identity service</strong> — the directory holding your users, groups and application identities, and the thing that issues <strong>tokens</strong>: short-lived signed proofs of identity that Azure, Microsoft 365 and thousands of SaaS apps accept as evidence of who you are.</p>
+<div class="admonition note">
+<p class="admonition-title">The name</p>
+<p>You'll see this called <strong>Azure Active Directory</strong>, <strong>Azure AD</strong> and <strong>AAD</strong> all over the internet. Microsoft renamed it <strong>Microsoft Entra ID</strong> in 2023 — same product, no migration, pure branding. When you read older content, mentally substitute.</p>
+</div>
+<h3 id="the-two-planes-the-idea-that-explains-everything">The Two Planes — The Idea That Explains Everything</h3>
+<p>This is the most important mental model today. Azure has <strong>two separate planes</strong>, managed in different places, by different services, with different permission systems:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Identity plane</strong></th>
+<th><strong>Resource plane</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Service</strong></td>
+<td>Microsoft Entra ID</td>
+<td>Azure Resource Manager (ARM)</td>
+</tr>
+<tr>
+<td><strong>Contains</strong></td>
+<td>Users, groups, app registrations</td>
+<td>VMs, storage accounts, VNets, databases</td>
+</tr>
+<tr>
+<td><strong>Organised by</strong></td>
+<td>Tenant → directory</td>
+<td>Management group → subscription → resource group → resource</td>
+</tr>
+<tr>
+<td><strong>Permissions via</strong></td>
+<td><strong>Entra roles</strong> (e.g. <em>User Administrator</em>)</td>
+<td><strong>Azure RBAC roles</strong> (e.g. <em>Contributor</em>)</td>
+</tr>
+<tr>
+<td><strong>Managed in</strong></td>
+<td>Entra ID → Roles &amp; admins</td>
+<td>Any resource → Access control (IAM)</td>
+</tr>
+<tr>
+<td><strong>Lives in a region?</strong></td>
+<td><strong>No</strong> — global</td>
+<td><strong>Yes</strong> — every resource has a region</td>
+</tr>
+</tbody>
+</table>
+<p>Look at that last row. Everything you built for sixteen days had a region. <strong>Entra ID has no region</strong> — your tenant is a global service. You will never see a "location" field on a user.</p>
+<p>And look at the permissions row, because it's the trap: <strong>being a Global Administrator in Entra ID gives you access to zero Azure resources.</strong> Not one VM. Different planes, different role systems. We prove it in Part 8.</p>
+<h3 id="tenant-directory-subscription">Tenant, Directory, Subscription</h3>
+<p>Three words, constantly confused:</p>
+<ul>
+<li><strong>Tenant</strong> — your organisation's dedicated, isolated instance of Entra ID. You got one automatically on Day 1. It has a globally unique <strong>Tenant ID</strong> (a GUID) and a domain ending <code>.onmicrosoft.com</code>. A tenant is a hard security boundary.</li>
+<li><strong>Directory</strong> — the store of objects inside the tenant. In practice "tenant" and "directory" are used interchangeably; don't lose sleep over it.</li>
+<li><strong>Subscription</strong> — a billing and resource container that <strong>trusts exactly one tenant</strong> for authentication.</li>
+</ul>
+<p>The rules that show up in interviews almost verbatim:</p>
+<ul>
+<li><strong>One subscription trusts exactly one tenant.</strong> One tenant can hold many subscriptions.</li>
+<li><strong>A subscription can be moved to another tenant — and all its RBAC assignments are permanently deleted</strong>, because the users they referenced don't exist there. This is one of the nastiest surprises in Azure.</li>
+<li><strong>A user cannot be moved between tenants.</strong> You invite them as a guest instead.</li>
+</ul>
+<h3 id="entra-id-is-not-active-directory">Entra ID Is Not Active Directory</h3>
+<p>If you've worked in corporate IT you've met <strong>Active Directory Domain Services</strong> — domain controllers, Group Policy, OUs. It's tempting to assume Entra ID is that, hosted by Microsoft. It isn't.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>AD DS</strong></th>
+<th><strong>Microsoft Entra ID</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Protocols</strong></td>
+<td>Kerberos, NTLM, LDAP</td>
+<td>OAuth 2.0, OpenID Connect, SAML</td>
+</tr>
+<tr>
+<td><strong>Designed for</strong></td>
+<td>Devices on a corporate LAN</td>
+<td>Applications on the internet</td>
+</tr>
+<tr>
+<td><strong>Structure</strong></td>
+<td>Hierarchical — forests, domains, OUs</td>
+<td>Flat — one directory of objects</td>
+</tr>
+<tr>
+<td><strong>Group Policy</strong></td>
+<td>Yes</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>You cannot domain-join a machine to Entra ID in the AD DS sense, and there are no OUs. Most real organisations run <strong>both</strong> — AD DS on-premises, Entra ID in the cloud, and a sync tool joining them (Part 7).</p>
+<h3 id="two-portals-one-tenant">Two Portals, One Tenant</h3>
+<ul>
+<li><strong><code>portal.azure.com</code></strong> — the Azure portal you've used all course. Everything in Part Two lives here.</li>
+<li><strong><code>entra.microsoft.com</code></strong> — the <strong>Microsoft Entra admin center</strong>, a dedicated identity console. Newer features land here first, and Microsoft's docs now write every set of steps for it.</li>
+</ul>
+<p>Same tenant, two front doors. I'll use the Entra admin center for identity and the Azure portal for RBAC — exactly the split you'll use in real life.</p>
+<h3 id="hands-on-find-your-tenant">Hands-On: Find Your Tenant ✅</h3>
+<ol>
+<li>Go to <strong><code>entra.microsoft.com</code></strong> and sign in. In the left navigation, expand <strong>Entra ID → Overview</strong>. <strong>✅</strong></li>
+<li>Note three things: <strong>✅</strong></li>
+<li><strong>Tenant ID</strong> — a GUID. <strong>Copy it somewhere you'll find again.</strong> It turns up in connection strings, app configuration, Terraform, <code>az login --tenant</code> — constantly.</li>
+<li><strong>Primary domain</strong> — <code>something.onmicrosoft.com</code></li>
+<li><strong>License</strong> — almost certainly <strong>Microsoft Entra ID Free</strong></li>
+<li>Click the <strong>Properties</strong> tab and note two settings we'll come back to: <strong>Access management for Azure resources</strong> (Part 8) and <strong>Manage security defaults</strong> (Part 4). <strong>✅</strong></li>
+<li>Open <strong><code>portal.azure.com</code></strong> in another tab and search <strong>Microsoft Entra ID</strong>. Same tenant, same ID, different chrome. <strong>✅</strong></li>
+</ol>
+<hr />
+<h2 id="part-2-users">Part 2 — Users</h2>
+<p>A <strong>user object</strong> is a set of attributes plus credentials plus role assignments. It's the thing that can sign in.</p>
+<p>Two attributes matter today:</p>
+<ul>
+<li>The <strong>User Principal Name (UPN)</strong> — looks like an email address, and it's the globally unique sign-in name. The domain part must be one your tenant owns.</li>
+<li>The <strong>Object ID</strong> — the user's GUID. <strong>When you create a role assignment, Azure doesn't store "Priya Sharma." It stores that GUID.</strong> Which is why deleting a user without cleaning up their role assignments leaves behind ghosts labelled <em>Identity not found</em>.</li>
+</ul>
+<p><strong>Three sources of users:</strong></p>
+<ul>
+<li><strong>Cloud-only</strong> — created directly in Entra ID. Everything we do today.</li>
+<li><strong>Synced</strong> — copied up from on-premises Active Directory. <strong>Most attributes are read-only in the portal</strong> — you edit them on-premises. If you've wondered why a name field is greyed out, that's why.</li>
+<li><strong>Guest</strong> — an identity that lives in another tenant, invited into yours (Part 7).</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Deleting a user is reversible for 30 days</p>
+<p>Deleted users go to a holding area for <strong>30 days</strong> and can be restored completely — <strong>same object ID</strong>, so their Azure role assignments come back working. Creating a fresh user with the same name would <em>not</em> restore access, because the GUID would be different. This is a favourite interview question.</p>
+</div>
+<h3 id="hands-on-create-a-user">Hands-On: Create a User ✅</h3>
+<ol>
+<li><strong>Entra ID → Users → All users → + New user → Create new user</strong>. <strong>✅</strong></li>
+<li><strong>Basics:</strong> <strong>✅</strong></li>
+<li><strong>User principal name:</strong> <code>priya</code> — pick your <code>.onmicrosoft.com</code> domain from the dropdown</li>
+<li><strong>Display name:</strong> <code>Priya Sharma</code></li>
+<li><strong>Password:</strong> reveal and <strong>copy it now</strong> — this screen never comes back</li>
+<li><strong>Properties tab:</strong> set <strong>Job title</strong> <code>Financial Analyst</code>, <strong>Department</strong> <code>Finance</code>, and <strong>Usage location</strong> — that last one isn't optional if you ever assign licences, and it's the most common cause of "why won't this licence assign" tickets. <strong>✅</strong></li>
+<li>Skip <strong>Assignments</strong> — that's the entire second half of this video, and I want you to feel its absence first. <strong>Review + create → Create</strong>. <strong>✅</strong></li>
+<li>Open <code>Priya Sharma</code> and copy her <strong>Object ID</strong>. Look down the left menu — <strong>Assigned roles</strong> (Entra roles, Part 8), <strong>Groups</strong>, <strong>Authentication methods</strong> (the helpdesk blade), and <strong>Azure role assignments</strong>, which is empty and which we fill in Part 9. <strong>✅</strong></li>
+</ol>
+<h3 id="hands-on-sign-in-as-priya-and-see-nothing">Hands-On: Sign In as Priya — and See Nothing ✅</h3>
+<p>This is the hinge the whole video turns on. Don't skip it.</p>
+<ol>
+<li>Open a <strong>private/incognito window</strong>, go to <code>portal.azure.com</code>, and sign in as <code>priya@yourtenant.onmicrosoft.com</code>. <strong>✅</strong></li>
+<li>Change the password when prompted. If security defaults are on you'll be asked to register for MFA — complete it or skip if offered. <strong>✅</strong></li>
+<li>Go to <strong>Subscriptions</strong>. <strong>✅</strong></li>
+</ol>
+<p><strong>The list is empty.</strong></p>
+<p>Priya is a fully valid, fully authenticated user. Entra ID confirmed exactly who she is. And she can see <strong>nothing</strong> — not one resource group, not one VM.</p>
+<p>That's the two planes, live. <strong>Authentication succeeded. Authorisation was never granted.</strong> Both systems are working perfectly, and the result is a user who can log in and do absolutely nothing.</p>
+<p>Hold onto that empty screen. In Part 9 we fix it in about forty seconds, and the contrast is the whole lesson.</p>
+<ol>
+<li>While you're there, visit <strong><code>myaccount.microsoft.com</code></strong> as Priya — the self-service page every user gets, where they manage their own MFA methods and see their sign-in activity. Knowing this URL saves your helpdesk enormous time. <strong>✅</strong></li>
+<li><strong>Leave this window open.</strong> We come back to it repeatedly.</li>
+</ol>
+<hr />
+<h2 id="part-3-groups">Part 3 — Groups</h2>
+<h3 id="never-assign-permissions-to-a-person">Never Assign Permissions to a Person</h3>
+<p>That's the rule, and it's the most important operational habit in this video.</p>
+<p>Assign permissions directly to users and after eighteen months you have four hundred individual assignments scattered across sixty resource groups, nobody knows who has access to what, and someone leaves with their access lingering in nine places.</p>
+<p>Assign to <strong>groups</strong> and access becomes a membership question. New analyst joins? Add to the group. Leaves? Remove. Access appears and disappears everywhere, instantly, in one action.</p>
+<p>There's a hard technical reason too: <strong>a subscription supports a maximum of 4,000 role assignments, and that limit cannot be raised.</strong> Per-user assignments burn through it. One group assignment can serve ten thousand people. Microsoft's own documented remedy for hitting the ceiling is literally "replace principal-based assignments with group-based assignments."</p>
+<h3 id="two-group-types-two-membership-types">Two Group Types, Two Membership Types</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Security group</strong></th>
+<th><strong>Microsoft 365 group</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Purpose</strong></td>
+<td>Granting access — RBAC, app assignment</td>
+<td>Collaboration — mailbox, SharePoint, Teams</td>
+</tr>
+<tr>
+<td><strong>Use in Azure RBAC</strong></td>
+<td><strong>Yes — always this one</strong></td>
+<td>Not the normal path</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Membership:</strong></p>
+<ul>
+<li><strong>Assigned</strong> — you add and remove members by hand. <strong>Free.</strong></li>
+<li><strong>Dynamic</strong> — you write a rule and Entra ID maintains membership automatically. <strong>Requires P1 — 💳 concept only today.</strong></li>
+</ul>
+<p>A dynamic rule is a query over user attributes:</p>
+<div class="highlight"><pre><span></span><code>(user.department -eq "Finance") and (user.country -eq "India")
+</code></pre></div>
+<p>The power is operational: HR changes someone's department, it syncs to Entra ID, and within minutes their group memberships — <strong>and therefore their Azure permissions</strong> — reshape automatically. Nobody files a ticket. That's HR data driving cloud authorisation with no human in the middle, and it's why P1 is worth the money in a real organisation.</p>
+<p><strong>Group owners</strong> can manage membership without being directory admins — proper delegation. And <strong>Azure RBAC honours nested groups</strong>: if you're in group A, and A is in B, and B has a role assignment, you have that role. Two levels is plenty; deeper becomes impossible to audit.</p>
+<h3 id="hands-on-create-a-security-group">Hands-On: Create a Security Group ✅</h3>
+<ol>
+<li><strong>Entra ID → Groups → All groups → + New group</strong>. <strong>✅</strong></li>
+<li><strong>Group type:</strong> <em>Security</em>. <strong>Name:</strong> <code>grp-finance-team</code>. <strong>Membership type:</strong> <em>Assigned</em> — open that dropdown first and notice <em>Dynamic User</em> is listed but blocked. <strong>That greyed-out option is the P1 paywall, visible.</strong> <strong>✅</strong></li>
+<li>Add yourself as <strong>Owner</strong> and <code>Priya Sharma</code> as a <strong>Member</strong>. <strong>Create</strong>. <strong>✅</strong></li>
+<li>Open the group and note its <strong>Object ID</strong> — <strong>this is what the role assignment in Part 9 will reference.</strong> Look at <strong>Azure role assignments</strong> in the left menu; empty for now. <strong>✅</strong></li>
+</ol>
+<hr />
+<h2 id="part-4-authentication-mfa-security-defaults-and-sspr">Part 4 — Authentication: MFA, Security Defaults and SSPR</h2>
+<h3 id="why-passwords-lose">Why Passwords Lose</h3>
+<p>A password is a shared secret, and shared secrets leak — phished, reused, breached in bulk from some unrelated site, sprayed against your tenant. Microsoft's published figure is the one to remember: <strong>MFA blocks over 99% of identity-based attacks.</strong> Not because the second factor is unbreakable, but because it breaks the attacker's economics.</p>
+<p>Real MFA needs factors from <strong>different categories</strong> — something you know (password), something you have (phone, security key), something you are (fingerprint, face). Password plus security question is <em>not</em> MFA. Password plus Authenticator push <em>is</em>.</p>
+<h3 id="the-methods-ranked">The Methods, Ranked</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Strength</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Passkeys (FIDO2)</strong></td>
+<td><strong>Phishing-resistant</strong></td>
+<td>Cryptographically bound to the real domain — a fake login page can't use it</td>
+</tr>
+<tr>
+<td><strong>Certificate-based auth</strong></td>
+<td>Phishing-resistant</td>
+<td>Smart cards; regulated industries</td>
+</tr>
+<tr>
+<td><strong>Microsoft Authenticator (push + number matching)</strong></td>
+<td>Strong</td>
+<td>The free default for most organisations</td>
+</tr>
+<tr>
+<td><strong>OATH TOTP codes</strong></td>
+<td>Strong</td>
+<td>6-digit rotating codes, works offline</td>
+</tr>
+<tr>
+<td><strong>SMS / voice</strong></td>
+<td><strong>Weak</strong></td>
+<td>SIM swapping. <strong>Being retired.</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Number matching</strong> deserves a mention. Older push notifications had one button: Approve. Attackers exploited that with "MFA fatigue" — spam prompts at 3am until someone taps Approve to make it stop. Now the sign-in screen shows a two-digit number you must type into the app. You can't approve a prompt you didn't initiate, because you can't see the number.</p>
+<div class="admonition info">
+<p class="admonition-title">Passkeys become the default from September 2026</p>
+<p>From <strong>1 September 2026</strong> Microsoft begins rolling out <strong>passkeys as the default authentication experience</strong> in Entra ID, and <strong>SMS and voice MFA are being retired</strong>. From <strong>1 February 2027</strong>, users relying only on SMS or voice get a blocking passkey-registration prompt.</p>
+<p>Practical takeaway: <strong>do not design around SMS.</strong> If you're advising an organisation, this migration is a now project.</p>
+</div>
+<h3 id="security-defaults-free-blunt-better-than-nothing">Security Defaults — Free, Blunt, Better Than Nothing</h3>
+<p><strong>Security defaults</strong> is one on/off switch applying a fixed bundle of protections to your whole tenant. It's free, needs no configuration, and if your tenant was created after October 2019 it's very likely <strong>already on</strong>.</p>
+<p>What it enforces:</p>
+<ol>
+<li><strong>All users must register for MFA</strong></li>
+<li><strong>Administrators do MFA every time</strong> they sign in</li>
+<li><strong>Users do MFA when necessary</strong>, based on risk signals</li>
+<li><strong>Legacy authentication protocols are blocked</strong> — IMAP, POP3, SMTP AUTH. Over 99% of password-spray attacks arrive over these, and they can't do MFA, so they're a permanent bypass. This is the highest-value item on the list.</li>
+<li><strong>Privileged activity is protected</strong> — MFA for the portal, Entra admin center, Azure PowerShell and CLI</li>
+</ol>
+<p>Its limitation is that it's binary. On or off, everyone or nobody. No exclusions, no service accounts, no trusted locations. Fine for a small organisation, unworkable for a large one.</p>
+<h3 id="conditional-access-the-paid-ifthen-engine">Conditional Access — The Paid If/Then Engine 💳</h3>
+<p><strong>Conditional Access requires P1, so we won't build one — but you must know what it is, because it's asked in every identity interview.</strong></p>
+<p>The model is a sentence: <strong>IF</strong> these conditions are true, <strong>THEN</strong> apply these controls.</p>
+<ul>
+<li><strong>IF</strong> — which users and groups (and critically, who's <em>excluded</em>), which apps, and conditions: device platform, location, client app, device compliance state, sign-in risk (P2)</li>
+<li><strong>THEN</strong> — block access, or grant it with requirements: require MFA, require a specific <strong>authentication strength</strong> (e.g. <em>phishing-resistant only</em> — this is how you mandate passkeys), require a compliant device, limit session length</li>
+</ul>
+<p>Policies you'd find in essentially every mature tenant: require MFA for administrators, block legacy authentication, require MFA for Azure management, require a compliant device for corporate apps, block sign-ins from countries where you have no staff.</p>
+<p>Two rules that prevent disaster, worth knowing even though we're not clicking:</p>
+<ol>
+<li><strong>Report-only mode.</strong> Every new policy starts in report-only, which logs what <em>would</em> have happened without enforcing it. Run it for days, confirm you haven't caught the backup service account, then enable.</li>
+<li><strong>Break-glass accounts.</strong> Two cloud-only Global Admin accounts, long random passwords, belonging to no individual, <strong>excluded from every policy</strong>, stored offline. For the day a policy misfires and the last admin's phone dies in another timezone.</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Conditional Access vs RBAC — the distinction interviewers probe</p>
+<p><strong>Conditional Access decides whether you get a token at all. RBAC decides what that token lets you do.</strong> A CA policy cannot say "Priya may restart VMs" — it has no concept of a VM. An RBAC assignment cannot say "only from a corporate laptop" — it has no concept of a device. Real security uses both.</p>
+<p>If a question mentions <em>devices, locations, risk or MFA requirements</em> → <strong>Conditional Access</strong>. If it mentions <em>resources, actions or scope</em> → <strong>RBAC</strong>.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Security defaults and Conditional Access are mutually exclusive</p>
+<p>You cannot run both. Enabling a CA policy requires turning security defaults off. That's a reliable exam question — and if you ever do turn security defaults off, replace them the same hour.</p>
+</div>
+<h3 id="mandatory-mfa-for-azure-already-here">Mandatory MFA for Azure — Already Here</h3>
+<p>Independently of all of the above, Microsoft has made <strong>MFA mandatory across all tenants</strong> for Azure administration: first for the <strong>Azure portal</strong> and admin centers, and then at the <strong>Azure Resource Manager layer</strong> — meaning <strong>Azure CLI, PowerShell, the REST APIs, Terraform and Bicep</strong>.</p>
+<p>That matters for the rest of this course. When we reach Bicep on Day 25 and Terraform on Day 26, those deployments authenticate through ARM, and <strong>that authentication requires MFA</strong>. This isn't opt-in. It's the floor now, for everybody.</p>
+<h3 id="self-service-password-reset-sspr">Self-Service Password Reset (SSPR)</h3>
+<p>Password resets are the single largest category of helpdesk tickets in most organisations. SSPR removes them — the user proves identity with registered methods and resets their own password at <code>aka.ms/sspr</code>. <strong>Free for cloud-only users.</strong> (Writing the new password back to on-premises AD needs P1.)</p>
+<h3 id="hands-on-security-defaults-mfa-and-sspr">Hands-On: Security Defaults, MFA and SSPR ✅</h3>
+<ol>
+<li><strong>Entra ID → Overview → Properties → Manage security defaults</strong>. Read the current state and read the bullet list on the panel — this is the free security baseline for the entire Microsoft cloud. <strong>Leave it Enabled.</strong> It's doing real work. <strong>✅</strong></li>
+<li>In your normal browser, go to <strong><code>aka.ms/mfasetup</code></strong> → <strong>+ Add sign-in method</strong> → <strong>Microsoft Authenticator</strong> and follow the QR-code flow. <strong>✅</strong></li>
+<li>Complete the test prompt and note the <strong>number matching</strong> screen — the browser shows a two-digit number and you type it into the app. <strong>✅</strong></li>
+<li>If your phone or laptop supports it, also add a <strong>Passkey</strong>. That's the method Microsoft is standardising on. <strong>✅</strong></li>
+<li><strong>Entra ID → Password reset → Properties</strong>: set SSPR to <strong>Selected</strong> and choose <code>grp-finance-team</code>. That's groups doing their job — a policy targeted at a group instead of a list of names. <strong>✅</strong></li>
+<li>Under <strong>Authentication methods</strong>, set methods required to <strong>1</strong> for the demo (<strong>2</strong> is the correct production answer). Under <strong>Registration</strong>, require users to register at next sign-in. <strong>Save</strong>. <strong>✅</strong></li>
+</ol>
+<hr />
+<h2 id="part-5-applications-app-registrations-and-service-principals">Part 5 — Applications: App Registrations and Service Principals</h2>
+<p>Everything so far has been about humans. But most authentication in a modern system isn't human — it's a web app calling an API, a script reading a storage account, a pipeline deploying infrastructure at 2am with nobody watching. Those need identities too.</p>
+<p>And here's why this sits in the identity half but pays off in the authorisation half: <strong>a service principal is a security principal.</strong> Everything you learn about RBAC in Part Two applies to applications exactly as it applies to people. Azure genuinely does not care whether the thing holding a token has a face.</p>
+<h3 id="three-terms-people-mix-up">Three Terms People Mix Up</h3>
+<ul>
+<li><strong>App registration</strong> — the <strong>global definition</strong> of your application: name, redirect URIs, permissions, credentials. There's exactly <strong>one</strong>, in the tenant where the app was created. The blueprint.</li>
+<li><strong>Service principal</strong> — the <strong>local instance</strong> of that application in a specific tenant. <strong>It's what actually gets role assignments.</strong> Registering an app in your own tenant creates both automatically.</li>
+<li><strong>Enterprise application</strong> — what the portal calls a service principal in the UI. Same object, different blade: <strong>App registrations</strong> is the developer view, <strong>Enterprise applications</strong> is the admin view.</li>
+</ul>
+<p>One blueprint, many buildings — one per tenant. That's the analogy that sticks.</p>
+<h3 id="three-ways-an-app-proves-who-it-is">Three Ways an App Proves Who It Is</h3>
+<table>
+<thead>
+<tr>
+<th>Credential</th>
+<th>Reality</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Client secret</strong></td>
+<td>A string. Expires. Ends up in config files, source control and Slack messages. Weakest.</td>
+</tr>
+<tr>
+<td><strong>Certificate</strong></td>
+<td>Private key — harder to leak by accident, but still something you store and rotate.</td>
+</tr>
+<tr>
+<td><strong>Federated credential</strong></td>
+<td><strong>No secret exists at all.</strong> An external issuer (GitHub Actions, Kubernetes) presents its own token and Entra ID exchanges it. The modern answer for CI/CD — we'll use it on Day 22.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="delegated-vs-application-permissions">Delegated vs Application Permissions</h3>
+<p>When an app requests access to an API like Microsoft Graph, there are two fundamentally different kinds of permission, and the distinction gets asked about:</p>
+<ul>
+<li><strong>Delegated</strong> — the app acts <strong>on behalf of a signed-in user</strong>. Effective access is the <em>intersection</em> of what the app was granted and what the user can do. Delegated <code>Files.Read</code> reads the files <strong>that user</strong> can read.</li>
+<li><strong>Application</strong> — the app acts <strong>as itself</strong>, no user present. Application <code>Files.Read.All</code> reads <strong>every file in the tenant</strong>. There's no user to constrain it, so it always requires <strong>admin consent</strong>.</li>
+</ul>
+<p>An over-permissioned application permission is one of the most common serious findings in a real Entra tenant.</p>
+<div class="admonition note">
+<p class="admonition-title">Graph permissions are not Azure RBAC</p>
+<p>Same two-planes idea wearing a different hat. <strong>Graph permissions</strong> control access to <em>directory data</em> — users, groups, mail. <strong>Azure RBAC roles</strong> control access to <em>Azure resources</em>. An app can have <code>Directory.ReadWrite.All</code> and still not read a single blob.</p>
+</div>
+<h3 id="hands-on-register-an-application">Hands-On: Register an Application ✅</h3>
+<ol>
+<li><strong>Entra ID → App registrations → + New registration</strong>. <strong>Name:</strong> <code>app-lwm-demo</code>, <strong>Supported account types:</strong> <em>Single tenant</em>. Leave the redirect URI blank. <strong>Register</strong>. <strong>✅</strong></li>
+<li>On <strong>Overview</strong>, note the <strong>Application (client) ID</strong> and <strong>Directory (tenant) ID</strong>. Click <strong>Managed application in local directory</strong> — you land in <strong>Enterprise applications</strong>, looking at the service principal. Same app, other view. <strong>✅</strong></li>
+<li><strong>Certificates &amp; secrets → + New client secret</strong> → description <code>demo-secret</code>, 3 months → <strong>Add</strong>. <strong>✅</strong></li>
+<li><strong>Copy the Value immediately.</strong> Not the Secret ID — the <strong>Value</strong>. It's shown exactly once. Everyone learns this the hard way. <strong>✅</strong></li>
+<li>Click the <strong>Federated credentials</strong> tab and read the scenario dropdown — <em>GitHub Actions deploying Azure resources</em>, <em>Kubernetes</em>, <em>Managed identity</em>. Bookmark this screen mentally for Day 22. <strong>✅</strong></li>
+</ol>
+<h3 id="hands-on-sign-in-as-the-application-and-watch-it-fail-like-priya">Hands-On: Sign In as the Application — and Watch It Fail Like Priya ✅</h3>
+<p>A rare, justified use of the CLI, because there's no portal equivalent for "authenticate as an application."</p>
+<ol>
+<li>Open <strong>Cloud Shell</strong> (the <code>&gt;_</code> icon), Bash. <strong>✅</strong></li>
+<li><code>bash
+   az login --service-principal \
+     --username &lt;application-client-id&gt; \
+     --password &lt;the-secret-value&gt; \
+     --tenant &lt;your-tenant-id&gt;</code>
+   It succeeds — Entra ID just authenticated a non-human identity. <strong>✅</strong></li>
+<li>Now try to do something:
+   <div class="highlight"><pre><span></span><code>az<span class="w"> </span>group<span class="w"> </span>list
+</code></pre></div>
+   <strong>The list is empty.</strong> Exactly like Priya. <strong>Authenticated, unauthorised.</strong> The app has a valid identity and <strong>zero</strong> Azure RBAC. <strong>✅</strong></li>
+<li>Return to your own identity with <code>az login</code>. <strong>✅</strong></li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">You just handled a real credential</p>
+<p>That secret is a password to your tenant, and it's now in your Cloud Shell history. In production it belongs in <strong>Key Vault</strong> (Day 18) — or better, it shouldn't exist at all, which is exactly what the next part is about. Delete this app registration at cleanup.</p>
+</div>
+<hr />
+<h2 id="part-6-managed-identities">Part 6 — Managed Identities</h2>
+<h3 id="the-problem-stated-plainly">The Problem, Stated Plainly</h3>
+<p>You just created a client secret. Now answer honestly: where does it live in production? Who could read it? What happens in three months when it expires — is there a calendar reminder, or does the app just break at 2am? Is it in your git history right now?</p>
+<p>Credentials in configuration are the single most common cause of cloud compromise. <strong>Managed identities delete the entire problem.</strong></p>
+<h3 id="what-it-is">What It Is</h3>
+<p>A managed identity is a <strong>service principal that Azure creates and manages for an Azure resource</strong>, where the credentials are handled entirely by the platform, rotated automatically, and <strong>never exposed to you or anyone else</strong>.</p>
+<p>There's no secret to copy, nothing to put in a config file, nothing to leak, nothing to rotate. And they cost <strong>nothing</strong>.</p>
+<p>How it works, because it makes the idea concrete:</p>
+<ol>
+<li>You enable a managed identity on a resource — VM, App Service, Function App, AKS, Data Factory.</li>
+<li>Azure creates a service principal in your tenant, tied to that resource.</li>
+<li>The platform injects the credential where <strong>only that resource</strong> can reach it — on a VM, that's the Instance Metadata Service at <code>169.254.169.254</code>.</li>
+<li>Code inside the resource calls that local endpoint and receives an <strong>Entra ID access token</strong>.</li>
+<li>It presents that token to the target service — Storage, SQL, Key Vault.</li>
+<li>The target service validates the token and <strong>checks the identity's RBAC permissions</strong>.</li>
+</ol>
+<p>No password crosses the wire. No password exists in your code.</p>
+<p>Note step 6 carefully. <strong>A managed identity solves authentication completely and authorisation not at all.</strong> A brand-new managed identity, like Priya, can do nothing until you give it a role. We do that in Part 11.</p>
+<h3 id="system-assigned-vs-user-assigned">System-Assigned vs User-Assigned</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>System-assigned</strong></th>
+<th><strong>User-assigned</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Created</strong></td>
+<td>On the resource, as part of it</td>
+<td>As a standalone Azure resource</td>
+</tr>
+<tr>
+<td><strong>Lifecycle</strong></td>
+<td><strong>Dies with the resource</strong></td>
+<td><strong>Independent</strong> — you delete it yourself</td>
+</tr>
+<tr>
+<td><strong>Shared?</strong></td>
+<td>No — exactly one resource</td>
+<td><strong>Yes</strong> — attach to many</td>
+</tr>
+<tr>
+<td><strong>Best for</strong></td>
+<td>One workload on one resource</td>
+<td>Fleets, or permissions that must survive the compute</td>
+</tr>
+</tbody>
+</table>
+<p>The interview answer: if the identity must <strong>survive VM recreation or be shared</strong>, it's <strong>user-assigned</strong>. If it should be <strong>cleaned up automatically with the resource</strong>, it's <strong>system-assigned</strong>.</p>
+<h3 id="hands-on-give-an-app-service-an-identity">Hands-On: Give an App Service an Identity ✅</h3>
+<ol>
+<li><strong>App Services → + Create → Web App</strong>. <strong>Resource group:</strong> <code>rg-day17-demo</code>, <strong>Name:</strong> <code>app-lwm-day17-&lt;yourname&gt;</code>, <strong>Publish:</strong> Code, <strong>Runtime:</strong> any, <strong>OS:</strong> Linux, <strong>Pricing plan: Free F1</strong>. <strong>Review + create → Create</strong>. <strong>✅</strong></li>
+<li>Open it → <strong>Settings → Identity → System assigned</strong> → <strong>Status: On</strong> → <strong>Save → Yes</strong>. <strong>✅</strong></li>
+<li>An <strong>Object (principal) ID</strong> appears. Entra ID just created a service principal named exactly after your app. <strong>✅</strong></li>
+<li>Note what's <strong>missing</strong> from this blade: no credentials tab, no secret to copy, nothing to download. <strong>That absence is the entire product.</strong> <strong>✅</strong></li>
+<li>Click <strong>Azure role assignments</strong> — empty. Same position Priya was in. Part 11 fills it. <strong>✅</strong></li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">The rule to take away</p>
+<p><strong>If both ends are Azure services, use a managed identity.</strong> App Service to SQL, Function to Storage, VM to Key Vault, AKS to Container Registry — managed identity, every time. Reach for a client secret only when one end genuinely isn't an Azure resource.</p>
+</div>
+<hr />
+<h2 id="part-7-guests-and-hybrid-identity">Part 7 — Guests and Hybrid Identity</h2>
+<p>Two short topics that come up constantly in interviews and almost never need clicking.</p>
+<h3 id="b2b-guests">B2B Guests</h3>
+<p>You hire a contractor. An auditor needs read access for six weeks. Do you create them an account in your tenant, with a password you now manage?</p>
+<p>No. <strong>B2B collaboration</strong> lets you invite someone using <strong>their own existing identity</strong> — their work account in their own tenant, or a personal Microsoft account. They authenticate at home, under their own organisation's MFA policies. You just grant access.</p>
+<ul>
+<li>You never manage their password.</li>
+<li>Their employer disables their account when they leave, and <strong>their access to your resources dies with it automatically.</strong></li>
+<li>A guest object appears in your tenant with a <code>#EXT#</code> in the UPN, and <strong>guests can hold Azure RBAC role assignments exactly like members</strong> — a guest can absolutely be a Reader on your subscription.</li>
+</ul>
+<h3 id="hybrid-identity">Hybrid Identity</h3>
+<p>Most enterprises have twenty years of on-premises Active Directory and aren't throwing it away. Hybrid identity connects the two so a user has <strong>one identity and one password</strong> across both, using <strong>Microsoft Entra Connect Sync</strong> (the mature agent) or <strong>Entra Cloud Sync</strong> (lighter, cloud-configured, Microsoft's direction of travel).</p>
+<p>The three authentication methods are a reliable exam and interview question:</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Where the password is verified</th>
+<th>Key characteristic</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Password Hash Sync (PHS)</strong></td>
+<td><strong>In the cloud</strong></td>
+<td>Simplest and most resilient. <strong>If on-premises is offline, cloud sign-in still works.</strong> Microsoft's recommended default.</td>
+</tr>
+<tr>
+<td><strong>Pass-Through Auth (PTA)</strong></td>
+<td><strong>On-premises</strong>, via an agent</td>
+<td>No password material in the cloud. If on-prem is down, sign-in fails.</td>
+</tr>
+<tr>
+<td><strong>Federation (AD FS)</strong></td>
+<td><strong>On-premises</strong>, by a dedicated farm</td>
+<td>Most control, most infrastructure. Microsoft encourages moving off it.</td>
+</tr>
+</tbody>
+</table>
+<p>The memory trick: <strong>PHS = cloud verifies. PTA = on-prem verifies, no farm. Federation = on-prem verifies, with a farm.</strong> When a question says <em>"must keep working if the on-premises environment is unavailable,"</em> the answer is <strong>PHS</strong>.</p>
+<p>And note: a synced user is a normal security principal with a normal object ID. <strong>You assign Azure roles to them identically.</strong></p>
+<hr />
+<h1 id="part-two-authorisation">PART TWO — AUTHORISATION</h1>
+<blockquote>
+<p><strong>Halfway point.</strong> Everything above answered <em>"who are you?"</em> Everything below answers <em>"and what exactly are you allowed to do?"</em> Right now you have a user who can sign in and see nothing, a group with no permissions, an application with a token and no access, and a managed identity that can't touch a single resource. Four identities, four empty permission sets. Let's fix them.</p>
+</blockquote>
+<hr />
+<h2 id="part-8-entra-roles-vs-azure-roles">Part 8 — Entra Roles vs Azure Roles</h2>
+<p>Before we build anything, we clear up the most misunderstood topic in Azure. There are <strong>two completely separate role systems</strong>, and people mix them up in interviews, in exams and in production incidents.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Entra ID roles</strong></th>
+<th><strong>Azure RBAC roles</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Control</strong></td>
+<td>The identity plane</td>
+<td>The resource plane</td>
+</tr>
+<tr>
+<td><strong>Examples</strong></td>
+<td>Global Administrator, User Administrator, Application Administrator</td>
+<td>Owner, Contributor, Reader, Storage Blob Data Reader</td>
+</tr>
+<tr>
+<td><strong>Let you</strong></td>
+<td>Create users, reset passwords, register apps</td>
+<td>Create VMs, read blobs, delete resource groups</td>
+</tr>
+<tr>
+<td><strong>Assigned at</strong></td>
+<td>Tenant scope</td>
+<td>Management group / subscription / resource group / resource</td>
+</tr>
+<tr>
+<td><strong>Managed in</strong></td>
+<td>Entra ID → Roles &amp; admins</td>
+<td>Any resource → Access control (IAM)</td>
+</tr>
+<tr>
+<td><strong>Custom roles cost</strong></td>
+<td><strong>P1 required</strong></td>
+<td><strong>Free</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>A Global Administrator has total control over identity and zero access to Azure resources.</strong> They can create a hundred users, reset every password, delete the entire directory — and still not see a single virtual machine. Conversely, a subscription <strong>Owner</strong> can do anything to every resource and cannot create a user.</p>
+<h3 id="the-bridge-the-elevate-access-toggle">The Bridge: The Elevate Access Toggle</h3>
+<p>There is exactly one connection between the two systems, and it's a switch: <strong>Entra ID → Overview → Properties → Access management for Azure resources.</strong></p>
+<p>Flip it to <strong>Yes</strong> and your Global Administrator identity is granted <strong>User Access Administrator</strong> at the <strong>root management group</strong> — across every subscription in the tenant.</p>
+<p>This is the emergency door, for exactly one scenario: someone left, they were the only Owner on a subscription, and nobody can get in. A Global Admin elevates, grants themselves Owner, fixes it, and <strong>switches the toggle back off</strong>. Leaving it on permanently means every Global Admin silently holds access-admin rights over every subscription in your tenant.</p>
+<h3 id="hands-on-prove-the-split">Hands-On: Prove the Split ✅</h3>
+<ol>
+<li><strong>Entra ID → Roles &amp; admins → All roles</strong>. Scan the list — over a hundred built-in Entra roles. <strong>✅</strong></li>
+<li>Open <strong>Global Reader</strong> and read the description: everything Global Admin can <em>see</em>, nothing it can <em>change</em>. <strong>This is the single most underused role in Azure</strong> — auditors and new team members should get Global Reader, not Global Administrator. <strong>✅</strong></li>
+<li>Open <strong>User Administrator → + Add assignments</strong> → select <code>Priya Sharma</code> → <strong>Add</strong>. <strong>✅</strong></li>
+<li>In the private window, sign Priya out and back in. Go to <strong>Entra ID → Users</strong>. <strong>She can see the user list and create users.</strong> Now go to <strong>Subscriptions</strong>. <strong>✅</strong></li>
+</ol>
+<p><strong>Still empty.</strong> She can create a hundred users and cannot see one resource group. That's the two planes demonstrated in a single browser session, and it's the clearest thirty seconds in this video.</p>
+<ol>
+<li>Back as admin, open <strong>Entra ID → Overview → Properties</strong>, find <strong>Access management for Azure resources</strong>, read it, and <strong>leave it set to No</strong>. <strong>✅</strong></li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">The interview giveaway</p>
+<p>Creating users, resetting passwords, registering apps, configuring Conditional Access → <strong>Entra role</strong>. Creating, reading or deleting Azure resources → <strong>Azure RBAC role</strong>. "Manage users <em>and</em> virtual machines" → <strong>two separate assignments</strong>.</p>
+</div>
+<hr />
+<h2 id="part-9-azure-rbac-who-what-where">Part 9 — Azure RBAC: Who, What, Where</h2>
+<h3 id="the-whole-model-in-one-line">The Whole Model, In One Line</h3>
+<p>Azure RBAC is the authorisation system built into Azure Resource Manager, and every access decision it makes comes from one construct: the <strong>role assignment</strong>. A role assignment is always, without exception, three things:</p>
+<blockquote>
+<p><strong>WHO</strong> can do <strong>WHAT</strong>, <strong>WHERE</strong>.</p>
+</blockquote>
+<ul>
+<li><strong>WHO</strong> — the <strong>security principal</strong>: a <strong>user</strong>, a <strong>group</strong>, a <strong>service principal</strong>, or a <strong>managed identity</strong>. Four types, complete list. Notice every one of them is something you created in Part One.</li>
+<li><strong>WHAT</strong> — the <strong>role definition</strong>: a named collection of permissions. <em>Reader</em>, <em>Contributor</em>, <em>Storage Blob Data Reader</em>, or one you write.</li>
+<li><strong>WHERE</strong> — the <strong>scope</strong>: management group, subscription, resource group, or an individual resource.</li>
+</ul>
+<p>Bolt those three together and you've granted access. Delete the assignment and you've revoked it. There is no other mechanism. Every permission in Azure — yours included — exists because somewhere there's a row saying <em>this principal, this role, this scope</em>.</p>
+<p>Say it out loud a few times. It's the answer to roughly a third of the RBAC questions you'll ever be asked: <strong>security principal, role definition, scope.</strong></p>
+<h3 id="scope-and-inheritance">Scope and Inheritance</h3>
+<div class="highlight"><pre><span></span><code>Root management group
+   └── Management group        (e.g. "Production")
+          └── Subscription     (e.g. "LWM-Prod")
+                 └── Resource group  (e.g. "rg-day17-demo")
+                        └── Resource (e.g. one storage account)
+</code></pre></div>
+<p>Assign a role at any level and it applies to that level <strong>and everything beneath it</strong>. <strong>Nothing flows upward.</strong></p>
+<ul>
+<li><strong>Reader at management group scope</strong> → read everything in every subscription underneath.</li>
+<li><strong>Contributor at resource group scope</strong> → full control inside that one resource group, invisible everywhere else.</li>
+</ul>
+<p>A <strong>management group</strong> is a container for subscriptions. It exists for exactly this: applying one role assignment or one policy across many subscriptions at once.</p>
+<h3 id="two-rules-that-follow-from-this">Two Rules That Follow From This</h3>
+<p><strong>The golden rule:</strong> <em>assign the least privileged role, at the narrowest scope, to a group rather than a person.</em> Microsoft adds a hard number — <strong>a maximum of three subscription Owners</strong>.</p>
+<p><strong>RBAC is additive.</strong> Your effective permissions are the <strong>union</strong> of every assignment that applies to you, from every scope, including ones inherited through group membership. There is no "deny" in a role assignment: if you have Reader at subscription scope and Contributor on one resource group, you're a Contributor there. <strong>Adding a more restrictive role never takes anything away.</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Why your new permission 'didn't work'</p>
+<p>When you sign in, your token is issued <strong>with your group memberships baked into it</strong>. So adding someone to a group — or granting a new role — doesn't take effect until they get a <strong>new token</strong>. Sign out and back in. That single fact explains most "I granted access and nothing happened" complaints. Role assignment changes can also take <strong>up to 10 minutes</strong> to propagate.</p>
+</div>
+<h3 id="hands-on-the-payoff-give-priya-access">Hands-On: The Payoff — Give Priya Access ✅</h3>
+<p>Priya has been staring at an empty portal for an hour. Let's fix it.</p>
+<ol>
+<li><strong>Resource groups → <code>rg-day17-demo</code> → Access control (IAM)</strong>. Spend a moment here — this is the blade where you'll spend the rest of your Azure career: <strong>✅</strong></li>
+<li><strong>Check access</strong> — "what can this specific person do here?"</li>
+<li><strong>Role assignments</strong> — everything granted at this scope, plus everything inherited</li>
+<li><strong>Roles</strong> — the full catalogue of role definitions</li>
+<li>Look at <strong>Role assignments</strong> as it stands. Your own account is <strong>Owner</strong>, with scope shown as <strong>(Inherited)</strong> from the subscription. <strong>That word is the hierarchy made visible.</strong> <strong>✅</strong></li>
+<li><strong>+ Add → Add role assignment</strong>, and walk the wizard tab by tab: <strong>✅</strong></li>
+<li><strong>Role:</strong> search <code>Reader</code>. Note the two categories — <strong>Job function roles</strong> and <strong>Privileged administrator roles</strong> (Part 10). <strong>Next</strong>.</li>
+<li><strong>Members:</strong> select <strong><code>grp-finance-team</code></strong> — <strong>the group, not Priya</strong>. Golden rule, on camera.</li>
+<li><strong>Review + assign</strong> — read the summary aloud: <em>Reader · grp-finance-team · rg-day17-demo.</em> Who, what, where.</li>
+<li>In the private window, <strong>sign Priya out and back in</strong> — she needs a fresh token. Go to <strong>Resource groups</strong>. <strong>✅</strong></li>
+</ol>
+<p><strong><code>rg-day17-demo</code> is there.</strong></p>
+<p>She can open it, see the App Service, read its configuration. That empty portal from Part 2 is populated — because of exactly one row in a table somewhere.</p>
+<ol>
+<li>Now show the limits. As Priya: try to <strong>stop</strong> the App Service — greyed out or errors, because Reader reads. Check <strong>Resource groups</strong> again and confirm she sees <strong>only</strong> this one. That's scope. <strong>✅</strong></li>
+<li>Back as admin, open the <strong>App Service → Access control (IAM) → Role assignments</strong>. The Reader assignment appears here too, marked <strong>(Inherited)</strong>. <strong>You never assigned anything on the App Service. It flowed down.</strong> <strong>✅</strong></li>
+<li>Click <strong>Check access</strong>, search <code>Priya Sharma</code>, and select her. Azure shows exactly what she has and where it came from. <strong>This is the blade to open when someone says "I can't access X" — it answers the question in five seconds.</strong> <strong>✅</strong></li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Say the sentence every time</p>
+<p>Narrate every assignment: <em>"Reader, to grp-finance-team, at rg-day17-demo."</em> Do that consistently and you'll never write a sloppy one, because saying <em>"Owner, to Priya, at subscription"</em> out loud makes the problem audible.</p>
+</div>
+<hr />
+<h2 id="part-10-inside-a-role-definition-and-the-built-in-roles">Part 10 — Inside a Role Definition, and the Built-in Roles</h2>
+<h3 id="a-role-is-just-a-list-of-strings">A Role Is Just a List of Strings</h3>
+<p>A role definition looks impressive in the portal. Underneath it's JSON with five interesting properties:</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">"Name"</span><span class="p">:</span><span class="w"> </span><span class="s2">"Reader"</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">"Actions"</span><span class="p">:</span><span class="w">         </span><span class="p">[</span><span class="w"> </span><span class="s2">"*/read"</span><span class="w"> </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">"NotActions"</span><span class="p">:</span><span class="w">      </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">"DataActions"</span><span class="p">:</span><span class="w">     </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">"NotDataActions"</span><span class="p">:</span><span class="w">  </span><span class="p">[],</span>
+<span class="w">  </span><span class="nt">"AssignableScopes"</span><span class="p">:[</span><span class="w"> </span><span class="s2">"/"</span><span class="w"> </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong><code>Actions</code></strong> — control-plane operations, always <code>{Provider}/{resourceType}/{operation}</code>:</p>
+<div class="highlight"><pre><span></span><code>Microsoft.Compute/virtualMachines/read           ← view a VM
+Microsoft.Compute/virtualMachines/write          ← create or modify a VM
+Microsoft.Compute/virtualMachines/start/action   ← start a VM
+</code></pre></div>
+<p><strong><code>NotActions</code></strong> — a <strong>subtraction, not a deny</strong>. This is the most misread property in Azure. It removes items from the <code>Actions</code> list; it does <strong>not</strong> block anything granted by a different role assignment. <strong>NotActions is arithmetic.</strong></p>
+<p><strong><code>DataActions</code> / <code>NotDataActions</code></strong> — the same idea for operations on the <em>data inside</em> a resource. That split is Part 11, and it's the most surprising thing in Azure RBAC.</p>
+<p><strong><code>AssignableScopes</code></strong> — where this definition is <em>available to be assigned</em>. Built-in roles use <code>/</code>, so they're assignable everywhere.</p>
+<p>The arithmetic ARM performs is exactly:</p>
+<div class="highlight"><pre><span></span><code>Actions      −  NotActions      =  effective management permissions
+DataActions  −  NotDataActions  =  effective data permissions
+</code></pre></div>
+<h3 id="the-big-four">The Big Four</h3>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Read resources</th>
+<th>Create/modify/delete</th>
+<th>Assign roles to others</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Reader</strong></td>
+<td>✅</td>
+<td>❌</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><strong>Contributor</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>❌</td>
+</tr>
+<tr>
+<td><strong>Owner</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>User Access Administrator</strong></td>
+<td>✅</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<p>That last row surprises people: User Access Administrator can hand out Owner to anybody and cannot create a VM. It's a pure access-management role.</p>
+<p>Azure sorts roles into <strong>job function roles</strong> (Virtual Machine Contributor, Storage Blob Data Reader, Website Contributor — 900+ of them, narrow and boring, and what you should be assigning almost all the time) and <strong>privileged administrator roles</strong> (Owner, Contributor, User Access Administrator, <strong>Role Based Access Control Administrator</strong>, Reservations Administrator). What puts a role in that second bucket isn't "can do a lot" — it's <strong>"can grant permissions to others."</strong> That's the master key.</p>
+<div class="admonition tip">
+<p class="admonition-title">Two habits worth forming</p>
+<p><strong>Prefer a job function role.</strong> Someone needs to restart VMs? <em>Virtual Machine Contributor</em>, not Contributor. Manage web apps? <em>Website Contributor</em>.</p>
+<p><strong>Prefer Role Based Access Control Administrator over User Access Administrator.</strong> Same job — assigning roles — with strictly fewer permissions. Most tutorials haven't caught up with this one, and mentioning it in an interview lands well.</p>
+</div>
+<h3 id="hands-on-read-a-built-in-role">Hands-On: Read a Built-in Role ✅</h3>
+<ol>
+<li><strong>Subscription → Access control (IAM) → Roles</strong> tab. You're looking at the full catalogue. <strong>✅</strong></li>
+<li>Find <strong>Contributor</strong> → <strong>…</strong> → <strong>View</strong> → <strong>JSON</strong> tab. Read the <code>NotActions</code> array aloud: <strong>✅</strong>
+   <div class="highlight"><pre><span></span><code>Microsoft.Authorization/*/Delete
+Microsoft.Authorization/*/Write
+Microsoft.Authorization/elevateAccess/Action
+</code></pre></div>
+   <code>Actions</code> is <code>["*"]</code>. <strong>Everything.</strong> Minus those subtractions. <strong>Contributor is literally "Owner minus the ability to grant access."</strong> Once you've seen the JSON you'll never forget the difference.</li>
+<li>Open <strong>Reader</strong> → JSON. <code>Actions: ["*/read"]</code>. One line. <strong>✅</strong></li>
+<li>Open <strong>Storage Blob Data Reader</strong> → JSON and look at <em>where</em> the permission lives: <strong>✅</strong>
+   <div class="highlight"><pre><span></span><code><span class="nt">"dataActions"</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">  </span><span class="s2">"Microsoft.Storage/storageAccounts/blobServices/containers/blobs/read"</span>
+<span class="p">]</span>
+</code></pre></div>
+   <strong>The interesting permission is in <code>dataActions</code>, not <code>actions</code>.</strong> Remember that shape — the next part is built on it.</li>
+<li>Search the Roles list for <code>Key Vault</code>, <code>SQL</code>, <code>Kubernetes</code>. There are <strong>900+ built-in roles</strong> and Microsoft adds more constantly. <strong>Before you write a custom role, search properly. It probably already exists.</strong> <strong>✅</strong></li>
+</ol>
+<hr />
+<h2 id="part-11-control-plane-vs-data-plane">Part 11 — Control Plane vs Data Plane</h2>
+<h3 id="the-question-nobody-gets-right">The Question Nobody Gets Right</h3>
+<p>Here's the question: <strong>if I make you a Contributor on a storage account — full management rights, you can delete the entire account — can you read a file inside it?</strong></p>
+<p>Everybody says yes. The answer is <strong>no</strong>.</p>
+<p>Azure splits operations into two categories:</p>
+<ul>
+<li><strong>Control plane</strong> — operations on the <em>resource itself</em>. Create the storage account, change replication, delete it. These go through <strong>Azure Resource Manager</strong>. Governed by <strong><code>Actions</code></strong>.</li>
+<li><strong>Data plane</strong> — operations on the <em>data inside</em>. Read a blob, get a secret from Key Vault, query a Cosmos container. These go <strong>straight to the service's own endpoint</strong> — <code>yourstorage.blob.core.windows.net</code> — never touching ARM. Governed by <strong><code>DataActions</code></strong>.</li>
+</ul>
+<p><strong>Contributor's <code>Actions</code> is <code>["*"]</code> and its <code>DataActions</code> is empty.</strong> So a Contributor can perform every management operation on a storage account and has literally zero data permissions. <strong>They can delete the account containing the file. They cannot open the file.</strong></p>
+<p>That's not a quirk. It's deliberate, it's the foundation of separation of duties in Azure, and it's why separate roles like <em>Storage Blob Data Reader</em>, <em>Key Vault Secrets User</em> and <em>AcrPull</em> exist.</p>
+<h3 id="hands-on-prove-it">Hands-On: Prove It ✅</h3>
+<p><strong>Set up:</strong></p>
+<ol>
+<li><strong>Storage accounts → + Create</strong>. <strong>Resource group:</strong> <code>rg-day17-demo</code>, <strong>Name:</strong> <code>stlwmday17&lt;yourname&gt;</code> (lowercase, unique), <strong>Redundancy:</strong> LRS. <strong>Create</strong>. <strong>✅</strong></li>
+<li>Open it → <strong>Containers → + Container</strong> → <code>reports</code> → <strong>Create</strong>. Open it → <strong>Upload</strong> → any small text file named <code>q3-results.txt</code>. <strong>✅</strong></li>
+</ol>
+<p><strong>Make Priya a Contributor on it:</strong></p>
+<ol>
+<li><strong>Storage account → Access control (IAM) → + Add → Add role assignment</strong>. <strong>Role:</strong> <code>Contributor</code>. <strong>Members:</strong> <code>grp-finance-team</code>. <strong>Review + assign</strong>. <strong>✅</strong></li>
+</ol>
+<p><strong>Watch it fail:</strong></p>
+<ol>
+<li>In the private window, sign Priya out and back in, and navigate to the storage account. <strong>✅</strong></li>
+<li>Confirm she has real power: she can open <strong>Configuration</strong>, change the <strong>access tier</strong>, and the <strong>Delete</strong> button on the account is live. <strong>She could destroy this storage account right now.</strong> <strong>✅</strong></li>
+<li>Now click <strong>Containers → reports</strong>. <strong>✅</strong></li>
+</ol>
+<p><strong>She gets an error</strong> — <em>"You do not have permissions to list the data using your user account with Microsoft Entra ID."</em></p>
+<p>Sit in that for a second. <strong>She can delete the container. She cannot list what's in it.</strong> Control plane, data plane.</p>
+<p><strong>Fix it properly:</strong></p>
+<ol>
+<li>Back as admin: <strong>storage account → IAM → + Add → Add role assignment → <code>Storage Blob Data Reader</code></strong> → <strong>Members:</strong> <code>grp-finance-team</code> → <strong>Review + assign</strong>. <strong>✅</strong></li>
+<li>In the private window, refresh — give it a minute, propagation can take up to 10. Click into <code>reports</code>. <strong>✅</strong></li>
+</ol>
+<p><strong>The blob list appears.</strong> She can open <code>q3-results.txt</code> and read it. She still can't upload or delete — that would need <em>Storage Blob Data Contributor</em>.</p>
+<div class="admonition warning">
+<p class="admonition-title">The back door worth knowing about</p>
+<p>A Contributor <em>can</em> call <code>listKeys</code> — a <strong>control-plane</strong> action — and use the returned account key to reach the data anyway. That's why serious environments disable shared key access entirely and force all access through Entra ID and RBAC. Data-plane roles only give you real separation of duties once that back door is closed.</p>
+</div>
+<h3 id="closing-the-loop-give-the-managed-identity-a-role">Closing the Loop: Give the Managed Identity a Role ✅</h3>
+<p>Everything you just did for Priya applies identically to software. That App Service identity from Part 6 is a <strong>security principal</strong>. It can hold role assignments. Azure does not care that it has no face.</p>
+<ol>
+<li><strong>Storage account → Access control (IAM) → + Add → Add role assignment → <code>Storage Blob Data Reader</code></strong>. <strong>✅</strong></li>
+<li>On the <strong>Members</strong> tab, change <strong>Assign access to</strong> from <em>User, group, or service principal</em> to <strong>Managed identity</strong>. <strong>✅</strong></li>
+<li><strong>+ Select members</strong> → <strong>Managed identity: App Service</strong> → pick <code>app-lwm-day17-&lt;yourname&gt;</code>. <strong>Review + assign</strong>. <strong>✅</strong></li>
+</ol>
+<p>Note what you did <strong>not</strong> do: you didn't paste a client ID, and no secret was involved anywhere.</p>
+<ol>
+<li>Look at the storage account's <strong>Role assignments</strong> tab now: a group with Contributor, the same group with Storage Blob Data Reader, and an <strong>App Service</strong> with Storage Blob Data Reader. <strong>Humans and software, same list, same model.</strong> <strong>✅</strong></li>
+</ol>
+<p>Your App Service can now read that blob — with no username, no password, no key, no connection string anywhere on it. <strong>Authentication with no credential, authorisation with no credential.</strong> That's the whole point of Part 6 and Part 9 arriving in the same video.</p>
+<div class="admonition tip">
+<p class="admonition-title">The interview version of this part</p>
+<p><em>"A user has Contributor on a storage account but can't read blobs. What's the minimum change?"</em> → <strong>Assign a data-plane role such as Storage Blob Data Reader.</strong> Not Owner. Not Storage Account Contributor. The question is testing whether you know the two planes exist. Same pattern everywhere: <strong>Key Vault Secrets User</strong> vs Contributor on the vault (Day 18), <strong>AcrPull</strong> vs Contributor on a registry.</p>
+</div>
+<hr />
+<h2 id="part-12-custom-roles">Part 12 — Custom Roles</h2>
+<p>With 900+ built-in roles, your first move is always to search the catalogue. But sometimes nothing fits:</p>
+<ul>
+<li>Too broad — <em>Virtual Machine Contributor</em> lets someone delete VMs when you only want them to restart a hung one.</li>
+<li>Too narrow — you need permissions spanning two services and no single role covers both.</li>
+</ul>
+<p>Custom roles are <strong>free</strong>, work with any principal type, and behave identically to built-in roles. (Reminder: custom <strong>Entra</strong> roles need P1. Custom <strong>Azure RBAC</strong> roles are free. Different systems.)</p>
+<p>Three starting points: <strong>clone a role</strong> (usually right), <strong>start from scratch</strong>, or <strong>start from JSON</strong> (which is how you keep roles in source control — the grown-up answer).</p>
+<h3 id="hands-on-build-vm-operator">Hands-On: Build "VM Operator" ✅</h3>
+<p>The scenario: your team needs to restart misbehaving VMs at 3am. They must <strong>not</strong> be able to create, resize or delete them.</p>
+<ol>
+<li><strong>Subscription → Access control (IAM) → + Add → Add custom role</strong>. <strong>✅</strong></li>
+<li><strong>Basics:</strong> <strong>Name:</strong> <code>LWM VM Operator</code>. <strong>Baseline permissions:</strong> <em>Clone a role</em> → <strong>Virtual Machine Contributor</strong>. <strong>✅</strong></li>
+<li><strong>Permissions tab</strong> — cut it down: <strong>✅</strong></li>
+<li>Remove <code>Microsoft.Compute/virtualMachines/write</code> and <code>/delete</code></li>
+<li>Remove the disk and snapshot write/delete permissions</li>
+<li>Confirm these survive:
+     <div class="highlight"><pre><span></span><code>Microsoft.Compute/virtualMachines/read
+Microsoft.Compute/virtualMachines/start/action
+Microsoft.Compute/virtualMachines/restart/action
+Microsoft.Compute/virtualMachines/powerOff/action
+</code></pre></div></li>
+<li><strong>Assignable scopes tab</strong> — by default it lists your whole subscription. <strong>Narrow it:</strong> remove that and add <code>rg-day17-demo</code>. Now the role can only ever be assigned inside that resource group. <strong>✅</strong></li>
+<li><strong>JSON tab</strong> — read the definition you just built. This is the payoff for Part 10. Copy it into a file if you want it in source control. <strong>✅</strong></li>
+<li><strong>Review + create → Create.</strong> It takes a few minutes to propagate. <strong>✅</strong></li>
+<li>Assign it: <strong><code>rg-day17-demo</code> → IAM → + Add → Add role assignment</strong>, use the <strong>Type</strong> filter → <strong>CustomRole</strong> to find it, and assign to <code>grp-finance-team</code>. <strong>✅</strong></li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">Don't reach for the wildcard</p>
+<p>It's tempting to write <code>Microsoft.Compute/*</code> and be done. List actions explicitly instead. A wildcard silently grants every permission Microsoft adds to that provider <strong>later</strong> — that's how a "restart VMs" role quietly becomes something else eighteen months from now.</p>
+</div>
+<hr />
+<h2 id="part-13-azure-policy-vs-rbac">Part 13 — Azure Policy vs RBAC</h2>
+<p>Students confuse these constantly, so one line separates them:</p>
+<blockquote>
+<p><strong>RBAC controls <em>who can perform actions</em>. Azure Policy controls <em>what resources are allowed to exist</em>.</strong></p>
+</blockquote>
+<p>They're orthogonal and you need both. RBAC says "Priya may create VMs here." Policy says "and any VM created here must be in an approved region and carry a <code>CostCenter</code> tag." Priya has permission; the resource still gets rejected.</p>
+<p><strong>Policy effects</strong>, in rough order of aggression:</p>
+<table>
+<thead>
+<tr>
+<th>Effect</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Audit</strong></td>
+<td>Logs non-compliance, changes nothing. Always start here.</td>
+</tr>
+<tr>
+<td><strong>Deny</strong></td>
+<td><strong>Blocks the deployment outright</strong></td>
+</tr>
+<tr>
+<td><strong>Modify</strong></td>
+<td>Adds or updates tags/properties during creation</td>
+</tr>
+<tr>
+<td><strong>DeployIfNotExists</strong></td>
+<td>Auto-deploys a missing related resource — real remediation</td>
+</tr>
+</tbody>
+</table>
+<p>Policies group into <strong>initiatives</strong> (for example an entire ISO 27001 benchmark as one assignable unit) and are assigned at management group, subscription or resource group scope, inheriting downwards exactly like RBAC.</p>
+<div class="admonition note">
+<p class="admonition-title">Deny assignments — know the term, that's all</p>
+<p>There's one thing that <em>can</em> override a role assignment: a <strong>deny assignment</strong>, which blocks actions for a principal and beats every role, even Owner. <strong>You cannot create them by hand.</strong> Azure creates them for managed applications and deployment stacks. The <strong>Deny assignments</strong> tab exists on every IAM blade and will be empty on your subscription. Know it exists; move on.</p>
+</div>
+<h3 id="hands-on-a-policy-that-blocks-an-owner">Hands-On: A Policy That Blocks an Owner ✅</h3>
+<ol>
+<li>Search <strong>Policy</strong> → <strong>Authoring → Definitions</strong>. Find <strong><code>Require a tag on resources</code></strong> and open it. Read the JSON — an <code>if</code> block (the tag is missing) and a <code>then</code> block (<code>"effect": "deny"</code>). <strong>✅</strong></li>
+<li><strong>Assign</strong> it: <strong>Scope:</strong> <code>rg-day17-demo</code>, <strong>Parameters → Tag Name:</strong> <code>CostCenter</code>. <strong>Review + create → Create</strong>. <strong>✅</strong></li>
+<li>Wait a few minutes — policy evaluation isn't instant. <strong>✅</strong></li>
+<li>Try to create any resource in <code>rg-day17-demo</code> <strong>without</strong> a <code>CostCenter</code> tag. <strong>✅</strong></li>
+</ol>
+<p><strong>Rejected</strong>, with <code>RequestDisallowedByPolicy</code> naming your assignment. You are the subscription <strong>Owner</strong>. You have every permission in Azure. <strong>And it still failed</strong> — because RBAC and Policy answer different questions.</p>
+<ol>
+<li>Create the same resource <strong>with</strong> the tag. It succeeds. <strong>✅</strong></li>
+<li><strong>Delete the policy assignment</strong> before moving on, or the cleanup steps will fight you. <strong>✅</strong></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Where the two systems meet</p>
+<p><code>DeployIfNotExists</code> and <code>Modify</code> policies have to actually <em>do</em> something, so the policy assignment gets a <strong>managed identity</strong>, and that identity needs <strong>role assignments</strong> to perform the remediation. A governance rule, enforced by a managed identity, authorised by RBAC — every concept from today in one sentence.</p>
+</div>
+<hr />
+<h2 id="part-14-pim-troubleshooting-and-interview-prep">Part 14 — PIM, Troubleshooting and Interview Prep</h2>
+<h3 id="privileged-identity-management">Privileged Identity Management 💳</h3>
+<p><strong>PIM requires Entra ID P2, so there's no demo — but the vocabulary comes up in interviews constantly, so know it cold.</strong></p>
+<p>Think about who holds Owner or Global Administrator in a typical organisation, and ask how many hours a year they actually <em>need</em> it. Maybe twenty. They hold it for 8,760. Every hour of standing privilege is an hour a phished session can use.</p>
+<p><strong>PIM shrinks that window.</strong> Instead of holding the role, you're <strong>eligible</strong> for it, and you activate it when needed.</p>
+<table>
+<thead>
+<tr>
+<th>Term</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Eligible</strong></td>
+<td>The assignment exists but is dormant — the user must <strong>activate</strong> it</td>
+</tr>
+<tr>
+<td><strong>Active</strong></td>
+<td>A normal, working assignment</td>
+</tr>
+<tr>
+<td><strong>Time-bound</strong></td>
+<td>Expires automatically on a date — eligible <em>or</em> active</td>
+</tr>
+<tr>
+<td><strong>Activation</strong></td>
+<td>Turning an eligible assignment on — can require MFA, a typed justification, and approval by a named person</td>
+</tr>
+</tbody>
+</table>
+<p>So the contractor's access expires by itself. The admin's Owner role lasts one hour, was approved by someone, and has a recorded reason. And everything lands in an audit trail.</p>
+<p>Two bonus facts worth having: PIM covers <strong>Entra roles, Azure resource roles, and group membership</strong>; and <strong>eligible assignments don't count towards the 4,000-role-assignment limit</strong>, so PIM improves your security posture <em>and</em> your headroom.</p>
+<p>The trigger words: <em>"just-in-time," "temporary elevation," "approval workflow," "time-bound admin access," "access must expire automatically"</em> → <strong>PIM, and the licence is P2.</strong></p>
+<h3 id="the-gotchas-that-actually-waste-your-day">The Gotchas That Actually Waste Your Day</h3>
+<p>These four cause most real-world RBAC support tickets:</p>
+<ul>
+<li><strong>Propagation delay.</strong> Role assignment changes take <strong>up to 10 minutes</strong>. And because group memberships are baked into the token, <strong>sign out and back in</strong> to see a new one. Start every "it didn't work" investigation here.</li>
+<li><strong>"Identity not found."</strong> You deleted a user, group or service principal without removing its role assignments. The assignment survives pointing at a dead GUID — harmless but messy, and it counts towards your 4,000. Clean them up.</li>
+<li><strong>Role assignments don't move with resources.</strong> Move a resource to another resource group and any assignment made <em>directly on it</em> is orphaned. Recreate it.</li>
+<li><strong>Subscription transfer wipes RBAC.</strong> Move a subscription to a different tenant and <strong>all</strong> role assignments are permanently deleted. Worth saying twice, because people get bitten exactly once.</li>
+</ul>
+<h3 id="where-the-evidence-lives">Where the Evidence Lives</h3>
+<p>Two logs, two planes, both free:</p>
+<ul>
+<li><strong>Entra ID sign-in logs</strong> — every authentication attempt, with the Conditional Access policies evaluated and the MFA method used. Four categories: interactive user, non-interactive user, <strong>service principal</strong>, and <strong>managed identity</strong> sign-ins. Your infrastructure signing in, logged like a person.</li>
+<li><strong>Azure Activity Log</strong> — every control-plane operation on resources, <strong>including role assignment writes and deletes</strong>. This is where <em>"who gave Priya Contributor, and when?"</em> is answered.</li>
+</ul>
+<p><strong>Retention is the catch:</strong> free tenants keep Entra logs <strong>7 days</strong>, the Activity Log keeps 90. For anything real you export via <strong>Diagnostic settings</strong> to a Log Analytics workspace — that's <strong>Day 19, Azure Monitor</strong>, and it's the same pattern for every service in Azure.</p>
+<h3 id="hands-on-audit-what-you-did-today">Hands-On: Audit What You Did Today ✅</h3>
+<ol>
+<li><strong><code>rg-day17-demo</code> → Activity log</strong> → filter <strong>Operation: Create role assignment</strong>. Every assignment you made today, with who made it and when. <strong>This is the answer to "who granted that?"</strong> <strong>✅</strong></li>
+<li><strong>Entra ID → Sign-in logs.</strong> Find your own sign-in and work through the tabs. Find <strong>Priya's</strong>. Then switch the view to <strong>Service principal sign-ins</strong> and find <code>app-lwm-demo</code> from Part 5. <strong>✅</strong></li>
+<li><strong>Subscription → Access control (IAM) → Role assignments</strong> and look at the count chart at the top of the page, showing where you stand against the 4,000 limit. <strong>✅</strong></li>
+</ol>
+<h3 id="interview-and-exam-quick-reference">Interview and Exam Quick Reference</h3>
+<table>
+<thead>
+<tr>
+<th>If you're asked…</th>
+<th>The answer is…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Create users / reset passwords / register apps"</td>
+<td><strong>Entra ID role</strong> (User Administrator)</td>
+</tr>
+<tr>
+<td>"Permissions on Azure resources"</td>
+<td><strong>Azure RBAC role</strong> — not an Entra role</td>
+</tr>
+<tr>
+<td>"Global Admin can't see any subscriptions"</td>
+<td><strong>Elevate access</strong> toggle — then turn it back off</td>
+</tr>
+<tr>
+<td>"Membership must update automatically by department"</td>
+<td><strong>Dynamic group</strong> (P1)</td>
+</tr>
+<tr>
+<td>"Require MFA only from outside the office"</td>
+<td><strong>Conditional Access</strong> with a named location (P1)</td>
+</tr>
+<tr>
+<td>"Simplest way to require MFA for everyone, free"</td>
+<td><strong>Security defaults</strong></td>
+</tr>
+<tr>
+<td>"Must keep working if on-premises is unavailable"</td>
+<td><strong>Password Hash Synchronisation</strong></td>
+</tr>
+<tr>
+<td>"Give a partner access without creating an account"</td>
+<td><strong>B2B guest invitation</strong></td>
+</tr>
+<tr>
+<td>"Recover a user deleted last week"</td>
+<td><strong>Deleted users</strong> — 30-day restore, same object ID</td>
+</tr>
+<tr>
+<td>"An Azure service must reach another with no credentials"</td>
+<td><strong>Managed identity</strong> + a role assignment</td>
+</tr>
+<tr>
+<td>"Identity must survive VM recreation or be shared"</td>
+<td><strong>User-assigned</strong> managed identity</td>
+</tr>
+<tr>
+<td>"A pipeline must deploy with no stored secret"</td>
+<td><strong>Federated credential</strong> (workload identity federation)</td>
+</tr>
+<tr>
+<td>"Grant the minimum access to manage VMs"</td>
+<td><strong>Virtual Machine Contributor</strong> at the narrowest scope</td>
+</tr>
+<tr>
+<td>"Manage everything but not grant access to others"</td>
+<td><strong>Contributor</strong></td>
+</tr>
+<tr>
+<td>"Grant access to others but not manage resources"</td>
+<td><strong>User Access Administrator</strong> — or better, <strong>RBAC Administrator</strong></td>
+</tr>
+<tr>
+<td>"One assignment across many subscriptions"</td>
+<td><strong>Management group</strong> scope</td>
+</tr>
+<tr>
+<td>"Contributor but can't read blobs"</td>
+<td>Assign a <strong>data-plane role</strong> — Storage Blob Data Reader</td>
+</tr>
+<tr>
+<td>"Built-in roles don't fit"</td>
+<td><strong>Custom role</strong> (free)</td>
+</tr>
+<tr>
+<td>"All resources must carry a CostCenter tag"</td>
+<td><strong>Azure Policy</strong>, <strong>Deny</strong> effect</td>
+</tr>
+<tr>
+<td>"Just-in-time, time-bound admin access with approval"</td>
+<td><strong>PIM</strong> (P2)</td>
+</tr>
+<tr>
+<td>"We've hit 4,000 role assignments"</td>
+<td><strong>Assign to groups</strong>, remove redundant assignments, make them eligible in PIM</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="cleanup">Cleanup ✅</h2>
+<p>Cleanup has two halves, because you created things in two planes. <strong>Deleting a resource group removes nothing from the directory</strong> — users, groups and app registrations live in the tenant.</p>
+<p><strong>Resource plane:</strong></p>
+<ol>
+<li><strong>Delete the policy assignment</strong> if you haven't: <strong>Policy → Assignments → Require a tag on resources → Delete</strong>. <strong>✅</strong></li>
+<li><strong>Delete the custom role:</strong> <code>rg-day17-demo</code> → IAM → <strong>Roles</strong> tab → filter <strong>CustomRole</strong> → <code>LWM VM Operator</code> → <strong>Delete</strong>. <strong>Remove its role assignment first</strong>, or you'll get <code>RoleDefinitionHasAssignments</code>. <strong>✅</strong></li>
+<li><strong>Delete the resource group</strong> <code>rg-day17-demo</code>. This removes the App Service, the plan, the storage account, and automatically every role assignment scoped inside it. <strong>✅</strong></li>
+<li><strong>Check the subscription IAM blade</strong> for orphaned assignments showing <em>Identity not found</em> and remove them. <strong>✅</strong></li>
+</ol>
+<p><strong>Identity plane:</strong></p>
+<ol>
+<li><strong>Delete the app registration:</strong> <strong>Entra ID → App registrations → app-lwm-demo → Delete</strong>. This kills the client secret. Do it. <strong>✅</strong></li>
+<li><strong>Remove the Entra role</strong> you gave Priya in Part 8 (<strong>Roles &amp; admins → User Administrator → Assignments</strong>). <strong>✅</strong></li>
+<li><strong>Keep <code>Priya Sharma</code> and <code>grp-finance-team</code>.</strong> They cost nothing, and Day 18 (Key Vault) uses exactly this pattern again — a group, a data-plane role, a managed identity. <strong>✅</strong></li>
+<li><strong>Keep <code>db-lwm-demo</code></strong> — it's on the free offer and Day 18 and Day 30 both use it. <strong>✅</strong></li>
+<li><strong>Keep the MFA you registered on your own account.</strong> Genuinely. It's free, it's the highest-value security change you can make to your Azure account, and Microsoft mandates it for the portal and ARM anyway. <strong>✅</strong></li>
+</ol>
+<hr />
+<h2 id="summary">Summary</h2>
+<p>Today you stopped asking "how do I build it?" and started asking two harder questions: <strong>"who are you?"</strong> and <strong>"what exactly are you allowed to do?"</strong></p>
+<p><strong>Microsoft Entra ID is the identity plane</strong> — a global, region-less service holding users, groups and application identities, completely separate from the resource plane where your VMs and databases live. Different containers, different role systems, different blades. The moment that split clicks, Azure permissions stop being confusing: <strong>a Global Administrator can't see a virtual machine, and a subscription Owner can't create a user.</strong> We proved it twice — once with Priya, once with a service principal that had a valid token and no access to an empty resource group.</p>
+<p><strong>Users and groups</strong> are the raw material, and the rule is permanent: <strong>never assign permissions to a person.</strong> It isn't tidiness — it's the documented remedy for the hard 4,000-assignment ceiling.</p>
+<p><strong>Authentication is where the free value is.</strong> MFA blocks over 99% of identity attacks and costs nothing. Security defaults deliver real protection with one switch. Microsoft has made MFA mandatory for the portal and the ARM layer — which means CLI, PowerShell, Terraform and Bicep. And <strong>passkeys become the default from September 2026</strong>, with SMS being retired, so don't design around text messages.</p>
+<p><strong>Applications get identities too</strong>, and the best idea in Azure security is the <strong>managed identity</strong> — a credential you cannot read, cannot leak and never rotate, because it doesn't exist anywhere you can reach.</p>
+<p>Then everything flipped. <strong>Azure RBAC is one sentence: who can do what, where.</strong> Security principal, role definition, scope. Every permission in Azure is that sentence written down somewhere, and every access problem you'll ever debug is one of those three words being wrong.</p>
+<p>You watched scope inherit downward, and you saw the exact instant Priya's empty portal filled up. You read the JSON and found that <strong>Contributor is literally Owner minus the ability to grant access</strong>. You made a Contributor on a storage account <strong>who could delete the account and could not read a file inside it</strong> — the single most important surprise in Azure authorisation. You gave that same data role to a machine. You built a custom role and cut it down to three actions and one resource group. And you watched Azure Policy reject a deployment from a subscription Owner because a tag was missing.</p>
+<p>Two questions. Two systems. One video, because in real life you never get to answer just one of them.</p>
+<h3 id="whats-next">What's Next</h3>
+<p><strong>Day 18 — Azure Key Vault</strong> is where secrets go to live properly, and it's the perfect sequel. Key Vault carries <em>both</em> permission models side by side — the legacy <strong>access policy</strong> model and modern <strong>Azure RBAC</strong> — with data-plane roles like <em>Key Vault Secrets User</em> that behave exactly like the Storage Blob Data Reader you met today. And you'll wire a managed identity to a vault so an application reads a secret with no credential, using precisely the pattern you built here.</p>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<p><strong>Identity</strong></p>
+<ul>
+<li><strong>Two planes.</strong> Entra ID manages identities (global, no region). ARM manages resources (regional). Different role systems, different blades — and mixing them up causes most Azure permission confusion.</li>
+<li><strong>One subscription trusts exactly one tenant.</strong> Moving a subscription to another tenant <strong>permanently deletes every role assignment</strong>.</li>
+<li><strong>Entra ID is not AD DS.</strong> OAuth/OIDC/SAML, flat directory, no Group Policy, no OUs.</li>
+<li><strong>The object ID is what matters.</strong> RBAC stores GUIDs, not names — which is why a 30-day user restore brings access back and a re-created user doesn't.</li>
+<li><strong>Never assign permissions to a person.</strong> Groups make access a membership question and are the documented fix for the 4,000-assignment ceiling.</li>
+<li><strong>MFA is free and blocks 99%+ of identity attacks.</strong> Security defaults give you a baseline in one click; <strong>Conditional Access (P1)</strong> adds the if/then logic. You can't run both.</li>
+<li><strong>Passkeys become the default from 1 September 2026</strong>; SMS and voice are being retired. Don't build on SMS.</li>
+<li><strong>App registration = blueprint, service principal = the instance that holds role assignments.</strong> Enterprise applications is just the admin view of the same object.</li>
+<li><strong>Delegated permissions act as the user; application permissions act as the app</strong> and need admin consent.</li>
+<li><strong>Managed identities are free, have no readable credential, and are the correct answer whenever both ends are Azure services.</strong> System-assigned dies with the resource; user-assigned survives and can be shared.</li>
+<li><strong>PHS = cloud verifies, PTA = on-prem verifies, Federation = on-prem with a farm.</strong> "Must work when on-prem is down" → <strong>PHS</strong>.</li>
+</ul>
+<p><strong>Authorisation</strong></p>
+<ul>
+<li><strong>Every role assignment is three things: security principal + role definition + scope.</strong> Who, what, where. There is no other mechanism.</li>
+<li><strong>Four principal types</strong> — user, group, service principal, managed identity. Software is a first-class citizen.</li>
+<li><strong>Four scope levels</strong> — management group → subscription → resource group → resource. Permissions inherit <strong>downwards only</strong>.</li>
+<li><strong>RBAC is additive.</strong> Your access is the union of every assignment. Adding a narrower role never removes anything.</li>
+<li><strong>Golden rule:</strong> least privileged role, narrowest scope, assigned to a group. <strong>Maximum three subscription Owners.</strong></li>
+<li><strong><code>Actions − NotActions</code> = your effective permissions. NotActions is subtraction, not denial.</strong></li>
+<li><strong>Contributor = Owner minus the ability to grant access.</strong> One <code>NotActions</code> list, nothing more.</li>
+<li><strong>Control plane ≠ data plane.</strong> A Contributor on a storage account <strong>cannot read a blob</strong> — that needs Storage Blob Data Reader. The same split hits Key Vault, Cosmos DB and ACR. Watch for the <code>listKeys</code> back door.</li>
+<li><strong>Prefer job function roles over privileged administrator roles</strong>, and prefer <strong>RBAC Administrator</strong> over User Access Administrator.</li>
+<li><strong>Custom roles are free.</strong> Clone, cut down, narrow the assignable scopes — and never use wildcards.</li>
+<li><strong>RBAC controls who can act; Azure Policy controls what may exist.</strong> A subscription Owner can still be blocked by a Deny policy.</li>
+<li><strong>PIM (P2)</strong> turns standing privilege into just-in-time, time-bound, approved, audited access — and eligible assignments don't count towards the 4,000 limit.</li>
+<li><strong>The ten-minute rule:</strong> assignment changes take up to 10 minutes, and group changes need a fresh token. Sign out and back in before you debug anything else.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../day16_azure_sql_database/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Day 16 — Azure SQL Database + Other Databases">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Day 16 — Azure SQL Database + Other Databases
+              </div>
+            </div>
+          </a>
+        
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

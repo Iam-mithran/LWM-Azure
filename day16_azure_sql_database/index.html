@@ -1,0 +1,3231 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A complete beginner's guide to Azure Cloud and Azure DevOps — 31 days plus bonus content, zero assumed cloud knowledge.">
+      
+      
+      
+        <link rel="canonical" href="https://iam-mithran.github.io/LWM-Azure/day16_azure_sql_database/">
+      
+      
+        <link rel="prev" href="../day15_vpn_expressroute/">
+      
+      
+        <link rel="next" href="../day17_entra_id_rbac/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Day 16 — Azure SQL Database + Other Databases - LearnWithMithran — Azure Complete Beginner's Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#day-16-azure-sql-database-other-databases" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-header__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LearnWithMithran — Azure Complete Beginner's Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Day 16 — Azure SQL Database + Other Databases
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-nav__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LearnWithMithran — Azure Complete Beginner's Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day01_account_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day02_fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day03_vms_part1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day04_web_hosting_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day05_vms_part3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day06_app_service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day07_storage_account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day08_storage_files_queue_tables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day09_intro_to_networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day10_virtual_network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day11_vnet_advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day12_load_balancer_vmss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day13_azure_dns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 13 — Azure DNS: Public & Private Zones
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day14_traffic_frontdoor_cdn_waf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 14 — Traffic Manager, Front Door, CDN & WAF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day15_vpn_expressroute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 15 — VPN Gateway & ExpressRoute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 16 — Azure SQL Database + Other Databases
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 16 — Azure SQL Database + Other Databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-why-managed-databases-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Why Managed Databases Exist
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Why Managed Databases Exist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-microsoft-runs-vs-what-you-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Microsoft Runs vs What You Run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paas-vs-iaas-in-database-terms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PaaS vs IaaS, in Database Terms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-tour-the-azure-sql-landing-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Tour the Azure SQL Landing Page ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-the-azure-sql-family-four-products-one-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — The Azure SQL Family: Four Products, One Name
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — The Azure SQL Family: Four Products, One Name">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#single-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single Database
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#elastic-pool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Elastic Pool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#managed-instance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Managed Instance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sql-server-on-azure-virtual-machines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SQL Server on Azure Virtual Machines
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-decision-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Decision Table
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-compare-deployment-options-in-the-portal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Compare Deployment Options in the Portal ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-purchasing-models-service-tiers-and-serverless" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Purchasing Models, Service Tiers, and Serverless
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Purchasing Models, Service Tiers, and Serverless">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dtu-the-bundled-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DTU — The Bundled Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vcore-the-transparent-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        vCore — The Transparent Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serverless-the-tier-that-makes-this-day-free" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serverless — The Tier That Makes This Day Free
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-your-azure-sql-database-on-the-free-offer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create Your Azure SQL Database on the Free Offer ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-the-logical-server-the-most-misunderstood-object-in-azure-sql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — The Logical Server: The Most Misunderstood Object in Azure SQL
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — The Logical Server: The Most Misunderstood Object in Azure SQL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#it-is-not-a-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        It Is Not a Machine
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#firewall-rules-the-three-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Firewall Rules — The Three Layers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#private-endpoints-bringing-the-database-into-your-vnet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Private Endpoints — Bringing the Database Into Your VNet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-explore-and-configure-server-networking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Explore and Configure Server Networking ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-connecting-and-querying" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — Connecting and Querying
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — Connecting and Querying">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-applications-connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Applications Connect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-query-your-database-from-the-browser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Query Your Database from the Browser ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-backups-and-restore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6 — Backups and Restore
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6 — Backups and Restore">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-azure-does-automatically" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Azure Does Automatically
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#point-in-time-restore-pitr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Point-in-Time Restore (PITR)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#long-term-retention-ltr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Long-Term Retention (LTR)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geo-restore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Geo-Restore
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-break-something-and-restore-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Break Something and Restore It ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-7-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 7 — Security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 7 — Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#encryption-already-done" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Encryption — Already Done
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication-two-ways-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication — Two Ways In
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamic-data-masking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic Data Masking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auditing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auditing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#microsoft-defender-for-sql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Microsoft Defender for SQL 💳
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-mask-sensitive-data-and-turn-on-auditing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Mask Sensitive Data and Turn On Auditing ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-8-performance-and-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 8 — Performance and Scaling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 8 — Performance and Scaling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scaling-is-a-slider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scaling Is a Slider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-performance-insight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Query Performance Insight
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automatic-tuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automatic Tuning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-scale-inspect-and-enable-automatic-tuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Scale, Inspect, and Enable Automatic Tuning ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-9-business-continuity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 9 — Business Continuity 💳
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 9 — Business Continuity 💳">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#built-in-high-availability-free-automatic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Built-In High Availability (Free, Automatic)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zone-redundancy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zone Redundancy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#active-geo-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Active Geo-Replication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auto-failover-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auto-Failover Groups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-tour-business-continuity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Tour Business Continuity 💳
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-10-the-rest-of-the-family-postgresql-mysql-and-friends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 10 — The Rest of the Family: PostgreSQL, MySQL, and Friends
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 10 — The Rest of the Family: PostgreSQL, MySQL, and Friends">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#azure-database-for-postgresql-flexible-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Database for PostgreSQL — Flexible Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#azure-database-for-mysql-flexible-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Database for MySQL — Flexible Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#choosing-between-them" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing Between Them
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-word-on-relational-vs-nosql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A Word on Relational vs NoSQL
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-a-postgresql-flexible-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create a PostgreSQL Flexible Server ✅/💳
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-11-cleanup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 11 — Cleanup ✅
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day17_entra_id_rbac/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 17 — Microsoft Entra ID & Azure RBAC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-why-managed-databases-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Why Managed Databases Exist
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Why Managed Databases Exist">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-microsoft-runs-vs-what-you-run" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Microsoft Runs vs What You Run
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#paas-vs-iaas-in-database-terms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PaaS vs IaaS, in Database Terms
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-tour-the-azure-sql-landing-page" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Tour the Azure SQL Landing Page ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-the-azure-sql-family-four-products-one-name" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — The Azure SQL Family: Four Products, One Name
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — The Azure SQL Family: Four Products, One Name">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#single-database" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Single Database
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#elastic-pool" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Elastic Pool
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#managed-instance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Managed Instance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#sql-server-on-azure-virtual-machines" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        SQL Server on Azure Virtual Machines
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-decision-table" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Decision Table
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-compare-deployment-options-in-the-portal" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Compare Deployment Options in the Portal ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-purchasing-models-service-tiers-and-serverless" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Purchasing Models, Service Tiers, and Serverless
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Purchasing Models, Service Tiers, and Serverless">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#dtu-the-bundled-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DTU — The Bundled Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vcore-the-transparent-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        vCore — The Transparent Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#serverless-the-tier-that-makes-this-day-free" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Serverless — The Tier That Makes This Day Free
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-your-azure-sql-database-on-the-free-offer" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create Your Azure SQL Database on the Free Offer ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-the-logical-server-the-most-misunderstood-object-in-azure-sql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — The Logical Server: The Most Misunderstood Object in Azure SQL
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — The Logical Server: The Most Misunderstood Object in Azure SQL">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#it-is-not-a-machine" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        It Is Not a Machine
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#firewall-rules-the-three-layers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Firewall Rules — The Three Layers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#private-endpoints-bringing-the-database-into-your-vnet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Private Endpoints — Bringing the Database Into Your VNet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-explore-and-configure-server-networking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Explore and Configure Server Networking ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-5-connecting-and-querying" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — Connecting and Querying
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — Connecting and Querying">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-applications-connect" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Applications Connect
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-query-your-database-from-the-browser" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Query Your Database from the Browser ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-6-backups-and-restore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6 — Backups and Restore
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6 — Backups and Restore">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-azure-does-automatically" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Azure Does Automatically
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#point-in-time-restore-pitr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Point-in-Time Restore (PITR)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#long-term-retention-ltr" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Long-Term Retention (LTR)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#geo-restore" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Geo-Restore
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-break-something-and-restore-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Break Something and Restore It ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-7-security" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 7 — Security
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 7 — Security">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#encryption-already-done" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Encryption — Already Done
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#authentication-two-ways-in" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Authentication — Two Ways In
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dynamic-data-masking" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Dynamic Data Masking
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auditing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auditing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#microsoft-defender-for-sql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Microsoft Defender for SQL 💳
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-mask-sensitive-data-and-turn-on-auditing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Mask Sensitive Data and Turn On Auditing ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-8-performance-and-scaling" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 8 — Performance and Scaling
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 8 — Performance and Scaling">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#scaling-is-a-slider" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scaling Is a Slider
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#query-performance-insight" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Query Performance Insight
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#automatic-tuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Automatic Tuning
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-scale-inspect-and-enable-automatic-tuning" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Scale, Inspect, and Enable Automatic Tuning ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-9-business-continuity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 9 — Business Continuity 💳
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 9 — Business Continuity 💳">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#built-in-high-availability-free-automatic" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Built-In High Availability (Free, Automatic)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#zone-redundancy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Zone Redundancy
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#active-geo-replication" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Active Geo-Replication
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#auto-failover-groups" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Auto-Failover Groups
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-tour-business-continuity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Tour Business Continuity 💳
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-10-the-rest-of-the-family-postgresql-mysql-and-friends" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 10 — The Rest of the Family: PostgreSQL, MySQL, and Friends
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 10 — The Rest of the Family: PostgreSQL, MySQL, and Friends">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#azure-database-for-postgresql-flexible-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Database for PostgreSQL — Flexible Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#azure-database-for-mysql-flexible-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure Database for MySQL — Flexible Server
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#choosing-between-them" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Choosing Between Them
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#a-word-on-relational-vs-nosql" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A Word on Relational vs NoSQL
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-a-postgresql-flexible-server" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create a PostgreSQL Flexible Server ✅/💳
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-11-cleanup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 11 — Cleanup ✅
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="day-16-azure-sql-database-other-databases">Day 16 — Azure SQL Database + Other Databases</h1>
+<p><strong>Phase 4 — Databases</strong></p>
+<blockquote>
+<p>Every application you've built or touched in this course so far has been missing something. The VM in Day 3 served a web page. The App Service in Day 6 hosted a site. The load balancer in Day 12 spread traffic across servers. But none of them <strong>remembered</strong> anything. Restart the VM and whatever the app was holding in memory is gone. Real applications — every single one — need somewhere to put data that survives a restart, a redeploy, a region failure, and the person who wrote the app leaving the company. Today we build that layer. And here's the part that surprises people coming from a traditional IT background: you are not going to install SQL Server. You're not going to patch it, back it up, configure high availability, or renew its licence. Azure does all of that. You get a connection string and a database, and you spend your time on schemas and queries instead of on the engine underneath them. By the end of today you'll have a live SQL database running on Azure's <strong>free forever</strong> offer, queried straight from your browser, secured, backed up, and restored from a backup — plus a clear map of when to reach for PostgreSQL or MySQL instead.</p>
+</blockquote>
+<hr />
+<h2 id="what-youll-learn">What You'll Learn</h2>
+<ul>
+<li><strong>Why managed databases exist</strong> — the exact list of jobs Microsoft takes over, and the smaller list you keep</li>
+<li><strong>The Azure SQL family</strong> — Single Database, Elastic Pool, Managed Instance, and SQL Server on a VM, and how to pick between them without guessing</li>
+<li><strong>Purchasing models</strong> — DTU vs vCore, and why the industry has moved decisively toward vCore</li>
+<li><strong>Service tiers</strong> — Basic/Standard/Premium and General Purpose/Business Critical/Hyperscale, explained by what actually differs underneath</li>
+<li><strong>The Serverless compute tier</strong> — a database that pauses itself when nobody's using it, and why that's the single most beginner-friendly billing model Azure offers</li>
+<li><strong>The Azure SQL Database free offer</strong> — a genuinely free database, not a 12-month trial, and exactly what its limits are</li>
+<li><strong>The logical server</strong> — the most misunderstood object in Azure SQL, and why it is <em>not</em> a machine</li>
+<li><strong>Firewall rules, public access, and Private Endpoints</strong> — the three layers that decide who can reach your database</li>
+<li>Hands-on: create a database, connect from the portal Query Editor, and run real SQL</li>
+<li><strong>Backups</strong> — automatic backups, point-in-time restore, long-term retention, and geo-restore — including an actual restore</li>
+<li><strong>Security</strong> — Microsoft Entra ID authentication, Transparent Data Encryption, auditing, and Dynamic Data Masking (with a live demo)</li>
+<li><strong>Performance</strong> — scaling tiers, Query Performance Insight, and automatic tuning that writes your indexes for you</li>
+<li><strong>Business continuity</strong> — active geo-replication, failover groups, and zone redundancy</li>
+<li><strong>The rest of the family</strong> — Azure Database for PostgreSQL and MySQL Flexible Server, and when each one wins</li>
+<li>Exam framing: how AZ-104 and AZ-305 phrase database questions, and the keywords that give away the intended answer</li>
+</ul>
+<hr />
+<h2 id="before-we-begin">Before We Begin</h2>
+<p>Good news — <strong>this is one of the cheapest days in the entire course.</strong> Almost everything today is genuinely free.</p>
+<ul>
+<li><strong>Azure SQL Database — free offer:</strong> Microsoft provides a free General Purpose Serverless database on <strong>every</strong> subscription type, not just free accounts and not just for 12 months. The allowance is roughly <strong>100,000 vCore-seconds of compute per month</strong>, <strong>32 GB of data storage</strong>, and <strong>32 GB of backup storage</strong>. When you exhaust the monthly compute allowance you choose in advance what happens: the database auto-pauses until the next month, or it keeps running and you get billed normally. Set it to <strong>auto-pause</strong> and your worst case is a paused database, not a bill. <strong>✅ Free</strong></li>
+<li><strong>Azure free account SQL offer (separate thing):</strong> if you're inside your first 12 months on a free account, you <em>also</em> get an S0 database (10 DTU, 250 GB) free for 12 months. You can use either. The free offer above is the better default because it doesn't expire. <strong>✅ Free</strong></li>
+<li><strong>Query Editor, firewall rules, backups, point-in-time restore, Dynamic Data Masking, auditing, Query Performance Insight, automatic tuning:</strong> all included, no separate charge. <strong>✅ Free</strong></li>
+<li><strong>Microsoft Defender for SQL:</strong> roughly <strong>$15/server/month</strong> after a free trial period. <strong>💳 Instructor demo</strong></li>
+<li><strong>Active geo-replication / failover groups:</strong> you pay full price for the secondary database, so this doubles your cost. <strong>💳 Instructor demo</strong></li>
+<li><strong>Elastic Pools and Managed Instance:</strong> pools start well above free-tier territory; Managed Instance starts around <strong>$700+/month</strong> and takes hours to provision. <strong>💳 Conceptual + portal tour only</strong> — nobody should deploy a Managed Instance to follow along, including me.</li>
+<li><strong>PostgreSQL / MySQL Flexible Server:</strong> free account holders get 12 months of a B1ms burstable instance with 32 GB storage. Outside that, a burstable instance is a few dollars a month. <strong>✅ / 💳</strong></li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">The one thing that can actually cost you money today</p>
+<p>Do not create a <strong>Managed Instance</strong> "just to look at it." It provisions for 4–6 hours, bills the entire time, and cannot be stopped — only deleted. We tour it in the portal instead. Everything else today, you can safely click.</p>
+</div>
+<p><strong>Set this up before you start:</strong> a resource group called <code>rg-day16-demo</code>. Everything today goes in it, and we delete the whole group at the end.</p>
+<hr />
+<h2 id="part-1-why-managed-databases-exist">Part 1 — Why Managed Databases Exist</h2>
+<h3 id="the-problem">The Problem</h3>
+<p>Imagine doing this the traditional way. You'd take the Ubuntu or Windows VM you built on Day 3, install a database engine on it, and then own the following forever:</p>
+<ul>
+<li>Installing and configuring the database engine</li>
+<li>Patching the operating system every month</li>
+<li>Patching the database engine when security fixes ship</li>
+<li>Configuring backups — and, far more importantly, <strong>testing that they restore</strong></li>
+<li>Building high availability: a second server, replication between them, automatic failover</li>
+<li>Monitoring disk space before it fills at 3am</li>
+<li>Sizing the VM correctly, then resizing it when you sized it wrong</li>
+<li>Buying and tracking SQL Server licences</li>
+</ul>
+<p>That is a full-time job. It's a real job that real people have. But it has nothing to do with your application — it's pure overhead, and every hour spent on it is an hour not spent on the thing your users actually pay for.</p>
+<p><strong>Azure SQL Database is that entire list, handed to Microsoft.</strong></p>
+<h3 id="what-microsoft-runs-vs-what-you-run">What Microsoft Runs vs What You Run</h3>
+<p>This split is the single most important idea today, and it's worth memorising because exam questions are built directly on it:</p>
+<table>
+<thead>
+<tr>
+<th>Microsoft handles</th>
+<th>You handle</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Operating system — install, patch, secure</td>
+<td>Schema design — tables, indexes, relationships</td>
+</tr>
+<tr>
+<td>Database engine — install, patch, upgrade</td>
+<td>Queries and stored procedures</td>
+</tr>
+<tr>
+<td>Automatic backups (every few minutes)</td>
+<td>Choosing the right service tier and size</td>
+</tr>
+<tr>
+<td>High availability and automatic failover</td>
+<td>Firewall rules and network access</td>
+</tr>
+<tr>
+<td>Hardware, storage, and replacing failed disks</td>
+<td>Users, permissions, and authentication</td>
+</tr>
+<tr>
+<td>Encryption at rest, on by default</td>
+<td>Connection strings in your application</td>
+</tr>
+<tr>
+<td>Underlying licensing</td>
+<td>Your data itself</td>
+</tr>
+</tbody>
+</table>
+<p>Notice the pattern: Microsoft owns <strong>infrastructure and availability</strong>. You own <strong>data and access</strong>. That line never moves.</p>
+<h3 id="paas-vs-iaas-in-database-terms">PaaS vs IaaS, in Database Terms</h3>
+<p>You already met this distinction on Day 6 with App Service. It's identical here:</p>
+<ul>
+<li><strong>SQL Server on an Azure VM</strong> = IaaS. You get a VM with SQL Server installed. Full control, full responsibility, full OS access. Choose this when you need something the managed service won't let you do — a specific SQL Server build, a third-party agent installed on the OS, cross-database transactions with a legacy app, or SQL Server Reporting Services running alongside.</li>
+<li><strong>Azure SQL Database</strong> = PaaS. You get a database. No OS, no server to log into, no patching. Choose this for basically everything new.</li>
+</ul>
+<p><strong>The rule of thumb:</strong> start with Azure SQL Database. Move to a VM only when you hit a specific, nameable blocker. "I might need OS access one day" is not a blocker.</p>
+<h3 id="hands-on-tour-the-azure-sql-landing-page">Hands-On: Tour the Azure SQL Landing Page ✅</h3>
+<p>Before creating anything, let's see the whole family in one screen.</p>
+<ol>
+<li>In the portal search bar, type <strong>Azure SQL</strong> and open it. <strong>✅</strong></li>
+<li>Click <strong>+ Create</strong>. You land on the <strong>Select SQL deployment option</strong> page — this single screen is the entire product family. <strong>✅</strong></li>
+<li>Look at the three cards:</li>
+<li><strong>SQL databases</strong> — with a dropdown for <em>Single database</em> or <em>Elastic pool</em></li>
+<li><strong>SQL managed instances</strong> — with a dropdown for <em>Single instance</em> or <em>Instance pool</em></li>
+<li><strong>SQL virtual machines</strong> — a gallery of pre-built SQL Server VM images</li>
+<li>Click <strong>Show details</strong> on each card and read the descriptions. Don't create anything yet — just register that these are four genuinely different products sharing a name. <strong>✅</strong></li>
+</ol>
+<p>Stay on this page. We're coming back to it in Part 2.</p>
+<hr />
+<h2 id="part-2-the-azure-sql-family-four-products-one-name">Part 2 — The Azure SQL Family: Four Products, One Name</h2>
+<h3 id="single-database">Single Database</h3>
+<p>One database, with its own dedicated allocation of compute and storage, completely isolated from everything else. This is the default and the one you'll use 90% of the time.</p>
+<p>Every single database lives inside a <strong>logical server</strong> (much more on that in Part 4). You can scale it up or down independently, back it up independently, and restore it independently.</p>
+<p><strong>Use it for:</strong> almost any new application. One app, one database.</p>
+<h3 id="elastic-pool">Elastic Pool</h3>
+<p>Now imagine you're running a SaaS product with 200 customers, and each customer gets their own database for isolation. Buying 200 individually-sized databases is enormously wasteful, because at any given moment most of those customers are asleep and using nothing.</p>
+<p>An <strong>Elastic Pool</strong> gives you one shared bucket of compute that all 200 databases draw from. Customer A spikes at 9am, customer B spikes at 3pm, and they share the same purchased capacity instead of each paying for their own peak.</p>
+<p>Key mechanics:
+- You buy the pool (in eDTUs or vCores), not the individual databases
+- Databases move in and out of a pool freely, with no downtime
+- You can set per-database min/max limits so one noisy tenant can't starve the others
+- Pools become cost-effective at roughly <strong>15+ databases</strong> with uncorrelated usage patterns</p>
+<p><strong>Use it for:</strong> multi-tenant SaaS, or any situation with many databases whose busy periods don't line up.</p>
+<p><strong>The trap to avoid:</strong> if all your databases peak at the same time, a pool saves you nothing — you'll just size the pool for the combined peak. Pools exploit <em>variation</em>, not volume.</p>
+<h3 id="managed-instance">Managed Instance</h3>
+<p>Managed Instance is for one specific scenario: <strong>you have an existing SQL Server and you want to move it to Azure without rewriting it.</strong></p>
+<p>Single Database is a managed <em>database</em>. Managed Instance is a managed <em>SQL Server instance</em> — it gives you back the instance-scoped features that Single Database doesn't have:</p>
+<ul>
+<li><strong>SQL Server Agent</strong> — scheduled jobs</li>
+<li><strong>Cross-database queries and transactions</strong> — joining across databases on the same instance</li>
+<li><strong>CLR (Common Language Runtime)</strong> — .NET code inside the database</li>
+<li><strong>Service Broker</strong>, <strong>Database Mail</strong>, <strong>linked servers</strong></li>
+<li>Near <strong>100% surface-area compatibility</strong> with on-premises SQL Server</li>
+</ul>
+<p>It always deploys <strong>inside your VNet</strong> with a private IP — there's no public endpoint by default. Everything you learned on Days 10 and 11 about VNets and subnets applies directly.</p>
+<p>The cost: it starts around <strong>$700+/month</strong>, takes <strong>4–6 hours</strong> to provision, and needs a dedicated subnet with specific delegation. It's a serious enterprise product.</p>
+<p><strong>Use it for:</strong> lift-and-shift migration of existing SQL Server workloads. Not for new applications.</p>
+<h3 id="sql-server-on-azure-virtual-machines">SQL Server on Azure Virtual Machines</h3>
+<p>Pure IaaS — a VM from Day 3 with SQL Server pre-installed and licensing handled through the image. You get root/administrator access and total control, and you own everything from the OS up.</p>
+<p>The one feature worth knowing: the <strong>SQL Server IaaS Agent Extension</strong> adds portal-managed automated backups and patching, which softens the management burden somewhat.</p>
+<p><strong>Use it for:</strong> when you need OS access, an unsupported SQL Server feature, or an exact version match with something on-premises.</p>
+<h3 id="the-decision-table">The Decision Table</h3>
+<p>Memorise this. AZ-104 and AZ-305 questions are built from it:</p>
+<table>
+<thead>
+<tr>
+<th>If the question says…</th>
+<th>The answer is…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"New application, minimal management overhead"</td>
+<td><strong>Single Database</strong></td>
+</tr>
+<tr>
+<td>"Many databases, variable and unpredictable usage"</td>
+<td><strong>Elastic Pool</strong></td>
+</tr>
+<tr>
+<td>"Migrate existing SQL Server with minimal changes" / "SQL Server Agent" / "cross-database queries"</td>
+<td><strong>Managed Instance</strong></td>
+</tr>
+<tr>
+<td>"Requires OS-level access" / "specific SQL Server version" / "third-party agent on the server"</td>
+<td><strong>SQL Server on a VM</strong></td>
+</tr>
+<tr>
+<td>"Unpredictable, intermittent workload" / "dev/test that sits idle"</td>
+<td><strong>Single Database, Serverless tier</strong></td>
+</tr>
+<tr>
+<td>"Up to 100 TB" / "very large database" / "fast restore regardless of size"</td>
+<td><strong>Hyperscale tier</strong></td>
+</tr>
+</tbody>
+</table>
+<h3 id="hands-on-compare-deployment-options-in-the-portal">Hands-On: Compare Deployment Options in the Portal ✅</h3>
+<ol>
+<li>Back on the <strong>Select SQL deployment option</strong> page, open the <strong>Resource type</strong> dropdown under <em>SQL databases</em>. <strong>✅</strong></li>
+<li>Switch between <strong>Single database</strong> and <strong>Elastic pool</strong> and note that the creation blade changes — pools ask you to size the pool, not the database. <strong>✅</strong></li>
+<li>Click into <strong>SQL managed instances → Show details</strong> and note the pricing estimate and the VNet requirement. Then back out <strong>without creating it</strong>. <strong>✅</strong></li>
+<li>Click into <strong>SQL virtual machines</strong> and browse the image gallery — notice you're choosing a <em>VM image</em> here, which tells you everything about which layer you're operating at. <strong>✅</strong></li>
+</ol>
+<hr />
+<h2 id="part-3-purchasing-models-service-tiers-and-serverless">Part 3 — Purchasing Models, Service Tiers, and Serverless</h2>
+<p>This is where most beginners get lost, because Azure gives you two completely different ways to buy the same thing. Let's untangle it.</p>
+<h3 id="dtu-the-bundled-model">DTU — The Bundled Model</h3>
+<p>A <strong>DTU (Database Transaction Unit)</strong> is a blended unit combining CPU, memory, and I/O into one number. You don't choose how much CPU or how much memory — you choose "how much database," and Microsoft decides the mix.</p>
+<p>DTU tiers:</p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>DTU range</th>
+<th>Max storage</th>
+<th>Typical use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Basic</strong></td>
+<td>5</td>
+<td>2 GB</td>
+<td>Tiny apps, learning</td>
+</tr>
+<tr>
+<td><strong>Standard</strong></td>
+<td>S0–S12 (10–3000)</td>
+<td>250 GB – 1 TB</td>
+<td>Most production workloads</td>
+</tr>
+<tr>
+<td><strong>Premium</strong></td>
+<td>P1–P15 (125–4000)</td>
+<td>Up to 4 TB</td>
+<td>High I/O, low latency, local SSD</td>
+</tr>
+</tbody>
+</table>
+<p><strong>The advantage:</strong> it's simple. One slider, one price.
+<strong>The disadvantage:</strong> you can't tune it. If you're memory-starved but CPU-idle, your only option is to buy more of <em>everything</em>.</p>
+<p>DTU is a legacy model. It still exists, it still works, and it appears on exams — but Microsoft's investment goes into vCore.</p>
+<h3 id="vcore-the-transparent-model">vCore — The Transparent Model</h3>
+<p><strong>vCore</strong> lets you choose your CPU count and memory independently, and pick your hardware generation. It costs a little more mental effort and gives you far more control.</p>
+<p>Why vCore has won:</p>
+<ul>
+<li><strong>Azure Hybrid Benefit</strong> — if you already own SQL Server licences with Software Assurance, you can apply them here and cut compute costs substantially. This is not available on DTU.</li>
+<li><strong>Reserved capacity</strong> — commit to 1 or 3 years for a large discount.</li>
+<li><strong>Serverless and Hyperscale are vCore-only</strong> — the two most interesting tiers don't exist in DTU at all.</li>
+<li>Independent scaling of compute and storage.</li>
+</ul>
+<p>vCore service tiers — and here's what actually differs underneath, which is the part most explanations skip:</p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>Storage architecture</th>
+<th>Replicas</th>
+<th>Max size</th>
+<th>Best for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>General Purpose</strong></td>
+<td>Remote premium storage, separated from compute</td>
+<td>1 primary + remote storage redundancy</td>
+<td>4 TB</td>
+<td>Most workloads — the sensible default</td>
+</tr>
+<tr>
+<td><strong>Business Critical</strong></td>
+<td><strong>Local SSD</strong> attached to the compute node</td>
+<td>3 replicas + <strong>1 free readable secondary</strong></td>
+<td>4 TB</td>
+<td>Low-latency, high-I/O, read-heavy workloads</td>
+</tr>
+<tr>
+<td><strong>Hyperscale</strong></td>
+<td>Distributed storage with page servers and a log service</td>
+<td>Up to 4 readable secondaries</td>
+<td><strong>100 TB</strong></td>
+<td>Very large databases; near-instant restore regardless of size</td>
+</tr>
+</tbody>
+</table>
+<p>The single most useful detail in that table: <strong>Business Critical gives you a free read-only replica.</strong> Point your reporting queries and dashboards at it and they stop competing with your transactional workload. That's a real architectural lever, and it's exactly the kind of thing AZ-305 asks about.</p>
+<p>And the Hyperscale detail worth knowing: because of how its storage works, <strong>restore time doesn't scale with database size</strong>. A 50 TB Hyperscale database restores in minutes. A 50 TB General Purpose database would take many hours. That's a decisive difference for large systems.</p>
+<h3 id="serverless-the-tier-that-makes-this-day-free">Serverless — The Tier That Makes This Day Free</h3>
+<p>Standard compute is <strong>provisioned</strong>: you pick a size and pay for it 24/7, whether or not anyone connects.</p>
+<p><strong>Serverless</strong> works differently:</p>
+<ul>
+<li>You set a <strong>min and max vCore range</strong>, and the database scales inside it automatically based on demand</li>
+<li>You're billed <strong>per vCore-second of actual use</strong>, not per hour of existence</li>
+<li>After a configurable idle period (minimum <strong>1 hour</strong>), the database <strong>auto-pauses</strong></li>
+<li>While paused, <strong>you pay nothing for compute</strong> — storage only</li>
+<li>The next connection <strong>auto-resumes</strong> it, taking roughly a minute</li>
+</ul>
+<p>That resume delay is the whole trade-off. Your first query after an idle period will time out or hang for about a minute while the database wakes up. Your application needs retry logic to handle it gracefully.</p>
+<p><strong>Serverless is the right choice for:</strong> development, testing, learning, internal tools, and any genuinely intermittent workload.
+<strong>Serverless is wrong for:</strong> a customer-facing production app that must respond instantly at any hour — the auto-pause resume delay is unacceptable there.</p>
+<p>For this course, Serverless with auto-pause is perfect, and it's exactly what the free offer uses.</p>
+<h3 id="hands-on-create-your-azure-sql-database-on-the-free-offer">Hands-On: Create Your Azure SQL Database on the Free Offer ✅</h3>
+<p>This is the main build of the day. Take your time.</p>
+<ol>
+<li>From <strong>Azure SQL → + Create → SQL databases (Single database) → Create</strong>. <strong>✅</strong></li>
+<li>On the <strong>Basics</strong> tab:</li>
+<li><strong>Subscription:</strong> yours</li>
+<li><strong>Resource group:</strong> <code>rg-day16-demo</code></li>
+<li><strong>Database name:</strong> <code>db-lwm-demo</code></li>
+<li><strong>Server</strong> — click <strong>Create new</strong>. This is the logical server, which we'll dissect in Part 4. Fill in: <strong>✅</strong></li>
+<li><strong>Server name:</strong> <code>sql-lwm-&lt;yourname&gt;</code> — this must be <strong>globally unique</strong>, because it becomes <code>sql-lwm-&lt;yourname&gt;.database.windows.net</code></li>
+<li><strong>Location:</strong> pick a region near you (I'm using Central India)</li>
+<li><strong>Authentication method:</strong> choose <strong>Use both SQL and Microsoft Entra authentication</strong>. This is the best of both — you get an Entra admin <em>and</em> a SQL login, and we'll use both later today.</li>
+<li><strong>Set Entra admin:</strong> click it and select your own account</li>
+<li><strong>Server admin login:</strong> <code>sqladmin</code></li>
+<li><strong>Password:</strong> something strong — <strong>write it down now</strong>, you'll need it in the Query Editor and it cannot be recovered, only reset</li>
+<li>Click <strong>OK</strong></li>
+<li>Back on Basics — <strong>look for the free offer banner.</strong> Azure surfaces a prompt like <em>"Want to try Azure SQL Database for free?"</em> with an <strong>Apply offer</strong> link. <strong>Click it.</strong> This is the whole reason today is free. <strong>✅</strong></li>
+<li>If you don't see the banner, continue to step 5 and set the tier manually — the free offer is normally applied on the <strong>Compute + storage</strong> blade.</li>
+<li><strong>Want to use SQL elastic pool?</strong> → <strong>No</strong>. <strong>✅</strong></li>
+<li><strong>Workload environment:</strong> <strong>Development</strong>. This nudges the defaults toward cheaper settings. <strong>✅</strong></li>
+<li><strong>Compute + storage</strong> → click <strong>Configure database</strong>: <strong>✅</strong></li>
+<li><strong>Service tier:</strong> <em>General Purpose — Serverless</em></li>
+<li><strong>Hardware:</strong> Standard-series (Gen5) is fine</li>
+<li><strong>Max vCores:</strong> 1 (or 2 — this is a ceiling, not a commitment)</li>
+<li><strong>Min vCores:</strong> 0.5</li>
+<li><strong>Enable auto-pause:</strong> <strong>Yes</strong>, delay <strong>1 hour</strong> — this is what makes it cost nothing when idle</li>
+<li><strong>Data max size:</strong> 32 GB</li>
+<li>Apply</li>
+<li><strong>Backup storage redundancy:</strong> <strong>Locally-redundant</strong> for this demo — geo-redundant costs more and we don't need it. <strong>✅</strong></li>
+<li><strong>Next: Networking</strong>: <strong>✅</strong></li>
+<li><strong>Connectivity method:</strong> <strong>Public endpoint</strong></li>
+<li><strong>Allow Azure services and resources to access this server:</strong> <strong>Yes</strong></li>
+<li><strong>Add current client IP address:</strong> <strong>Yes</strong> ← without this, you cannot connect from your own machine</li>
+<li><strong>Connection policy:</strong> Default</li>
+<li><strong>Minimum TLS version:</strong> 1.2</li>
+<li><strong>Next: Security</strong> — leave the defaults for now. We'll come back and turn things on deliberately in Part 7. <strong>✅</strong></li>
+<li><strong>Next: Additional settings</strong>: <strong>✅</strong><ul>
+<li><strong>Use existing data:</strong> select <strong>Sample</strong> ← <strong>do this.</strong> It loads the AdventureWorksLT sample database, so you have real tables to query in about two minutes instead of typing test data by hand.</li>
+<li><strong>Collation:</strong> leave default</li>
+</ul>
+</li>
+<li><strong>Review + create → Create</strong>. Deployment takes <strong>2–5 minutes</strong>. <strong>✅</strong></li>
+</ol>
+<p>While that deploys, let's talk about what you just created — because the "server" is not what you think it is.</p>
+<hr />
+<h2 id="part-4-the-logical-server-the-most-misunderstood-object-in-azure-sql">Part 4 — The Logical Server: The Most Misunderstood Object in Azure SQL</h2>
+<h3 id="it-is-not-a-machine">It Is Not a Machine</h3>
+<p>You just created something called a "server" at <code>sql-lwm-&lt;yourname&gt;.database.windows.net</code>. Here is the critical point:</p>
+<p><strong>There is no server.</strong> You cannot RDP into it. You cannot SSH into it. It has no operating system, no CPU allocation of its own, and no cost of its own. Creating a logical server is <strong>completely free</strong> — you're only billed for the databases inside it.</p>
+<p>A logical server is an <strong>administrative and networking container</strong>. It provides:</p>
+<ul>
+<li>A <strong>globally unique DNS endpoint</strong> — <code>&lt;name&gt;.database.windows.net</code></li>
+<li>A <strong>shared firewall</strong> — server-level rules apply to every database inside it</li>
+<li><strong>Administrative accounts</strong> — the SQL admin login and the Microsoft Entra admin</li>
+<li>A <strong>security boundary</strong> — auditing, Defender for SQL, and Entra configuration are set here</li>
+<li>A <strong>region</strong> — every database inside it lives in that region</li>
+</ul>
+<p>The databases inside a single logical server can be <strong>completely different sizes and tiers</strong>. You can have a Basic database and a Business Critical database on the same logical server. They don't share compute — only the endpoint and the security configuration.</p>
+<p><strong>Why this matters practically:</strong> when you troubleshoot "I can't connect," the answer is almost always at the <em>server</em> level (firewall or authentication), not the database level. And when someone says "our SQL server is expensive," they mean the databases — the server itself is free.</p>
+<h3 id="firewall-rules-the-three-layers">Firewall Rules — The Three Layers</h3>
+<p>Azure SQL is protected by default: <strong>a brand-new logical server rejects every connection from everywhere</strong>, including from you. You have to explicitly open it.</p>
+<p>There are three distinct controls, and confusing them is the classic beginner mistake:</p>
+<p><strong>1. Server-level firewall rules</strong> — IP ranges that can reach <em>any</em> database on this server. Set in the portal under the server's <strong>Networking</strong> blade. This is the common case.</p>
+<p><strong>2. Database-level firewall rules</strong> — IP ranges that can reach <em>one specific</em> database. These can only be created with T-SQL (<code>sp_set_database_firewall_rule</code>), not in the portal. Use them when you want tighter isolation than the server-wide rule allows. Worth knowing they exist; rarely needed.</p>
+<p><strong>3. "Allow Azure services and resources to access this server"</strong> — a toggle that sounds harmless and isn't. It creates a rule for the IP range <code>0.0.0.0</code>, which means <strong>any Azure resource in any subscription</strong> — including other people's — can attempt a connection. They still need valid credentials, so it's not an open door, but it's a much wider surface than most people realise when they flip it on.</p>
+<div class="admonition danger">
+<p class="admonition-title">Use the Azure-services toggle deliberately</p>
+<p>Turn it on for a demo or for quick App Service connectivity. For production, turn it <strong>off</strong> and use a <strong>Private Endpoint</strong> instead. If an exam question mentions "no public internet exposure" or "traffic must stay on the Microsoft backbone," Private Endpoint is the answer every time.</p>
+</div>
+<h3 id="private-endpoints-bringing-the-database-into-your-vnet">Private Endpoints — Bringing the Database Into Your VNet</h3>
+<p>You built these on Day 11. The concept is identical here: a <strong>Private Endpoint</strong> gives your SQL logical server a <strong>private IP address inside your VNet</strong>. Traffic from your VMs and App Services then reaches the database over Azure's private backbone, never touching the public internet.</p>
+<p>When you enable it, Azure creates a Private DNS zone (<code>privatelink.database.windows.net</code>) so that <code>sql-lwm-&lt;yourname&gt;.database.windows.net</code> resolves to the <em>private</em> IP from inside your VNet — the connection string doesn't change at all. That's the elegance of it.</p>
+<p>The full pattern for a locked-down production database:</p>
+<ol>
+<li>Create a Private Endpoint into your application's VNet</li>
+<li>Set <strong>Public network access</strong> to <strong>Disabled</strong></li>
+<li>Application connects over the private IP; the database is unreachable from the internet entirely</li>
+</ol>
+<h3 id="hands-on-explore-and-configure-server-networking">Hands-On: Explore and Configure Server Networking ✅</h3>
+<p>Your database should be deployed by now.</p>
+<ol>
+<li>Open your database <code>db-lwm-demo</code>. On the <strong>Overview</strong> page, find <strong>Server name</strong> at the top right and copy it. Note the <strong>Pricing tier</strong> shows <em>General Purpose: Serverless</em> and the status shows <strong>Online</strong>. <strong>✅</strong></li>
+<li>Click the <strong>server name</strong> link to jump up to the logical server. Look at the Overview — notice there's no CPU metric, no size, no OS. It's a container. <strong>✅</strong></li>
+<li>Go to <strong>Security → Networking</strong>. <strong>✅</strong></li>
+<li>On the <strong>Public access</strong> tab, review: <strong>✅</strong></li>
+<li><strong>Public network access</strong> is set to <em>Selected networks</em></li>
+<li>Your client IP rule is listed — this was added during creation</li>
+<li>The <strong>Exceptions</strong> checkbox for <em>Allow Azure services</em> is ticked</li>
+<li>Click <strong>+ Add your client IPv4 address</strong> if your IP has changed since creation, then <strong>Save</strong>. <strong>✅</strong></li>
+<li>Now demonstrate the failure mode deliberately — this teaches more than success does: <strong>✅</strong></li>
+<li>Delete your client IP rule and <strong>Save</strong></li>
+<li>Go back to the database → <strong>Query editor</strong> → try to sign in</li>
+<li>You'll get an error naming your IP address and telling you it's not allowed. <strong>This exact error is the #1 Azure SQL support question in the world.</strong> Now you'll recognise it instantly.</li>
+<li>Re-add your IP and <strong>Save</strong></li>
+<li>Click the <strong>Private access</strong> tab and read the Private Endpoint option. <strong>We're not creating one today</strong> (it needs a VNet and adds cost), but note that this is where you'd wire up exactly what you built on Day 11. <strong>✅</strong></li>
+</ol>
+<hr />
+<h2 id="part-5-connecting-and-querying">Part 5 — Connecting and Querying</h2>
+<h3 id="how-applications-connect">How Applications Connect</h3>
+<p>Your database exposes a standard <strong>TDS</strong> endpoint on <strong>port 1433</strong>. Anything that speaks SQL Server can connect to it:</p>
+<ul>
+<li><strong>Query Editor</strong> — built into the Azure Portal, no installation, works from a browser. This is what we'll use.</li>
+<li><strong>SQL Server Management Studio (SSMS)</strong> — the full Windows tool, most powerful option</li>
+<li><strong>Azure Data Studio / VS Code with the MSSQL extension</strong> — cross-platform, lighter</li>
+<li><strong>Your application</strong> — via a connection string</li>
+</ul>
+<p>The portal hands you ready-made connection strings under <strong>Settings → Connection strings</strong>, with tabs for ADO.NET, JDBC, ODBC, PHP, and Go.</p>
+<div class="admonition tip">
+<p class="admonition-title">Never paste a connection string into your source code</p>
+<p>The connection string contains your database password. It belongs in <strong>Azure Key Vault</strong> (Day 19) or in an App Service application setting — never in a file that gets committed to Git. Better still: use a <strong>managed identity</strong> so there's no password at all. We'll build that on Day 17.</p>
+</div>
+<h3 id="hands-on-query-your-database-from-the-browser">Hands-On: Query Your Database from the Browser ✅</h3>
+<ol>
+<li>Open <code>db-lwm-demo</code> → <strong>Query editor (preview)</strong> in the left menu. <strong>✅</strong></li>
+<li>Sign in. You have two options, and <strong>try both</strong> so you understand the difference: <strong>✅</strong></li>
+<li><strong>SQL authentication:</strong> login <code>sqladmin</code> and the password you saved</li>
+<li><strong>Microsoft Entra authentication:</strong> click <em>Continue as <your account></em> — this works because you set yourself as Entra admin during creation</li>
+<li>Expand <strong>Tables</strong> in the left pane. Because you loaded the sample data, you'll see the <code>SalesLT</code> schema with <code>Customer</code>, <code>Product</code>, <code>SalesOrderHeader</code>, and others. <strong>✅</strong></li>
+<li>Run a simple read: <strong>✅</strong>
+   <div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="n">TOP</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">SalesLT</span><span class="p">.</span><span class="n">Product</span><span class="p">;</span>
+</code></pre></div></li>
+<li>Something more realistic — a join and an aggregate: <strong>✅</strong>
+   <div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">CompanyName</span><span class="p">,</span>
+<span class="w">       </span><span class="k">COUNT</span><span class="p">(</span><span class="n">soh</span><span class="p">.</span><span class="n">SalesOrderID</span><span class="p">)</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="n">OrderCount</span><span class="p">,</span>
+<span class="w">       </span><span class="k">SUM</span><span class="p">(</span><span class="n">soh</span><span class="p">.</span><span class="n">TotalDue</span><span class="p">)</span><span class="w">       </span><span class="k">AS</span><span class="w"> </span><span class="n">TotalSpent</span>
+<span class="k">FROM</span><span class="w"> </span><span class="n">SalesLT</span><span class="p">.</span><span class="n">Customer</span><span class="w"> </span><span class="k">c</span>
+<span class="k">JOIN</span><span class="w"> </span><span class="n">SalesLT</span><span class="p">.</span><span class="n">SalesOrderHeader</span><span class="w"> </span><span class="n">soh</span><span class="w"> </span><span class="k">ON</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">CustomerID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">soh</span><span class="p">.</span><span class="n">CustomerID</span>
+<span class="k">GROUP</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="k">c</span><span class="p">.</span><span class="n">CompanyName</span>
+<span class="k">ORDER</span><span class="w"> </span><span class="k">BY</span><span class="w"> </span><span class="n">TotalSpent</span><span class="w"> </span><span class="k">DESC</span><span class="p">;</span>
+</code></pre></div></li>
+<li>Now create your own table and put data in it — this is the part that proves it's a real database, not a read-only demo: <strong>✅</strong>
+   <div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">Students</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">StudentID</span><span class="w">   </span><span class="nb">INT</span><span class="w"> </span><span class="k">IDENTITY</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">    </span><span class="n">FullName</span><span class="w">    </span><span class="n">NVARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Email</span><span class="w">       </span><span class="n">NVARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
+<span class="w">    </span><span class="n">PhoneNumber</span><span class="w"> </span><span class="n">NVARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">),</span>
+<span class="w">    </span><span class="n">EnrolledOn</span><span class="w">  </span><span class="nb">DATE</span><span class="w"> </span><span class="k">DEFAULT</span><span class="w"> </span><span class="n">GETDATE</span><span class="p">()</span>
+<span class="p">);</span>
+
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">Students</span><span class="w"> </span><span class="p">(</span><span class="n">FullName</span><span class="p">,</span><span class="w"> </span><span class="n">Email</span><span class="p">,</span><span class="w"> </span><span class="n">PhoneNumber</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span>
+<span class="w">    </span><span class="p">(</span><span class="s1">'Anita Sharma'</span><span class="p">,</span><span class="w">  </span><span class="s1">'anita@example.com'</span><span class="p">,</span><span class="w">  </span><span class="s1">'+91-9876543210'</span><span class="p">),</span>
+<span class="w">    </span><span class="p">(</span><span class="s1">'Ravi Kumar'</span><span class="p">,</span><span class="w">    </span><span class="s1">'ravi@example.com'</span><span class="p">,</span><span class="w">   </span><span class="s1">'+91-9876543211'</span><span class="p">),</span>
+<span class="w">    </span><span class="p">(</span><span class="s1">'Sofia Almeida'</span><span class="p">,</span><span class="w"> </span><span class="s1">'sofia@example.com'</span><span class="p">,</span><span class="w">  </span><span class="s1">'+91-9876543212'</span><span class="p">);</span>
+
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Students</span><span class="p">;</span>
+</code></pre></div>
+   Keep this table — we use it for the masking demo in Part 7 and the restore demo in Part 6.</li>
+<li>Update and delete, to complete the picture: <strong>✅</strong>
+   <div class="highlight"><pre><span></span><code><span class="k">UPDATE</span><span class="w"> </span><span class="n">Students</span><span class="w"> </span><span class="k">SET</span><span class="w"> </span><span class="n">Email</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'anita.sharma@example.com'</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">FullName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Anita Sharma'</span><span class="p">;</span>
+<span class="k">DELETE</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Students</span><span class="w"> </span><span class="k">WHERE</span><span class="w"> </span><span class="n">FullName</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'Ravi Kumar'</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Students</span><span class="p">;</span>
+</code></pre></div></li>
+<li>Go to <strong>Settings → Connection strings</strong> and look at the <strong>ADO.NET</strong> tab. Note the <code>Password={your_password}</code> placeholder — that's the value that must live in Key Vault, never in code. <strong>✅</strong></li>
+</ol>
+<hr />
+<h2 id="part-6-backups-and-restore">Part 6 — Backups and Restore</h2>
+<h3 id="what-azure-does-automatically">What Azure Does Automatically</h3>
+<p>You did not configure backups. They are already running. This is one of the strongest arguments for the managed service, and the schedule is worth knowing precisely:</p>
+<ul>
+<li><strong>Full backup</strong> — weekly</li>
+<li><strong>Differential backup</strong> — every 12–24 hours</li>
+<li><strong>Transaction log backup</strong> — <strong>every 5–10 minutes</strong></li>
+</ul>
+<p>That transaction log cadence is what makes <strong>point-in-time restore</strong> possible: Azure can rebuild your database as it existed at any moment inside the retention window, down to roughly the minute.</p>
+<h3 id="point-in-time-restore-pitr">Point-in-Time Restore (PITR)</h3>
+<ul>
+<li><strong>Default retention:</strong> 7 days</li>
+<li><strong>Configurable:</strong> 1–35 days</li>
+<li><strong>Restores to a new database</strong> — it never overwrites your existing one</li>
+</ul>
+<p>That last point is important and often surprises people. Restoring doesn't roll your database back; it creates a <em>second</em> database alongside it. If you want to replace the original, you restore to a new name, verify the data, then rename or repoint your application.</p>
+<h3 id="long-term-retention-ltr">Long-Term Retention (LTR)</h3>
+<p>35 days doesn't satisfy "keep 7 years of records" compliance requirements. <strong>LTR</strong> lets you set weekly, monthly, and yearly backup retention policies for <strong>up to 10 years</strong>, stored in Azure Blob Storage.</p>
+<p>LTR backups are restore-only — you can't query them in place, and restoring one creates a new database just like PITR does.</p>
+<h3 id="geo-restore">Geo-Restore</h3>
+<p>If you chose <strong>geo-redundant backup storage</strong> at creation, your backups are replicated to the Azure paired region. <strong>Geo-restore</strong> lets you rebuild the database in a <em>different region</em> entirely — your recovery path if an entire region is lost.</p>
+<p>The RPO (Recovery Point Objective) for geo-restore is up to <strong>1 hour</strong>, because the replication is asynchronous. If you need better than that, you need active geo-replication (Part 9), not backups.</p>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Protects against</th>
+<th>RPO</th>
+<th>Extra cost</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Point-in-time restore</strong></td>
+<td>Bad data, dropped table, bad deployment</td>
+<td>~5–10 min</td>
+<td>Included</td>
+</tr>
+<tr>
+<td><strong>Long-term retention</strong></td>
+<td>Compliance / audit requirements</td>
+<td>Weekly-to-yearly</td>
+<td>Blob storage cost</td>
+</tr>
+<tr>
+<td><strong>Geo-restore</strong></td>
+<td>Full region failure</td>
+<td>Up to 1 hour</td>
+<td>Geo-redundant storage cost</td>
+</tr>
+<tr>
+<td><strong>Active geo-replication</strong></td>
+<td>Region failure, with low RPO</td>
+<td>Seconds</td>
+<td>Full price of the secondary</td>
+</tr>
+</tbody>
+</table>
+<h3 id="hands-on-break-something-and-restore-it">Hands-On: Break Something and Restore It ✅</h3>
+<p>The best way to trust a backup is to use one.</p>
+<ol>
+<li>In <strong>Query editor</strong>, do something destructive on purpose: <strong>✅</strong>
+   <div class="highlight"><pre><span></span><code><span class="k">DROP</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">Students</span><span class="p">;</span>
+<span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Students</span><span class="p">;</span><span class="w">   </span><span class="c1">-- Invalid object name 'Students'</span>
+</code></pre></div>
+   Note the current UTC time — you'll need it.</li>
+<li>Go to the database → <strong>Overview</strong> → <strong>Restore</strong> in the top toolbar. <strong>✅</strong></li>
+<li>Configure the restore: <strong>✅</strong></li>
+<li><strong>Source:</strong> Point-in-time</li>
+<li><strong>Restore point:</strong> a time a few minutes <strong>before</strong> you dropped the table</li>
+<li><strong>Database name:</strong> <code>db-lwm-demo-restored</code></li>
+<li>Note that it wants a compute size — the restored database is a <strong>real, separately-billed database</strong></li>
+<li><strong>Review + create → Create</strong>. This takes several minutes for a small database. <strong>✅</strong></li>
+<li>When it's done, open <code>db-lwm-demo-restored</code> → <strong>Query editor</strong> and run: <strong>✅</strong>
+   <div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Students</span><span class="p">;</span>
+</code></pre></div>
+   Your table is back, with the exact rows it had at that moment. Nothing was configured to make this possible — it was on from the second the database existed.</li>
+<li>Look at retention settings: go to the <strong>logical server → Data management → Backups</strong>. <strong>✅</strong></li>
+<li>The <strong>Retention policies</strong> tab is where you'd change PITR from 7 days and configure LTR weekly/monthly/yearly rules</li>
+<li>The <strong>Available backups</strong> tab lists what exists right now</li>
+<li><strong>Delete <code>db-lwm-demo-restored</code> now</strong> — it's outside your free allowance and bills separately. Right-click → <strong>Delete</strong>. <strong>✅</strong></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Why the restored database costs money</p>
+<p>Your free offer covers <strong>one</strong> database. The restore created a second one, on a normal paid tier. Deleting it immediately keeps today free. This is the single most likely way to accidentally incur a charge on this day.</p>
+</div>
+<hr />
+<h2 id="part-7-security">Part 7 — Security</h2>
+<p>Azure SQL has more security features than any other service we've covered. Here are the ones that matter, in the order you'd actually apply them.</p>
+<h3 id="encryption-already-done">Encryption — Already Done</h3>
+<p><strong>Transparent Data Encryption (TDE)</strong> encrypts your database files, backups, and transaction logs at rest. It is <strong>enabled by default</strong> on every new Azure SQL Database, using a Microsoft-managed key. You don't have to do anything.</p>
+<p>If your compliance requirements demand you control the key, you can switch to <strong>customer-managed keys</strong> stored in <strong>Azure Key Vault</strong> (Day 19) — a pattern called Bring Your Own Key. The database then can't be read without your key, which also means losing that key means losing the database. Handle accordingly.</p>
+<p><strong>In transit</strong>, connections are TLS-encrypted and the server enforces a minimum TLS version (set 1.2 or higher — anything older is a finding in a security review).</p>
+<h3 id="authentication-two-ways-in">Authentication — Two Ways In</h3>
+<p><strong>SQL authentication</strong> is the username/password you created. It works everywhere, and it has all the problems passwords always have: it's shared, it's stored in connection strings, it rarely gets rotated, and it doesn't support MFA.</p>
+<p><strong>Microsoft Entra ID authentication</strong> is the modern answer, and it's what Day 17 is about:
+- Sign in with your organisational identity
+- <strong>MFA and Conditional Access apply</strong> to database access
+- Grant access to <strong>Entra groups</strong> — add someone to the group, they get database access; remove them from the group, access disappears with no database change at all
+- <strong>Managed identities</strong> let an App Service or VM connect <strong>with no password anywhere</strong> — the strongest option available</p>
+<p>Set the Entra admin at the <strong>logical server</strong> level, then create contained users inside the database:</p>
+<div class="highlight"><pre><span></span><code><span class="c1">-- Give an Entra user access to this database</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="p">[</span><span class="n">someone</span><span class="o">@</span><span class="n">yourdomain</span><span class="p">.</span><span class="n">com</span><span class="p">]</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="k">EXTERNAL</span><span class="w"> </span><span class="n">PROVIDER</span><span class="p">;</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">db_datareader</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="n">MEMBER</span><span class="w"> </span><span class="p">[</span><span class="n">someone</span><span class="o">@</span><span class="n">yourdomain</span><span class="p">.</span><span class="n">com</span><span class="p">];</span>
+
+<span class="c1">-- Give an App Service managed identity access (no password involved)</span>
+<span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="p">[</span><span class="n">my</span><span class="o">-</span><span class="n">app</span><span class="o">-</span><span class="n">service</span><span class="o">-</span><span class="n">name</span><span class="p">]</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="k">EXTERNAL</span><span class="w"> </span><span class="n">PROVIDER</span><span class="p">;</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">db_datareader</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="n">MEMBER</span><span class="w"> </span><span class="p">[</span><span class="n">my</span><span class="o">-</span><span class="n">app</span><span class="o">-</span><span class="n">service</span><span class="o">-</span><span class="n">name</span><span class="p">];</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">db_datawriter</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="n">MEMBER</span><span class="w"> </span><span class="p">[</span><span class="n">my</span><span class="o">-</span><span class="n">app</span><span class="o">-</span><span class="n">service</span><span class="o">-</span><span class="n">name</span><span class="p">];</span>
+</code></pre></div>
+<h3 id="dynamic-data-masking">Dynamic Data Masking</h3>
+<p>This one is genuinely clever and costs nothing. <strong>Dynamic Data Masking</strong> hides sensitive column values from unprivileged users <strong>at query time</strong>. The data on disk is unchanged — the masking happens in the response.</p>
+<p>A support agent runs <code>SELECT * FROM Students</code> and sees <code>xxxx@xxxx.com</code> and <code>XXXX-XXX3210</code>. An administrator runs the identical query and sees real values. Same query, same table, different result based on who asked.</p>
+<p>Built-in masking functions: default (full mask), credit card, email, random number in a range, and custom (show first N and last M characters).</p>
+<p><strong>Its limitation, which you must understand:</strong> masking is not access control. A determined user with query permissions can infer masked values with clever <code>WHERE</code> clauses. It reduces casual exposure; it does not protect against an attacker. For real protection use <strong>Always Encrypted</strong> (encrypted client-side, invisible to the database engine) or proper <strong>row-level security</strong>.</p>
+<h3 id="auditing">Auditing</h3>
+<p><strong>SQL Auditing</strong> logs database events — who connected, what they ran, what failed — to one of three destinations:</p>
+<ul>
+<li><strong>Log Analytics workspace</strong> — best choice; queryable with KQL, and integrates with everything you'll build on Day 20</li>
+<li><strong>Storage account</strong> — cheapest for long retention</li>
+<li><strong>Event Hub</strong> — for streaming into an external SIEM</li>
+</ul>
+<p>Enable auditing at the <strong>server</strong> level and every database inherits it. This is usually a compliance requirement rather than an optional extra.</p>
+<h3 id="microsoft-defender-for-sql">Microsoft Defender for SQL 💳</h3>
+<p>A paid add-on (~$15/server/month) that provides:</p>
+<ul>
+<li><strong>Vulnerability assessment</strong> — scans your configuration against best practices and gives you a prioritised remediation list</li>
+<li><strong>Advanced threat protection</strong> — alerts on SQL injection attempts, anomalous access patterns, brute-force login attempts, and access from unusual locations</li>
+<li><strong>Data discovery &amp; classification</strong> — automatically finds and labels columns holding sensitive data (email, phone, national ID, financial)</li>
+</ul>
+<p>For any database holding real customer data, this is worth the money.</p>
+<h3 id="hands-on-mask-sensitive-data-and-turn-on-auditing">Hands-On: Mask Sensitive Data and Turn On Auditing ✅</h3>
+<p>Let's make the masking demo concrete, because seeing it is much more convincing than reading it.</p>
+<ol>
+<li>First, recreate the <code>Students</code> table (you dropped it in Part 6) in <code>db-lwm-demo</code>: <strong>✅</strong>
+   <div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">Students</span><span class="w"> </span><span class="p">(</span>
+<span class="w">    </span><span class="n">StudentID</span><span class="w">   </span><span class="nb">INT</span><span class="w"> </span><span class="k">IDENTITY</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">)</span><span class="w"> </span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">,</span>
+<span class="w">    </span><span class="n">FullName</span><span class="w">    </span><span class="n">NVARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span><span class="w"> </span><span class="k">NOT</span><span class="w"> </span><span class="k">NULL</span><span class="p">,</span>
+<span class="w">    </span><span class="n">Email</span><span class="w">       </span><span class="n">NVARCHAR</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
+<span class="w">    </span><span class="n">PhoneNumber</span><span class="w"> </span><span class="n">NVARCHAR</span><span class="p">(</span><span class="mi">20</span><span class="p">)</span>
+<span class="p">);</span>
+<span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="n">Students</span><span class="w"> </span><span class="p">(</span><span class="n">FullName</span><span class="p">,</span><span class="w"> </span><span class="n">Email</span><span class="p">,</span><span class="w"> </span><span class="n">PhoneNumber</span><span class="p">)</span><span class="w"> </span><span class="k">VALUES</span>
+<span class="w">    </span><span class="p">(</span><span class="s1">'Anita Sharma'</span><span class="p">,</span><span class="w">  </span><span class="s1">'anita@example.com'</span><span class="p">,</span><span class="w">  </span><span class="s1">'+91-9876543210'</span><span class="p">),</span>
+<span class="w">    </span><span class="p">(</span><span class="s1">'Sofia Almeida'</span><span class="p">,</span><span class="w"> </span><span class="s1">'sofia@example.com'</span><span class="p">,</span><span class="w">  </span><span class="s1">'+91-9876543212'</span><span class="p">);</span>
+</code></pre></div></li>
+<li>Go to the database → <strong>Security → Dynamic Data Masking</strong>. <strong>✅</strong></li>
+<li>Azure will likely already show <strong>recommended masks</strong> — it detected the <code>Email</code> column by name. Click <strong>Add mask</strong> on it. <strong>✅</strong></li>
+<li>Click <strong>+ Add mask</strong> to add one manually: <strong>✅</strong></li>
+<li><strong>Schema:</strong> dbo, <strong>Table:</strong> Students, <strong>Column:</strong> PhoneNumber</li>
+<li><strong>Masking field format:</strong> <em>Custom string</em>, with <strong>prefix 4</strong>, <strong>padding</strong> <code>XXXXX</code>, <strong>suffix 3</strong></li>
+<li><strong>Add</strong></li>
+<li><strong>Save</strong> the masking policy. <strong>✅</strong></li>
+<li>Now prove it works. As admin you're exempt from masking, so create a limited user in <strong>Query editor</strong>: <strong>✅</strong>
+   <div class="highlight"><pre><span></span><code><span class="k">CREATE</span><span class="w"> </span><span class="k">USER</span><span class="w"> </span><span class="n">supportagent</span><span class="w"> </span><span class="k">WITH</span><span class="w"> </span><span class="n">PASSWORD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s1">'A-Strong-Password-Here-123!'</span><span class="p">;</span>
+<span class="k">ALTER</span><span class="w"> </span><span class="k">ROLE</span><span class="w"> </span><span class="n">db_datareader</span><span class="w"> </span><span class="k">ADD</span><span class="w"> </span><span class="n">MEMBER</span><span class="w"> </span><span class="n">supportagent</span><span class="p">;</span>
+</code></pre></div></li>
+<li>Sign out of Query Editor, sign back in as <code>supportagent</code>, and run: <strong>✅</strong>
+   <div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">Students</span><span class="p">;</span>
+</code></pre></div>
+   Emails come back as <code>xxxx@xxxx.com</code> and phone numbers as <code>+91-XXXXX210</code>. Sign back in as <code>sqladmin</code> and run the same query — full values. <strong>Same query, different answer, based on identity.</strong> <strong>✅</strong></li>
+<li>Turn on auditing: go to the <strong>logical server → Security → Auditing</strong> → toggle <strong>Enable Azure SQL Auditing</strong> → destination <strong>Log Analytics</strong> (create a workspace if you don't have one) → <strong>Save</strong>. This connects directly to what we build on Day 20. <strong>✅</strong></li>
+<li>Look at <strong>Security → Microsoft Defender for Cloud</strong> on the database and read the recommendations panel — the findings are visible even before you enable the paid tier. <strong>💳</strong> for full enablement.</li>
+</ol>
+<hr />
+<h2 id="part-8-performance-and-scaling">Part 8 — Performance and Scaling</h2>
+<h3 id="scaling-is-a-slider">Scaling Is a Slider</h3>
+<p>Changing your database's size is a portal setting, not a migration:</p>
+<ul>
+<li><strong>Scale up/down</strong> — more or fewer vCores/DTUs. Takes seconds to minutes, with a brief connection drop at the end when the switchover happens.</li>
+<li><strong>Change tier</strong> — General Purpose to Business Critical, or DTU to vCore. Same mechanism, takes longer.</li>
+<li><strong>Serverless autoscaling</strong> — happens continuously, with no intervention and no connection drop.</li>
+</ul>
+<p>Because scaling is this easy, <strong>start small</strong>. Don't over-provision "just in case." Deploy on the smallest tier that works, watch the metrics, and scale when the data tells you to.</p>
+<h3 id="query-performance-insight">Query Performance Insight</h3>
+<p>Built into the portal, no setup required. It shows you:</p>
+<ul>
+<li>Top queries by CPU, duration, and execution count</li>
+<li>How each query's consumption has trended over time</li>
+<li>Which specific query is responsible for your CPU spike</li>
+</ul>
+<p>This is the first place to look when someone says "the app is slow." Nine times out of ten it's one badly-written query, and this blade names it.</p>
+<h3 id="automatic-tuning">Automatic Tuning</h3>
+<p>Azure will analyse your workload and <strong>improve it for you</strong>:</p>
+<ul>
+<li><strong>CREATE INDEX</strong> — identifies missing indexes and creates them</li>
+<li><strong>DROP INDEX</strong> — finds unused and duplicate indexes and removes them</li>
+<li><strong>FORCE LAST GOOD PLAN</strong> — detects when a query's execution plan regresses and reverts it automatically</li>
+</ul>
+<p>Each option can be set to <strong>on</strong> (Azure applies it automatically), <strong>off</strong>, or <strong>inherit from server</strong>. Azure validates every change by measuring performance before and after — and <strong>reverts anything that made things worse</strong>.</p>
+<p><code>FORCE LAST GOOD PLAN</code> is the one to enable first. Plan regression is a genuinely nasty failure mode — the query didn't change, the data didn't change much, but the optimiser picked a worse plan and performance fell off a cliff. Having Azure catch and revert that automatically is enormously valuable.</p>
+<h3 id="hands-on-scale-inspect-and-enable-automatic-tuning">Hands-On: Scale, Inspect, and Enable Automatic Tuning ✅</h3>
+<ol>
+<li>On <code>db-lwm-demo</code> → <strong>Settings → Compute + storage</strong>. <strong>✅</strong></li>
+<li>Adjust <strong>Max vCores</strong> and watch the estimated cost update live</li>
+<li>Switch the tier selector to <em>Provisioned</em> and back to <em>Serverless</em> to compare the pricing models</li>
+<li><strong>Discard</strong> — don't save changes that would take you off the free offer</li>
+<li>Generate some load so the tools have something to show, then look at metrics: <strong>✅</strong>
+   <div class="highlight"><pre><span></span><code><span class="k">SELECT</span><span class="w"> </span><span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">SalesLT</span><span class="p">.</span><span class="n">SalesOrderDetail</span><span class="w"> </span><span class="n">sod</span>
+<span class="k">CROSS</span><span class="w"> </span><span class="k">JOIN</span><span class="w"> </span><span class="n">SalesLT</span><span class="p">.</span><span class="n">Product</span><span class="w"> </span><span class="n">p</span><span class="p">;</span>
+</code></pre></div></li>
+<li>Go to <strong>Intelligent Performance → Query Performance Insight</strong>. Look at the <em>Long running queries</em> tab. (Data can take a few minutes to appear — worth mentioning on camera so nobody thinks it's broken.) <strong>✅</strong></li>
+<li>Go to <strong>Intelligent Performance → Automatic tuning</strong>. <strong>✅</strong></li>
+<li>Set <strong>FORCE LAST GOOD PLAN</strong> to <strong>ON</strong></li>
+<li>Set <strong>CREATE INDEX</strong> and <strong>DROP INDEX</strong> to <strong>ON</strong></li>
+<li><strong>Apply</strong></li>
+<li>Go to <strong>Monitoring → Metrics</strong> and chart <strong>CPU percentage</strong> and <strong>Data space used</strong>. For a Serverless database, also chart <strong>App CPU billed</strong> — this is literally what you're being charged for, and watching it drop to zero when the database pauses is a satisfying thing to see. <strong>✅</strong></li>
+</ol>
+<hr />
+<h2 id="part-9-business-continuity">Part 9 — Business Continuity 💳</h2>
+<p>Backups protect your data. They don't keep your application <em>running</em> — restoring takes minutes to hours. For high availability you need a live copy.</p>
+<h3 id="built-in-high-availability-free-automatic">Built-In High Availability (Free, Automatic)</h3>
+<p>Every Azure SQL Database already has HA inside its region:</p>
+<ul>
+<li><strong>General Purpose:</strong> compute and storage are separated. If the compute node fails, Azure spins up a new one and reattaches the storage. Failover takes a minute or two.</li>
+<li><strong>Business Critical:</strong> maintains <strong>three synchronous replicas</strong> on local SSD. Failover is nearly instant, because a replica is already running and current.</li>
+</ul>
+<p>You configure nothing. It's included in the price of the tier.</p>
+<h3 id="zone-redundancy">Zone Redundancy</h3>
+<p>Enable <strong>zone redundancy</strong> and your replicas are spread across separate Availability Zones — physically separate datacentres within the region, each with independent power, cooling, and networking. An entire datacentre can fail and your database stays online.</p>
+<p>This is the Availability Zones concept from Day 5, applied to a PaaS service. Available on Premium, Business Critical, General Purpose, and Hyperscale.</p>
+<h3 id="active-geo-replication">Active Geo-Replication</h3>
+<p>Creates up to <strong>four readable secondary databases</strong> in other regions, kept current by asynchronous replication.</p>
+<ul>
+<li>Secondaries are <strong>readable</strong> — point reporting workloads at the nearest one</li>
+<li>Failover is <strong>manual</strong> — you decide when to promote</li>
+<li>Each secondary is billed at full price</li>
+<li>RPO is typically <strong>under 5 seconds</strong></li>
+</ul>
+<h3 id="auto-failover-groups">Auto-Failover Groups</h3>
+<p>The production-grade version. A failover group wraps geo-replication with:</p>
+<ul>
+<li><strong>A listener endpoint</strong> — <code>&lt;group-name&gt;.database.windows.net</code>, which always points at whichever database is currently primary. Your application connection string never changes during a failover.</li>
+<li><strong>Automatic failover</strong> — with a configurable grace period</li>
+<li><strong>Group-level failover</strong> — multiple databases fail over together, so an app with several databases doesn't end up split across regions</li>
+</ul>
+<p><strong>The exam distinction, stated plainly:</strong> geo-replication is manual and per-database. Failover groups add automatic failover and a stable endpoint. If the question mentions "the application connection string must not change" or "automatic failover," the answer is <strong>failover group</strong>.</p>
+<h3 id="hands-on-tour-business-continuity">Hands-On: Tour Business Continuity 💳</h3>
+<p>We're touring, not building — a geo-replica doubles your bill.</p>
+<ol>
+<li>On <code>db-lwm-demo</code> → <strong>Data management → Replicas</strong>. Click <strong>+ Create replica</strong> and walk through the blade: choose a target region, note it wants a server in that region, note the pricing. <strong>Cancel without creating.</strong> <strong>💳</strong></li>
+<li>On the <strong>logical server → Data management → Failover groups</strong>. Click <strong>+ Add group</strong> and read the configuration: the group name becomes the listener endpoint, and note the <strong>read/write failover policy</strong> and <strong>grace period</strong> settings. <strong>Cancel.</strong> <strong>💳</strong></li>
+<li>Back on the database → <strong>Compute + storage</strong>, look for the <strong>zone redundancy</strong> checkbox — note which tiers offer it and which don't. <strong>✅</strong></li>
+</ol>
+<hr />
+<h2 id="part-10-the-rest-of-the-family-postgresql-mysql-and-friends">Part 10 — The Rest of the Family: PostgreSQL, MySQL, and Friends</h2>
+<p>Azure SQL is built on SQL Server. If your application speaks a different database language, Azure has fully managed services for those too — with the same operational model: Microsoft runs the engine, you run the data.</p>
+<h3 id="azure-database-for-postgresql-flexible-server">Azure Database for PostgreSQL — Flexible Server</h3>
+<p>The managed PostgreSQL service. <strong>Flexible Server</strong> is the current and only deployment model for new work (the older Single Server model is retired).</p>
+<p>What you get:
+- Choice of major PostgreSQL versions
+- <strong>Burstable, General Purpose, and Memory Optimized</strong> compute tiers — burstable (B1ms) is the cheap entry point
+- <strong>Stop/start</strong> — genuinely stop the server and pay only for storage, ideal for dev
+- <strong>High availability</strong> with a standby in the same or a different Availability Zone
+- <strong>Read replicas</strong> for scaling reads
+- <strong>Extensions</strong> — PostGIS for geospatial, pgvector for AI embeddings, TimescaleDB for time-series
+- VNet integration or public access with firewall rules
+- Automatic backups with PITR, 7–35 days</p>
+<p><strong>Choose PostgreSQL for:</strong> open-source applications, geospatial workloads, anything using pgvector for AI/embedding search, and teams that already know Postgres.</p>
+<h3 id="azure-database-for-mysql-flexible-server">Azure Database for MySQL — Flexible Server</h3>
+<p>The managed MySQL service, structured almost identically to the PostgreSQL one.</p>
+<ul>
+<li>MySQL 8.0+</li>
+<li>Burstable/General Purpose/Memory Optimized, with stop/start</li>
+<li><strong>Zone-redundant HA</strong> with automatic failover</li>
+<li>Read replicas</li>
+<li>Automatic backups with PITR</li>
+</ul>
+<p><strong>Choose MySQL for:</strong> WordPress, Drupal, Magento, Laravel, and traditional LAMP-stack applications — anything where the ecosystem assumes MySQL.</p>
+<h3 id="choosing-between-them">Choosing Between Them</h3>
+<p>The honest answer: <strong>choose based on what your application already speaks.</strong> These are all mature, capable, fully managed relational databases. Migrating an application between engines is expensive and rarely worth it.</p>
+<table>
+<thead>
+<tr>
+<th>If your situation is…</th>
+<th>Choose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>.NET application, or existing SQL Server skills on the team</td>
+<td><strong>Azure SQL Database</strong></td>
+</tr>
+<tr>
+<td>Existing on-premises SQL Server to migrate as-is</td>
+<td><strong>SQL Managed Instance</strong></td>
+</tr>
+<tr>
+<td>Open-source stack, geospatial data, or AI vector search</td>
+<td><strong>PostgreSQL Flexible Server</strong></td>
+</tr>
+<tr>
+<td>WordPress, Drupal, Magento, LAMP stack</td>
+<td><strong>MySQL Flexible Server</strong></td>
+</tr>
+<tr>
+<td>Globally distributed, low-latency, schema-flexible NoSQL</td>
+<td><strong>Cosmos DB</strong> (Bonus Day 33)</td>
+</tr>
+<tr>
+<td>Sub-millisecond caching in front of any of the above</td>
+<td><strong>Azure Cache for Redis</strong> (not covered in this course)</td>
+</tr>
+</tbody>
+</table>
+<h3 id="a-word-on-relational-vs-nosql">A Word on Relational vs NoSQL</h3>
+<p>Everything today has been <strong>relational</strong>: fixed schema, tables with rows and columns, relationships enforced by foreign keys, queried with SQL, and <strong>ACID</strong> transactional guarantees. That's the right default for the overwhelming majority of applications — orders, users, inventory, payments, bookings.</p>
+<p><strong>NoSQL</strong> (Cosmos DB) trades some of those guarantees for flexible schemas and effortless global distribution. It's the right answer for specific problems — globally distributed apps needing single-digit-millisecond reads worldwide, or genuinely schema-less data.</p>
+<p><strong>Start relational.</strong> Move to NoSQL when you have a named problem that relational can't solve. "It might scale better" is not a named problem.</p>
+<h3 id="hands-on-create-a-postgresql-flexible-server">Hands-On: Create a PostgreSQL Flexible Server ✅/💳</h3>
+<p>Free-account holders inside their first 12 months can do this free (B1ms burstable, 32 GB). Otherwise it's a few dollars a month — or just follow along and watch.</p>
+<ol>
+<li>Search <strong>Azure Database for PostgreSQL flexible servers</strong> → <strong>+ Create</strong>. <strong>✅/💳</strong></li>
+<li>Configure: <strong>✅/💳</strong></li>
+<li><strong>Resource group:</strong> <code>rg-day16-demo</code></li>
+<li><strong>Server name:</strong> <code>pg-lwm-&lt;yourname&gt;</code></li>
+<li><strong>Region:</strong> same as your SQL database</li>
+<li><strong>PostgreSQL version:</strong> latest available</li>
+<li><strong>Workload type:</strong> <em>Development</em> — this selects burstable defaults</li>
+<li><strong>Compute + storage → Configure server:</strong> <em>Burstable, B1ms, 32 GiB</em>. Note the <strong>stop/start</strong> capability mentioned here.</li>
+<li><strong>Availability zone:</strong> No preference</li>
+<li><strong>High availability:</strong> <strong>unchecked</strong> (it doubles the cost)</li>
+<li><strong>Authentication:</strong> PostgreSQL authentication only, set an admin username and password. <strong>✅/💳</strong></li>
+<li><strong>Networking:</strong> <em>Public access</em>, tick <strong>Allow public access from any Azure service</strong> and <strong>+ Add current client IP address</strong>. <strong>✅/💳</strong></li>
+<li><strong>Review + create → Create.</strong> Provisioning takes 5–10 minutes. <strong>✅/💳</strong></li>
+<li>When it's ready, note the parallels to everything you just learned: a <strong>Networking</strong> blade with firewall rules, a <strong>Backup and restore</strong> blade with PITR, <strong>Server parameters</strong> (the PostgreSQL equivalent of engine configuration), and <strong>Replication</strong> for read replicas. <strong>The concepts transfer completely — only the engine changed.</strong> <strong>✅/💳</strong></li>
+<li>Open <strong>Databases → postgres</strong> and try the built-in query interface if available in your region, or connect with <code>psql</code> from Cloud Shell:
+   <div class="highlight"><pre><span></span><code>psql<span class="w"> </span><span class="s2">"host=pg-lwm-&lt;yourname&gt;.postgres.database.azure.com port=5432 dbname=postgres user=&lt;admin&gt; sslmode=require"</span>
+</code></pre></div></li>
+<li><strong>Stop the server</strong> when you're finished exploring — <strong>Overview → Stop</strong>. This is the PostgreSQL equivalent of auto-pause, and it's the difference between a free month and a surprise. <strong>✅/💳</strong></li>
+</ol>
+<hr />
+<h2 id="part-11-cleanup">Part 11 — Cleanup ✅</h2>
+<p>Do this at the end of the session, on camera, every time.</p>
+<ol>
+<li>Confirm <code>db-lwm-demo-restored</code> is already deleted (Part 6). If not, delete it now — it's the one thing here that definitely bills. <strong>✅</strong></li>
+<li>If you created the PostgreSQL server and don't want it, delete it — or at minimum <strong>Stop</strong> it. <strong>✅</strong></li>
+<li>Delete the whole resource group: search <strong>Resource groups</strong> → <code>rg-day16-demo</code> → <strong>Delete resource group</strong> → type the name → <strong>Delete</strong>. <strong>✅</strong></li>
+<li><strong>Decide about <code>db-lwm-demo</code> before you delete it.</strong> Deleting the resource group removes it too. It's on the free offer and costs nothing while paused, so there's a good argument for keeping it — the Day 17 (Entra ID) and Day 19 (Key Vault) demos both benefit from having a live database to point at, and the capstone on Day 31 needs one. <strong>My recommendation: keep <code>db-lwm-demo</code> and its logical server, and delete everything else.</strong> <strong>✅</strong></li>
+<li>Whatever you keep, check <strong>Cost Management → Cost analysis</strong> tomorrow and confirm it reads what you expect. Make this a reflex.</li>
+</ol>
+<hr />
+<h2 id="summary">Summary</h2>
+<p>Today you stopped building infrastructure and started building the part of an application that actually persists.</p>
+<p><strong>Azure SQL Database</strong> is SQL Server with the operational burden removed. Microsoft patches it, backs it up, replicates it, and fails it over. You get a connection string, a schema, and your queries. That trade is why PaaS databases have become the default for new applications.</p>
+<p>The <strong>four deployment options</strong> solve four different problems: Single Database for new apps, Elastic Pool for many databases with uncorrelated load, Managed Instance for lifting an existing SQL Server into Azure intact, and SQL Server on a VM for when you genuinely need the OS.</p>
+<p>The <strong>vCore purchasing model</strong> with the <strong>Serverless</strong> compute tier is the most beginner-friendly billing arrangement in Azure — the database pauses when nobody's using it, and a paused database costs nothing but storage. Combined with the free offer, you can keep a real database running indefinitely and pay essentially zero.</p>
+<p>The <strong>logical server</strong> is not a machine. It's a free container providing a DNS endpoint, a firewall, and administrative identity. Almost every connection problem you'll ever have with Azure SQL is solved at that level.</p>
+<p><strong>Backups you never configured</strong> have been running since the moment you created the database, and you restored from one today. <strong>Encryption at rest</strong> was already on. <strong>Dynamic Data Masking</strong> changed what a query returned based on who ran it. <strong>Automatic tuning</strong> will write your indexes. This is what "managed" actually means in practice — not fewer features, but fewer things you have to remember to switch on.</p>
+<p>And the whole family works the same way: <strong>PostgreSQL</strong> and <strong>MySQL Flexible Server</strong> give you the identical operational model with a different engine. Learn the pattern once and it transfers.</p>
+<h3 id="whats-next">What's Next</h3>
+<p>You've now got compute, networking, storage, and data. The obvious question is the one we've been deferring all course: <strong>who is allowed to touch any of it?</strong></p>
+<p>Tomorrow, Day 17 begins Phase 5 with <strong>Microsoft Entra ID</strong> — Azure's identity platform. Users, groups, multi-factor authentication, Conditional Access, and managed identities. That last one is the direct sequel to today: we'll connect an App Service to the database you just built <strong>with no password in the connection string at all</strong>, using an identity Azure manages for you. Every credential you wrote down today becomes something you no longer need.</p>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<ul>
+<li><strong>Azure SQL Database is PaaS</strong> — Microsoft owns the OS, engine, patching, backups, and HA; you own the schema, queries, access, and data. That line is the source of most exam questions.</li>
+<li><strong>Four deployment options:</strong> Single Database (new apps), Elastic Pool (many databases, variable load), Managed Instance (lift-and-shift with instance-level features), SQL on a VM (needs OS access).</li>
+<li><strong>vCore beats DTU</strong> for anything new — it's the only path to Serverless, Hyperscale, Hybrid Benefit, and reserved capacity.</li>
+<li><strong>Serverless auto-pauses</strong> after a configurable idle period (1 hour minimum) and costs nothing for compute while paused — at the price of a ~1 minute resume delay on the next connection.</li>
+<li><strong>The free offer is free forever</strong>, not a 12-month trial: ~100,000 vCore-seconds plus 32 GB storage per month, on every subscription type.</li>
+<li><strong>The logical server is not a machine.</strong> It's free, it has no OS, and it exists to provide a DNS endpoint, a firewall, and admin identity.</li>
+<li><strong>A new server blocks everyone by default.</strong> Add your client IP explicitly. "Allow Azure services" opens access to Azure resources in <em>any</em> subscription — use Private Endpoint for production instead.</li>
+<li><strong>Backups are automatic and always on:</strong> full weekly, differential every 12–24h, transaction log every 5–10 minutes. PITR retention 1–35 days; LTR up to 10 years.</li>
+<li><strong>Restore always creates a new database</strong> — it never overwrites the original. Delete restored copies promptly; they bill separately.</li>
+<li><strong>TDE is on by default.</strong> Minimum TLS 1.2. Prefer <strong>Entra ID authentication</strong> over SQL logins, and <strong>managed identities</strong> over both.</li>
+<li><strong>Dynamic Data Masking is not access control</strong> — it reduces casual exposure at query time. Use Always Encrypted or row-level security when you need real protection.</li>
+<li><strong>Business Critical includes a free readable replica</strong> — the cheapest way to move reporting load off your primary.</li>
+<li><strong>Hyperscale restores in minutes regardless of size</strong> — up to 100 TB. That property alone drives the choice for very large databases.</li>
+<li><strong>Failover group vs geo-replication:</strong> the failover group adds automatic failover and a stable listener endpoint, so the application connection string never changes.</li>
+<li><strong>Choose the engine your application already speaks.</strong> PostgreSQL for open-source/geospatial/vector, MySQL for LAMP and WordPress, Azure SQL for .NET and SQL Server heritage. Start relational; move to NoSQL only for a named problem.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../day15_vpn_expressroute/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Day 15 — VPN Gateway &amp; ExpressRoute">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Day 15 — VPN Gateway & ExpressRoute
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../day17_entra_id_rbac/" class="md-footer__link md-footer__link--next" aria-label="Next: Day 17 — Microsoft Entra ID &amp; Azure RBAC">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Day 17 — Microsoft Entra ID & Azure RBAC
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

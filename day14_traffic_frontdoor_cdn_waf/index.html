@@ -1,0 +1,1946 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A complete beginner's guide to Azure Cloud and Azure DevOps — 31 days plus bonus content, zero assumed cloud knowledge.">
+      
+      
+      
+        <link rel="canonical" href="https://iam-mithran.github.io/LWM-Azure/day14_traffic_frontdoor_cdn_waf/">
+      
+      
+        <link rel="prev" href="../day13_azure_dns/">
+      
+      
+        <link rel="next" href="../day15_vpn_expressroute/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Day 14 — Traffic Manager, Front Door, CDN & WAF - LearnWithMithran — Azure Complete Beginner's Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#day-14-traffic-manager-front-door-cdn-waf" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-header__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LearnWithMithran — Azure Complete Beginner's Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Day 14 — Traffic Manager, Front Door, CDN & WAF
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-nav__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LearnWithMithran — Azure Complete Beginner's Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day01_account_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day02_fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day03_vms_part1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day04_web_hosting_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day05_vms_part3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day06_app_service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day07_storage_account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day08_storage_files_queue_tables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day09_intro_to_networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day10_virtual_network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day11_vnet_advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day12_load_balancer_vmss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day13_azure_dns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 13 — Azure DNS: Public & Private Zones
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 14 — Traffic Manager, Front Door, CDN & WAF
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 14 — Traffic Manager, Front Door, CDN & WAF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-azure-traffic-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Azure Traffic Manager
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Azure Traffic Manager">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-one-region-is-a-single-point-of-failure-even-for-multi-vm-apps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem: One Region Is a Single Point of Failure — Even for Multi-VM Apps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-traffic-manager-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Traffic Manager Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-six-routing-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Six Routing Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#endpoints-and-health-probes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endpoints and Health Probes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-build-a-traffic-manager-profile-and-force-a-failover" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Build a Traffic Manager Profile and Force a Failover
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-azure-front-door-the-modern-global-front-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Azure Front Door: The Modern Global Front End
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Azure Front Door: The Modern Global Front End">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#front-door-vs-traffic-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Front Door vs. Traffic Manager
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#an-important-current-reality-classic-is-retiring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        An Important Current Reality: Classic Is Retiring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-front-door-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Front Door Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-what" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use What
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-put-front-door-standard-in-front-of-a-static-website" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Put Front Door Standard in Front of a Static Website
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-web-application-firewall-waf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Web Application Firewall (WAF)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Web Application Firewall (WAF)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-your-backend-trusts-every-request-that-reaches-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem: Your Backend Trusts Every Request That Reaches It
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-waf-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What WAF Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-owasp-core-rule-set-crs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The OWASP Core Rule Set (CRS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#detection-mode-vs-prevention-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detection Mode vs. Prevention Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-rules-and-bot-protection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Rules and Bot Protection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#an-important-current-change-waf-policy-is-now-the-only-way" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        An Important Current Change: WAF Policy Is Now the Only Way
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-attach-a-waf-policy-to-front-door-and-prove-it-blocks-an-attack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Attach a WAF Policy to Front Door and Prove It Blocks an Attack
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day15_vpn_expressroute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 15 — VPN Gateway & ExpressRoute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day16_azure_sql_database/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 16 — Azure SQL Database + Other Databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day17_entra_id_rbac/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 17 — Microsoft Entra ID & Azure RBAC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-azure-traffic-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Azure Traffic Manager
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Azure Traffic Manager">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-one-region-is-a-single-point-of-failure-even-for-multi-vm-apps" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem: One Region Is a Single Point of Failure — Even for Multi-VM Apps
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-traffic-manager-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Traffic Manager Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-six-routing-methods" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Six Routing Methods
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#endpoints-and-health-probes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Endpoints and Health Probes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-build-a-traffic-manager-profile-and-force-a-failover" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Build a Traffic Manager Profile and Force a Failover
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-azure-front-door-the-modern-global-front-end" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Azure Front Door: The Modern Global Front End
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Azure Front Door: The Modern Global Front End">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#front-door-vs-traffic-manager" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Front Door vs. Traffic Manager
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#an-important-current-reality-classic-is-retiring" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        An Important Current Reality: Classic Is Retiring
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-front-door-features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Front Door Features
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-to-use-what" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When to Use What
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-put-front-door-standard-in-front-of-a-static-website" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Put Front Door Standard in Front of a Static Website
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-web-application-firewall-waf" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Web Application Firewall (WAF)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Web Application Firewall (WAF)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-your-backend-trusts-every-request-that-reaches-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem: Your Backend Trusts Every Request That Reaches It
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-waf-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What WAF Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-owasp-core-rule-set-crs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The OWASP Core Rule Set (CRS)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#detection-mode-vs-prevention-mode" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Detection Mode vs. Prevention Mode
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-rules-and-bot-protection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Rules and Bot Protection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#an-important-current-change-waf-policy-is-now-the-only-way" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        An Important Current Change: WAF Policy Is Now the Only Way
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-attach-a-waf-policy-to-front-door-and-prove-it-blocks-an-attack" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Attach a WAF Policy to Front Door and Prove It Blocks an Attack
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="day-14-traffic-manager-front-door-cdn-waf">Day 14 — Traffic Manager, Front Door, CDN &amp; WAF</h1>
+<p><strong>Phase 3 — Networking</strong></p>
+<blockquote>
+<p>Every service you've built so far in this course lives in one region. That's fine until your users don't — a user in Singapore hitting a web app that only exists in East US is going to feel every millisecond of that round trip, and if East US ever has a bad day, that user has no fallback at all. Today we go global. You'll route users to the best endpoint anywhere in the world using nothing but DNS, put a globally distributed edge network in front of your application that caches content and terminates SSL closer to your users, and wrap the whole thing in a managed firewall that blocks common web attacks before they ever reach your backend. Along the way, we'll also deal with something very current: two of the classic services this topic used to be built on — Azure CDN (classic) and Azure Front Door (classic) — have been closed to new deployments since August 15, 2025, so everything we build today uses the modern, unified replacement.</p>
+</blockquote>
+<hr />
+<h2 id="what-youll-learn">What You'll Learn</h2>
+<ul>
+<li><strong>Azure Traffic Manager</strong> — a DNS-based global load balancer that never sits in your data path</li>
+<li>Traffic Manager's six routing methods: Performance, Priority, Weighted, Geographic, Subnet, MultiValue</li>
+<li>Hands-on: build a Traffic Manager profile with two endpoints, then force a failover and watch DNS respond</li>
+<li><strong>Azure Front Door (Standard/Premium)</strong> — Microsoft's global Application Delivery Network: edge caching, global HTTP(S) load balancing, SSL offload, and WAF, all in one service</li>
+<li>Why <strong>Azure CDN (classic)</strong> and <strong>Front Door (classic)</strong> are both in retirement, and why Front Door Standard/Premium is now the answer to "I need a CDN" <em>and</em> "I need global routing"</li>
+<li>Hands-on: build a Front Door Standard profile in front of a static website, and prove edge caching is real via the <code>X-Cache</code> response header</li>
+<li><strong>Web Application Firewall (WAF)</strong> — the OWASP Core Rule Set, Detection vs. Prevention mode, custom rules, and the Bot Manager rule set</li>
+<li>Why <strong>WAF Policy</strong> is now the only way to configure WAF — and why the old inline WAF config on Application Gateway is gone</li>
+<li>Hands-on: attach a WAF Policy to your Front Door profile, review Detection mode logs, then flip to Prevention mode and prove a SQL injection attempt gets blocked</li>
+<li>Exam framing: how AZ-104 and AZ-305 expect you to choose between Traffic Manager, Front Door, and Application Gateway (Day 12)</li>
+</ul>
+<hr />
+<h2 id="before-we-begin">Before We Begin</h2>
+<p>Everything meaningful today has a real cost — this is a <strong>💳 instructor-demo-heavy day</strong>. Delete everything at the end.</p>
+<ul>
+<li><strong>Azure Traffic Manager:</strong> a small monthly charge per DNS zone (roughly $0.54/month) plus a small charge per million DNS queries received. At demo volume, a few cents. <strong>💳</strong></li>
+<li><strong>Two backend endpoints for Traffic Manager</strong> (two B1s VMs, one per region): this is the real cost driver, not Traffic Manager itself. <strong>💳</strong></li>
+<li><strong>Azure Front Door (Standard tier):</strong> billed on a consumption model — a base platform fee plus usage (data transfer, requests, routing rules). Budget roughly $35–$40/month if left running for a full month; a short demo session costs a small fraction of that. <strong>💳</strong></li>
+<li><strong>WAF Policy attached to Front Door Standard/Premium:</strong> included in the Front Door Standard/Premium price — no separate WAF charge on these tiers. <strong>💳</strong> (bundled into the Front Door cost above)</li>
+<li><strong>Blob Storage static website</strong> (today's Front Door origin): <strong>✅ free</strong> at this scale — same static website hosting feature from Day 7.</li>
+</ul>
+<p>We're deliberately <strong>not</strong> creating a standalone "Azure CDN (classic)" resource today — as of August 15, 2025, Azure no longer allows new classic CDN profiles or new custom domains on existing ones, so building one from scratch would teach you a dead end. Front Door Standard is where that functionality lives now.</p>
+<hr />
+<h2 id="part-1-azure-traffic-manager">Part 1 — Azure Traffic Manager</h2>
+<h3 id="the-problem-one-region-is-a-single-point-of-failure-even-for-multi-vm-apps">The Problem: One Region Is a Single Point of Failure — Even for Multi-VM Apps</h3>
+<p>Back on Day 12, you made a single region resilient — spreading traffic across multiple VMs with a Load Balancer, and across multiple availability zones. But what happens if the <em>entire region</em> has an outage? Every VM behind that Load Balancer goes down with it. To survive a regional outage, you need presence in more than one region — and a way to route users to whichever region is actually healthy.</p>
+<h3 id="what-traffic-manager-is">What Traffic Manager Is</h3>
+<p><strong>Azure Traffic Manager</strong> is a <strong>DNS-based global load balancer</strong>. The critical thing to understand: Traffic Manager does not sit in the path of your traffic at all. It only answers DNS queries.</p>
+<pre class="mermaid"><code>sequenceDiagram
+    participant User
+    participant TM as Traffic Manager (DNS)
+    participant EastUS as App in East US
+    User-&gt;&gt;TM: DNS query for myapp.trafficmanager.net
+    TM-&gt;&gt;TM: Evaluate routing method + health probes
+    TM--&gt;&gt;User: Returns IP of the best endpoint
+    User-&gt;&gt;EastUS: Connects directly (Traffic Manager is no longer involved)</code></pre>
+<p>Once Traffic Manager hands back an IP address, the user's browser connects <strong>directly</strong> to that endpoint — Traffic Manager is completely out of the picture for the actual request/response traffic. That's why it adds effectively zero latency overhead: it's pure DNS resolution, not a proxy.</p>
+<h3 id="the-six-routing-methods">The Six Routing Methods</h3>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>How It Chooses</th>
+<th>Typical Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Performance</strong></td>
+<td>Lowest network latency from the user's location, based on Microsoft's latency tables</td>
+<td>The default choice for a global, multi-region active-active app</td>
+</tr>
+<tr>
+<td><strong>Priority</strong></td>
+<td>Send everything to a primary endpoint; fail over to secondary only if primary is unhealthy</td>
+<td>Active/passive disaster recovery</td>
+</tr>
+<tr>
+<td><strong>Weighted</strong></td>
+<td>Distribute traffic by a ratio you set (e.g., 80/20)</td>
+<td>Gradual rollouts, canary testing across regions</td>
+</tr>
+<tr>
+<td><strong>Geographic</strong></td>
+<td>Route by the user's country/region</td>
+<td>Data residency and compliance requirements</td>
+</tr>
+<tr>
+<td><strong>Subnet</strong></td>
+<td>Route specific source IP ranges to specific endpoints</td>
+<td>Corporate IP range → internal/staging backend</td>
+</tr>
+<tr>
+<td><strong>MultiValue</strong></td>
+<td>Return several healthy endpoint IPs in one DNS answer; the client picks</td>
+<td>Simple client-side failover without another DNS round trip</td>
+</tr>
+</tbody>
+</table>
+<h3 id="endpoints-and-health-probes">Endpoints and Health Probes</h3>
+<p>Traffic Manager can point at <strong>Azure endpoints</strong> (App Service, VMs behind a Load Balancer, another Traffic Manager profile nested underneath), or <strong>external endpoints</strong> — any public IP or FQDN, even outside Azure entirely.</p>
+<p>A <strong>health probe</strong> runs continuously against every endpoint on a path/port/interval you configure. The moment an endpoint fails its probe, Traffic Manager stops returning that endpoint's IP in DNS answers — traffic is steered away from it automatically, with no manual intervention.</p>
+<p><strong>TTL matters here too</strong> (remember Day 13): Traffic Manager DNS responses use a short TTL — typically 30–300 seconds — specifically so that when a failover happens, resolvers around the world stop caching the dead endpoint's IP quickly.</p>
+<hr />
+<h3 id="hands-on-build-a-traffic-manager-profile-and-force-a-failover">Hands-On: Build a Traffic Manager Profile and Force a Failover</h3>
+<p><strong>💳 Instructor demo — two VMs in different regions are the real cost driver here</strong></p>
+<p>We're using plain VMs as endpoints instead of App Service. The reason matters: Traffic Manager never rewrites the <code>Host</code> header, so a request still arrives at the origin addressed to <code>lwm-tm-demo.trafficmanager.net</code>. App Service's shared front-end routes by hostname, so it needs that Traffic Manager hostname explicitly bound as a <strong>custom domain</strong> on the app — a binding that Free tier can't do at all, and that's fussy to set up even on Basic tier. A VM has no such routing layer in front of it — Traffic Manager just resolves to its public IP directly, so there's nothing to bind.</p>
+<p><strong>Step 1 — Create two VMs in different regions:</strong></p>
+<ol>
+<li>Search for <strong>Virtual machines</strong> → <strong>+ Create</strong> → <strong>Azure virtual machine</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Resource group:</strong> <code>rg-day14-demo</code></li>
+<li><strong>Name:</strong> <code>lwm-tm-india</code></li>
+<li><strong>Region:</strong> Central India</li>
+<li><strong>Image:</strong> Ubuntu Server (latest LTS)</li>
+<li><strong>Size:</strong> B1s</li>
+<li><strong>Inbound ports:</strong> allow HTTP (80) and SSH (22)</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+<li>Repeat with <strong>Name:</strong> <code>lwm-tm-centralus</code>, <strong>Region:</strong> Central US.</li>
+<li>Once each VM is running, connect via SSH and install a web server with a distinct page so routing is visually obvious:
+   <div class="highlight"><pre><span></span><code>sudo<span class="w"> </span>apt<span class="w"> </span>update<span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span>sudo<span class="w"> </span>apt<span class="w"> </span>install<span class="w"> </span>-y<span class="w"> </span>nginx
+<span class="nb">echo</span><span class="w"> </span><span class="s2">"Hello from Central India"</span><span class="w"> </span><span class="p">|</span><span class="w"> </span>sudo<span class="w"> </span>tee<span class="w"> </span>/var/www/html/index.nginx-debian.html
+</code></pre></div>
+   (On <code>lwm-tm-centralus</code>, use <code>"Hello from Central US"</code> instead.)</li>
+</ol>
+<p><strong>Step 2 — Give each VM's public IP a DNS name label (this is the FQDN step):</strong></p>
+<p>Traffic Manager's "Public IP address" endpoint type works by pointing DNS at the IP's FQDN, not the raw IP — so the public IP resource <strong>must</strong> have a DNS name label before Traffic Manager will let you pick it. This is almost certainly the "asking for an FQDN" prompt you hit.</p>
+<ol>
+<li>Open the VM <code>lwm-tm-india</code> → <strong>Networking</strong> → click the public IP resource link (e.g. <code>lwm-tm-india-ip</code>).</li>
+<li>Go to <strong>Settings → Configuration</strong>.</li>
+<li>Under <strong>DNS name label</strong>, enter something unique, e.g. <code>lwm-tm-india-&lt;yourname&gt;</code>.</li>
+<li><strong>Save</strong> — this generates an FQDN like <code>lwm-tm-india-&lt;yourname&gt;.centralindia.cloudapp.azure.com</code>.</li>
+<li>Repeat for <code>lwm-tm-centralus</code>'s public IP with a label like <code>lwm-tm-centralus-&lt;yourname&gt;</code>.</li>
+</ol>
+<p><strong>Step 3 — Create the Traffic Manager profile:</strong></p>
+<ol>
+<li>Search for <strong>Traffic Manager profiles</strong> → <strong>+ Create</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Name:</strong> <code>lwm-tm-demo</code> (this becomes <code>lwm-tm-demo.trafficmanager.net</code>)</li>
+<li><strong>Routing method:</strong> Performance</li>
+<li><strong>Resource group:</strong> <code>rg-day14-demo</code></li>
+<li><strong>Create</strong>.</li>
+</ol>
+<p><strong>Step 4 — Add both VM public IPs as endpoints:</strong></p>
+<ol>
+<li>Open <code>lwm-tm-demo</code> → <strong>Endpoints</strong> → <strong>+ Add</strong>.</li>
+<li><strong>Type:</strong> Azure endpoint, <strong>Target resource type:</strong> Public IP address, select <code>lwm-tm-india-ip</code> (now selectable because it has a DNS name label / FQDN) → <strong>Add</strong>.</li>
+<li>Repeat for <code>lwm-tm-centralus-ip</code>.</li>
+</ol>
+<p><strong>Step 5 — Verify routing:</strong></p>
+<ol>
+<li>Open <code>lwm-tm-demo.trafficmanager.net</code> in a browser — you'll land on whichever region's VM is closest to you, based on the Performance routing method, and see its distinct "Hello from..." page.</li>
+<li>Check <strong>Endpoints</strong> in the portal — both should show <strong>Monitor status: Online</strong>.</li>
+</ol>
+<p><strong>Step 6 — Force a failover and watch it happen:</strong></p>
+<ol>
+<li>Go to <code>lwm-tm-india</code> → <strong>Stop</strong> (deallocate).</li>
+<li>Back in <code>lwm-tm-demo</code> → <strong>Endpoints</strong>, wait for the health probe interval to elapse (default 30 seconds) — <code>lwm-tm-india-ip</code> flips to <strong>Degraded</strong>.</li>
+<li>Refresh <code>lwm-tm-demo.trafficmanager.net</code> — you now see the Central US page instead, automatically, with no DNS record edited by hand.</li>
+<li>Start <code>lwm-tm-india</code> back up when you're done to restore normal routing.</li>
+</ol>
+<p><strong>Step 7 — Clean up:</strong></p>
+<p>Delete <code>rg-day14-demo</code>'s VMs when finished with this part, or leave them running into Part 2 if you want a live origin to point Front Door at (optional).</p>
+<hr />
+<h2 id="part-2-azure-front-door-the-modern-global-front-end">Part 2 — Azure Front Door: The Modern Global Front End</h2>
+<h3 id="front-door-vs-traffic-manager">Front Door vs. Traffic Manager</h3>
+<p>Traffic Manager only ever answers DNS — it never touches your actual HTTP traffic. <strong>Azure Front Door</strong> is different: it's an <strong>Application Delivery Network (ADN)</strong> that sits directly <strong>in the data path</strong>. Requests are received at one of Microsoft's global edge Points of Presence (PoPs) using anycast routing, and Front Door itself talks to your backend (called an <strong>origin</strong>) on your behalf.</p>
+<p>Because it's in the path, Front Door can do things Traffic Manager fundamentally cannot:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Traffic Manager</th>
+<th>Front Door</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Sits in the data path</td>
+<td>❌ No — DNS only</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td>Can cache content at the edge</td>
+<td>❌ No</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td>Can terminate SSL at the edge</td>
+<td>❌ No</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td>Can attach a WAF</td>
+<td>❌ No</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td>Works for any protocol</td>
+<td>✅ Yes (DNS is protocol-agnostic)</td>
+<td>HTTP/HTTPS only</td>
+</tr>
+<tr>
+<td>Adds latency overhead</td>
+<td>Effectively none</td>
+<td>Small (one extra hop through the edge), offset by caching and anycast routing</td>
+</tr>
+</tbody>
+</table>
+<h3 id="an-important-current-reality-classic-is-retiring">An Important Current Reality: Classic Is Retiring</h3>
+<p>This is genuinely current, not just textbook theory — as of <strong>August 15, 2025</strong>, Microsoft stopped allowing <strong>new profile creation and new custom domains</strong> on both <strong>Azure Front Door (classic)</strong> and <strong>Azure CDN Standard from Microsoft (classic)</strong>. Existing managed TLS certificates on classic profiles were auto-renewed one last time and remain valid only until <strong>April 14, 2026</strong> — after that, anything not migrated loses its certificate. Full retirement dates are <strong>March 31, 2027</strong> (Front Door classic) and <strong>September 30, 2027</strong> (CDN classic).</p>
+<p>The practical result: <strong>Azure Front Door Standard or Premium tier is now the only starting point for new deployments</strong> — and it has absorbed the CDN use case entirely. There's no reason to reach for a separate "Azure CDN" resource anymore; a Front Door Standard profile <em>is</em> your CDN, plus global load balancing, plus WAF, in one resource.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Front Door Standard</th>
+<th>Front Door Premium</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Edge caching, compression, anycast routing</td>
+<td>✅</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Managed rule sets (WAF)</td>
+<td>Basic managed rules</td>
+<td>Full managed rule sets + Bot Manager</td>
+</tr>
+<tr>
+<td>Private Link to your origin</td>
+<td>❌</td>
+<td>✅</td>
+</tr>
+<tr>
+<td>Best for</td>
+<td>Cost-sensitive caching + global routing</td>
+<td>Security-sensitive workloads needing private origins</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>A separate note on <strong>Azure CDN from Edgio</strong> (the old Verizon-branded CDN offering): that product shut down entirely on <strong>January 15, 2025</strong> after its parent company's business closure — any workloads still on it were force-migrated by Microsoft. If you ever see <code>azureedge.net</code> in older documentation or an existing customer's setup, that's the legacy signal to migrate immediately.</p>
+</blockquote>
+<h3 id="key-front-door-features">Key Front Door Features</h3>
+<ul>
+<li><strong>Anycast edge routing</strong> — your request lands at whichever of Microsoft's edge PoPs is closest to the user, not necessarily your origin's region</li>
+<li><strong>Caching</strong> — static content (images, JS, CSS) is cached at the edge; only cache misses and dynamic requests reach your origin</li>
+<li><strong>SSL offload</strong> — TLS is terminated at the edge; Front Door manages certificates for you (or bring your own)</li>
+<li><strong>WAF integration</strong> — the same WAF Policy resource you'll build in Part 3 attaches directly to a Front Door profile</li>
+<li><strong>Session affinity</strong> — pin a user to the same origin across requests</li>
+<li><strong>Health probes + automatic failover</strong> — an unhealthy origin is removed from rotation, same concept as Traffic Manager but enforced in-path instead of via DNS</li>
+<li><strong>URL rewrite/redirect</strong> — force HTTP → HTTPS, rewrite paths, before the request ever reaches your origin</li>
+<li><strong>Origins</strong> — App Service, Storage static websites, VMs, Application Gateway, or any public endpoint</li>
+</ul>
+<h3 id="when-to-use-what">When to Use What</h3>
+<table>
+<thead>
+<tr>
+<th>Scenario</th>
+<th>Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Pure DNS-level global failover, any protocol, zero added latency</td>
+<td><strong>Traffic Manager</strong></td>
+</tr>
+<tr>
+<td>Global HTTP(S) delivery with edge caching, SSL offload, and WAF</td>
+<td><strong>Front Door</strong></td>
+</tr>
+<tr>
+<td>Layer 7 routing (URL path/host header) <strong>within</strong> a single region</td>
+<td><strong>Application Gateway</strong> (Day 12)</td>
+</tr>
+<tr>
+<td>Need Front Door's global reach <em>and</em> Application Gateway's regional path-based routing</td>
+<td>Chain them — Front Door in front, Application Gateway as one of its origins</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h3 id="hands-on-put-front-door-standard-in-front-of-a-static-website">Hands-On: Put Front Door Standard in Front of a Static Website</h3>
+<p><strong>💳 Instructor demo — Front Door Standard has a real ongoing cost even at low usage</strong></p>
+<p><strong>Step 1 — Reuse or create a Storage static website origin:</strong></p>
+<ol>
+<li>If you still have a storage account with static website hosting enabled from Day 7, you can reuse it. Otherwise: create a storage account → <strong>Static website</strong> (under <strong>Data management</strong>) → <strong>Enable</strong> → upload a simple <code>index.html</code>.</li>
+<li>Note the <strong>Primary endpoint</strong> URL shown — this is today's origin.</li>
+</ol>
+<p><strong>Step 2 — Create the Front Door profile:</strong></p>
+<ol>
+<li>Search for <strong>Front Door and CDN profiles</strong> → <strong>+ Create</strong>.</li>
+<li>Choose <strong>Front Door</strong> (not "CDN Standard from Microsoft (classic)" or "CDN from Edgio" — both greyed-out or flagged for retirement in the portal).</li>
+<li><strong>Tier:</strong> Standard.</li>
+<li>Fill in:</li>
+<li><strong>Resource group:</strong> <code>rg-day14-demo</code></li>
+<li><strong>Name:</strong> <code>lwm-frontdoor-demo</code></li>
+<li><strong>Endpoint name:</strong> <code>lwm-fd-demo</code> (becomes <code>lwm-fd-demo.azurefd.net</code>)</li>
+<li><strong>Origin type:</strong> Storage static website, select your storage account</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>. Provisioning takes a few minutes.</li>
+</ol>
+<p><strong>Step 3 — Verify edge caching is real:</strong></p>
+<ol>
+<li>Browse to <code>https://lwm-fd-demo.azurefd.net</code>. You should see your <code>index.html</code> content.</li>
+<li>Open browser dev tools → <strong>Network</strong> tab → reload the page and inspect the response headers on the request.</li>
+<li>Look for the <code>X-Cache</code> header: <code>TCP_MISS</code> means this request went all the way to your origin; <code>TCP_HIT</code> means it was served straight from the edge cache, without touching your storage account at all. Reload a couple of times and watch it flip from miss to hit.</li>
+</ol>
+<p><strong>Step 4 — Clean up (or keep running into Part 3):</strong></p>
+<p>Keep <code>lwm-frontdoor-demo</code> running if you're continuing straight into the WAF hands-on next — otherwise delete it to stop the ongoing charge.</p>
+<hr />
+<h2 id="part-3-web-application-firewall-waf">Part 3 — Web Application Firewall (WAF)</h2>
+<h3 id="the-problem-your-backend-trusts-every-request-that-reaches-it">The Problem: Your Backend Trusts Every Request That Reaches It</h3>
+<p>By default, nothing stands between the internet and your application's code except your own application logic. A malicious request — a SQL injection payload in a query string, a cross-site scripting payload in a form field — travels the exact same path as a legitimate one, all the way to your backend, unless something inspects it first.</p>
+<h3 id="what-waf-is">What WAF Is</h3>
+<p>A <strong>Web Application Firewall (WAF)</strong> inspects every incoming HTTP(S) request against a set of known attack signatures <strong>before</strong> it's forwarded to your origin. On Azure, the same WAF engine attaches to two different places: <strong>Azure Front Door</strong> (global edge) and <strong>Application Gateway</strong> (regional, from Day 12) — via a shared resource type called a <strong>WAF Policy</strong>.</p>
+<h3 id="the-owasp-core-rule-set-crs">The OWASP Core Rule Set (CRS)</h3>
+<p>WAF ships with the <strong>Default Rule Set (DRS)</strong>, based on the industry-standard <strong>OWASP Core Rule Set</strong>, covering the OWASP Top 10 categories out of the box:</p>
+<ul>
+<li>SQL injection</li>
+<li>Cross-Site Scripting (XSS)</li>
+<li>Remote Code Execution</li>
+<li>Local File Inclusion / Remote File Inclusion</li>
+<li>HTTP protocol violations and anomalies</li>
+<li>PHP injection attacks</li>
+<li>Session fixation</li>
+</ul>
+<p>Microsoft layers its own <strong>Microsoft Threat Intelligence Collection</strong> rules on top of the base OWASP set, updated continuously as new attack patterns are observed across Microsoft's global traffic.</p>
+<h3 id="detection-mode-vs-prevention-mode">Detection Mode vs. Prevention Mode</h3>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Behavior</th>
+<th>When to Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Detection</strong></td>
+<td>Logs every request that matches an attack signature, but lets it through</td>
+<td>Rolling out WAF for the first time — see what <em>would</em> be blocked before you commit to blocking it, avoiding false-positive outages</td>
+</tr>
+<tr>
+<td><strong>Prevention</strong></td>
+<td>Actively blocks matching requests and returns an error to the client</td>
+<td>Production, once you've reviewed Detection-mode logs and tuned out false positives</td>
+</tr>
+</tbody>
+</table>
+<h3 id="custom-rules-and-bot-protection">Custom Rules and Bot Protection</h3>
+<p>Beyond the managed rule set, a WAF Policy supports:</p>
+<ul>
+<li><strong>Custom rules</strong> — block or allow by IP address, geography, request rate (rate limiting), or custom match conditions you define yourself</li>
+<li><strong>Bot Manager rule set</strong> — a separate managed rule set that classifies incoming traffic into <strong>Bad</strong>, <strong>Good</strong>, and <strong>Unknown</strong> bot categories, letting you take different actions per category (e.g., block Bad bots outright, allow Good bots like search engine crawlers, challenge Unknown traffic). Known-bad bot signatures are updated multiple times a day from Microsoft's threat intelligence feeds.</li>
+</ul>
+<h3 id="an-important-current-change-waf-policy-is-now-the-only-way">An Important Current Change: WAF Policy Is Now the Only Way</h3>
+<p>If you've seen older Application Gateway tutorials showing WAF configured <strong>inline</strong>, directly on the gateway resource itself — that path is gone. Microsoft discontinued new inline WAF configuration on Application Gateway WAF_v2 on <strong>March 15, 2025</strong>. Every new WAF deployment, on both Application Gateway and Front Door, now goes through a standalone <strong>WAF Policy</strong> resource, which you create once and can attach to multiple gateways or Front Door profiles at the same time — a cleaner model than configuring the same rules separately on every resource.</p>
+<p>This pairs with something you already learned on Day 12: <strong>Application Gateway v1 fully retired on April 28, 2026.</strong> Between that and the WAF Policy change, there's now exactly one supported path for Layer 7 security on Azure: <strong>Application Gateway (or Front Door) Standard_v2/Premium, protected by a WAF Policy resource</strong> — no legacy variants remain.</p>
+<hr />
+<h3 id="hands-on-attach-a-waf-policy-to-front-door-and-prove-it-blocks-an-attack">Hands-On: Attach a WAF Policy to Front Door and Prove It Blocks an Attack</h3>
+<p><strong>💳 Instructor demo — WAF Policy is included in the Front Door Standard cost from Part 2, no separate charge</strong></p>
+<p><strong>Step 1 — Create the WAF Policy:</strong></p>
+<ol>
+<li>Search for <strong>WAF policies (Web Application Firewall)</strong> → <strong>+ Create</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Policy for:</strong> Front Door (global)</li>
+<li><strong>Resource group:</strong> <code>rg-day14-demo</code></li>
+<li><strong>Name:</strong> <code>lwm-waf-policy-demo</code></li>
+<li><strong>Policy state:</strong> Enabled</li>
+<li><strong>Mode:</strong> <strong>Detection</strong> (start here, exactly as recommended above)</li>
+<li>On the <strong>Managed rules</strong> tab, confirm the <strong>Default Rule Set</strong> is enabled.</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+</ol>
+<p><strong>Step 2 — Associate the WAF Policy with your Front Door endpoint:</strong></p>
+<ol>
+<li>Open <code>lwm-frontdoor-demo</code> → <strong>Security</strong> (under <strong>Settings</strong>) → <strong>+ Add</strong>.</li>
+<li>Select <code>lwm-waf-policy-demo</code> and associate it with your Front Door endpoint's domain.</li>
+<li><strong>Add</strong>.</li>
+</ol>
+<p><strong>Step 3 — Generate a suspicious request and review Detection mode logs:</strong></p>
+<ol>
+<li>In a browser, append a simple SQL-injection-style payload to your Front Door URL's query string, e.g.:
+   <code>https://lwm-fd-demo.azurefd.net/?id=1' OR '1'='1</code></li>
+<li>Because the policy is in <strong>Detection</strong> mode, the request still succeeds (you'll get your normal page back) — but go to <code>lwm-waf-policy-demo</code> → <strong>Diagnostics</strong> / <strong>Logs</strong> (or Log Analytics if you've wired one up) and confirm the request was flagged as a matched SQL injection rule, without being blocked.</li>
+</ol>
+<p><strong>Step 4 — Switch to Prevention mode and confirm the attack is blocked:</strong></p>
+<ol>
+<li>Go to <code>lwm-waf-policy-demo</code> → <strong>Overview</strong> (or <strong>Policy settings</strong>) → change <strong>Mode</strong> to <strong>Prevention</strong> → <strong>Save</strong>.</li>
+<li>Repeat the exact same request from Step 3.</li>
+<li>This time, you get back an HTTP error (typically <code>403 Forbidden</code>) generated by the WAF itself — the request never reaches your storage account origin at all.</li>
+</ol>
+<p><strong>Step 5 — Clean up:</strong></p>
+<ol>
+<li>Delete <code>lwm-waf-policy-demo</code>, <code>lwm-frontdoor-demo</code>, and the Traffic Manager profile/VMs from Part 1.</li>
+<li>Check for any leftover storage accounts, VMs, disks, or public IPs in <code>rg-day14-demo</code> — or delete the whole resource group in one step to remove everything built today.</li>
+</ol>
+<hr />
+<h2 id="summary">Summary</h2>
+<p>Today you built the "make it global" layer of Azure networking, and dealt with a real, current platform shift along the way.</p>
+<p><strong>Azure Traffic Manager</strong> is a pure DNS-based global load balancer — it never touches your actual traffic, just answers DNS queries using one of six routing methods (Performance, Priority, Weighted, Geographic, Subnet, MultiValue), backed by continuous health probes that steer traffic away from unhealthy endpoints automatically. You proved this yourself by stopping an App Service and watching Traffic Manager fail over without touching a single DNS record by hand.</p>
+<p><strong>Azure Front Door</strong> sits directly in the data path at Microsoft's global edge, combining anycast routing, edge caching, SSL offload, and WAF in one service — and as of today, it's also the direct replacement for the standalone Azure CDN product, since both Azure CDN (classic) and Front Door (classic) stopped accepting new profiles and domains on August 15, 2025, with full retirement dates set for 2027. You built a Front Door Standard profile in front of a static website and proved edge caching was real by watching <code>X-Cache</code> flip from <code>TCP_MISS</code> to <code>TCP_HIT</code>.</p>
+<p><strong>Web Application Firewall (WAF)</strong>, built on the OWASP Core Rule Set plus Microsoft's own threat intelligence rules, inspects every request before it reaches your origin. You built a <strong>WAF Policy</strong> — now the only supported way to configure WAF, on both Front Door and Application Gateway — started it in Detection mode to see what would be blocked, then flipped to Prevention mode and proved a SQL injection attempt was stopped cold at the edge.</p>
+<h3 id="whats-next">What's Next</h3>
+<p>You now have the complete global-scale picture: Traffic Manager for DNS-level failover across any protocol, Front Door for HTTP-aware global delivery with caching and security, and Application Gateway (Day 12) for regional Layer 7 routing — all protected by the same WAF Policy model. That closes out the core of Phase 3's networking arc. <strong>VPN Gateway &amp; ExpressRoute</strong> — connecting your Azure networks privately to on-premises infrastructure — remains deferred to its own future session, since it's a genuinely more advanced, hybrid-networking topic that deserves dedicated room rather than being squeezed in here. From here, the course moves into Phase 4: <strong>Azure Functions &amp; Serverless</strong>.</p>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<ul>
+<li><strong>Traffic Manager</strong> is DNS-only global load balancing — it never sits in the data path, adds effectively zero latency, and works for any protocol, not just HTTP</li>
+<li>Traffic Manager's six routing methods: <strong>Performance</strong> (lowest latency), <strong>Priority</strong> (active/passive failover), <strong>Weighted</strong> (ratio-based), <strong>Geographic</strong> (compliance/data residency), <strong>Subnet</strong> (source IP-based), <strong>MultiValue</strong> (multiple healthy IPs in one answer)</li>
+<li><strong>Azure Front Door</strong> sits in the data path at Microsoft's global edge — anycast routing, edge caching, SSL offload, and WAF, all in one service</li>
+<li><strong>Both Azure CDN (classic) and Azure Front Door (classic) stopped accepting new profiles/domains on August 15, 2025</strong> — full retirement is March 31, 2027 (Front Door classic) and September 30, 2027 (CDN classic); <strong>Azure Front Door Standard/Premium is now the starting point for both use cases</strong></li>
+<li><strong>Azure CDN from Edgio</strong> (formerly Verizon) shut down entirely on January 15, 2025 — a legacy signal to migrate immediately if you ever encounter it</li>
+<li>Front Door Premium adds full managed rule sets, Bot Manager, and Private Link to your origin over Standard</li>
+<li><strong>WAF</strong> inspects every request against the <strong>OWASP Core Rule Set</strong> plus Microsoft's threat intelligence rules — start in <strong>Detection mode</strong> to see what would be blocked, then switch to <strong>Prevention mode</strong> to actually block it</li>
+<li><strong>WAF Policy</strong> is now the only supported way to configure WAF on both Front Door and Application Gateway — inline WAF config on Application Gateway was discontinued March 15, 2025, and Application Gateway v1 itself fully retired April 28, 2026</li>
+<li><strong>Bot Manager rule set</strong> classifies traffic into Bad/Good/Unknown bot categories with independently configurable actions per category</li>
+<li>Decision framework: <strong>Traffic Manager</strong> for protocol-agnostic DNS failover, <strong>Front Door</strong> for global HTTP delivery + caching + security, <strong>Application Gateway</strong> for regional Layer 7 routing — and they can be chained, with Front Door in front of an Application Gateway origin, for global reach plus regional path-based routing</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../day13_azure_dns/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Day 13 — Azure DNS: Public &amp; Private Zones">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Day 13 — Azure DNS: Public & Private Zones
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../day15_vpn_expressroute/" class="md-footer__link md-footer__link--next" aria-label="Next: Day 15 — VPN Gateway &amp; ExpressRoute">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Day 15 — VPN Gateway & ExpressRoute
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

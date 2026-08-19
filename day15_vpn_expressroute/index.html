@@ -1,0 +1,2123 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A complete beginner's guide to Azure Cloud and Azure DevOps — 31 days plus bonus content, zero assumed cloud knowledge.">
+      
+      
+      
+        <link rel="canonical" href="https://iam-mithran.github.io/LWM-Azure/day15_vpn_expressroute/">
+      
+      
+        <link rel="prev" href="../day14_traffic_frontdoor_cdn_waf/">
+      
+      
+        <link rel="next" href="../day16_azure_sql_database/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Day 15 — VPN Gateway & ExpressRoute - LearnWithMithran — Azure Complete Beginner's Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#day-15-vpn-gateway-expressroute" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-header__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LearnWithMithran — Azure Complete Beginner's Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Day 15 — VPN Gateway & ExpressRoute
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-nav__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LearnWithMithran — Azure Complete Beginner's Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day01_account_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day02_fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day03_vms_part1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day04_web_hosting_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day05_vms_part3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day06_app_service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day07_storage_account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day08_storage_files_queue_tables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day09_intro_to_networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day10_virtual_network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day11_vnet_advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day12_load_balancer_vmss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day13_azure_dns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 13 — Azure DNS: Public & Private Zones
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day14_traffic_frontdoor_cdn_waf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 14 — Traffic Manager, Front Door, CDN & WAF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 15 — VPN Gateway & ExpressRoute
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 15 — VPN Gateway & ExpressRoute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-hybrid-networking-why-connect-to-anything-outside-azure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Hybrid Networking: Why Connect to Anything Outside Azure?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Hybrid Networking: Why Connect to Anything Outside Azure?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-azure-vpn-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Azure VPN Gateway
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Azure VPN Gateway">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-it-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What It Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vpn-gateway-skus-what-changed-in-20252026" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VPN Gateway SKUs — What Changed in 2025–2026
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#point-to-site-authentication-also-modernized" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Point-to-Site Authentication — Also Modernized
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-recent-additions-worth-knowing-about" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two Recent Additions Worth Knowing About
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-site-to-site-style-vpn-two-vnets-standing-in-for-azure-and-on-premises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Site-to-Site-Style VPN — Two VNets Standing In for "Azure" and "On-Premises"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-point-to-site-connect-your-own-laptop-no-office-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Point-to-Site — Connect Your Own Laptop, No Office Required
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-expressroute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — ExpressRoute
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — ExpressRoute">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-it-is_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What It Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#peering-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Peering Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expressroute-direct" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ExpressRoute Direct
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fastpath-bypassing-the-gateway-for-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FastPath — Bypassing the Gateway for Performance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pricing-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pricing Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-portal-tour-no-physical-circuit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Portal Tour (No Physical Circuit)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-azure-virtual-wan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Azure Virtual WAN
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Azure Virtual WAN">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-it-is_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What It Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-portal-tour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Portal Tour
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day16_azure_sql_database/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 16 — Azure SQL Database + Other Databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day17_entra_id_rbac/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 17 — Microsoft Entra ID & Azure RBAC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-hybrid-networking-why-connect-to-anything-outside-azure" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Hybrid Networking: Why Connect to Anything Outside Azure?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Hybrid Networking: Why Connect to Anything Outside Azure?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-azure-vpn-gateway" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Azure VPN Gateway
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Azure VPN Gateway">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-it-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What It Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vpn-gateway-skus-what-changed-in-20252026" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VPN Gateway SKUs — What Changed in 2025–2026
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#point-to-site-authentication-also-modernized" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Point-to-Site Authentication — Also Modernized
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-recent-additions-worth-knowing-about" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two Recent Additions Worth Knowing About
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-site-to-site-style-vpn-two-vnets-standing-in-for-azure-and-on-premises" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Site-to-Site-Style VPN — Two VNets Standing In for "Azure" and "On-Premises"
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-point-to-site-connect-your-own-laptop-no-office-required" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Point-to-Site — Connect Your Own Laptop, No Office Required
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-expressroute" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — ExpressRoute
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — ExpressRoute">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-it-is_1" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What It Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#peering-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Peering Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expressroute-direct" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        ExpressRoute Direct
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#fastpath-bypassing-the-gateway-for-performance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        FastPath — Bypassing the Gateway for Performance
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pricing-model" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pricing Model
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-portal-tour-no-physical-circuit" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Portal Tour (No Physical Circuit)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-azure-virtual-wan" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Azure Virtual WAN
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Azure Virtual WAN">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-it-is_2" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What It Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-portal-tour" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Portal Tour
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="day-15-vpn-gateway-expressroute">Day 15 — VPN Gateway &amp; ExpressRoute</h1>
+<p><strong>Phase 3 — Networking</strong></p>
+<blockquote>
+<p>Everything we've built across this entire networking phase has assumed one thing: all your resources live inside Azure. But almost no real company starts from zero — they already have an office, a data center, servers that aren't going anywhere anytime soon. Today we answer the question every one of those companies eventually asks: "how do I connect what I already have to Azure, securely, without routing sensitive traffic across the open internet unprotected?" That's called <strong>hybrid networking</strong>, and Azure gives you two very different ways to do it — <strong>VPN Gateway</strong>, an encrypted tunnel over the public internet, and <strong>ExpressRoute</strong>, a private dedicated circuit that never touches the internet at all. I don't have a real office network to plug into for this course, and neither do most of you — so today's hands-on is built entirely around techniques that prove the real mechanics using nothing but Azure resources and, for one demo, your own laptop standing in as "the remote site." That's not a simulation — it's the exact same configuration a real hybrid connection uses; the only thing missing is an actual building on the other end.</p>
+</blockquote>
+<hr />
+<h2 id="what-youll-learn">What You'll Learn</h2>
+<ul>
+<li><strong>Hybrid networking</strong> — why organizations connect existing infrastructure to Azure instead of moving everything at once</li>
+<li><strong>Azure VPN Gateway</strong> — encrypted IPsec/IKE tunnels over the public internet, and the two connection types it supports: <strong>Site-to-Site</strong> and <strong>Point-to-Site</strong></li>
+<li><strong>VPN Gateway SKUs</strong> — the current, zone-redundant SKU lineup (<strong>VpnGw1AZ–VpnGw5AZ</strong>), the two <strong>generations</strong> they come in, and where the legacy Standard/High Performance and non-AZ SKUs went during the 2025–2026 consolidation</li>
+<li>Hands-on: build a real <strong>Site-to-Site-style VPN connection</strong> using two Azure VNets standing in for "Azure" and "on-premises" — the exact same Local Network Gateway configuration you'd use for a real office, minus the physical building</li>
+<li>Hands-on: connect <strong>your own laptop</strong> to a VNet with a real <strong>Point-to-Site VPN</strong>, using the Azure VPN Client and Microsoft Entra ID authentication — no on-premises network required, because P2S was never about a site to begin with</li>
+<li><strong>ExpressRoute</strong> — a private, dedicated circuit through a connectivity provider that never touches the public internet</li>
+<li><strong>ExpressRoute Direct</strong>, <strong>FastPath</strong>, peering types, and circuit pricing models</li>
+<li><strong>Azure Virtual WAN</strong> — Microsoft's managed hub-and-spoke networking fabric for connecting many sites and circuits at global scale</li>
+<li>Exam framing: how AZ-104 and AZ-305 expect you to choose between VPN Gateway, ExpressRoute, and Virtual WAN</li>
+</ul>
+<hr />
+<h2 id="before-we-begin">Before We Begin</h2>
+<p>This is one of the more expensive days in the course, and almost everything is <strong>💳 instructor demo</strong>.</p>
+<ul>
+<li><strong>VPN Gateway (VpnGw1AZ, the entry-level current SKU):</strong> roughly <strong>$0.20–$0.30/hour</strong> (check the <a href="https://azure.microsoft.com/en-us/pricing/details/vpn-gateway/">VPN Gateway pricing page</a> for your region — Microsoft has been actively lowering AZ-SKU prices to encourage migration off the retiring non-AZ SKUs). Microsoft's own guidance is that provisioning takes <strong>45 minutes or more</strong> — we'll explain the architecture while it deploys. Budget <strong>90–120 minutes</strong> for the full Site-to-Site lab end to end.</li>
+<li><strong>Public IP addresses:</strong> an active-active gateway needs <strong>two Standard SKU public IPs</strong>, and Standard public IPs are billed hourly. It's a small charge next to the gateway itself, but it's twice as many meters running.</li>
+<li><strong>Two VPN Gateways for the Site-to-Site-style demo:</strong> double the above, since we're building both "sides" entirely in Azure.</li>
+<li><strong>Point-to-Site:</strong> no separate charge beyond the VPN Gateway itself already being deployed — you're reusing one side of the gateway you already built.</li>
+<li><strong>ExpressRoute circuit:</strong> requires a physical circuit from a connectivity provider — genuinely not something you or I can spin up for a demo. <strong>💳 conceptual walkthrough + portal tour only</strong>, no real circuit ordered.</li>
+<li><strong>Azure Virtual WAN:</strong> billed per virtual hub deployed plus data processing — <strong>💳 portal tour only</strong> today.</li>
+</ul>
+<p>Given the cost and 30–45 minute provisioning time, this entire day is realistically a <strong>watch-and-understand</strong> day for Free Tier students, with the option to follow along on a paid subscription if you want the real hands-on experience.</p>
+<hr />
+<h2 id="part-1-hybrid-networking-why-connect-to-anything-outside-azure">Part 1 — Hybrid Networking: Why Connect to Anything Outside Azure?</h2>
+<h3 id="the-problem">The Problem</h3>
+<p>Every VNet you've built this course has been fully self-contained. But real organizations almost always have something that already exists: an office network, a data center, a legacy application that can't move yet, or compliance requirements that keep certain data on-premises permanently. <strong>Hybrid networking</strong> is the practice of connecting that existing infrastructure to Azure so both sides can reach each other privately — as if they were one network.</p>
+<p>Azure gives you two fundamentally different ways to build that connection:</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>VPN Gateway</th>
+<th>ExpressRoute</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Path</strong></td>
+<td>Encrypted tunnel over the public internet</td>
+<td>Private, dedicated circuit via a connectivity provider — never touches the internet</td>
+</tr>
+<tr>
+<td><strong>Setup time</strong></td>
+<td>Minutes to provision the gateway itself</td>
+<td>Days to weeks — requires ordering a physical circuit</td>
+</tr>
+<tr>
+<td><strong>Cost</strong></td>
+<td>Lower — pay for the gateway by the hour</td>
+<td>Higher — port fees + circuit costs</td>
+</tr>
+<tr>
+<td><strong>Bandwidth</strong></td>
+<td>Capped by SKU, shared with internet-style variability</td>
+<td>Higher, more consistent, SLA-backed</td>
+</tr>
+<tr>
+<td><strong>Best for</strong></td>
+<td>Quick setup, smaller offices, dev/test, backup path for ExpressRoute</td>
+<td>High-bandwidth, latency-sensitive, regulatory/compliance-driven connectivity</td>
+</tr>
+</tbody>
+</table>
+<p>You'll see both again shortly, but the core idea to hold onto: <strong>VPN Gateway is software-defined and internet-based; ExpressRoute is physical and private.</strong></p>
+<hr />
+<h2 id="part-2-azure-vpn-gateway">Part 2 — Azure VPN Gateway</h2>
+<h3 id="what-it-is">What It Is</h3>
+<p>An <strong>Azure VPN Gateway</strong> is a managed resource that sits inside a dedicated subnet in your VNet (called <code>GatewaySubnet</code> — the same mandatory-name pattern you saw with Azure Bastion's <code>AzureBastionSubnet</code> back on Day 11) and establishes an <strong>encrypted IPsec/IKE tunnel</strong> between Azure and whatever is on the other end.</p>
+<p>There are two distinct connection types, and they solve genuinely different problems:</p>
+<table>
+<thead>
+<tr>
+<th>Connection Type</th>
+<th>Connects</th>
+<th>Typical Use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Site-to-Site (S2S)</strong></td>
+<td>An entire remote network (an office, a data center — anything with its own VPN device) to an Azure VNet</td>
+<td>Permanently linking a whole office network to Azure</td>
+</tr>
+<tr>
+<td><strong>Point-to-Site (P2S)</strong></td>
+<td>A single device (a laptop, a workstation) directly to an Azure VNet</td>
+<td>An individual remote worker or administrator needing VNet access, with no office network involved at all</td>
+</tr>
+</tbody>
+</table>
+<p>That distinction matters enormously for today's lab: <strong>P2S was never about connecting "a site"</strong> — it connects one device, which is exactly why it's the one part of this topic that needs zero on-premises infrastructure to demo for real.</p>
+<p>Here's both connection types on one picture. Notice that <strong>the VPN Gateway is the same resource in both cases</strong> — one gateway can serve Site-to-Site and Point-to-Site connections simultaneously. What changes is what's on the other end of the tunnel, and how that other end proves who it is:</p>
+<pre class="mermaid"><code>flowchart LR
+    subgraph OFFICE["🏢 Office / Data Center — 192.168.0.0/16"]
+        SRV["File server&lt;br/&gt;192.168.1.10"]
+        DEV["VPN device&lt;br/&gt;public IP + shared key"]
+        SRV --- DEV
+    end
+
+    subgraph REMOTE["💻 A single remote device"]
+        LAP["Your laptop&lt;br/&gt;Azure VPN Client&lt;br/&gt;signs in with Entra ID"]
+    end
+
+    subgraph AZURE["☁️ Azure VNet — 10.0.0.0/16"]
+        GW["VPN Gateway&lt;br/&gt;lives in GatewaySubnet"]
+        VM["VM&lt;br/&gt;10.0.1.4"]
+        GW --- VM
+    end
+
+    DEV ==&gt;|"SITE-to-Site&lt;br/&gt;IPsec / IKE&lt;br/&gt;an entire network"| GW
+    LAP -.-&gt;|"POINT-to-Site&lt;br/&gt;OpenVPN (SSL)&lt;br/&gt;one device only"| GW
+
+    style GW fill:#0078d4,color:#fff
+    style DEV fill:#e8f4fd
+    style LAP fill:#e8f4fd</code></pre>
+<p>Read it this way: <strong>Site-to-Site is a permanent, always-on link between two networks</strong>, authenticated by a shared key configured on a physical device that someone installed in a building. <strong>Point-to-Site is an on-demand link from one machine</strong>, authenticated by a person signing in. That's why S2S needs hardware and P2S needs only an app.</p>
+<h3 id="vpn-gateway-skus-what-changed-in-20252026">VPN Gateway SKUs — What Changed in 2025–2026</h3>
+<p>This is genuinely current, not textbook trivia. Azure has spent the last two years consolidating a messy SKU portfolio down to one clean family, and the dates matter because half the tutorials online still show the old options:</p>
+<ul>
+<li>The legacy <strong>Standard</strong> and <strong>High Performance</strong> SKUs were deprecated in <strong>June 2026</strong>. Microsoft auto-migrated any that were still running to their zone-redundant equivalents — Standard → <strong>VpnGw1AZ</strong>, High Performance → <strong>VpnGw2AZ</strong>.</li>
+<li>The <strong>non-AZ VpnGw1–VpnGw5</strong> SKUs are on their way out too. You haven't been able to create a new one since <strong>November 1, 2025</strong>, and they retire on <strong>September 30, 2026</strong>. Existing ones stopped accepting configuration changes once the rollout reached them.</li>
+<li>That leaves the zone-redundant <strong>VpnGw1AZ through VpnGw5AZ</strong> lineup as what you actually deploy — every new gateway is resilient across availability zones, something the old SKUs never offered. In regions that don't yet have availability zones you can still deploy an AZ SKU; it stays regional until the region catches up.</li>
+<li><strong>The Basic SKU is <em>not</em> retired</strong> — this trips people up constantly, because a <em>different</em> Basic thing is retiring. The <strong>Basic SKU public IP address</strong> is being deprecated (end of June 2026 for VPN gateways), and every new gateway must use a <strong>Standard</strong> public IP. The Basic <em>gateway</em> SKU still exists — it's just <strong>not offered in the portal at all</strong> any more. If you ever genuinely need it, you create it with PowerShell or the Azure CLI. It's dev/test only: no BGP, no active-active, no IPv6, no RADIUS, and 100 Mbps.</li>
+</ul>
+<p>Every AZ SKU also comes in a <strong>Generation</strong>, and this catches people out in the portal — the Generation dropdown filters which SKUs you can pick:</p>
+<table>
+<thead>
+<tr>
+<th>Generation</th>
+<th>SKU</th>
+<th>Max S2S / VNet-to-VNet Tunnels</th>
+<th>Max P2S (IKEv2/OpenVPN)</th>
+<th>Aggregate Throughput</th>
+<th>BGP</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Generation 1</strong></td>
+<td><strong>VpnGw1AZ</strong></td>
+<td>30</td>
+<td>250</td>
+<td>650 Mbps</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Generation 1</strong></td>
+<td><strong>VpnGw2AZ</strong></td>
+<td>30</td>
+<td>500</td>
+<td>1 Gbps</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Generation 1</strong></td>
+<td><strong>VpnGw3AZ</strong></td>
+<td>30</td>
+<td>1000</td>
+<td>1.25 Gbps</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Generation 2</strong></td>
+<td><strong>VpnGw2AZ</strong></td>
+<td>30</td>
+<td>500</td>
+<td>1.25 Gbps</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Generation 2</strong></td>
+<td><strong>VpnGw3AZ</strong></td>
+<td>30</td>
+<td>1000</td>
+<td>2.5 Gbps</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Generation 2</strong></td>
+<td><strong>VpnGw4AZ</strong></td>
+<td>100</td>
+<td>5000</td>
+<td>5 Gbps</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Generation 2</strong></td>
+<td><strong>VpnGw5AZ</strong></td>
+<td>100</td>
+<td>10000</td>
+<td>10 Gbps</td>
+<td>✅</td>
+</tr>
+</tbody>
+</table>
+<p>Three things to read off that table, because they're all exam-relevant and all commonly misremembered:</p>
+<ul>
+<li><strong>Tunnel counts and client counts are different numbers.</strong> A VpnGw1AZ supports <strong>30</strong> Site-to-Site tunnels but <strong>250</strong> Point-to-Site clients. People quote the 250 as a tunnel count all the time; it isn't. If you genuinely need more than <strong>100</strong> S2S tunnels, Microsoft's answer isn't a bigger gateway — it's <strong>Virtual WAN</strong>, which we cover in Part 4.</li>
+<li><strong>VpnGw1AZ only exists in Generation 1.</strong> If your Generation dropdown says Generation 2, VpnGw1AZ simply won't appear in the SKU list. That's not a bug, and we'll hit it live in the demo.</li>
+<li><strong>Generation 2 is faster at the same SKU name.</strong> A Generation 2 VpnGw3AZ does 2.5 Gbps; the Generation 1 VpnGw3AZ does 1.25 Gbps. Same name, double the throughput.</li>
+</ul>
+<blockquote>
+<p><strong>Exam tip:</strong> if you see an older exam question or tutorial telling you to pick "Basic" or plain "VpnGw2" in the portal, treat it as historical — the portal only offers <strong>VpnGw*AZ</strong> SKUs now. Always reach for an AZ SKU on any new deployment.</p>
+</blockquote>
+<h3 id="point-to-site-authentication-also-modernized">Point-to-Site Authentication — Also Modernized</h3>
+<p>Point-to-Site used to lean heavily on certificate-based authentication (generate a root cert, generate client certs, distribute them manually). That still works, but the modern, recommended path is <strong>Microsoft Entra ID authentication</strong> — sign in with the same Entra ID credentials from Day 17, which means <strong>Conditional Access and MFA</strong> apply to VPN access exactly like they do to everything else in your tenant. Azure also now provides a <strong>Microsoft-registered App ID</strong> for the Azure VPN Client, meaning you skip the manual Entra app-registration step that used to be required — configure the gateway to use the published Audience value and your tenant can use it immediately, with no Cloud App Administrator consent step at all.</p>
+<p>That older manual registration path still functions, but it has an end date: <strong>manually registered Azure VPN Clients retire on March 31, 2028</strong> in Azure Public Cloud (March 31, 2029 for Government and 21Vianet). Anything you build today should use the Microsoft-registered App ID.</p>
+<p><strong>Protocol support — read this carefully, because it's a common exam trap.</strong> The Azure VPN Client connecting with <strong>Microsoft Entra ID authentication requires the OpenVPN (SSL) tunnel type</strong>. IKEv2 is a perfectly valid tunnel type on a VPN Gateway, but it authenticates with certificates or RADIUS — <em>not</em> Entra ID. So "Entra ID sign-in" and "IKEv2" are mutually exclusive choices, and the portal will happily let you configure a combination that never connects.</p>
+<p><strong>Client platforms:</strong> the Azure VPN Client is supported on <strong>Windows</strong> (10 and 11, on x64/x86/ARM64) and <strong>macOS</strong>. The <strong>Azure VPN Client for Linux was a preview and retires on August 31, 2026</strong> — if Linux P2S clients are in your design, you need a different plan.</p>
+<h3 id="two-recent-additions-worth-knowing-about">Two Recent Additions Worth Knowing About</h3>
+<p>Both landed in 2026 and neither shows up in older tutorials, so they're easy currency points for you:</p>
+<ul>
+<li><strong>Site-to-Site certificate authentication.</strong> A shared key isn't your only option for S2S any more — you can authenticate the tunnel with <strong>digital certificates</strong> instead of a PSK. Same tunnel, better key management story for organizations that already run a PKI. We'll still use a PSK in the lab because it's the clearer teaching path.</li>
+<li><strong>Point-to-Site user groups and per-group address pools.</strong> You can now assign <strong>different client address pools to different Entra ID groups</strong>. Contractors land in one range, full-time staff in another, and your NSGs and route tables can then treat those ranges differently. That's a genuinely powerful pattern: network-level segmentation driven purely by group membership in Entra ID.</li>
+</ul>
+<hr />
+<h3 id="hands-on-site-to-site-style-vpn-two-vnets-standing-in-for-azure-and-on-premises">Hands-On: Site-to-Site-Style VPN — Two VNets Standing In for "Azure" and "On-Premises"</h3>
+<p><strong>💳 Instructor demo — two VPN Gateways, real cost, 45+ min provisioning each</strong></p>
+<p>Here's the trick: a <strong>Site-to-Site connection</strong> is really just "my VPN Gateway talks to a device with a public IP on the other end, described to Azure as a <strong>Local Network Gateway</strong> resource." Azure doesn't actually care whether that other end is a physical office router or another Azure VPN Gateway — the configuration is identical either way. So instead of needing a real office, we'll build <strong>two VNets, each with its own VPN Gateway</strong>, and connect them with a <strong>Site-to-Site connection</strong> in exactly the way you'd connect a real building.</p>
+<p><strong>One honest clarification before we start.</strong> Azure <em>does</em> have a purpose-built <strong>VNet-to-VNet</strong> connection type for joining two Azure VNets — you pick it from the same Connections blade, tick <strong>Establish bidirectional connectivity</strong>, and it creates both connections at once. It's faster, and if your only goal were "make these two VNets talk," that's what you'd use. But it hides the Local Network Gateway entirely — Azure creates one behind the scenes that you can't see or edit. We're deliberately taking the <strong>Site-to-Site</strong> route instead, because the Local Network Gateway <em>is</em> the concept you need for real hybrid networking and for the exam. Microsoft's own guidance says the same thing: use the site-to-site steps when you need control over the local network gateway. I'll show you the VNet-to-VNet shortcut on screen so you know it exists, then we'll build the version that teaches you something.</p>
+<p><strong>This is what we're about to build</strong> — keep this picture in mind as we go through the steps, because every resource in it maps to one step below:</p>
+<pre class="mermaid"><code>flowchart LR
+    subgraph LEFT["VNet: vnet-azure-side — 10.0.0.0/16"]
+        direction TB
+        LVM["VM&lt;br/&gt;10.0.1.4&lt;br/&gt;subnet-demo"]
+        LGW["vgw-azure-side&lt;br/&gt;VpnGw1AZ · active-active&lt;br/&gt;GatewaySubnet"]
+        LPIP1(["pip-vgw-azure-side-1&lt;br/&gt;instance 1"])
+        LPIP2(["pip-vgw-azure-side-2&lt;br/&gt;instance 2"])
+        LVM --- LGW
+        LGW --- LPIP1
+        LGW --- LPIP2
+    end
+
+    subgraph RIGHT["VNet: vnet-onprem-side — 192.168.0.0/16&lt;br/&gt;(standing in for a real office)"]
+        direction TB
+        RPIP1(["pip-vgw-onprem-side-1&lt;br/&gt;instance 1"])
+        RPIP2(["pip-vgw-onprem-side-2&lt;br/&gt;instance 2"])
+        RGW["vgw-onprem-side&lt;br/&gt;VpnGw1AZ · active-active&lt;br/&gt;GatewaySubnet"]
+        RVM["VM&lt;br/&gt;192.168.1.4&lt;br/&gt;subnet-demo"]
+        RPIP1 --- RGW
+        RPIP2 --- RGW
+        RGW --- RVM
+    end
+
+    LPIP1 &lt;==&gt;|"encrypted IPsec / IKE tunnel&lt;br/&gt;authenticated by shared key&lt;br/&gt;— the leg we build —"| RPIP1
+    LPIP2 -.-|"second instance: live, but&lt;br/&gt;outside this lab's connection"| RPIP2
+
+    style LGW fill:#0078d4,color:#fff
+    style RGW fill:#0078d4,color:#fff
+    style LPIP2 fill:#f5f5f5,stroke-dasharray: 4 4
+    style RPIP2 fill:#f5f5f5,stroke-dasharray: 4 4</code></pre>
+<p><strong>Step 1 — Create two non-overlapping VNets:</strong></p>
+<ol>
+<li>Search for <strong>Virtual networks</strong> → <strong>+ Create</strong>.</li>
+<li><strong>Resource group:</strong> <code>rg-day15-demo</code>, <strong>Name:</strong> <code>vnet-azure-side</code>, <strong>Region:</strong> East US, <strong>Address space:</strong> <code>10.0.0.0/16</code>, subnet <code>subnet-demo</code> at <code>10.0.1.0/24</code>.</li>
+<li>Repeat with <strong>Name:</strong> <code>vnet-onprem-side</code>, <strong>Region:</strong> East US, <strong>Address space:</strong> <code>192.168.0.0/16</code>, subnet <code>subnet-demo</code> at <code>192.168.1.0/24</code> — deliberately non-overlapping, exactly like real on-premises ranges must be relative to your Azure VNets.</li>
+</ol>
+<p><strong>Step 2 — Add a <code>GatewaySubnet</code> to each VNet:</strong></p>
+<p>There used to be a dedicated <strong>+ Gateway subnet</strong> button here. It's gone — the flow is now unified with normal subnet creation, and you get <code>GatewaySubnet</code> by declaring the subnet's <em>purpose</em>:</p>
+<ol>
+<li>Open <code>vnet-azure-side</code> → <strong>Subnets</strong> → <strong>+ Subnet</strong>.</li>
+<li>For <strong>Subnet purpose</strong>, select <strong>Virtual Network Gateway</strong> from the dropdown. Watch the <strong>Name</strong> field — it auto-fills to <code>GatewaySubnet</code> and locks. That's Azure enforcing the mandatory name for you.</li>
+<li>Set the range to <code>10.0.255.0/27</code>. Microsoft's guidance is <strong>/27 or larger</strong> (/26, /25). Don't be clever and squeeze it into a /29 — some gateway features and future SKU migrations need the headroom, and an undersized gateway subnet is a documented cause of failed migrations later.</li>
+<li>Leave everything else alone and click <strong>Add</strong>.</li>
+<li>Repeat for <code>vnet-onprem-side</code>, using <code>192.168.255.0/27</code>.</li>
+</ol>
+<p>⚠️ <strong>Never attach an NSG to <code>GatewaySubnet</code>.</strong> It's not supported and it will make your gateway misbehave in ways that are miserable to diagnose. This is one of the few places in Azure networking where the answer is genuinely "don't."</p>
+<p><strong>Step 3 — Deploy a VPN Gateway into each VNet:</strong></p>
+<ol>
+<li>Search for <strong>Virtual network gateways</strong> → <strong>+ Create</strong>.</li>
+<li>On the <strong>Basics</strong> tab, fill in:</li>
+<li><strong>Name:</strong> <code>vgw-azure-side</code></li>
+<li><strong>Region:</strong> East US (must match the VNet)</li>
+<li><strong>Gateway type:</strong> VPN</li>
+<li><strong>SKU:</strong> VpnGw1AZ</li>
+<li><strong>Generation:</strong> <strong>Generation 1</strong></li>
+<li><strong>Virtual network:</strong> <code>vnet-azure-side</code></li>
+<li><strong>Subnet:</strong> should auto-populate with the <code>GatewaySubnet</code> you just created</li>
+</ol>
+<blockquote>
+<p>🛑 <strong>Pause here on camera — this is the gotcha from the SKU table.</strong> If you set <strong>Generation</strong> to Generation 2 first, <strong>VpnGw1AZ disappears from the SKU dropdown</strong>, because VpnGw1AZ only exists in Generation 1. Students will think the portal is broken. Show it happening deliberately: pick Generation 2, watch VpnGw1AZ vanish, switch back to Generation 1, watch it return. Microsoft's own tutorials use <strong>VpnGw2AZ + Generation 2</strong> — that's the more production-typical pairing, and it's what you'd choose if cost weren't a factor. We're on VpnGw1AZ purely because it's the cheapest thing that can do this lab, and we're building two of them.</p>
+</blockquote>
+<ol>
+<li>Still on <strong>Basics</strong>, fill in the <strong>Public IP address</strong> section:</li>
+<li><strong>Public IP address:</strong> Create new, named <code>pip-vgw-azure-side-1</code></li>
+<li><strong>Public IP address SKU:</strong> auto-selected as <strong>Standard</strong> (Basic public IPs are being retired — this is no longer a choice, and that's a good thing)</li>
+<li><strong>Assignment:</strong> <strong>Static</strong> (auto-selected)</li>
+<li><strong>Availability zone:</strong> <strong>Zone-redundant</strong></li>
+<li><strong>Enable active-active mode:</strong> <strong>Enabled</strong>. Microsoft recommends this for any production gateway, and it's why the blade then asks you for a <strong>second</strong> public IP. Note that it is <em>not</em> the default — a VPN Gateway is active-standby unless you explicitly turn this on, so you have to reach for it.</li>
+<li><strong>Second public IP address:</strong> Create new, named <code>pip-vgw-azure-side-2</code>, also <strong>Zone-redundant</strong></li>
+<li><strong>Configure BGP:</strong> <strong>Disabled</strong> (if you ever enable it, the default ASN is 65515)</li>
+<li><strong>Enable Key Vault Access:</strong> <strong>Disabled</strong></li>
+<li><strong>Review + create</strong> → <strong>Create</strong>. Microsoft's stated time is <strong>45 minutes or more</strong> — start the second gateway in parallel rather than waiting, or you'll be sitting here for an hour and a half.</li>
+<li>Repeat with <strong>Name:</strong> <code>vgw-onprem-side</code>, same SKU and generation, attached to <code>vnet-onprem-side</code>, public IPs <code>pip-vgw-onprem-side-1</code> and <code>pip-vgw-onprem-side-2</code>.</li>
+</ol>
+<p>Once both are deployed, grab the addresses from each gateway's <strong>Properties</strong> page (not Overview — it's under <strong>Settings</strong> → <strong>Properties</strong>). An active-active gateway lists <strong>two</strong> public IPs there, one per instance. You'll need them in the next step.</p>
+<p><strong>Why two public IPs? Active-active vs. active-standby.</strong></p>
+<p>Every VPN Gateway is really <strong>two</strong> VM instances under the hood — you never see them, and the gateway is billed as one resource either way. What this setting controls is what the second instance <em>does</em>:</p>
+<ul>
+<li><strong>Active-standby</strong> (the default) — one instance carries all traffic, one sits idle. If the active one fails or Azure patches it, the standby takes over, which causes a brief interruption: short for planned maintenance, longer for an unplanned failure. One public IP, one tunnel. Worth knowing: for <strong>Point-to-Site</strong> clients, a failover <strong>disconnects them</strong> and they have to reconnect manually.</li>
+<li><strong>Active-active</strong> (what we're deploying) — <strong>both</strong> instances carry traffic simultaneously, each with its own public IP and its own tunnel to the far end, and in a region with availability zones they're zone-redundant. Azure spreads traffic across both tunnels at once. Lose an instance, lose a zone, or lose one tunnel, and the other keeps forwarding. This is what you want for anything business-critical, and it's what Microsoft recommends for every new gateway.</li>
+</ul>
+<p>So the second public IP isn't a mistake or an upsell — it's the address of the second live gateway instance. Both are real, both are reachable, and both will build tunnels.</p>
+<p>⚠️ <strong>The corollary that people miss:</strong> because both instances are active, the device on the far end has to be configured to accept <strong>two</strong> tunnels, one per Azure instance. Microsoft is blunt about this — <em>"if you establish a tunnel to only one gateway VM instance, the connection will go down during maintenance."</em> In a real deployment you check whether your office firewall even supports that; if it doesn't, you deliberately choose active-standby instead. This is a genuine design decision, not a checkbox.</p>
+<p>The one wrinkle to keep in your head for the next step: a <strong>Local Network Gateway describes exactly one endpoint</strong>. It cannot describe a two-IP far end on its own.</p>
+<p><strong>Step 4 — Create Local Network Gateways (each side describing "the other network"):</strong></p>
+<p>A <strong>Local Network Gateway</strong> is how Azure represents whatever's on the far end of a Site-to-Site tunnel — normally your office's public IP and address range. Here, we'll point each side's Local Network Gateway at the <em>other VNet's</em> gateway.</p>
+<p>Remember the wrinkle: an LNG describes <strong>one</strong> endpoint, but each of our gateways now has two addresses. <strong>We're going to use the <code>-1</code> address on each side and leave the <code>-2</code> address out of the lab.</strong> That's not a workaround — it's exactly how Azure models "my active-active gateway talks to a single remote VPN device." Both of your local instances will still build tunnels toward that one remote address, so you get redundancy on your own side. I'll show you what full redundancy on <em>both</em> sides would look like right after.</p>
+<ol>
+<li>Search for <strong>Local network gateways</strong> → <strong>+ Create</strong>.</li>
+<li>On the <strong>Basics</strong> tab, fill in:</li>
+<li><strong>Name:</strong> <code>lng-onprem-side</code> (this represents <code>vnet-onprem-side</code>, as seen from the Azure side)</li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>Endpoint:</strong> <strong>IP address</strong> — then enter the address of <code>pip-vgw-onprem-side-1</code></li>
+<li><strong>Address space:</strong> <code>192.168.0.0/16</code></li>
+<li>Leave the <strong>Advanced</strong> tab alone (that's where BGP settings live).</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+<li>Repeat with <strong>Name:</strong> <code>lng-azure-side</code>, endpoint IP = the address of <code>pip-vgw-azure-side-1</code>, <strong>Address space:</strong> <code>10.0.0.0/16</code>.</li>
+</ol>
+<p><strong>Say a word about that <code>Endpoint</code> dropdown</strong> — it's a genuinely useful real-world detail. Your other choice is <strong>FQDN (Fully Qualified Domain Name)</strong>, and it exists for offices whose ISP hands them a <em>dynamic</em> public IP. Instead of an address that goes stale, you point the LNG at a Dynamic DNS name and Azure resolves it. Three caveats if you use it: Azure takes only the <strong>first IPv4 address</strong> returned (so the name must resolve to a single address), it caches DNS for about <strong>5 minutes</strong>, and if you have several LNGs using FQDNs they must all resolve to <em>different</em> addresses. IPv6 isn't supported here.</p>
+<p>⚠️ <strong>Write down which IP you used on each side.</strong> With four public IPs floating around, mixing up a <code>-1</code> and a <code>-2</code> is the single most common reason a connection in this lab sits at <strong>Connecting</strong> forever.</p>
+<p><strong>What full dual-redundancy would look like in production</strong> (worth describing on camera, not worth building here): you'd create a <em>second</em> Local Network Gateway on each side — <code>lng-onprem-side-2</code> pointing at <code>pip-vgw-onprem-side-2</code> — and a <em>second</em> Connection bound to it. Four LNGs and four Connections across both sides, yielding a full mesh where any single gateway instance, tunnel, or availability zone can drop without interrupting traffic. In a real hybrid setup this is the same pattern, except the second address belongs to your <strong>second on-premises VPN device</strong> sitting in a different rack or building. We're building one leg of that mesh because one leg teaches the entire concept.</p>
+<p><strong>Step 5 — Create the connections (both directions):</strong></p>
+<p>Creating a connection is a proper two-tab wizard now, not a three-field pop-out — so don't go looking for a quick <strong>Add</strong> button that finishes the job.</p>
+<ol>
+<li>Open <code>vgw-azure-side</code> → <strong>Connections</strong> → <strong>+ Add</strong>. This opens the <strong>Create connection</strong> page.</li>
+<li>On the <strong>Basics</strong> tab:</li>
+<li><strong>Connection type:</strong> <strong>Site-to-site (IPsec)</strong></li>
+<li><strong>Name:</strong> <code>conn-azure-to-onprem</code></li>
+<li><strong>Region:</strong> East US</li>
+<li>Click <strong>Next : Settings &gt;</strong>. On the <strong>Settings</strong> tab:</li>
+<li><strong>Virtual network gateway:</strong> <code>vgw-azure-side</code> (pre-filled)</li>
+<li><strong>Local network gateway:</strong> <code>lng-onprem-side</code></li>
+<li><strong>Shared key (PSK):</strong> type a strong shared secret — e.g., <code>Demo-PSK-2026!</code> — and use the <strong>exact same value</strong> on both sides. Microsoft's recommendation for real deployments is at least <strong>32 characters</strong> mixing upper, lower, digits and symbols. This is the pre-shared key both gateways use to authenticate the tunnel.</li>
+<li><strong>IKE Protocol:</strong> <strong>IKEv2</strong></li>
+<li>Leave the rest at their defaults, and know what they are, because students will ask: <strong>Use Azure Private IP Address</strong> (unchecked), <strong>Enable BGP</strong> (unchecked), <strong>FastPath</strong> (unchecked — that's an ExpressRoute feature we discuss in Part 3), <strong>IPsec/IKE policy: Default</strong>, <strong>Use policy based traffic selector: Disable</strong>, <strong>DPD timeout: 45</strong> seconds, <strong>Connection Mode: Default</strong> (which side may initiate the tunnel).</li>
+<li><strong>NAT Rules Associations:</strong> leave both Ingress and Egress at <strong>0 selected</strong>.</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+<li>Now mirror it from the other side: open <code>vgw-onprem-side</code> → <strong>Connections</strong> → <strong>+ Add</strong>, name it <code>conn-onprem-to-azure</code>, <strong>Local network gateway:</strong> <code>lng-azure-side</code>, and the <strong>same shared key</strong>.</li>
+</ol>
+<blockquote>
+<p>If the <strong>Shared key</strong> field doesn't render on the Settings tab for you — it occasionally doesn't, depending on the connection type — create the connection anyway, then open it and set the key on its <strong>Authentication</strong> page. That's also where you go to rotate a PSK later.</p>
+</blockquote>
+<p><strong>How those four resources actually relate</strong> — this is the part that trips everyone up, so here it is drawn out. The key insight: a <strong>Local Network Gateway is not a gateway at all.</strong> It's a <em>description</em> of the far end — nothing more than an endpoint (a public IP or FQDN) and an address range written down as an Azure resource. The <strong>Connection</strong> is what binds your real gateway to that description:</p>
+<pre class="mermaid"><code>flowchart TB
+    subgraph AZSIDE["Configured on the Azure side"]
+        direction TB
+        A1["vgw-azure-side&lt;br/&gt;the real VPN Gateway"]
+        A2["Connection&lt;br/&gt;type: Site-to-site IPsec&lt;br/&gt;shared key: Demo-PSK-2026!"]
+        A3["lng-onprem-side&lt;br/&gt;Local Network Gateway&lt;br/&gt;─────────────&lt;br/&gt;IP: pip-vgw-onprem-side-1&lt;br/&gt;Address space: 192.168.0.0/16"]
+        A1 --&gt;|"has a"| A2
+        A2 --&gt;|"points at"| A3
+    end
+
+    subgraph OPSIDE["Configured on the other side — mirrored"]
+        direction TB
+        B3["lng-azure-side&lt;br/&gt;Local Network Gateway&lt;br/&gt;─────────────&lt;br/&gt;IP: pip-vgw-azure-side-1&lt;br/&gt;Address space: 10.0.0.0/16"]
+        B2["Connection&lt;br/&gt;type: Site-to-site IPsec&lt;br/&gt;shared key: Demo-PSK-2026!"]
+        B1["vgw-onprem-side&lt;br/&gt;the real VPN Gateway"]
+        B1 --&gt;|"has a"| B2
+        B2 --&gt;|"points at"| B3
+    end
+
+    A3 -.-&gt;|"describes"| B1
+    B3 -.-&gt;|"describes"| A1
+
+    style A3 fill:#fff4e5
+    style B3 fill:#fff4e5
+    style A1 fill:#0078d4,color:#fff
+    style B1 fill:#0078d4,color:#fff</code></pre>
+<p>The dashed arrows are the thing to internalise: <code>lng-onprem-side</code> <strong>describes</strong> the gateway on the other side. In a real deployment, that dashed arrow points at your office firewall instead — and the entire right-hand box stops being Azure resources and becomes configuration your network team enters into that firewall by hand. <strong>The Azure side does not change at all.</strong> That's why this lab teaches the real skill.</p>
+<p><strong>Step 6 — Verify the tunnel comes up:</strong></p>
+<ol>
+<li>Give it a few minutes, then open the gateway's <strong>Connections</strong> page.</li>
+<li>Watch the status walk through <strong>Unknown → Connecting → Succeeded</strong>. Don't let the wording throw you: the connection <em>resource</em> reports <strong>Succeeded</strong>, while the <strong>Connections</strong> list column shows <strong>Connected</strong>. Both mean the tunnel is up — students always ask which one is "real."</li>
+<li>Click into the connection and check <strong>Data in</strong> and <strong>Data out</strong> on the Essentials pane. Non-zero and climbing means traffic is genuinely crossing the tunnel, not just that the resource deployed cleanly.</li>
+</ol>
+<p><strong>Step 7 — Prove it with a real VM:</strong></p>
+<ol>
+<li>Deploy one small VM into <code>subnet-demo</code> in <code>vnet-azure-side</code> (<code>Standard_B1s</code>, no public IP needed) and one into <code>subnet-demo</code> in <code>vnet-onprem-side</code>.</li>
+<li>From one VM, ping the other's private IP (<code>192.168.1.4</code>, for example). A successful reply proves traffic is flowing through the encrypted Site-to-Site tunnel, across two completely separate VNets that would otherwise have no route to each other at all.</li>
+</ol>
+<p><strong>Follow that ping packet end to end</strong> — this is what your successful reply actually proves happened:</p>
+<pre class="mermaid"><code>sequenceDiagram
+    autonumber
+    participant VM1 as VM 10.0.1.4&lt;br/&gt;azure-side
+    participant GW1 as vgw-azure-side
+    participant NET as Public Internet
+    participant GW2 as vgw-onprem-side
+    participant VM2 as VM 192.168.1.4&lt;br/&gt;onprem-side
+
+    VM1-&gt;&gt;GW1: ping 192.168.1.4&lt;br/&gt;route table says: send to gateway
+    Note over GW1: Matches address space&lt;br/&gt;on lng-onprem-side&lt;br/&gt;→ encrypt with shared key
+    GW1-&gt;&gt;NET: IPsec-encrypted packet&lt;br/&gt;src/dst = the two public IPs
+    Note over NET: Anyone intercepting sees&lt;br/&gt;only encrypted payload
+    NET-&gt;&gt;GW2: arrives at far side's public IP
+    Note over GW2: Decrypt with matching&lt;br/&gt;shared key
+    GW2-&gt;&gt;VM2: original ping,&lt;br/&gt;delivered on private IP
+    VM2--&gt;&gt;GW2: ICMP reply
+    GW2--&gt;&gt;NET: encrypted again
+    NET--&gt;&gt;GW1: same path, reversed
+    GW1--&gt;&gt;VM1: reply lands&lt;br/&gt;✅ tunnel confirmed</code></pre>
+<p>Two details worth calling out on camera: the packet crosses <strong>the public internet</strong> — this is not a private circuit, which is exactly the distinction we'll draw against ExpressRoute in Part 3. And the VMs themselves know nothing about any of this. Neither VM has a public IP, neither has VPN software installed, and neither was configured for the tunnel. <strong>Routing and encryption happen entirely at the gateway layer</strong>, which is the whole point of doing it this way instead of installing VPN clients on every server.</p>
+<p>This is the complete mechanic behind a real Site-to-Site connection to an actual office — the only difference in a real deployment is that <code>lng-onprem-side</code> would point at your office firewall's public IP instead of another Azure VPN Gateway, and the office-side device (not Azure) would hold the matching configuration.</p>
+<p><strong>Step 8 — Clean up:</strong></p>
+<p>VPN Gateways bill by the hour regardless of traffic — delete both connections, both gateways (<code>vgw-azure-side</code>, <code>vgw-onprem-side</code>), both Local Network Gateways, <strong>all four public IPs</strong> (<code>pip-vgw-azure-side-1/-2</code>, <code>pip-vgw-onprem-side-1/-2</code> — active-active means twice as many to clean up, and the <code>-2</code> addresses are easy to forget because nothing in the lab ever referenced them), and the two VNets when you're done. Standard public IPs bill hourly whether or not anything is attached to them, so orphaned <code>-2</code> addresses quietly keep costing you. Deleting the whole <code>rg-day15-demo</code> resource group in one step catches all of it and is the safer habit.</p>
+<hr />
+<h3 id="hands-on-point-to-site-connect-your-own-laptop-no-office-required">Hands-On: Point-to-Site — Connect Your Own Laptop, No Office Required</h3>
+<p><strong>💳 Instructor demo — reuses one VPN Gateway; genuinely practical with just your own machine</strong></p>
+<p>This is the one demo today that was never about a "site" in the first place — P2S connects a single device, and your own laptop is a perfectly legitimate example of that device. No office, no second location, no pretending required.</p>
+<p><strong>What we're building this time.</strong> Compare it against the Site-to-Site picture above and notice everything that's <em>missing</em>: no second VNet, no Local Network Gateway, no shared key, no device with a static public IP. Your laptop can be on hotel wifi with an address that changes every hour, and it still works — because P2S doesn't identify you by IP address, it identifies you by <strong>who you sign in as</strong>:</p>
+<pre class="mermaid"><code>flowchart LR
+    subgraph HOME["💻 Wherever you happen to be"]
+        direction TB
+        LAP["Your laptop&lt;br/&gt;Azure VPN Client"]
+        POOL["Gets issued&lt;br/&gt;172.16.0.x&lt;br/&gt;from the address pool"]
+        LAP -.-&gt; POOL
+    end
+
+    ENTRA{{"Microsoft Entra ID&lt;br/&gt;─────────────&lt;br/&gt;sign-in + MFA&lt;br/&gt;+ Conditional Access"}}
+
+    subgraph AZURE["☁️ vnet-azure-side — 10.0.0.0/16"]
+        direction TB
+        GW["vgw-azure-side&lt;br/&gt;P2S enabled&lt;br/&gt;OpenVPN (SSL)"]
+        VM["VM&lt;br/&gt;10.0.1.4"]
+        GW --- VM
+    end
+
+    LAP ==&gt;|"1 · authenticate"| ENTRA
+    ENTRA ==&gt;|"2 · token issued"| LAP
+    LAP ==&gt;|"3 · encrypted tunnel"| GW
+
+    style GW fill:#0078d4,color:#fff
+    style ENTRA fill:#fff4e5</code></pre>
+<p>That middle box is the whole reason Entra ID authentication is the recommended path. With certificate-based P2S, revoking someone's access means managing a certificate revocation list. With Entra ID, you disable their account — or just remove them from a group — and their VPN access is gone at the next connection attempt, alongside their access to everything else. <strong>Identity becomes the single control point</strong>, which is the theme that Day 17 picks up in full.</p>
+<p><strong>Step 1 — Configure Point-to-Site on an existing gateway:</strong></p>
+<p>You can reuse <code>vgw-azure-side</code> from the previous demo if it's still running, or deploy a fresh VpnGw1AZ gateway for this alone. Two prerequisites worth stating out loud: the gateway <strong>can't be a Basic SKU</strong> and <strong>must be route-based</strong> — Entra ID authentication is unsupported on both. You'll also need your <strong>Entra tenant ID</strong> to hand.</p>
+<ol>
+<li>Open the gateway → <strong>Point-to-site configuration</strong> → <strong>Configure now</strong>.</li>
+<li><strong>Address pool:</strong> <code>172.16.0.0/24</code> — the range Azure hands out to connecting clients. It must not overlap your VNet's range or the network you're dialling in <em>from</em>. The minimum size is a <strong>/29</strong> for active-standby gateways and a <strong>/28</strong> for active-active ones; a /24 gives us plenty of room.</li>
+<li><strong>Tunnel type:</strong> <strong>OpenVPN (SSL)</strong>. ← This one is not optional. Entra ID authentication only works over OpenVPN. If you pick IKEv2 here, the portal will save happily and the client will never connect.</li>
+<li><strong>Authentication type:</strong> <strong>Microsoft Entra ID</strong>.</li>
+<li>Fill in the three Entra fields exactly:</li>
+<li><strong>Tenant:</strong> <code>https://login.microsoftonline.com/&lt;your-tenant-id&gt;</code> — note it's a <strong>URL</strong>, not a bare GUID, and it must <strong>not</strong> end in a backslash.</li>
+<li><strong>Audience:</strong> <code>c632b3df-fb67-4d84-bdcf-b95ad541b5c8</code> — this is the Microsoft-registered Azure VPN Client App ID. It's the same value in Azure Public, Government, Germany and 21Vianet, and using it is what lets you skip app registration entirely. A gateway can hold <strong>only one</strong> Audience value.</li>
+<li><strong>Issuer:</strong> <code>https://sts.windows.net/&lt;your-tenant-id&gt;/</code> — <strong>the trailing slash is mandatory.</strong> Leave it off and the connection fails with an error that tells you nothing useful.</li>
+<li><strong>Ignore the "Grant administrator consent for Azure VPN client application" link.</strong> It's a leftover for the old manually-registered app. With the Microsoft-registered Audience above, you don't need consent and you don't need the Cloud App Administrator role — that's precisely the step this approach removes.</li>
+<li><strong>Save.</strong> Give it a few minutes to apply.</li>
+</ol>
+<blockquote>
+<p>If your portal still says "Azure Active Directory" instead of "Microsoft Entra ID" on this blade, that's fine — Microsoft is still working through the rename, and the fields behave identically.</p>
+</blockquote>
+<p><strong>Step 2 — Download and install the Azure VPN Client:</strong></p>
+<ol>
+<li>Back on <strong>Point-to-site configuration</strong>, click <strong>Download VPN client</strong>. It takes a couple of minutes to generate, then downloads a zip named after your gateway.</li>
+<li>Extract it and open the <strong>AzureVPN</strong> folder — the file that matters is <strong><code>azurevpnconfig.xml</code></strong>. That single file holds every setting the client needs, and it's what you'd distribute to your users by email or Intune. It contains no secrets: each user still has to sign in with their own valid Entra ID credentials.</li>
+<li>Install the <strong>Azure VPN Client</strong> app (<strong>Windows 10/11 or macOS</strong> — remember the Linux client retires August 31, 2026) and import <code>azurevpnconfig.xml</code>.</li>
+</ol>
+<p><strong>Step 3 — Connect:</strong></p>
+<ol>
+<li>Open the Azure VPN Client, select the imported profile, and click <strong>Connect</strong>.</li>
+<li>You'll be prompted to sign in with your Microsoft Entra ID credentials — if Conditional Access or MFA is configured on your tenant, it applies here exactly as it would signing into the Azure Portal.</li>
+<li>Once connected, your laptop is issued an IP from the <code>172.16.0.0/24</code> pool and now has a private route into the VNet.</li>
+</ol>
+<p><strong>Step 4 — Prove it:</strong></p>
+<ol>
+<li>From your laptop's terminal, ping the private IP of the VM you deployed in <code>vnet-azure-side</code> earlier.</li>
+<li>A successful reply means your own physical machine — wherever you're sitting right now — is privately reachable from, and to, an Azure VNet, over an encrypted tunnel, authenticated with your Entra ID identity. No office network, no VPN appliance, no physical hardware anywhere in this picture.</li>
+</ol>
+<p><strong>The full connection sequence</strong>, from clicking Connect to a working ping:</p>
+<pre class="mermaid"><code>sequenceDiagram
+    autonumber
+    participant U as You
+    participant C as Azure VPN Client&lt;br/&gt;on your laptop
+    participant E as Microsoft Entra ID
+    participant G as vgw-azure-side&lt;br/&gt;P2S enabled
+    participant V as VM 10.0.1.4
+
+    U-&gt;&gt;C: Click Connect
+    C-&gt;&gt;E: Redirect to sign-in&lt;br/&gt;(using the profile's Audience + Issuer)
+    E-&gt;&gt;U: Prompt for credentials
+    U-&gt;&gt;E: Username + password
+    E-&gt;&gt;U: MFA challenge&lt;br/&gt;(if Conditional Access requires it)
+    U-&gt;&gt;E: Approve
+    E-&gt;&gt;C: Access token
+    C-&gt;&gt;G: Establish OpenVPN (SSL) tunnel&lt;br/&gt;presenting the token
+    Note over G: Validate token against&lt;br/&gt;configured tenant + audience
+    G-&gt;&gt;C: Assign IP from pool&lt;br/&gt;172.16.0.4
+    Note over C: Laptop now has a route&lt;br/&gt;into 10.0.0.0/16
+    C-&gt;&gt;V: ping 10.0.1.4 through tunnel
+    V--&gt;&gt;C: reply ✅</code></pre>
+<p>Step 5 is the one to pause on while recording. <strong>An MFA prompt appearing during a VPN connection is the entire value proposition in a single screen</strong> — the same Conditional Access policies protecting your portal sign-in are now protecting network-level access to your VNet. That was simply not achievable with certificate-based VPN authentication.</p>
+<p><strong>Step 5 — Disconnect and clean up:</strong></p>
+<ol>
+<li>Disconnect in the Azure VPN Client.</li>
+<li>Remove the Point-to-Site configuration from the gateway if you're done, and proceed to delete the gateway itself as part of Step 8 above if you haven't already.</li>
+</ol>
+<hr />
+<h2 id="part-3-expressroute">Part 3 — ExpressRoute</h2>
+<h3 id="what-it-is_1">What It Is</h3>
+<p><strong>ExpressRoute</strong> is a <strong>private, dedicated network connection</strong> between your on-premises network (or a colocation facility) and Azure, provisioned through a <strong>connectivity provider</strong> — it never touches the public internet at all.</p>
+<pre class="mermaid"><code>graph LR
+    OnPrem["Your On-Premises Network"]
+    Provider["Connectivity Provider&lt;br/&gt;e.g. a carrier or colo partner"]
+    MSEE["Microsoft Enterprise Edge&lt;br/&gt;MSEE routers"]
+    Azure["Your Azure VNet(s)"]
+
+    OnPrem --&gt;|"Private physical circuit"| Provider --&gt; MSEE --&gt; Azure
+    Internet["🌐 Public Internet"] -.-x OnPrem</code></pre>
+<p>Because the traffic never crosses the public internet, ExpressRoute gives you <strong>higher, more consistent bandwidth</strong>, <strong>lower and more predictable latency</strong>, and an <strong>SLA</strong> — at the cost of a much longer setup time (ordering and provisioning a physical circuit genuinely takes days to weeks) and significantly higher price.</p>
+<h3 id="peering-types">Peering Types</h3>
+<table>
+<thead>
+<tr>
+<th>Peering Type</th>
+<th>What It Connects To</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Private Peering</strong></td>
+<td>Your VNets — the equivalent of what VPN Gateway does, but over a private circuit instead of an internet tunnel</td>
+</tr>
+<tr>
+<td><strong>Microsoft Peering</strong></td>
+<td>Microsoft's public services directly — Microsoft 365, Azure PaaS public endpoints — without traversing the internet</td>
+</tr>
+</tbody>
+</table>
+<h3 id="expressroute-direct">ExpressRoute Direct</h3>
+<p><strong>ExpressRoute Direct</strong> lets large customers connect <strong>directly</strong> into Microsoft's global network at the physical layer, via dedicated <strong>10, 100, or 400 Gbps port pairs</strong> at a Microsoft Enterprise Edge (MSEE) site — skipping the connectivity provider entirely for organizations that need that scale. It supports active-active connectivity across the port pair for resilience. Two practical notes: <strong>400 Gbps is only available at a limited set of peering locations and requires enrollment</strong>, and you must register your subscription for ExpressRoute Direct before the option appears at all.</p>
+<p>You then carve individual <strong>circuits</strong> out of that port capacity, and the available circuit sizes depend on the port pair: 1/2/5/10 Gbps on a 10-Gbps pair, 5/10/40/100 Gbps on a 100-Gbps pair, and up to 400 Gbps on a 400-Gbps pair. Compare that with a provider circuit, which tops out at 10 Gbps — that gap is the whole reason ExpressRoute Direct exists.</p>
+<h3 id="fastpath-bypassing-the-gateway-for-performance">FastPath — Bypassing the Gateway for Performance</h3>
+<p>By default, ExpressRoute traffic flows through your VNet's ExpressRoute gateway before reaching your VMs — that gateway can become a bottleneck at very high throughput. <strong>FastPath</strong> routes network traffic from on-premises <strong>directly to VMs</strong>, bypassing the gateway's data path entirely, dramatically improving throughput and latency for eligible configurations.</p>
+<p>FastPath is available in all Azure public cloud regions and works with both provider circuits and ExpressRoute Direct, but it has a hard prerequisite worth memorising: it requires a <strong>high-end ExpressRoute gateway SKU</strong> — <strong>Ultra Performance</strong>, <strong>ErGw3AZ</strong>, <strong>ErGwScale with at least 10 scale units</strong>, or a Virtual WAN ExpressRoute gateway with at least 5 scale units (where it's simply on by default for Direct circuits). You can't bolt FastPath onto a small gateway.</p>
+<p>Several of the more advanced FastPath features are <strong>ExpressRoute Direct only</strong> — VNet peering over FastPath, User-Defined Routes over FastPath, and IPv6. And <strong>Private Link / private endpoints over FastPath</strong> is in <strong>limited GA</strong>: it requires enrolling through a form, deployment takes 4–6 weeks after approval, and it's restricted to a specific list of regions and services (Storage, Key Vault, Cosmos DB, and third-party Private Link services). In that Private Link configuration on 100- or 400-Gbps Direct circuits, FastPath supports up to <strong>100 Gbps to a single availability zone</strong>. None of this is beginner configuration — but knowing FastPath has a gateway-SKU floor and a Direct-only feature tier is exactly the kind of detail AZ-305 likes.</p>
+<h3 id="pricing-model">Pricing Model</h3>
+<p>ExpressRoute circuits are billed one of two ways:</p>
+<ul>
+<li><strong>Metered Data plan:</strong> a monthly port/circuit fee, plus a charge per GB of outbound data transferred.</li>
+<li><strong>Unlimited Data plan:</strong> a single higher fixed monthly fee that includes all inbound and outbound data transfer.</li>
+</ul>
+<p>ExpressRoute Direct itself is billed as a <strong>flat port-pair fee</strong>, with individual circuits provisioned within that port capacity billed separately on top.</p>
+<h3 id="hands-on-portal-tour-no-physical-circuit">Hands-On: Portal Tour (No Physical Circuit)</h3>
+<p><strong>💳 Conceptual walkthrough only — a real circuit requires an actual connectivity provider and cannot be demoed</strong></p>
+<ol>
+<li>Search for <strong>ExpressRoute circuits</strong> → <strong>+ Create</strong>, and walk through the <strong>Create ExpressRoute circuit</strong> blade: provider selection, peering location, bandwidth, and the Metered vs. Unlimited data plan choice — without completing the purchase.</li>
+<li>Show the <strong>ExpressRoute Direct</strong> creation blade separately, pointing out the port-pair bandwidth options (10/100/400 Gbps) and where FastPath and Private Link options would surface once a real circuit exists.</li>
+<li>Emphasize the <strong>provisioning workflow</strong>: after creating the circuit resource in Azure, you (or your connectivity provider) must also authorize and activate it in the provider's own system before the circuit goes live — this is why ExpressRoute timelines are measured in weeks, not minutes.</li>
+</ol>
+<hr />
+<h2 id="part-4-azure-virtual-wan">Part 4 — Azure Virtual WAN</h2>
+<h3 id="what-it-is_2">What It Is</h3>
+<p><strong>Azure Virtual WAN</strong> is Microsoft's fully managed hub-and-spoke networking service, designed for organizations with <strong>many</strong> branch offices, VPN connections, and ExpressRoute circuits that would otherwise require you to manually build and maintain a mesh of individual gateways and connections yourself.</p>
+<p>A <strong>Virtual WAN hub</strong> is a Microsoft-managed VNet that can simultaneously host VPN Gateway connections (Site-to-Site and Point-to-Site), ExpressRoute connections, and VNet-to-VNet connections — all managed as one unified routing domain, with Microsoft handling the underlying gateway infrastructure and route propagation for you.</p>
+<p><strong>Why it exists:</strong> if you're a large enterprise with 50 branch offices, building 50 individual VPN Gateway connections and manually managing routes between all of them doesn't scale. Virtual WAN turns that into a hub-and-spoke model where every site connects to the hub once, and the hub handles routing everywhere else automatically.</p>
+<h3 id="hands-on-portal-tour">Hands-On: Portal Tour</h3>
+<p><strong>💳 Portal tour only — billed per virtual hub and data processed, not something to leave running for a demo</strong></p>
+<ol>
+<li>Search for <strong>Virtual WANs</strong> → <strong>+ Create</strong>, and walk through creating a Virtual WAN resource and its first <strong>hub</strong>.</li>
+<li>Show where you'd attach a <strong>VPN site</strong>, an <strong>ExpressRoute circuit</strong>, or a <strong>VNet connection</strong> to that hub — pointing out that this is the same Site-to-Site and Point-to-Site VPN configuration from Part 2, just orchestrated centrally instead of gateway-by-gateway.</li>
+<li>Close out without deploying, to avoid the ongoing per-hub charge.</li>
+</ol>
+<hr />
+<h2 id="summary">Summary</h2>
+<p>Today closed out the hybrid networking picture — connecting Azure to whatever already exists outside it, without needing an actual office network to prove any of it.</p>
+<p><strong>VPN Gateway</strong> builds encrypted IPsec tunnels over the public internet, in two flavors: <strong>Site-to-Site</strong> for connecting an entire remote network, and <strong>Point-to-Site</strong> for connecting a single device. You proved Site-to-Site's exact mechanics using two Azure VNets standing in for "Azure" and "on-premises," connected via Local Network Gateways and a shared key — the identical configuration a real office deployment uses. You then proved Point-to-Site for real, connecting your own laptop over an encrypted OpenVPN tunnel authenticated with Microsoft Entra ID, no on-premises network involved at all. Along the way, you learned where the SKU portfolio landed after two years of consolidation: the legacy Standard and High Performance SKUs retired in June 2026, the non-AZ VpnGw1–5 SKUs retire in September 2026, and every gateway you create in the portal today is a zone-redundant <strong>VpnGw*AZ</strong> SKU in one of two generations.</p>
+<p><strong>ExpressRoute</strong> is the private, dedicated alternative — a physical circuit through a connectivity provider that never touches the internet, offering higher and more consistent bandwidth with an SLA, at the cost of weeks of provisioning time and a much higher price. <strong>ExpressRoute Direct</strong> and <strong>FastPath</strong> push that further for organizations that need raw port-level scale and gateway-bypass performance.</p>
+<p><strong>Azure Virtual WAN</strong> wraps both VPN and ExpressRoute connectivity into a single, Microsoft-managed hub-and-spoke fabric — the right answer once you have too many sites and circuits to manage as individual gateways.</p>
+<h3 id="whats-next">What's Next</h3>
+<p>You've now covered the complete Azure networking phase: addressing fundamentals, VNets and NSGs, peering and private connectivity, load balancing and global routing, DNS, and hybrid connectivity to the outside world. From here, the course moves into Phase 4: <strong>Azure SQL Database and the managed database family</strong> — shifting from "how traffic moves" to "where your data actually lives, and who runs the database engine for you."</p>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<ul>
+<li><strong>Hybrid networking</strong> connects existing on-premises infrastructure to Azure — via <strong>VPN Gateway</strong> (encrypted internet tunnel) or <strong>ExpressRoute</strong> (private dedicated circuit)</li>
+<li><strong>Site-to-Site (S2S)</strong> connects an entire remote network to a VNet; <strong>Point-to-Site (P2S)</strong> connects a single device — and only P2S can be demoed for real without any on-premises infrastructure, since it was never about a "site"</li>
+<li>A <strong>Local Network Gateway</strong> represents whatever's on the far end of a Site-to-Site tunnel — Azure doesn't care whether that's a physical office router or another Azure VPN Gateway, which is exactly why joining two VNets with the site-to-site flow exercises the real mechanics. Its <strong>Endpoint</strong> can be an <strong>IP address or an FQDN</strong> (for offices on dynamic IPs). Azure's dedicated <strong>VNet-to-VNet</strong> connection type is quicker for VNets but hides the LNG entirely</li>
+<li><strong>The portal only offers zone-redundant AZ SKUs now</strong> — legacy Standard/High Performance retired <strong>June 2026</strong> (auto-migrated to VpnGw1AZ/VpnGw2AZ); non-AZ VpnGw1–5 blocked from creation since <strong>Nov 1, 2025</strong> and retiring <strong>Sept 30, 2026</strong>. The <strong>Basic gateway SKU is <em>not</em> retired</strong> — it's just PowerShell/CLI-only; what's retiring is the <strong>Basic public IP</strong></li>
+<li><strong>Know your SKU numbers:</strong> VpnGw1AZ–3AZ carry <strong>30</strong> S2S tunnels, VpnGw4AZ/5AZ carry <strong>100</strong> — the 250/500/1000 figures are <strong>P2S client</strong> limits, not tunnels. Past 100 tunnels the answer is <strong>Virtual WAN</strong>. <strong>VpnGw1AZ exists only in Generation 1</strong>, and Generation 2 is faster at the same SKU name</li>
+<li><strong>Active-active mode is recommended but not the default</strong> — a gateway is active-standby unless you enable it. It asks for <strong>two Standard public IPs</strong>, one per live instance, and the far-end device must accept <strong>two tunnels</strong> or you lose the benefit during maintenance. A <strong>Local Network Gateway describes only one endpoint</strong>, so full dual-redundancy means one LNG and one Connection per far-side address</li>
+<li><strong>Point-to-Site now favors Microsoft Entra ID authentication</strong> over manual certificates — bringing Conditional Access and MFA to VPN access, with the Microsoft-registered App ID (<code>c632b3df-fb67-4d84-bdcf-b95ad541b5c8</code>) removing the old manual app-registration and admin-consent steps. Manually registered clients retire <strong>March 31, 2028</strong></li>
+<li><strong>Entra ID authentication requires the OpenVPN (SSL) tunnel type</strong> — IKEv2 authenticates with certificates or RADIUS, never Entra ID. Picking the wrong tunnel type saves fine and then never connects</li>
+<li>The <strong>Azure VPN Client runs on Windows and macOS</strong>; the <strong>Linux client retires August 31, 2026</strong> — plan accordingly if Linux P2S clients are part of your design</li>
+<li><strong>ExpressRoute</strong> never touches the public internet — <strong>Private Peering</strong> reaches your VNets, <strong>Microsoft Peering</strong> reaches Microsoft's public services directly</li>
+<li><strong>ExpressRoute Direct</strong> offers dedicated 10/100/400 Gbps port pairs directly into Microsoft's network (400 Gbps needs enrollment and limited locations), versus a 10 Gbps ceiling on provider circuits; <strong>FastPath</strong> bypasses the ExpressRoute gateway for direct-to-VM performance but requires a high-end gateway SKU (Ultra Performance, ErGw3AZ, or ErGwScale with 10+ units), and its Private Link support is <strong>limited GA by enrollment only</strong></li>
+<li><strong>Azure Virtual WAN</strong> is Microsoft's managed hub-and-spoke alternative to manually building and maintaining individual gateways per site — the right tool once you have many branches, VPN connections, and ExpressRoute circuits to manage together</li>
+<li>Exam framing: VPN Gateway for quick, cheaper, internet-based hybrid connectivity; ExpressRoute for high-bandwidth, low-latency, SLA-backed private connectivity; Virtual WAN for centrally managing either at scale across many sites</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../day14_traffic_frontdoor_cdn_waf/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Day 14 — Traffic Manager, Front Door, CDN &amp; WAF">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Day 14 — Traffic Manager, Front Door, CDN & WAF
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../day16_azure_sql_database/" class="md-footer__link md-footer__link--next" aria-label="Next: Day 16 — Azure SQL Database + Other Databases">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Day 16 — Azure SQL Database + Other Databases
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

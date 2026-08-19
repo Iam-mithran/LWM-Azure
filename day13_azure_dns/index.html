@@ -1,0 +1,2115 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A complete beginner's guide to Azure Cloud and Azure DevOps — 31 days plus bonus content, zero assumed cloud knowledge.">
+      
+      
+      
+        <link rel="canonical" href="https://iam-mithran.github.io/LWM-Azure/day13_azure_dns/">
+      
+      
+        <link rel="prev" href="../day12_load_balancer_vmss/">
+      
+      
+        <link rel="next" href="../day14_traffic_frontdoor_cdn_waf/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Day 13 — Azure DNS: Public & Private Zones - LearnWithMithran — Azure Complete Beginner's Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#day-13-azure-dns-public-private-zones" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-header__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LearnWithMithran — Azure Complete Beginner's Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Day 13 — Azure DNS: Public & Private Zones
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-nav__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LearnWithMithran — Azure Complete Beginner's Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day01_account_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day02_fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day03_vms_part1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day04_web_hosting_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day05_vms_part3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day06_app_service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day07_storage_account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day08_storage_files_queue_tables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day09_intro_to_networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day10_virtual_network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day11_vnet_advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day12_load_balancer_vmss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 13 — Azure DNS: Public & Private Zones
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 13 — Azure DNS: Public & Private Zones
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-dns-fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — DNS Fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — DNS Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-dns-solves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem DNS Solves
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dns-record-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DNS Record Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-dns-resolution-actually-works-step-by-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How DNS Resolution Actually Works, Step by Step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ttl-time-to-live" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TTL — Time to Live
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="TTL — Time to Live">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#worked-example-changing-an-ip-without-breaking-anyone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worked Example: Changing an IP Without Breaking Anyone
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#typical-ttl-values-in-practice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Typical TTL Values in Practice
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-azure-dns-public-zones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Azure DNS Public Zones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Azure DNS Public Zones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-a-public-zone-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a Public Zone Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alias-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alias Records
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dnssec-cryptographically-signed-dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DNSSEC — Cryptographically Signed DNS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-deploy-a-real-web-server-host-its-dns-in-azure-and-delegate-a-real-domain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Deploy a Real Web Server, Host Its DNS in Azure, and Delegate a Real Domain
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-azure-dns-private-zones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Azure DNS Private Zones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Azure DNS Private Zones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-public-dns-doesnt-help-inside-a-vnet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem: Public DNS Doesn't Help Inside a VNet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vnet-links-and-autoregistration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VNet Links and Autoregistration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#azures-built-in-dns-resolver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure's Built-In DNS Resolver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-dns-when-the-built-in-resolver-isnt-enough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom DNS — When the Built-In Resolver Isn't Enough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-a-private-zone-link-it-and-prove-autoregistration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create a Private Zone, Link It, and Prove Autoregistration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-azure-dns-private-resolver-hybrid-dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Azure DNS Private Resolver (Hybrid DNS)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Azure DNS Private Resolver (Hybrid DNS)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-it-solves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem It Solves
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-its-built" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It's Built
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-tour-the-private-resolver-blade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Tour the Private Resolver Blade
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day14_traffic_frontdoor_cdn_waf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 14 — Traffic Manager, Front Door, CDN & WAF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day15_vpn_expressroute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 15 — VPN Gateway & ExpressRoute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day16_azure_sql_database/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 16 — Azure SQL Database + Other Databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day17_entra_id_rbac/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 17 — Microsoft Entra ID & Azure RBAC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-1-dns-fundamentals" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — DNS Fundamentals
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — DNS Fundamentals">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-dns-solves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem DNS Solves
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dns-record-types" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DNS Record Types
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-dns-resolution-actually-works-step-by-step" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How DNS Resolution Actually Works, Step by Step
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#ttl-time-to-live" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        TTL — Time to Live
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="TTL — Time to Live">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#worked-example-changing-an-ip-without-breaking-anyone" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Worked Example: Changing an IP Without Breaking Anyone
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#typical-ttl-values-in-practice" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Typical TTL Values in Practice
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-2-azure-dns-public-zones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Azure DNS Public Zones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Azure DNS Public Zones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-a-public-zone-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What a Public Zone Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alias-records" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alias Records
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#dnssec-cryptographically-signed-dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        DNSSEC — Cryptographically Signed DNS
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-deploy-a-real-web-server-host-its-dns-in-azure-and-delegate-a-real-domain" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Deploy a Real Web Server, Host Its DNS in Azure, and Delegate a Real Domain
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-3-azure-dns-private-zones" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — Azure DNS Private Zones
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — Azure DNS Private Zones">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-public-dns-doesnt-help-inside-a-vnet" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem: Public DNS Doesn't Help Inside a VNet
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#vnet-links-and-autoregistration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        VNet Links and Autoregistration
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#azures-built-in-dns-resolver" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Azure's Built-In DNS Resolver
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-dns-when-the-built-in-resolver-isnt-enough" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom DNS — When the Built-In Resolver Isn't Enough
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-a-private-zone-link-it-and-prove-autoregistration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create a Private Zone, Link It, and Prove Autoregistration
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-4-azure-dns-private-resolver-hybrid-dns" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Azure DNS Private Resolver (Hybrid DNS)
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Azure DNS Private Resolver (Hybrid DNS)">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-it-solves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem It Solves
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#how-its-built" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How It's Built
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-tour-the-private-resolver-blade" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Tour the Private Resolver Blade
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="day-13-azure-dns-public-private-zones">Day 13 — Azure DNS: Public &amp; Private Zones</h1>
+<p><strong>Phase 3 — Networking</strong></p>
+<blockquote>
+<p>Every single day of this course, you've been typing hostnames without thinking twice about it — <code>portal.azure.com</code>, <code>mystorageaccount.blob.core.windows.net</code>, <code>google.com</code>. Every one of those names has to turn into an IP address before your computer can actually talk to anything. Today we open up that translation layer and put Azure in charge of it — both for the outside world finding <em>your</em> domain, and for your own VMs finding <em>each other</em> by name instead of by a private IP you'll forget in a week. By the end of today, you'll host a public domain's DNS records in Azure, give your VNet its own internal phonebook that updates itself, and understand the hybrid resolution service (Azure DNS Private Resolver) that's now the modern, fully-managed way to bridge Azure and on-premises DNS — no custom DNS VMs required.</p>
+</blockquote>
+<hr />
+<h2 id="what-youll-learn">What You'll Learn</h2>
+<ul>
+<li><strong>DNS fundamentals</strong> — what a hostname-to-IP lookup actually does, and why every cloud platform needs a DNS service</li>
+<li><strong>How DNS resolution actually works</strong> — the full recursive lookup chain from your browser, to a recursive resolver, to root servers, to <code>.com</code>'s TLD servers, to Azure — walked through step by step with a real example</li>
+<li><strong>DNS record types</strong> — A, AAAA, CNAME, MX, TXT, NS, SOA, and what each one is actually for</li>
+<li><strong>TTL (Time to Live)</strong> — how long resolvers cache an answer, the trade-off between "fast and cheap" and "changes propagate quickly," and a worked migration-cutover example showing exactly when to lower and raise it</li>
+<li><strong>Azure DNS Public Zones</strong> — hosting a domain's records at global scale, and delegating a real domain to Azure via NS records at your registrar</li>
+<li><strong>Alias records</strong> — Azure's DNS enhancement that keeps a record pointed at a resource (not just an IP), even after the resource's IP changes</li>
+<li><strong>DNSSEC</strong> — signing a public zone so resolvers can cryptographically verify your DNS answers haven't been tampered with</li>
+<li>Hands-on: deploy a real Ubuntu VM running nginx, create a Public DNS Zone, add A/CNAME/MX/TXT records pointing at it, and query Azure's name servers directly to prove resolution works</li>
+<li><strong>Live example:</strong> actually delegating a real, registered domain (<code>learnwithmithran.com</code>, bought at GoDaddy) to that same zone and watching a browser load the nginx page through the real domain, end to end</li>
+<li><strong>Azure DNS Private Zones</strong> — internal-only DNS that resolves inside a VNet (or across several, once linked)</li>
+<li><strong>VNet links &amp; autoregistration</strong> — link a Private Zone to a VNet and every VM gets a hostname automatically, no manual record-keeping</li>
+<li>Hands-on: build a fresh VNet and VM, create a Private Zone, link it, and prove autoregistration + manual records both resolve correctly</li>
+<li><strong>Azure's built-in DNS resolver (<code>168.63.129.16</code>)</strong> — what every VM uses out of the box, and exactly what it can and can't resolve</li>
+<li><strong>Azure DNS Private Resolver</strong> — the modern, fully managed hybrid DNS bridge between Azure and on-premises networks (💳 conceptual walkthrough + portal tour)</li>
+<li>Exam framing: where Azure DNS sits in AZ-104 (Domain 4 — Implement and Manage Virtual Networking) and AZ-305</li>
+</ul>
+<hr />
+<h2 id="before-we-begin">Before We Begin</h2>
+<p>DNS is one of the cheapest services in all of Azure. Today is almost entirely <strong>✅ free tier</strong>, with one <strong>💳 instructor-only</strong> section near the end.</p>
+<ul>
+<li><strong>Azure DNS Public Zone:</strong> roughly <strong>$0.50/month</strong> per zone, plus a small per-query charge (roughly $0.40 per million queries for the first billion queries/month). At the volume we'll generate today, this is effectively <strong>✅ free</strong> — a few cents at most. Delete the zone when you're done if you want to avoid even that. This zone happens to be named after a domain (<code>learnwithmithran.com</code>, bought at GoDaddy) that only the instructor owns, but creating and using the zone itself is identical, and free, regardless of whether you own the name you type in.</li>
+<li><strong>Delegating that zone to the real domain at GoDaddy</strong> (the last step of Part 2's hands-on) is a <strong>💳 instructor demo</strong> for that reason alone — not because of any extra Azure cost, just because it needs a domain only the instructor owns. You don't need your own domain to get everything else from today's lesson.</li>
+<li><strong>Azure DNS Private Zone:</strong> same pricing shape as a Public Zone — <strong>✅ effectively free</strong> for a demo.</li>
+<li><strong>DNS records</strong> (A, CNAME, MX, TXT, etc.) inside a zone: <strong>✅ free</strong> — no per-record charge.</li>
+<li><strong>Alias records:</strong> <strong>✅ free</strong> — no additional charge over a normal record.</li>
+<li><strong>DNSSEC signing:</strong> <strong>✅ free</strong> — no extra charge to sign a zone.</li>
+<li><strong>Two test VMs</strong> (<code>Standard_B1s</code> each — one running nginx in Part 2, one in Part 3): <strong>✅ free</strong> — both comfortably covered by the Free Tier's 750 B-series hours/month, shared across everything you deploy that month.</li>
+<li><strong>Azure DNS Private Resolver:</strong> billed per inbound and outbound endpoint, roughly <strong>$180/month per endpoint</strong> (prorated to the hour if deleted early), plus a small charge per forwarding ruleset. A minimum working setup needs both an inbound and an outbound endpoint, so this is a real recurring cost — <strong>💳 instructor demo only</strong>. We'll tour the portal and explain the architecture rather than leave it running. Always check the <a href="https://azure.microsoft.com/en-us/pricing/details/dns/">Azure DNS pricing page</a> for current rates before deploying this yourself.</li>
+</ul>
+<hr />
+<h2 id="part-1-dns-fundamentals">Part 1 — DNS Fundamentals</h2>
+<h3 id="the-problem-dns-solves">The Problem DNS Solves</h3>
+<p>Every device on a network is ultimately reachable only by an IP address — <code>20.42.73.11</code>, or <code>2603:1030:c02::9</code>. But nobody wants to memorize IP addresses, and worse, IP addresses change: a server gets rebuilt, a service migrates to a new region, a load balancer gets replaced. If everyone had hard-coded the old IP address, everything breaks.</p>
+<p><strong>DNS (Domain Name System)</strong> is the phonebook that solves both problems. It maps a human-readable hostname (<code>www.learnwithmithran.com</code>) to whatever IP address currently answers for it. Change the IP, update one DNS record, and every client that looks up the hostname gets routed to the new address — without anyone needing to know an IP address ever changed.</p>
+<p>This lookup — hostname in, IP address out — is called <strong>DNS resolution</strong>, and the process happens every single time you open a browser, SSH into a VM by hostname, or an app calls out to an API.</p>
+<h3 id="dns-record-types">DNS Record Types</h3>
+<p>A DNS zone is made up of individual <strong>records</strong>, each one answering a specific type of question. These are the types you'll use constantly in Azure (and everywhere else DNS is used):</p>
+<table>
+<thead>
+<tr>
+<th>Record Type</th>
+<th>What It Answers</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>A</strong></td>
+<td>"What IPv4 address does this hostname point to?"</td>
+<td><code>www.learnwithmithran.com</code> → <code>20.42.73.11</code></td>
+</tr>
+<tr>
+<td><strong>AAAA</strong></td>
+<td>"What IPv6 address does this hostname point to?"</td>
+<td><code>www.learnwithmithran.com</code> → <code>2603:1030:c02::9</code></td>
+</tr>
+<tr>
+<td><strong>CNAME</strong></td>
+<td>"This hostname is really just an alias for another hostname"</td>
+<td><code>blog.learnwithmithran.com</code> → <code>learnwithmithran.azurewebsites.net</code></td>
+</tr>
+<tr>
+<td><strong>MX</strong></td>
+<td>"Where should email for this domain be delivered?"</td>
+<td><code>learnwithmithran.com</code> → mail server, with a priority value</td>
+</tr>
+<tr>
+<td><strong>TXT</strong></td>
+<td>Arbitrary text — most commonly used for domain ownership verification (Microsoft 365, Google Workspace) and SPF/DKIM email authentication</td>
+<td><code>v=spf1 include:spf.protection.outlook.com -all</code></td>
+</tr>
+<tr>
+<td><strong>NS</strong></td>
+<td>"Which name servers are authoritative for this zone?" — this is the record that makes delegation work</td>
+<td>4 Azure-assigned name servers</td>
+</tr>
+<tr>
+<td><strong>SOA</strong></td>
+<td>Start of Authority — administrative metadata about the zone itself (primary name server, zone version/serial number, refresh/retry timers)</td>
+<td>Created automatically, rarely edited by hand</td>
+</tr>
+</tbody>
+</table>
+<p>Every zone gets an <strong>SOA</strong> and a set of <strong>NS</strong> records automatically the moment you create it — you don't add those yourself.</p>
+<h3 id="how-dns-resolution-actually-works-step-by-step">How DNS Resolution Actually Works, Step by Step</h3>
+<p>Every time you type a hostname into a browser, it doesn't turn into an IP address by magic — it walks through a specific chain of servers, each holding one piece of the answer, until something <em>authoritative</em> finally responds. Let's trace the exact path for <code>www.learnwithmithran.com</code>, assuming this is the very first time anyone, anywhere, has looked it up (a "cold cache").</p>
+<p>Two kinds of query happen along this chain:</p>
+<ul>
+<li><strong>Recursive query</strong> — "Give me the final answer, I don't care how many hops it takes you." This is the query your laptop or phone sends to its configured resolver.</li>
+<li><strong>Iterative query</strong> — "Here's my best answer; if you need more, ask that server next." This is how the recursive resolver talks to root, TLD, and authoritative servers — each one hands back a referral, not the final answer.</li>
+</ul>
+<pre class="mermaid"><code>sequenceDiagram
+    participant You as Your Laptop
+    participant Resolver as Recursive Resolver (e.g. 8.8.8.8)
+    participant Root as Root Name Server
+    participant TLD as .com TLD Name Server
+    participant Azure as Azure DNS&lt;br/&gt;(authoritative for learnwithmithran.com)
+
+    You-&gt;&gt;Resolver: Recursive query: "IP for www.learnwithmithran.com?"
+    Resolver-&gt;&gt;Root: Iterative query: "Who's authoritative for .com?"
+    Root--&gt;&gt;Resolver: "Ask the .com TLD servers"
+    Resolver-&gt;&gt;TLD: Iterative query: "Who's authoritative for learnwithmithran.com?"
+    TLD--&gt;&gt;Resolver: "Ask Azure's 4 name servers (via NS delegation)"
+    Resolver-&gt;&gt;Azure: Iterative query: "What's the A record for www.learnwithmithran.com?"
+    Azure--&gt;&gt;Resolver: "20.42.73.11, TTL 3600"
+    Resolver--&gt;&gt;You: "20.42.73.11" (and caches it for 3600s)</code></pre>
+<p>Step by step, in plain language:</p>
+<ol>
+<li><strong>Browser/OS cache check.</strong> Before any network traffic happens at all, your browser and operating system check their own local DNS cache. If a still-valid (within-TTL) answer for <code>www.learnwithmithran.com</code> is already sitting there from a previous lookup, it's returned instantly — zero network round trips, zero servers involved.</li>
+<li><strong>Ask the recursive resolver.</strong> Cache miss? Your device sends a recursive query to whichever resolver it's configured to use — your ISP's resolver, or a public one like Google's <code>8.8.8.8</code> or Cloudflare's <code>1.1.1.1</code>. This resolver now does all the remaining legwork on your behalf.</li>
+<li><strong>Resolver asks a root name server.</strong> If the resolver's own cache is also cold, it starts at the very top of the DNS hierarchy: one of the 13 logical <strong>root name servers</strong>. The root server has never heard of <code>learnwithmithran.com</code> specifically, but it knows who's authoritative for <code>.com</code> — so it refers the resolver there.</li>
+<li><strong>Resolver asks a <code>.com</code> TLD name server.</strong> The TLD server doesn't know <code>www.learnwithmithran.com</code>'s IP either — but it does hold the <strong>NS records</strong> for <code>learnwithmithran.com</code>, which is exactly the delegation you set up by pointing your registrar's nameserver settings at Azure (Part 2). So it refers the resolver to Azure's four name servers.</li>
+<li><strong>Resolver asks Azure DNS directly.</strong> This is the first server in the whole chain that's actually <strong>authoritative</strong> for the zone — it holds the real record. Azure answers with the A record's value (<code>20.42.73.11</code>) and its <strong>TTL</strong> (say, 3600 seconds).</li>
+<li><strong>Resolver caches the answer, then replies.</strong> The recursive resolver stores that answer for 3600 seconds and hands it back to your device, which may cache it too. Everyone else using that same resolver (e.g., everyone on the same ISP) who looks up <code>www.learnwithmithran.com</code> in the next hour gets the cached answer instantly — none of steps 3–5 happen again until the TTL expires.</li>
+</ol>
+<p>That's the entire chain, and it's exactly why <strong>delegation</strong> (Part 2) and <strong>TTL</strong> (next) matter so much: delegation is what makes step 4 point at Azure at all, and TTL is what determines how often steps 3–5 have to repeat, versus how much of the internet is running on a cached — and possibly stale — answer.</p>
+<h3 id="ttl-time-to-live">TTL — Time to Live</h3>
+<p>Every DNS record has a <strong>TTL</strong>, measured in seconds, telling any resolver that caches the answer how long it's allowed to keep using that cached answer before asking again.</p>
+<ul>
+<li><strong>Short TTL</strong> (e.g., 60 seconds): changes propagate almost immediately, but every resolver has to re-query far more often, which increases load and (on Azure) increases your per-query billing.</li>
+<li><strong>Long TTL</strong> (e.g., 86400 seconds / 24 hours): far fewer repeat queries, cheaper and faster for everyone downstream — but if you need to change the record (say, during a migration or an incident), it can take up to that long for every cached resolver worldwide to pick up the new value.</li>
+</ul>
+<p><strong>Practical pattern:</strong> keep a long TTL during steady-state operation, and deliberately lower it in the days <em>before</em> a planned migration or cutover, so the eventual real change propagates fast. Raise it back up again afterward.</p>
+<h4 id="worked-example-changing-an-ip-without-breaking-anyone">Worked Example: Changing an IP Without Breaking Anyone</h4>
+<p>Say <code>www.learnwithmithran.com</code>'s A record has been sitting at TTL <code>86400</code> (24 hours) for months, pointing at <code>20.42.73.11</code>. You're migrating to a new VM at <code>40.90.23.5</code> this Thursday.</p>
+<p>If you just changed the IP on Thursday and left the TTL at 86400, here's what actually happens: every resolver that cached the <em>old</em> IP any time in the previous 24 hours keeps serving <code>20.42.73.11</code> — some visitors could keep hitting the decommissioned VM for up to a full day after cutover, because their resolver has no reason to ask again until its cached copy expires.</p>
+<p>The standard fix:</p>
+<ol>
+<li><strong>Two days before cutover (Tuesday):</strong> lower the TTL on the existing record to <code>300</code> (5 minutes) — leave the IP unchanged for now.</li>
+<li><strong>Wait at least one full day.</strong> This guarantees every resolver worldwide has, at some point, re-queried and picked up the new, short TTL — so nobody is still holding a stale 24-hour cache entry.</li>
+<li><strong>Thursday — perform the actual cutover:</strong> update the IP to <code>40.90.23.5</code>. Because the TTL is now only 300 seconds, resolvers refresh within 5 minutes of their existing cache expiring. Instead of "up to 24 hours to fully propagate," you're looking at "essentially done in under 5 minutes."</li>
+<li><strong>Once the new VM is confirmed stable</strong> (say, the following Monday): raise the TTL back to <code>86400</code>. There's no reason to keep every resolver on Earth re-querying every 5 minutes once things are stable again — and on Azure DNS, more queries means a (small) increase in your per-query billing.</li>
+</ol>
+<h4 id="typical-ttl-values-in-practice">Typical TTL Values in Practice</h4>
+<table>
+<thead>
+<tr>
+<th>TTL</th>
+<th>Seconds</th>
+<th>When You'd Use It</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1 minute</td>
+<td>60</td>
+<td>Active migration/cutover window, or a record behind DNS-based failover (e.g. Traffic Manager) that needs to react fast if an endpoint goes down</td>
+</tr>
+<tr>
+<td>5 minutes</td>
+<td>300</td>
+<td>The "lowered ahead of a planned change" TTL — short enough to propagate fast, long enough not to hammer your query count</td>
+</tr>
+<tr>
+<td>1 hour</td>
+<td>3600</td>
+<td>Sensible default for most records during steady-state — Azure's own portal defaults new records to this</td>
+</tr>
+<tr>
+<td>24 hours</td>
+<td>86400</td>
+<td>Stable, rarely-changing records — MX records, SOA, records for services that never move</td>
+</tr>
+<tr>
+<td>48 hours</td>
+<td>172800</td>
+<td>Occasionally seen on NS records at the registrar level — outside Azure's control, but it's exactly why <em>nameserver</em> changes (as opposed to individual record changes) can take the longest to propagate globally</td>
+</tr>
+</tbody>
+</table>
+<p>Notice how this ties directly back to the resolution chain from the previous section: a resolver only repeats steps 3–5 (root → TLD → authoritative) once its cached copy's TTL has expired. Shrink the TTL, and you shrink how long any single resolver can keep serving a stale answer — at the cost of it asking Azure more often.</p>
+<hr />
+<h2 id="part-2-azure-dns-public-zones">Part 2 — Azure DNS Public Zones</h2>
+<h3 id="what-a-public-zone-is">What a Public Zone Is</h3>
+<p>An <strong>Azure DNS Public Zone</strong> hosts the DNS records for a domain (or subdomain) at global scale, on Microsoft's globally distributed, anycast name server network. When you create a zone in Azure, Azure automatically assigns it <strong>four name servers</strong> and generates the <strong>NS</strong> and <strong>SOA</strong> records for you.</p>
+<p>To make the rest of the internet actually use Azure as the authority for your domain, you go to your <strong>domain registrar</strong> (GoDaddy, Namecheap, wherever you bought the domain) and update the domain's NS records to point at the four name servers Azure gave you. This is called <strong>delegation</strong> — you're telling the global DNS system, "stop asking the registrar's default name servers about this domain; ask Azure instead."</p>
+<pre class="mermaid"><code>graph LR
+    Registrar["Domain Registrar\n(e.g. GoDaddy)"]
+    AzureDNS["Azure DNS Public Zone\n4 assigned name servers"]
+    Resolver["Any DNS resolver\nworldwide"]
+
+    Registrar --&gt;|"NS records updated to point at"| AzureDNS
+    Resolver --&gt;|"Queries"| AzureDNS
+    AzureDNS --&gt;|"Authoritative answer"| Resolver</code></pre>
+<p>You do <strong>not</strong> need to own or delegate a real domain to follow today's hands-on demo — Azure lets you create a zone for any name you type in, and you can query its assigned name servers directly to prove resolution works, without touching a registrar at all. To make that as concrete as possible, we're going to point today's DNS record at a genuine Ubuntu VM running nginx, so you can actually watch a browser load a page through it — not just prove an IP address resolves — and then, as a bonus, delegate a real registered domain to it for real.</p>
+<h3 id="alias-records">Alias Records</h3>
+<p>A normal <strong>A record</strong> points at a static IP address you type in by hand. That's a problem for Azure resources whose IP can change — a Public IP that gets reassigned, a Traffic Manager profile, an Azure Front Door endpoint, or a CDN endpoint. If the underlying IP changes and your A record still has the old one hard-coded, your domain silently breaks.</p>
+<p>An <strong>Alias record</strong> solves this by pointing at the <em>Azure resource itself</em>, not its current IP. Azure keeps the record's answer in sync automatically whenever the resource's IP changes — no manual updates, ever.</p>
+<p>Alias records also solve the classic <strong>"zone apex" problem</strong>: a CNAME record is not allowed at the root of a domain (<code>learnwithmithran.com</code> itself, as opposed to <code>www.learnwithmithran.com</code>) — that's a rule baked into the DNS specification itself, not an Azure limitation. But an Alias record <em>is</em> allowed at the zone apex, so it's the standard way to point a naked domain straight at a Front Door endpoint, a Traffic Manager profile, or a Public IP.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Normal Record (A/CNAME)</th>
+<th>Alias Record</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Points at</td>
+<td>A static IP or hostname you type in</td>
+<td>An Azure resource (Public IP, Traffic Manager, Front Door, CDN)</td>
+</tr>
+<tr>
+<td>Updates automatically if the resource's IP changes</td>
+<td>❌ No — you must edit it manually</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td>Allowed at the zone apex (root domain)</td>
+<td>Only A/AAAA; CNAME is not allowed at the apex</td>
+<td>✅ Yes</td>
+</tr>
+<tr>
+<td>Extra cost</td>
+<td>None</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+<h3 id="dnssec-cryptographically-signed-dns">DNSSEC — Cryptographically Signed DNS</h3>
+<p>Plain DNS has a well-known weakness: a resolver has no way to <em>prove</em> an answer it received actually came from the real authoritative source and wasn't tampered with in transit (a class of attack known as DNS spoofing/cache poisoning). <strong>DNSSEC (Domain Name System Security Extensions)</strong> fixes this by cryptographically signing every record in a zone, so a validating resolver can verify the answer's authenticity and integrity before trusting it.</p>
+<p>Azure Public DNS supports signing a zone with DNSSEC directly in the portal:</p>
+<ol>
+<li>Signing the zone generates a <strong>Zone Signing Key (ZSK)</strong>, using ECDSA P-256/SHA-256.</li>
+<li>Azure produces a <strong>DS (Delegation Signer) record</strong>.</li>
+<li>You publish that DS record at your <strong>domain registrar</strong>, alongside your existing NS delegation — this is what tells the parent zone (and the rest of the internet) to trust your zone's signatures.</li>
+<li>Azure automatically rotates (rolls over) the signing key on an ongoing basis — you don't manage key rotation by hand.</li>
+</ol>
+<p>There's no extra charge to sign a zone with DNSSEC. It's a one-way trust upgrade for any domain that's internet-facing and cares about tamper-proofing its own DNS answers.</p>
+<hr />
+<h3 id="hands-on-deploy-a-real-web-server-host-its-dns-in-azure-and-delegate-a-real-domain">Hands-On: Deploy a Real Web Server, Host Its DNS in Azure, and Delegate a Real Domain</h3>
+<p><strong>Mostly ✅ Free Tier — you'll deploy a genuine Ubuntu VM running nginx and host its DNS in Azure. The final step, delegating a real domain at a registrar, is 💳 Instructor Demo (it needs <code>learnwithmithran.com</code>, registered at GoDaddy) — everything before it works identically with any name you type in, owned or not.</strong></p>
+<p><strong>Step 1 — Create the resource group:</strong></p>
+<ol>
+<li>Search for <strong>Resource groups</strong> → <strong>+ Create</strong>.</li>
+<li><strong>Resource group name:</strong> <code>rg-day13-demo</code></li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+</ol>
+<p><strong>Step 2 — Deploy an Ubuntu VM running nginx:</strong></p>
+<p>This VM is the real thing our DNS record is going to point at — once it's up, you'll be able to open a browser and actually watch it serve a page, instead of only proving an IP address resolves.</p>
+<ol>
+<li>Search for <strong>Virtual machines</strong> → <strong>+ Create</strong> → <strong>Azure virtual machine</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Resource group:</strong> <code>rg-day13-demo</code></li>
+<li><strong>VM name:</strong> <code>vm-web-day13</code></li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>Image:</strong> Ubuntu Server 24.04 LTS</li>
+<li><strong>Size:</strong> Standard_B1s</li>
+<li><strong>Authentication:</strong> SSH public key (or password)</li>
+<li><strong>Public inbound ports:</strong> Allow selected ports → <strong>SSH (22)</strong>, <strong>HTTP (80)</strong></li>
+<li>On <strong>Networking</strong>, leave the auto-created VNet/subnet as-is, and confirm <strong>Public IP</strong> is set to <strong>Create new</strong> — this VM needs a real, internet-reachable address for the DNS record to mean anything.</li>
+<li>On <strong>Advanced</strong>, scroll to <strong>Custom data</strong> and paste this cloud-init script so nginx is installed and serving the moment the VM boots:
+   <div class="highlight"><pre><span></span><code><span class="c1">#cloud-config</span>
+<span class="nt">package_update</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+<span class="nt">packages</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">nginx</span>
+<span class="nt">runcmd</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">echo "&lt;h1&gt;Hello from learnwithmithran.com — served by $(hostname)&lt;/h1&gt;" &gt; /var/www/html/index.html</span>
+</code></pre></div></li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+<li>Once deployed, copy the VM's <strong>public IP address</strong> from its Overview page, and browse to <code>http://&lt;vm-public-ip&gt;</code> — confirm you see the nginx page <em>before</em> touching DNS at all. This isolates "is the server actually working" from "is DNS pointing at it correctly," which is exactly how you'd debug a real outage.</li>
+</ol>
+<p><strong>Step 3 — Create the Public DNS Zone:</strong></p>
+<ol>
+<li>Search for <strong>DNS zones</strong> → <strong>+ Create</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Resource group:</strong> <code>rg-day13-demo</code></li>
+<li><strong>Name:</strong> <code>learnwithmithran.com</code> <em>(this is the real domain we'll delegate for real in Step 7 — if you don't own a domain yourself, any name works exactly the same way through Step 6; only the actual registrar delegation needs real ownership)</em></li>
+<li><strong>Resource group location:</strong> East US</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+</ol>
+<p>Once it's deployed, open the zone. You'll immediately see two records already created for you: an <strong>NS</strong> record listing four Azure-assigned name servers, and an <strong>SOA</strong> record. Note down the four name servers — you'll use them directly in a moment, and again at the registrar later.</p>
+<p><strong>Step 4 — Add an A record pointing at your real VM:</strong></p>
+<ol>
+<li>Click <strong>+ Record set</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Name:</strong> <code>www</code></li>
+<li><strong>Type:</strong> A</li>
+<li><strong>TTL:</strong> 3600 (1 hour)</li>
+<li><strong>IP address:</strong> the <strong>real public IP</strong> of <code>vm-web-day13</code> from Step 2 — not a placeholder this time</li>
+<li>Click <strong>Add</strong>.</li>
+</ol>
+<p><strong>Step 5 — Add a CNAME, MX, and TXT record (same record types as before, illustrative values):</strong></p>
+<ol>
+<li><strong>CNAME:</strong> <strong>Name:</strong> <code>blog</code>, <strong>Type:</strong> CNAME, <strong>TTL:</strong> 3600, <strong>Alias:</strong> <code>learnwithmithran.com</code> <em>(pointing at the zone's own apex, just to demonstrate a CNAME hop — in a real setup this would point at another hostname entirely, like an App Service default hostname)</em> → <strong>Add</strong>.</li>
+<li><strong>MX:</strong> <strong>Name:</strong> <code>@</code> (the zone apex), <strong>Type:</strong> MX, <strong>TTL:</strong> 3600, <strong>Mail Exchange:</strong> <code>mail.learnwithmithran.com</code>, <strong>Preference:</strong> 10 → <strong>Add</strong>.</li>
+<li><strong>TXT:</strong> <strong>Name:</strong> <code>@</code>, <strong>Type:</strong> TXT, <strong>TTL:</strong> 3600, <strong>Value:</strong> <code>v=spf1 -all</code> <em>(a real SPF record would list your actual mail providers — this is a placeholder showing the format)</em> → <strong>Add</strong>.</li>
+</ol>
+<p><strong>Step 6 — Query Azure's name servers directly (no registrar needed):</strong></p>
+<p>Because delegation only matters for the <em>rest of the internet</em> finding your zone automatically, you can always query Azure's assigned name servers <strong>directly</strong> to prove your records resolve — this works whether or not you own the domain you typed in, and it's exactly how you'd debug delegation issues on a real domain too.</p>
+<ol>
+<li>Open <strong>Cloud Shell</strong> (or any terminal with <code>nslookup</code>/<code>dig</code>).</li>
+<li>Run, substituting one of the four name servers you noted in Step 3:
+   <div class="highlight"><pre><span></span><code>nslookup -type=A www.learnwithmithran.com &lt;name-server-from-your-zone&gt;
+</code></pre></div></li>
+<li>You'll get back <code>vm-web-day13</code>'s real public IP — proof that Azure is correctly answering for records inside this zone, entirely independent of whether any registrar points at it yet. If you don't actually own the domain you typed in, this is as far as you can take it — and that's fine, you've already proven the exact mechanism a real delegation relies on.</li>
+</ol>
+<p><strong>Step 7 — Delegate at GoDaddy, then watch it resolve for real:</strong></p>
+<p><strong>💳 Instructor Demo — needs a domain actually registered somewhere. For this course, that's <code>learnwithmithran.com</code> at GoDaddy, not yet pointed at anything, so there's no existing email or website to break.</strong></p>
+<ol>
+<li>Log into GoDaddy → <strong>My Products</strong> → find <code>learnwithmithran.com</code> → <strong>DNS</strong> → <strong>Nameservers</strong>.</li>
+<li>Choose <strong>Change Nameservers</strong> → <strong>Enter my own nameservers (custom)</strong>.</li>
+<li>Enter all <strong>four</strong> name servers Azure assigned in Step 3 — GoDaddy will accept as few as two, but use all four Azure gave you.</li>
+<li>Save. GoDaddy will warn that this hands off DNS management for the domain entirely — that's expected, and exactly the point: Azure is now authoritative for <code>learnwithmithran.com</code>.</li>
+<li>Wait for propagation — governed by the <strong>TTL on the <code>.com</code> TLD's own NS delegation</strong>, typically up to 48 hours though often much faster in practice. This is the one TTL in the whole chain that neither you nor Azure controls; it belongs to the registry operating <code>.com</code>.</li>
+<li>Once it's propagated, open a plain browser tab — no name server override, no <code>nslookup</code>, nothing clever — and go to <strong>http://www.learnwithmithran.com</strong>. You should see the exact same nginx page you already confirmed at the raw IP in Step 2, now served through a real, publicly delegated domain name, resolved by the exact chain traced earlier in this Part: your resolver → root → <code>.com</code> TLD → Azure → this VM.</li>
+</ol>
+<p>That's the complete loop, closed for real: a genuine web server, its DNS hosted in Azure, delegated from a real registrar, resolving through the exact same recursive chain every visitor on Earth uses for every domain — not a shortcut, the real thing.</p>
+<p><strong>Step 8 — Clean up:</strong></p>
+<ol>
+<li>Stop/deallocate or delete <code>vm-web-day13</code> if you're done experimenting — but if you delegated a real domain to it, remember that leaves <code>www</code> pointing at a dead IP until you update the A record or redeploy the VM.</li>
+<li>Keep the DNS zone around if you want to keep building on it later (a Public Zone at this volume is effectively free) — or delete the whole <code>rg-day13-demo</code> resource group in one step to remove everything.</li>
+</ol>
+<hr />
+<h2 id="part-3-azure-dns-private-zones">Part 3 — Azure DNS Private Zones</h2>
+<h3 id="the-problem-public-dns-doesnt-help-inside-a-vnet">The Problem: Public DNS Doesn't Help Inside a VNet</h3>
+<p>Everything in Part 2 was about the <em>outside world</em> finding your domain. But what about your own VMs finding <em>each other</em>? By default, VMs inside a VNet only know each other by private IP — <code>10.0.1.4</code>, <code>10.0.2.10</code>. Hard-coding those into scripts, connection strings, or config files is exactly the fragile pattern DNS exists to avoid.</p>
+<p>An <strong>Azure DNS Private Zone</strong> is a DNS zone that only resolves for VNets you explicitly <strong>link</strong> to it. It never touches the public internet and isn't reachable by anyone outside those linked VNets.</p>
+<h3 id="vnet-links-and-autoregistration">VNet Links and Autoregistration</h3>
+<p>Linking a Private Zone to a VNet is a two-part decision:</p>
+<table>
+<thead>
+<tr>
+<th>Option</th>
+<th>What It Does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>VNet link (registration link)</strong></td>
+<td>Connects the Private Zone to the VNet so resources in that VNet can <em>resolve</em> records in the zone</td>
+</tr>
+<tr>
+<td><strong>Enable autoregistration</strong></td>
+<td>Additionally, every VM deployed into that VNet automatically gets its own <strong>A record</strong> created in the zone — no manual record-keeping required</td>
+</tr>
+</tbody>
+</table>
+<p>With autoregistration on, deploy a new VM into the linked VNet and within moments it has a resolvable hostname like <code>vm-web-demo.internal.learnwithmithran.com</code> — Azure created that record for you, and will remove it automatically if the VM is deleted.</p>
+<p>You can link the <strong>same Private Zone to multiple VNets</strong> — a common pattern for a shared "internal services" zone (like <code>internal.learnwithmithran.com</code> hosting a shared database hostname) that several application VNets all need to resolve, even though only one of those VNets has autoregistration enabled for it.</p>
+<h3 id="azures-built-in-dns-resolver">Azure's Built-In DNS Resolver</h3>
+<p>Every VM in Azure, by default, is configured to use Azure's own DNS resolver at the well-known address <strong><code>168.63.129.16</code></strong>. Out of the box, with zero configuration, this resolver can answer for:</p>
+<ul>
+<li>Public internet hostnames (<code>google.com</code>, <code>github.com</code>) — forwarded out to the public internet</li>
+<li>Azure service hostnames (<code>*.blob.core.windows.net</code>, <code>*.database.windows.net</code>, etc.)</li>
+<li>Any <strong>Private DNS Zone records</strong> linked to that VM's VNet</li>
+</ul>
+<p>This is exactly why, back on Day 11, a VM could resolve <code>google.com</code> <em>and</em> a Private Endpoint's private IP without you configuring a single DNS setting yourself — <code>168.63.129.16</code> was already handling all of it.</p>
+<h3 id="custom-dns-when-the-built-in-resolver-isnt-enough">Custom DNS — When the Built-In Resolver Isn't Enough</h3>
+<p>Sometimes you need a VNet to resolve names that Azure's built-in resolver has no way of knowing about — most commonly, hostnames that only exist in your <strong>on-premises</strong> DNS server, as part of a hybrid network. In that scenario, you can point a VNet's DNS settings at your own custom DNS server(s) instead of <code>168.63.129.16</code> — but doing so naively means you <em>lose</em> automatic resolution of Private DNS Zones and Azure service hostnames, unless that custom DNS server is configured to conditionally forward those queries back to Azure.</p>
+<p>This exact problem — "I need one DNS system that correctly answers for Azure Private Zones <em>and</em> my on-premises zones, without me hand-building and patching forwarding VMs myself" — is precisely what <strong>Azure DNS Private Resolver</strong> (Part 4, next) was built to solve.</p>
+<hr />
+<h3 id="hands-on-create-a-private-zone-link-it-and-prove-autoregistration">Hands-On: Create a Private Zone, Link It, and Prove Autoregistration</h3>
+<p><strong>✅ Free Tier — follow along. Builds a fresh VNet and VM, kept separate from any earlier day's resources.</strong></p>
+<p><strong>Step 1 — Create a fresh VNet:</strong></p>
+<ol>
+<li>Search for <strong>Virtual networks</strong> → <strong>+ Create</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Resource group:</strong> <code>rg-day13-demo</code></li>
+<li><strong>Name:</strong> <code>vnet-day13</code></li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>Next: IP Addresses</strong> → set address space to <code>10.0.0.0/16</code>, with a single subnet <code>subnet-demo</code> at <code>10.0.1.0/24</code>.</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+</ol>
+<p><strong>Step 2 — Deploy one test VM into it:</strong></p>
+<ol>
+<li>Search for <strong>Virtual machines</strong> → <strong>+ Create</strong> → <strong>Azure virtual machine</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Resource group:</strong> <code>rg-day13-demo</code></li>
+<li><strong>VM name:</strong> <code>vm-dns-demo</code></li>
+<li><strong>Region:</strong> East US</li>
+<li><strong>Image:</strong> Ubuntu Server 24.04 LTS</li>
+<li><strong>Size:</strong> Standard_B1s</li>
+<li><strong>Authentication:</strong> SSH public key (or password)</li>
+<li>On <strong>Networking</strong>: <strong>Virtual network:</strong> <code>vnet-day13</code>, <strong>Subnet:</strong> <code>subnet-demo</code>, <strong>Public IP:</strong> Create new (so we can SSH straight in for this demo).</li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+</ol>
+<p><strong>Step 3 — Create the Private DNS Zone:</strong></p>
+<ol>
+<li>Search for <strong>Private DNS zones</strong> → <strong>+ Create</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Resource group:</strong> <code>rg-day13-demo</code></li>
+<li><strong>Name:</strong> <code>internal.learnwithmithran.com</code></li>
+<li><strong>Review + create</strong> → <strong>Create</strong>.</li>
+</ol>
+<p><strong>Step 4 — Link it to <code>vnet-day13</code> with autoregistration:</strong></p>
+<ol>
+<li>Open <code>internal.learnwithmithran.com</code> → <strong>Virtual network links</strong> → <strong>+ Add</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Link name:</strong> <code>link-vnet-day13</code></li>
+<li><strong>Virtual network:</strong> <code>vnet-day13</code></li>
+<li><strong>Enable auto registration:</strong> ✅ Yes</li>
+<li>Click <strong>OK</strong>.</li>
+</ol>
+<p>Within a minute or two, go back to the zone's <strong>Overview</strong> — you'll see a new <strong>A record</strong> for <code>vm-dns-demo</code>, created automatically, with <code>vm-dns-demo</code>'s private IP as the value. Nobody typed that in.</p>
+<p><strong>Step 5 — Add a manual A record:</strong></p>
+<p>Not everything you want to resolve is a VM Azure auto-registers — sometimes you want a friendly name for a fixed private IP (a database endpoint, an on-prem-facing service, anything static).</p>
+<ol>
+<li>Click <strong>+ Record set</strong>.</li>
+<li>Fill in:</li>
+<li><strong>Name:</strong> <code>db</code></li>
+<li><strong>Type:</strong> A</li>
+<li><strong>TTL:</strong> 3600</li>
+<li><strong>IP address:</strong> <code>10.0.2.10</code> <em>(a placeholder — nothing is actually listening here, we're only proving the record resolves)</em></li>
+<li>Click <strong>Add</strong>.</li>
+</ol>
+<p><strong>Step 6 — Verify all three resolution paths from inside the VM:</strong></p>
+<ol>
+<li>SSH into <code>vm-dns-demo</code>: <code>ssh azureuser@&lt;vm-dns-demo-public-ip&gt;</code>.</li>
+<li>Run each of these and compare the results:
+   <div class="highlight"><pre><span></span><code>nslookup vm-dns-demo.internal.learnwithmithran.com
+</code></pre></div>
+   Resolves to <code>vm-dns-demo</code>'s own private IP — the <strong>autoregistered</strong> record, created with zero manual effort.
+   <div class="highlight"><pre><span></span><code>nslookup db.internal.learnwithmithran.com
+</code></pre></div>
+   Resolves to <code>10.0.2.10</code> — the <strong>manual</strong> record you just added.
+   <div class="highlight"><pre><span></span><code>nslookup google.com
+</code></pre></div>
+   Resolves normally to a public IP — proving the same built-in resolver (<code>168.63.129.16</code>) is transparently handling both your Private Zone <em>and</em> the public internet, with no configuration required on the VM itself.</li>
+</ol>
+<p>That's the complete picture: one resolver, three different kinds of answers, and you never touched a DNS setting on the VM.</p>
+<p><strong>Step 7 — Clean up:</strong></p>
+<ol>
+<li>Stop/deallocate or delete <code>vm-dns-demo</code> if you're done experimenting.</li>
+<li>Keep <code>internal.learnwithmithran.com</code> and <code>vnet-day13</code> around if you want to build on this later — both are effectively free at this scale — or delete the whole <code>rg-day13-demo</code> resource group in one step to remove everything.</li>
+</ol>
+<hr />
+<h2 id="part-4-azure-dns-private-resolver-hybrid-dns">Part 4 — Azure DNS Private Resolver (Hybrid DNS)</h2>
+<h3 id="the-problem-it-solves">The Problem It Solves</h3>
+<p>Before this service existed, bridging DNS between Azure and an on-premises network meant standing up your own DNS forwarder — typically a VM running Windows DNS or BIND, configured with conditional forwarding rules, that you had to patch, scale, and keep highly available yourself. It worked, but it was infrastructure you owned and maintained just to answer DNS queries correctly.</p>
+<p><strong>Azure DNS Private Resolver</strong> replaces that VM entirely with a fully managed, highly available PaaS service. It reached <strong>General Availability in June 2025</strong>, and is now the Microsoft-recommended way to handle hybrid DNS resolution — no custom DNS server, no patching, no scaling to manage.</p>
+<h3 id="how-its-built">How It's Built</h3>
+<p>A Private Resolver is deployed inside a VNet and is built from two independent pieces:</p>
+<table>
+<thead>
+<tr>
+<th>Component</th>
+<th>What It Does</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Inbound endpoint</strong></td>
+<td>Gives the resolver a private IP inside your VNet that <em>on-premises</em> DNS servers can forward queries to — this is how an on-prem DNS server asks Azure to resolve an Azure Private Zone record</td>
+</tr>
+<tr>
+<td><strong>Outbound endpoint</strong></td>
+<td>Paired with a <strong>DNS forwarding ruleset</strong> — a set of rules like "for <code>corp.local</code>, forward to <code>10.100.0.5</code>" — that lets <em>Azure</em> forward specific domain queries back out to your on-premises DNS servers</td>
+</tr>
+</tbody>
+</table>
+<pre class="mermaid"><code>graph LR
+    OnPrem["On-Premises DNS Server"]
+    VPN["VPN Gateway / ExpressRoute\n(hybrid connection)"]
+    Inbound["Private Resolver\nInbound Endpoint"]
+    Outbound["Private Resolver\nOutbound Endpoint\n+ Forwarding Ruleset"]
+    AzureZone["Azure Private DNS Zone\n(e.g. internal.learnwithmithran.com)"]
+
+    OnPrem --&gt;|"Query for Azure-hosted name"| VPN --&gt; Inbound --&gt; AzureZone
+    Outbound --&gt;|"Query for corp.local"| VPN --&gt; OnPrem</code></pre>
+<p>The two endpoints are independent — you can deploy just an inbound endpoint if on-premises only ever needs to <em>ask</em> Azure things, or just an outbound endpoint if Azure only ever needs to <em>ask</em> on-premises things, or both for full two-way resolution.</p>
+<blockquote>
+<p><strong>Where this connects to hybrid networking:</strong> a Private Resolver's inbound/outbound endpoints are only useful for actual on-premises traffic once there's a network path between Azure and on-premises in the first place — that's exactly the job of <strong>VPN Gateway</strong> or <strong>ExpressRoute</strong>, which this course covers as its own dedicated day a little further on. Today's goal is understanding what the Private Resolver does and how it's built; wiring it into a live hybrid connection is a natural next step once that hybrid tunnel exists.</p>
+</blockquote>
+<h3 id="hands-on-tour-the-private-resolver-blade">Hands-On: Tour the Private Resolver Blade</h3>
+<p><strong>💳 Instructor demo only — real deployment runs roughly $180/month per endpoint. We'll walk the portal, not leave anything running.</strong></p>
+<ol>
+<li>Search for <strong>DNS Private Resolvers</strong> → <strong>+ Create</strong>.</li>
+<li>Walk through the <strong>Basics</strong> tab: resource group, region, and the VNet it will attach to (a resolver's VNet needs a dedicated, empty <code>/28</code> subnet for each endpoint type — inbound and outbound each need their own subnet, similar to Azure Bastion's dedicated-subnet requirement from Day 11).</li>
+<li>On the <strong>Inbound Endpoints</strong> tab, show how you'd assign it a subnet and a private IP allocation method (static or dynamic).</li>
+<li>On the <strong>Outbound Endpoints</strong> tab, show the pairing with a <strong>DNS Forwarding Ruleset</strong> — explain that a ruleset is a separate resource containing individual rules (domain name → target DNS servers), and that the same ruleset can be linked to multiple VNets.</li>
+<li>Close out without deploying, to avoid the ongoing charge — this is a "know the architecture and be able to describe it on an exam or in a design conversation" topic for most learners, not a daily-use lab resource.</li>
+</ol>
+<hr />
+<h2 id="summary">Summary</h2>
+<p>Let's bring it all together. Today you covered the two sides of Azure DNS — the world reaching you, and your resources reaching each other.</p>
+<p>Along the way you traced the full <strong>DNS resolution chain</strong> — browser/OS cache, recursive resolver, root name servers, <code>.com</code> TLD servers, and finally Azure's authoritative name servers — and saw exactly where <strong>TTL</strong> governs how long each hop's cached answer stays trustworthy, including a worked migration-cutover example showing when to lower a TTL and when to raise it back.</p>
+<p><strong>Azure DNS Public Zones</strong> host your domain's records at global scale, on Azure's anycast name server network. Every zone gets NS and SOA records automatically; delegating a real domain means updating your registrar's name servers to point at Azure's four — but you can always query Azure's name servers directly to verify records, delegated or not. Today you proved that against something real: you stood up an actual Ubuntu VM running nginx, pointed a Public DNS Zone's A record at its genuine public IP, verified it against Azure's own name servers, then delegated the real, GoDaddy-registered <code>learnwithmithran.com</code> and watched a browser load that same nginx page through the fully delegated domain — the entire recursion chain, end to end, not a shortcut. <strong>Alias records</strong> solve the zone-apex and "IP keeps changing" problems by pointing at an Azure resource instead of a static value, and <strong>DNSSEC</strong> lets you cryptographically sign a zone so resolvers can verify your answers haven't been tampered with — at no extra cost.</p>
+<p><strong>Azure DNS Private Zones</strong> give your VNet internal name resolution that never touches the public internet. Link a zone to a VNet, flip on autoregistration, and every VM gets a hostname with zero manual record-keeping — exactly what you proved with <code>vm-dns-demo</code> today, alongside a manually created record and normal public resolution, all served transparently by Azure's built-in resolver at <code>168.63.129.16</code>.</p>
+<p>Finally, <strong>Azure DNS Private Resolver</strong> — GA since June 2025 — is the modern, fully managed replacement for hand-rolled DNS forwarder VMs in hybrid scenarios. Inbound endpoints let on-premises ask Azure; outbound endpoints plus forwarding rulesets let Azure ask on-premises. It's infrastructure you'll wire into a real VPN Gateway or ExpressRoute connection once that hybrid tunnel exists — which is exactly where this course picks the thread back up.</p>
+<h3 id="whats-next">What's Next</h3>
+<p>You now have a complete picture of Azure-native DNS: hosting a public domain, giving your VNet its own internal phonebook, and the managed bridge for hybrid resolution. <strong>VPN Gateway &amp; ExpressRoute</strong> — the hybrid connectivity layer that a Private Resolver's endpoints ultimately ride on top of — is being held for a dedicated future session, since it's genuinely more advanced and deserves room to breathe rather than being rushed in right after today. Coming up next in the meantime: <strong>Traffic Manager, Front Door, CDN &amp; WAF</strong> — global traffic routing and edge delivery, including Alias records pointed straight at a Front Door endpoint, tying directly back into what you learned about Alias records today.</p>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<ul>
+<li><strong>DNS</strong> maps human-readable hostnames to IP addresses so nothing ever has to hard-code an address that might change</li>
+<li>Core record types: <strong>A/AAAA</strong> (hostname → IP), <strong>CNAME</strong> (hostname → hostname), <strong>MX</strong> (mail routing), <strong>TXT</strong> (verification/SPF/DKIM), <strong>NS</strong> (delegation), <strong>SOA</strong> (zone metadata) — NS and SOA are created automatically</li>
+<li><strong>DNS resolution</strong> is a chain, not a single lookup: browser/OS cache → recursive resolver → root name servers → TLD name servers → the authoritative name servers (Azure, once delegated) — each hop is skipped if a still-valid cached answer already exists</li>
+<li><strong>TTL</strong> controls the cache/propagation trade-off — lower it before a planned change (e.g., a migration cutover), raise it back up after; shorter TTL means faster propagation but more resolver queries (and slightly higher Azure DNS billing)</li>
+<li><strong>Azure DNS Public Zones</strong> get four Azure-assigned name servers automatically; delegating a real domain means pointing your registrar's NS records at them — but you can query Azure's name servers directly to verify records without ever delegating</li>
+<li><strong>Live example:</strong> an A record was pointed at a real Ubuntu VM running nginx, then <code>learnwithmithran.com</code> (registered at GoDaddy) was actually delegated to that same Azure Public DNS Zone — proving, by loading the nginx page in a plain browser at <code>www.learnwithmithran.com</code>, that the full resolution chain works end-to-end, not just against Azure's own name servers</li>
+<li><strong>Alias records</strong> point at an Azure resource (Public IP, Traffic Manager, Front Door, CDN) instead of a static value, auto-updating if the resource's IP changes, and are the only record type allowed at a zone's apex besides A/AAAA</li>
+<li><strong>DNSSEC</strong> cryptographically signs a zone (free to enable) — publish the generated DS record at your registrar to complete the trust chain</li>
+<li><strong>Azure DNS Private Zones</strong> resolve only inside VNets you explicitly link to them — link + enable <strong>autoregistration</strong> and every VM gets a hostname automatically, with zero manual record-keeping</li>
+<li>The same Private Zone can be linked to multiple VNets — common for a shared internal-services zone</li>
+<li>Every VM uses Azure's built-in resolver at <strong><code>168.63.129.16</code></strong> by default, which transparently handles public internet names, Azure service hostnames, and any linked Private Zone records</li>
+<li><strong>Custom DNS</strong> on a VNet is how you point resolution at on-premises DNS servers for hybrid scenarios — but you lose automatic Private Zone/Azure-service resolution unless that custom server conditionally forwards those queries back to Azure</li>
+<li><strong>Azure DNS Private Resolver</strong> (GA June 2025) is the fully managed replacement for hand-built DNS forwarder VMs — an <strong>inbound endpoint</strong> lets on-premises query Azure; an <strong>outbound endpoint</strong> plus a <strong>DNS forwarding ruleset</strong> lets Azure query on-premises; each endpoint costs roughly $180/month, so this is a 💳 design-and-understand topic for most learners rather than a resource to leave running</li>
+<li>This is AZ-104 <strong>Domain 4 (Implement and Manage Virtual Networking)</strong> territory, and comes up in AZ-305 as part of hybrid network design — know the record types, autoregistration behavior, and the inbound/outbound endpoint split cold</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../day12_load_balancer_vmss/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Day 12 — Load Balancer, VM Scale Sets &amp; Application Gateway">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../day14_traffic_frontdoor_cdn_waf/" class="md-footer__link md-footer__link--next" aria-label="Next: Day 14 — Traffic Manager, Front Door, CDN &amp; WAF">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Day 14 — Traffic Manager, Front Door, CDN & WAF
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
