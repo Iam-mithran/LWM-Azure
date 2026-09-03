@@ -64,3 +64,5 @@ nav:
   - "Day 15 — VPN Gateway & ExpressRoute": day15_vpn_expressroute.md
   - "Day 16 — Azure SQL Database + Other Databases": day16_azure_sql_database.md
   - "Day 17 — Microsoft Entra ID & Azure RBAC": day17_entra_id_rbac.md
+  - "Day 18 — Azure Key Vault": day18_key_vault.md
+  - "Day 19 — Azure Monitor, Log Analytics & Alerts": day19_azure_monitor.md

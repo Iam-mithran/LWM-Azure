@@ -25,6 +25,8 @@
 | Day 15 | VPN Gateway & ExpressRoute | `docs/day15_vpn_expressroute.md` |
 | Day 16 | Azure SQL Database + Other Databases | `docs/day16_azure_sql_database.md` |
 | Day 17 | Microsoft Entra ID & Azure RBAC (merged) | `docs/day17_entra_id_rbac.md` |
+| Day 18 | Azure Key Vault | `docs/day18_key_vault.md` |
+| Day 19 | Azure Monitor, Log Analytics & Alerts | `docs/day19_azure_monitor.md` |
 
 ---
 
@@ -60,8 +62,10 @@ Phases 3 and 4 are fully recorded (Days 9–16), and Day 17 (Entra ID + RBAC) is
 | Day | Topic | File | Depends On |
 |-----|-------|------|------------|
 | ~~Day 17~~ | ~~Microsoft Entra ID & Azure RBAC~~ — **written** | `entra_id_rbac.md` | — |
-| **Day 18 (next)** | Azure Key Vault | `key_vault.md` | Day 17 |
-| Day 19 | Azure Monitor & Alerts | `azure_monitor.md` | None |
+| ~~Day 18~~ | ~~Azure Key Vault~~ — **written** | `key_vault.md` | Day 17 |
+| ~~Day 19~~ | ~~Azure Monitor & Alerts~~ — **written** | `azure_monitor.md` | None |
+
+**Phase 5 is complete.** Days 17–19 are written. Phase 6 (Azure DevOps) is next.
 
 ### Phase 6 — Azure DevOps
 
@@ -109,18 +113,46 @@ Record these after Day 31 — no main-course day depends on them.
 
 ## What's Next to Record
 
-**Day 18 — Azure Key Vault** (`days/key_vault.md`) — next up now that Day 17 is written.
+**Day 20 — Azure DevOps Introduction** (`days/devops_intro.md`) — next up. **Phase 5 is complete** (Days 17–19 written), and Day 20 starts Phase 6.
 
-Day 17 deliberately hands Key Vault a loaded starting position, so lean on it rather than re-teaching it:
+This is the biggest tonal shift in the course: nineteen days of portal clicking, and Phase 6 is where that stops. Day 19's closing section already sets this up explicitly — *"you can't automate what you don't understand"* — so open on that rather than re-justifying it.
 
-- `Priya Sharma` and `grp-finance-team` are left alive at Day 17 cleanup. Reuse them for vault access instead of creating new principals.
-- `db-lwm-demo` is left alive for the connection-string secret demo, and again for Day 30 (Capstone).
-- The **control plane vs data plane** split is already taught (Day 17 **Part 11**, with the storage-account demo). Key Vault is the second instance of the same pattern — *Key Vault Contributor* manages the vault, *Key Vault Secrets User* reads a secret. Call back to the blob demo explicitly; do not re-derive it.
-- **Key Vault Secrets User** is named twice in Day 17 (Parts 11 and the What's Next) as the vault-side twin of Storage Blob Data Reader — lean on that recognition. **Note:** *Key Vault Data Access Administrator* and **ABAC conditions were cut** from Day 17 in the beginner rework, so Day 18 must introduce them from scratch rather than assuming them.
-- **Managed identity → resource** is fully established (Day 17 **Parts 6 and 11**). Day 18 should go straight to wiring an identity to a vault, not re-explain what a managed identity is.
+### What Phase 5 hands forward
 
-The one genuinely new axis for Day 18 is the **access policy vs RBAC** permission-model choice on the vault itself, plus soft delete, purge protection, and private endpoints.
+Three things are now fully established and should be **used, not re-taught**, when Pipelines arrives on Days 22–23:
 
-Recording note: Day 17 was reworked down from 24 parts / 26k words to **14 parts / ~12k words** — roughly 90–100 minutes, inside the 2-hour cap, with **no paid demo steps at all**. Keep Day 18 to the same standard: student-friendly depth, free-tier labs, paid features as concepts only.
+- **Service principal + federated credential.** Day 17 Part 5 registers an app, creates a secret, and explicitly shows the **Federated credentials** tab with the *GitHub Actions* / *Kubernetes* scenarios, saying "bookmark this for Day 22." Day 22 owes that payoff — a pipeline that authenticates to Azure with **no stored secret**.
+- **Key Vault + variable groups.** Day 18 Part 10 builds managed identity → data-plane role → reference, and Part 10's closing tip names **Azure DevOps variable groups linked to a vault** as "the same shape, that's Day 22."
+- **Azure Monitor.** Day 19's closing section promises both of the above by name. Deployments should emit telemetry somewhere the student already knows how to query.
 
-Portal steps in Day 17 were re-verified against Microsoft docs in **September 2026** — see the *Portal Currency* table in `days/entra_id_rbac.md`. Two of those findings carry into Day 18: Cloud Shell demos should tell students to pick **"No storage account required"**, and any MFA/auth-method screenshot must come from **Entra ID → Authentication methods → Policies**, not the legacy blades.
+Also reusable: `Priya Sharma`, `grp-finance-team` and `db-lwm-demo` are still alive after all three cleanups, kept deliberately for Day 30's capstone.
+
+### Standard to hold
+
+Days 17, 18 and 19 all landed at **14 parts / ~12k words** — roughly 90–100 minutes, inside the 2-hour cap, student-friendly depth, free-or-near-free labs, paid features as concepts only. Keep Phase 6 to the same shape.
+
+**Research the portal steps before writing.** All three Phase 5 days were verified against current Microsoft documentation and all three turned up material changes — see the *Portal Currency* tables in `days/entra_id_rbac.md`, `days/key_vault.md` and `days/azure_monitor.md`. Azure DevOps is a fast-moving product with its own UI refresh cadence and its own pricing (free tier: 5 users, parallel job grants that changed), so this matters at least as much for Phase 6.
+
+### Source-file drift found so far
+
+Three `days/*.md` files disagreed with `course_outline.md` or with reality. The outline wins on scope, per CLAUDE.md; factual errors get corrected in both places:
+
+| File | Problem | Resolution |
+|---|---|---|
+| `days/entra_id_rbac.md` | Was two separate days | Merged into one — Day 17 |
+| `days/key_vault.md` | Titled "Key Vault & Security Center"; Defender + Sentinel had equal billing | Key Vault is Parts 1–13; Defender + Sentinel get one concept-level closing part |
+| `days/azure_monitor.md` | **Factual error:** claimed the Log Analytics free grant is "5GB per day". It is **5 GB per billing account per month** (~30x). Also claimed App Insights has its own separate 5 GB/month free tier — it is workspace-based and draws on the same grant. | Corrected in the script (a `!!! danger` box, the gotchas list and the interview table) and in the source file |
+
+### Drift check on Phase 6 — done, and it found a lab-breaker
+
+Ran the check rather than leaving it as a note. `days/devops_intro.md` and `days/pipelines_ci.md` both carried a claim that would have blocked students for a working week:
+
+| File | Problem | Resolution |
+|---|---|---|
+| `days/devops_intro.md` | Said the free tier includes *"1 Microsoft-hosted pipeline with 1,800 minutes/month"* as though it arrives with a new org. **It does not.** Microsoft docs: *"you must enable the Microsoft-hosted free tier."* A new org has **zero** hosted parallelism and fails with `No hosted parallelism has been purchased or granted`. Fix is linking billing; if the grant is withheld for anti-abuse reasons, the request form takes **~4–5 business days**. Also missed: **public projects are retired** (no new ones; existing convert to private in 2027), killing the old "go public for free minutes" workaround. | Corrected in the file with a ⚠️ section. **The billing-link step must be Part 1–2 of Day 20, not a Day 22 footnote** — students need days of lead time. |
+| `days/pipelines_ci.md` | Same 1,800-minutes claim, stated as "all steps below are free tier" | Corrected with a `!!! danger` box; Day 22 must open by verifying Parallel jobs shows an available Microsoft-hosted job |
+| `days/aks_setup.md` | Said the AKS control plane is managed *"at no charge"* with no tier qualification | Corrected: **free on the Free tier only (no SLA)**; Standard is **/usr/bin/bash.10/cluster/hour (~3/month)**, Premium /usr/bin/bash.60. The demo must select Free explicitly |
+
+**Verified as correct, no change needed:** Cosmos DB free tier (1,000 RU/s + 25 GB, one per subscription, lifetime), Azure Functions Consumption (1M executions/month), Azure Artifacts (2 GB), unlimited private repos, 5 free Basic users.
+
+**Keep doing this check.** Four of the last four source files inspected had either scope drift or a factual error, and two of those errors would have cost students money or a week of blocked progress.

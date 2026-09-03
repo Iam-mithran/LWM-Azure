@@ -27,7 +27,26 @@ Build an automated CI pipeline that runs on every code push — compile, test, a
 
 ## Hands-On Demo
 
-**Account Requirements:** Free tier includes 1 Microsoft-hosted agent with 1,800 minutes/month. All steps below are free tier.
+**Account Requirements:** All steps below are free tier — **but only if the Microsoft-hosted parallelism
+grant was enabled back on Day 20.**
+
+!!! danger "Verify this before recording, and make the student verify it too"
+    The free grant is **one Microsoft-hosted job, 1,800 minutes/month, with a 60-minute cap per job** —
+    and it is **not** granted automatically to a new organization. If Day 20's billing-linking step was
+    skipped, every pipeline in this day fails immediately with:
+
+    ```text
+    No hosted parallelism has been purchased or granted
+    ```
+
+    The fix is **Organization settings → Billing → Set up billing** (link an Azure subscription), and if
+    the automatic grant is still withheld, the **parallelism request form**, which takes **~4–5 business
+    days**. That is a week of being blocked, so this day must open by confirming
+    **Organization settings → Pipelines → Parallel jobs** shows a Microsoft-hosted job available.
+
+    See the corrected section in `days/devops_intro.md` for the full detail. Note also that **public
+    projects are retired** — the old "make it public for unlimited free minutes" workaround no longer
+    exists.
 
 - ✅ Create an `azure-pipelines.yml` file in your repo
 - ✅ Configure trigger: run on every push to main

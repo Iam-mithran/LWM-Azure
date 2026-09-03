@@ -101,12 +101,16 @@
 | Day | Title | Key Services | Tier |
 |-----|-------|-------------|------|
 | Day 17 | Microsoft Entra ID & Azure RBAC | **Identity:** Tenants, Users, Groups, MFA & Security Defaults, SSPR, App Registrations & Service Principals, Managed Identities. **Authorisation:** Entra roles vs Azure roles, Role assignments (principal/role/scope), Scope & inheritance, Role definitions, Control plane vs data plane, Custom roles, Azure Policy. *Concept-only (paid):* Conditional Access, dynamic groups, PIM | ✅ |
-| Day 18 | Azure Key Vault | Secrets, Keys, Certificates, Access Policies, RBAC, Soft Delete, Private Endpoints | ✅ |
-| Day 19 | Azure Monitor & Alerts | Log Analytics, Metrics, Alerts, Action Groups, Application Insights, Workbooks | ✅ |
+| Day 18 | Azure Key Vault | Secrets, Keys, Certificates, **RBAC vs access policies** (RBAC is the default since API 2026-02-01), Key Vault data-plane roles, **managed identity + Key Vault references**, Soft Delete & Purge Protection, Networking & Private Endpoints, audit logging. *Concept-only (paid):* Premium/HSM, Managed HSM, integrated-CA certificates, private endpoints, paid Defender plans, Sentinel | ✅ |
+| Day 19 | Azure Monitor, Log Analytics & Alerts | Metrics (free, 93 days), Activity log, **Diagnostic settings**, Log Analytics workspaces, **KQL**, table plans & retention, **Azure Monitor Agent + data collection rules**, metric/log/activity-log alerts, Action Groups, Application Insights, Workbooks & Dashboards, **cost control**. *Concept-only (paid):* SMS/voice notifications, availability tests, Managed Grafana, commitment tiers | ✅ |
 
 > **Day 17 is a combined identity + authorisation video.** Authentication ("who are you?") and authorisation ("what are you allowed to do?") are two halves of one sentence, and splitting them meant the identity day ended with a user who could sign in but do nothing. Teaching them together lets one demo identity — `Priya Sharma` — go from created, to authenticated, to permissioned in a single sitting.
 >
 > **It is scoped for beginners, not as a reference.** 14 parts, ~11,000 words, and **every hands-on step is free tier — there are no paid demos.** Paid features that matter in interviews (Conditional Access, dynamic groups, PIM) are explained as concepts only. Advanced material is deliberately cut: ABAC conditions, constrained delegation, Azure Blueprints, the full RBAC limits table, and Resource Graph auditing.
+>
+> **Day 19 teaches cost before features.** It is the first day in the course where a careless lab genuinely bills you, so the pricing model is taught in *Before We Begin* rather than as a footnote. It also corrects a widespread error that was in this repo's own source notes: the free Log Analytics grant is **5 GB per billing account per month**, not per day — a ~30x difference and one of the most common surprise bills in Azure. Exactly one lab step (a log search alert, ~$0.50/month) is not free; it is flagged as such and deleted at cleanup.
+>
+> **Day 18 is Key Vault, not Key Vault + Security Center.** The source file `days/key_vault.md` originally gave Microsoft Defender for Cloud and Sentinel equal billing. Key Vault is the hands-on core (Parts 1–13); **Defender for Cloud and Sentinel get one concept-level closing part**, with the free Secure Score as the only lab step. Defender is subscription-wide posture tooling that sits more naturally beside Day 19, and Sentinel is consumption-priced so it can never be a student lab. Same beginner scope as Day 17 — 14 parts, ~12,000 words, every hands-on step free or rounding to zero.
 
 ### Phase 6 — Azure DevOps
 

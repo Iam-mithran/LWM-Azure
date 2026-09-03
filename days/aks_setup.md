@@ -9,9 +9,20 @@ Deploy a managed Kubernetes cluster on Azure and run a real application on it.
 ## Key Topics
 
 - Kubernetes recap (brief): pods are the smallest deployable unit (one or more containers); Deployments manage replica sets; Services expose pods to network traffic; Namespaces isolate resources within a cluster
-- AKS: Azure's fully managed Kubernetes service — Microsoft manages the control plane (API server, etcd, scheduler) at no charge; you pay only for the worker nodes (VMs)
+- AKS: Azure's fully managed Kubernetes service — Microsoft manages the control plane (API server, etcd, scheduler); you pay for the worker nodes (VMs), and for the control plane only above the Free tier
+- **AKS pricing tiers (verified September 2026)** — the control plane is only free on one of them, so be precise in the script:
+
+  | Tier | Control plane cost | SLA |
+  |---|---|---|
+  | **Free** | **$0/cluster/hour** | No financially backed SLA — best effort. Fine for dev/test and for this course |
+  | **Standard** | **$0.10/cluster/hour** (~$73/month) | 99.95% API server uptime. The production default |
+  | **Premium** | **$0.60/cluster/hour** | SLA plus Long-Term Support (2 years per K8s version) |
+
+  ✅ **The demo must select the Free tier explicitly.** A student who accepts a Standard-tier default is
+  billed ~$73/month for the control plane *before any nodes*. Worker node VMs are charged in every tier
+  and are usually the larger cost.
 - AKS architecture:
-  - **Control Plane**: managed by Microsoft — you never see or manage these machines; free
+  - **Control Plane**: managed by Microsoft — you never see or manage these machines; **free on the Free tier only** (no SLA), $0.10/hour on Standard
   - **Node Pool**: a group of VMs that run your workloads — you choose the VM size and count
   - **System Node Pool**: runs Kubernetes system pods (CoreDNS, metrics-server); required
   - **User Node Pool**: runs your application pods; optional additional pools
