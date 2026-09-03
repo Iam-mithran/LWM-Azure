@@ -21,6 +21,24 @@ Deliberately **not** an exhaustive reference. This day is reworked to be student
   devices/Intune, workload identity federation detail, external-tenant settings, custom domains.
   Several survive as one-line mentions so the vocabulary is familiar; none get a demo.
 
+## Portal Currency — Verified September 2026
+
+Every portal path in the script was re-checked against current Microsoft documentation. Five things
+changed since the first draft and are now reflected in `docs/day17_entra_id_rbac.md`:
+
+| Area | What changed | Where it lands |
+|---|---|---|
+| **Authentication methods** | Legacy MFA and SSPR policies stopped managing methods on **30 Sept 2025**. `Entra ID → Authentication methods → Policies` is the single place now — but the **Password reset** blade still owns enabling SSPR, its target group, and *Number of methods required to reset*. | Part 4, new step 7 + warning box |
+| **Passkeys** | **1 Sept 2026** — passkeys are the default *now*, not a roadmap item. SMS/voice retire **1 Feb 2027** with a blocking prompt. A temporary opt-out exists between the dates. | Part 4, rewritten from future to present tense |
+| **Mandatory MFA** | Phase 2 (ARM layer) postponement closed **1 July 2026** — fully enforced. Read-only ops are exempt; needs **CLI 2.76+ / PowerShell 14.3+**. | Part 4 |
+| **Security defaults** | Sixth protection added: **device code flow blocked** for tenants created from **1 July 2026**. | Part 4, list now has 6 items |
+| **Cloud Shell** | Students must pick **"No storage account required"** (ephemeral) or they get billed for a storage account. | Part 5 |
+
+Also corrected: the create-user wizard now shows **Mail nickname**, **Auto-generate password** and
+**Account enabled** (formerly *Block sign in*) on Basics, and **Usage location** sits under a
+**Settings** section on Properties. Management groups cap at **500** role assignments, not 4,000 —
+now stated alongside the subscription limit.
+
 ## Goal
 
 Answer Azure's two access questions and know which system answers which:
@@ -51,7 +69,9 @@ Factor types, why MFA blocks ~99% of identity attacks, number matching, method r
 becoming default (1 Sept 2026) and SMS/voice retiring. Security defaults (free, six protections).
 Mandatory MFA for the portal and ARM. Conditional Access explained as the paid if/then engine —
 **theory only**, plus the CA-vs-RBAC distinction.
-*Demo: read security defaults; register MFA on your own account; enable SSPR.*
+*Demo: read security defaults (six protections now, including device code flow); register MFA on your
+own account; enable SSPR from the Password reset blade; then open the modern **Authentication methods
+→ Policies** blade — the only place methods are enabled since 30 Sept 2025.*
 
 **5. Applications — App Registrations & Service Principals**
 Why software needs identity. App registration vs service principal vs enterprise application.
@@ -124,8 +144,9 @@ Azure Policy built-ins are free.
 - ✅ Find your tenant ID
 - ✅ Create `Priya Sharma`; sign in as her and see nothing
 - ✅ Create `grp-finance-team` and add her
-- ✅ Read security defaults; register MFA; enable SSPR
+- ✅ Read security defaults; register MFA; enable SSPR; review **Authentication methods → Policies**
 - ✅ Register `app-lwm-demo`, create a secret, `az login --service-principal` → `az group list` is empty
+  (Cloud Shell: choose **No storage account required** so the lab stays genuinely free)
 - ✅ Enable a system-assigned managed identity on an App Service (Free F1)
 - ✅ Give Priya User Administrator — directory power, zero resource access
 - ✅ Assign **Reader** to the group at `rg-day17-demo` — her portal fills up

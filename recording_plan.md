@@ -45,7 +45,7 @@ Everything after it shifted down by one. The course is now **31 days + 3 optiona
 | Day 31–32 | Day 30–31 | Capstone |
 | Day 33–35 | Day 32–34 | Optional Bonus |
 
-**This change is now complete.** `docs/day17_entra_id_rbac.md` holds the combined script (24 parts, identity then authorisation, with a marked halfway point before Part 12). The identity-only `docs/day17_entra_id.md` has been removed, `days/entra_id.md` and `days/rbac.md` have been merged into `days/entra_id_rbac.md`, and the `mkdocs.yml` nav points at the merged title. Days 1–16 are unaffected.
+**This change is now complete.** `docs/day17_entra_id_rbac.md` holds the combined script (**14 parts**, identity in Parts 1–7 then authorisation in Parts 8–14, with a marked halfway point before Part 8). The identity-only `docs/day17_entra_id.md` has been removed, `days/entra_id.md` and `days/rbac.md` have been merged into `days/entra_id_rbac.md`, and the `mkdocs.yml` nav points at the merged title. Days 1–16 are unaffected.
 
 ---
 
@@ -115,10 +115,12 @@ Day 17 deliberately hands Key Vault a loaded starting position, so lean on it ra
 
 - `Priya Sharma` and `grp-finance-team` are left alive at Day 17 cleanup. Reuse them for vault access instead of creating new principals.
 - `db-lwm-demo` is left alive for the connection-string secret demo, and again for Day 30 (Capstone).
-- The **control plane vs data plane** split is already taught (Day 17 Part 16, with the storage-account demo). Key Vault is the second instance of the same pattern — *Key Vault Contributor* manages the vault, *Key Vault Secrets User* reads a secret. Call back to the blob demo explicitly; do not re-derive it.
-- **Key Vault Data Access Administrator** and its built-in ABAC condition are named in Day 17 Part 19 as a forward reference. Day 18 owns the hands-on.
-- **Managed identity → resource** is fully established (Day 17 Parts 8 and 17). Day 18 should go straight to wiring an identity to a vault, not re-explain what a managed identity is.
+- The **control plane vs data plane** split is already taught (Day 17 **Part 11**, with the storage-account demo). Key Vault is the second instance of the same pattern — *Key Vault Contributor* manages the vault, *Key Vault Secrets User* reads a secret. Call back to the blob demo explicitly; do not re-derive it.
+- **Key Vault Secrets User** is named twice in Day 17 (Parts 11 and the What's Next) as the vault-side twin of Storage Blob Data Reader — lean on that recognition. **Note:** *Key Vault Data Access Administrator* and **ABAC conditions were cut** from Day 17 in the beginner rework, so Day 18 must introduce them from scratch rather than assuming them.
+- **Managed identity → resource** is fully established (Day 17 **Parts 6 and 11**). Day 18 should go straight to wiring an identity to a vault, not re-explain what a managed identity is.
 
 The one genuinely new axis for Day 18 is the **access policy vs RBAC** permission-model choice on the vault itself, plus soft delete, purge protection, and private endpoints.
 
-Recording note: Day 17 was reworked down from 24 parts / 26k words to **14 parts / ~11k words** — roughly 90–100 minutes, inside the 2-hour cap, with **no paid demo steps at all**. Keep Day 18 to the same standard: student-friendly depth, free-tier labs, paid features as concepts only.
+Recording note: Day 17 was reworked down from 24 parts / 26k words to **14 parts / ~12k words** — roughly 90–100 minutes, inside the 2-hour cap, with **no paid demo steps at all**. Keep Day 18 to the same standard: student-friendly depth, free-tier labs, paid features as concepts only.
+
+Portal steps in Day 17 were re-verified against Microsoft docs in **September 2026** — see the *Portal Currency* table in `days/entra_id_rbac.md`. Two of those findings carry into Day 18: Cloud Shell demos should tell students to pick **"No storage account required"**, and any MFA/auth-method screenshot must come from **Entra ID → Authentication methods → Policies**, not the legacy blades.

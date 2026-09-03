@@ -153,12 +153,16 @@ Two attributes matter today:
 ### Hands-On: Create a User ✅
 
 1. **Entra ID → Users → All users → + New user → Create new user**. **✅**
-2. **Basics:** **✅**
+2. **Basics tab:** **✅**
    - **User principal name:** `priya` — pick your `.onmicrosoft.com` domain from the dropdown
+   - **Mail nickname:** leave **Derive from user principal name** ticked
    - **Display name:** `Priya Sharma`
-   - **Password:** reveal and **copy it now** — this screen never comes back
-3. **Properties tab:** set **Job title** `Financial Analyst`, **Department** `Finance`, and **Usage location** — that last one isn't optional if you ever assign licences, and it's the most common cause of "why won't this licence assign" tickets. **✅**
-4. Skip **Assignments** — that's the entire second half of this video, and I want you to feel its absence first. **Review + create → Create**. **✅**
+   - **Password:** **Auto-generate password** is ticked by default. Reveal it and **copy it now** — this screen never comes back. Untick the box if you'd rather type your own.
+   - **Account enabled:** leave it ticked. This is the setting the old portal called *Block sign in*, inverted — worth knowing if you ever follow an older tutorial.
+3. **Properties tab** — five sections, and two of them matter today: **✅**
+   - **Job information:** **Job title** `Financial Analyst`, **Department** `Finance`
+   - **Settings:** **Usage location**. That one isn't optional if you ever assign licences, and it's the most common cause of "why won't this licence assign" tickets.
+4. Skip **Assignments** — you *could* attach groups, Entra roles and an administrative unit right here, but that's the entire second half of this video and I want you to feel its absence first. **Review + create → Create**. **✅**
 5. Open `Priya Sharma` and copy her **Object ID**. Look down the left menu — **Assigned roles** (Entra roles, Part 8), **Groups**, **Authentication methods** (the helpdesk blade), and **Azure role assignments**, which is empty and which we fill in Part 9. **✅**
 
 ### Hands-On: Sign In as Priya — and See Nothing ✅
@@ -192,7 +196,7 @@ Assign permissions directly to users and after eighteen months you have four hun
 
 Assign to **groups** and access becomes a membership question. New analyst joins? Add to the group. Leaves? Remove. Access appears and disappears everywhere, instantly, in one action.
 
-There's a hard technical reason too: **a subscription supports a maximum of 4,000 role assignments, and that limit cannot be raised.** Per-user assignments burn through it. One group assignment can serve ten thousand people. Microsoft's own documented remedy for hitting the ceiling is literally "replace principal-based assignments with group-based assignments."
+There's a hard technical reason too: **a subscription supports a maximum of 4,000 role assignments, and that limit cannot be raised.** (Management groups have their own, much tighter ceiling of **500**.) Per-user assignments burn through it. One group assignment can serve ten thousand people. Microsoft's own documented remedy for hitting the ceiling is literally "replace principal-based assignments with group-based assignments."
 
 ### Two Group Types, Two Membership Types
 
@@ -245,10 +249,14 @@ Real MFA needs factors from **different categories** — something you know (pas
 
 **Number matching** deserves a mention. Older push notifications had one button: Approve. Attackers exploited that with "MFA fatigue" — spam prompts at 3am until someone taps Approve to make it stop. Now the sign-in screen shows a two-digit number you must type into the app. You can't approve a prompt you didn't initiate, because you can't see the number.
 
-!!! info "Passkeys become the default from September 2026"
-    From **1 September 2026** Microsoft begins rolling out **passkeys as the default authentication experience** in Entra ID, and **SMS and voice MFA are being retired**. From **1 February 2027**, users relying only on SMS or voice get a blocking passkey-registration prompt.
+!!! info "Passkeys are the default *right now* — this is live as you watch this"
+    This stopped being a roadmap item. **As of 1 September 2026**, Entra ID enables passkeys automatically for eligible users and sets the passkey registration campaign to a **Microsoft-managed** state. Anyone currently enabled for SMS or voice is enabled for passkeys too, and gets prompted to register one the next time they perform MFA.
 
-    Practical takeaway: **do not design around SMS.** If you're advising an organisation, this migration is a now project.
+    Then on **1 February 2027**, Microsoft-provided SMS and voice delivery **is retired outright**. A user whose only MFA method is SMS or voice hits a **blocking** passkey-registration prompt — they cannot continue signing in until they register one. An organisation that genuinely still needs text messages will have to bring its own telecom provider.
+
+    There is a **temporary opt-out** covering the window between those two dates for organisations that need time to migrate. Treat it as breathing room, not a plan.
+
+    Practical takeaway: **do not design around SMS.** If you're advising an organisation, this is a this-quarter project, not a next-year one — and migrating SMS/voice users to passkeys costs nothing.
 
 ### Security Defaults — Free, Blunt, Better Than Nothing
 
@@ -261,6 +269,7 @@ What it enforces:
 3. **Users do MFA when necessary**, based on risk signals
 4. **Legacy authentication protocols are blocked** — IMAP, POP3, SMTP AUTH. Over 99% of password-spray attacks arrive over these, and they can't do MFA, so they're a permanent bypass. This is the highest-value item on the list.
 5. **Privileged activity is protected** — MFA for the portal, Entra admin center, Azure PowerShell and CLI
+6. **Device code flow is blocked** — this one is new, and applies to tenants created from **1 July 2026**. Device code flow is where a device shows you a code to type at `microsoft.com/devicelogin`; attackers abuse it heavily in phishing. If something genuine in your estate needs it, fix that device — it isn't a reason to switch security defaults off.
 
 Its limitation is that it's binary. On or off, everyone or nobody. No exclusions, no service accounts, no trusted locations. Fine for a small organisation, unworkable for a large one.
 
@@ -290,9 +299,16 @@ Two rules that prevent disaster, worth knowing even though we're not clicking:
 
 ### Mandatory MFA for Azure — Already Here
 
-Independently of all of the above, Microsoft has made **MFA mandatory across all tenants** for Azure administration: first for the **Azure portal** and admin centers, and then at the **Azure Resource Manager layer** — meaning **Azure CLI, PowerShell, the REST APIs, Terraform and Bicep**.
+Independently of all of the above, Microsoft has made **MFA mandatory across all tenants** for Azure administration, in two phases. **Phase 1** covered the **Azure portal** and the admin centers. **Phase 2** pushed it down to the **Azure Resource Manager layer** — meaning **Azure CLI, Azure PowerShell, the mobile app, the REST APIs, the SDKs, and IaC tools like Terraform and Bicep**.
 
-That matters for the rest of this course. When we reach Bicep on Day 25 and Terraform on Day 26, those deployments authenticate through ARM, and **that authentication requires MFA**. This isn't opt-in. It's the floor now, for everybody.
+**Both phases are fully in force.** Phase 2 started rolling out in October 2025, tenants were allowed to postpone it until **1 July 2026**, and that window has now closed. There is no opt-out left.
+
+Two details that will save you a confusing afternoon:
+
+- **Read-only operations don't require MFA under Phase 2.** `az group list` is fine without it. It's the **write** operations — create, update, delete — that are gated.
+- **Your tooling has to be current.** Use **Azure CLI 2.76 or later** and **Azure PowerShell 14.3 or later**. Older versions handle the MFA challenge badly and fail with errors that never mention MFA, which is a genuinely horrible thing to debug.
+
+This matters for the rest of the course. When we reach Bicep on Day 25 and Terraform on Day 26, those deployments authenticate through ARM and they *write* resources — so **that authentication requires MFA**. It's the floor now, for everybody, which is one more reason to register MFA properly in the next demo rather than skipping past it.
 
 ### Self-Service Password Reset (SSPR)
 
@@ -304,8 +320,19 @@ Password resets are the single largest category of helpdesk tickets in most orga
 2. In your normal browser, go to **`aka.ms/mfasetup`** → **+ Add sign-in method** → **Microsoft Authenticator** and follow the QR-code flow. **✅**
 3. Complete the test prompt and note the **number matching** screen — the browser shows a two-digit number and you type it into the app. **✅**
 4. If your phone or laptop supports it, also add a **Passkey**. That's the method Microsoft is standardising on. **✅**
-5. **Entra ID → Password reset → Properties**: set SSPR to **Selected** and choose `grp-finance-team`. That's groups doing their job — a policy targeted at a group instead of a list of names. **✅**
-6. Under **Authentication methods**, set methods required to **1** for the demo (**2** is the correct production answer). Under **Registration**, require users to register at next sign-in. **Save**. **✅**
+5. **Entra ID → Password reset → Properties**: set SSPR to **Selected** and choose `grp-finance-team`. That's groups doing their job — a policy targeted at a group instead of a list of names. **Save**. **✅**
+6. Still under **Password reset**, open **Authentication methods** and set **Number of methods required to reset** to **1** for this demo (**2** is the correct production answer). Then open **Registration** and require users to register at next sign-in. **Save** each one. **✅**
+7. Now go to **Entra ID → Authentication methods → Policies**. **This is the blade that actually matters, and it's where the methods themselves get turned on.** Open **Microsoft Authenticator**, then **Passkey (FIDO2)**, and notice you can target **specific groups** rather than only "all users". **✅**
+
+!!! warning "Don't follow an older tutorial here — this changed on 30 September 2025"
+    Entra used to manage authentication methods in **three** separate places: the legacy per-user MFA settings, the legacy SSPR policy, and the modern Authentication methods policy. Since **30 September 2025, the two legacy policies can no longer manage methods at all.** **Entra ID → Authentication methods → Policies** is now the single place methods are enabled — for both sign-in *and* password reset.
+
+    Two leftovers cause most of the confusion, and both are visible in the steps above:
+
+    - The **Password reset** blade still owns *enabling SSPR and choosing who it applies to*, and still owns **Number of methods required to reset**. That's exactly why steps 5 and 6 still send you there.
+    - **Security questions** can still only be enabled in the legacy SSPR policy.
+
+    That blade also carries a **Manage migration** control with three states — *Pre-migration*, *Migration in Progress*, *Migration Complete*. Open it and read it, but **on your demo tenant, don't change it.** In a real tenant, moving to *Migration Complete* means the legacy policies are ignored entirely, and you only do that after auditing what they currently allow — otherwise you silently switch off a method someone depends on.
 
 ---
 
@@ -355,7 +382,10 @@ An over-permissioned application permission is one of the most common serious fi
 
 A rare, justified use of the CLI, because there's no portal equivalent for "authenticate as an application."
 
-1. Open **Cloud Shell** (the `>_` icon), Bash. **✅**
+1. Open **Cloud Shell** (the `>_` icon at the top of the portal) and choose **Bash**. **✅**
+
+    !!! tip "First time in Cloud Shell? Choose 'No storage account required'"
+        Cloud Shell offers to create a storage account so your files persist. **You don't need it here, and it isn't free.** Pick **No storage account required** for an **ephemeral session** — it starts faster, costs nothing, and everything in it is destroyed when you close the window. Which is ideal, because the only thing we're about to type is a credential we'd rather not keep lying around.
 2. ```bash
    az login --service-principal \
      --username <application-client-id> \
@@ -825,6 +855,7 @@ These four cause most real-world RBAC support tickets:
 - **"Identity not found."** You deleted a user, group or service principal without removing its role assignments. The assignment survives pointing at a dead GUID — harmless but messy, and it counts towards your 4,000. Clean them up.
 - **Role assignments don't move with resources.** Move a resource to another resource group and any assignment made *directly on it* is orphaned. Recreate it.
 - **Subscription transfer wipes RBAC.** Move a subscription to a different tenant and **all** role assignments are permanently deleted. Worth saying twice, because people get bitten exactly once.
+- **Management groups have a 500-assignment ceiling**, not 4,000. It's a much easier limit to hit than people expect, because management-group assignments are exactly the broad ones teams like to make.
 
 ### Where the Evidence Lives
 
@@ -851,6 +882,8 @@ Two logs, two planes, both free:
 | "Membership must update automatically by department" | **Dynamic group** (P1) |
 | "Require MFA only from outside the office" | **Conditional Access** with a named location (P1) |
 | "Simplest way to require MFA for everyone, free" | **Security defaults** |
+| "Where do I enable Authenticator or passkeys for a group?" | **Authentication methods policy** — not the legacy MFA or SSPR blades |
+| "Terraform/CLI deployment suddenly prompts for MFA" | **Mandatory MFA Phase 2** at the ARM layer — expected; update the CLI and register a method |
 | "Must keep working if on-premises is unavailable" | **Password Hash Synchronisation** |
 | "Give a partner access without creating an account" | **B2B guest invitation** |
 | "Recover a user deleted last week" | **Deleted users** — 30-day restore, same object ID |
@@ -898,7 +931,7 @@ Today you stopped asking "how do I build it?" and started asking two harder ques
 
 **Users and groups** are the raw material, and the rule is permanent: **never assign permissions to a person.** It isn't tidiness — it's the documented remedy for the hard 4,000-assignment ceiling.
 
-**Authentication is where the free value is.** MFA blocks over 99% of identity attacks and costs nothing. Security defaults deliver real protection with one switch. Microsoft has made MFA mandatory for the portal and the ARM layer — which means CLI, PowerShell, Terraform and Bicep. And **passkeys become the default from September 2026**, with SMS being retired, so don't design around text messages.
+**Authentication is where the free value is.** MFA blocks over 99% of identity attacks and costs nothing. Security defaults deliver real protection with one switch. Microsoft has made MFA mandatory for the portal and the ARM layer — which means CLI, PowerShell, Terraform and Bicep, and both phases are now fully enforced. And **passkeys are the default as of September 2026**, with Microsoft-provided SMS and voice retiring on 1 February 2027, so don't design around text messages.
 
 **Applications get identities too**, and the best idea in Azure security is the **managed identity** — a credential you cannot read, cannot leak and never rotate, because it doesn't exist anywhere you can reach.
 
@@ -924,7 +957,8 @@ Two questions. Two systems. One video, because in real life you never get to ans
 - **The object ID is what matters.** RBAC stores GUIDs, not names — which is why a 30-day user restore brings access back and a re-created user doesn't.
 - **Never assign permissions to a person.** Groups make access a membership question and are the documented fix for the 4,000-assignment ceiling.
 - **MFA is free and blocks 99%+ of identity attacks.** Security defaults give you a baseline in one click; **Conditional Access (P1)** adds the if/then logic. You can't run both.
-- **Passkeys become the default from 1 September 2026**; SMS and voice are being retired. Don't build on SMS.
+- **Passkeys are the default as of 1 September 2026**; Microsoft-provided SMS and voice retire on **1 February 2027**, with a blocking registration prompt for anyone who has nothing else. Don't build on SMS.
+- **Authentication methods live in one blade now** — *Entra ID → Authentication methods → Policies*. The legacy MFA and SSPR policies stopped managing methods on 30 September 2025.
 - **App registration = blueprint, service principal = the instance that holds role assignments.** Enterprise applications is just the admin view of the same object.
 - **Delegated permissions act as the user; application permissions act as the app** and need admin consent.
 - **Managed identities are free, have no readable credential, and are the correct answer whenever both ends are Azure services.** System-assigned dies with the resource; user-assigned survives and can be shared.
