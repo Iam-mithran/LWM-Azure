@@ -34,6 +34,13 @@ changed since the first draft and are now reflected in `docs/day17_entra_id_rbac
 | **Security defaults** | Sixth protection added: **device code flow blocked** for tenants created from **1 July 2026**. | Part 4, list now has 6 items |
 | **Cloud Shell** | Students must pick **"No storage account required"** (ephemeral) or they get billed for a storage account. | Part 5 |
 
+**Corrected from a real run (Part 5).** `az login --service-principal` **fails** for a principal with
+no role assignments — the CLI refuses to finish the session with *"No subscriptions were found for
+'None'. If this is expected, use '--allow-no-subscriptions' to have tenant level access."* The script
+previously claimed this command succeeded. It now shows the failure first (the error message is the
+clearest statement of authenticated-but-unauthorised in the whole day), then the working command with
+**`--allow-no-subscriptions`**, then `az group list` returning nothing.
+
 Also corrected: the create-user wizard now shows **Mail nickname**, **Auto-generate password** and
 **Account enabled** (formerly *Block sign in*) on Basics, and **Usage location** sits under a
 **Settings** section on Properties. Management groups cap at **500** role assignments, not 4,000 —
@@ -145,7 +152,10 @@ Azure Policy built-ins are free.
 - ✅ Create `Priya Sharma`; sign in as her and see nothing
 - ✅ Create `grp-finance-team` and add her
 - ✅ Read security defaults; register MFA; enable SSPR; review **Authentication methods → Policies**
-- ✅ Register `app-lwm-demo`, create a secret, `az login --service-principal` → `az group list` is empty
+- ✅ Register `app-lwm-demo`, create a secret, then **`az login --service-principal` fails** with
+  *"No subscriptions were found"* — read that error aloud, it's the two planes in text form — and
+  only succeeds once you add **`--allow-no-subscriptions`**, giving a tenant-level session that
+  can't see a single resource group
   (Cloud Shell: choose **No storage account required** so the lab stays genuinely free)
 - ✅ Enable a system-assigned managed identity on an App Service (Free F1)
 - ✅ Give Priya User Administrator — directory power, zero resource access

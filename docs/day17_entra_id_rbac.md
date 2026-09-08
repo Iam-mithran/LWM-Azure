@@ -386,20 +386,71 @@ A rare, justified use of the CLI, because there's no portal equivalent for "auth
 
     !!! tip "First time in Cloud Shell? Choose 'No storage account required'"
         Cloud Shell offers to create a storage account so your files persist. **You don't need it here, and it isn't free.** Pick **No storage account required** for an **ephemeral session** — it starts faster, costs nothing, and everything in it is destroyed when you close the window. Which is ideal, because the only thing we're about to type is a credential we'd rather not keep lying around.
-2. Authenticate as the application:
+2. Try to authenticate as the application, exactly as you would for any service principal:
    ```bash
    az login --service-principal \
      --username <application-client-id> \
      --password <the-secret-value> \
      --tenant <your-tenant-id>
    ```
-   It succeeds — Entra ID just authenticated a non-human identity. **✅**
-3. Now try to do something:
+   **✅**
+
+   **It fails.** And I want you to read the error rather than skip past it, because it is the single
+   most on-the-nose message in this entire video:
+
+   ```text
+   No subscriptions were found for 'None'. If this is expected, use
+   '--allow-no-subscriptions' to have tenant level access.
+   ```
+
+    !!! tip "Stop and look at what just happened"
+        Entra ID **accepted the credential.** The client ID was right, the secret was right, the
+        tenant was right. Authentication *succeeded*.
+
+        Then the CLI went looking for something this identity is allowed to work with, found
+        **zero subscriptions**, and refused to finish setting up the session.
+
+        That is the two planes, printed to your terminal by a command-line tool. **Identity: fine.
+        Authorisation: nothing at all.** Priya's empty portal, in text form.
+
+3. Now log in the way you have to log in when an identity genuinely holds no Azure permissions — by
+   telling the CLI you already know it can't see anything: **✅**
+   ```bash
+   az login --service-principal \
+     --username <application-client-id> \
+     --password <the-secret-value> \
+     --tenant <your-tenant-id> \
+     --allow-no-subscriptions
+   ```
+   **This one succeeds**, and gives you a *tenant-level* session — signed in to the directory, with
+   no subscription context. Confirm it with:
+   ```bash
+   az account show
+   ```
+   Note the shape of what comes back: a tenant, and no real subscription behind it.
+
+4. Now try to actually do something with Azure resources: **✅**
    ```bash
    az group list
    ```
-   **The list is empty.** Exactly like Priya. **Authenticated, unauthorised.** The app has a valid identity and **zero** Azure RBAC. **✅**
-4. Return to your own identity with `az login`. **✅**
+   **Nothing.** There is no subscription in context, so there are no resource groups to list — the
+   command has nothing to return and will either come back empty or tell you there's no subscription
+   to work against. Either way the conclusion is identical: **this application cannot see one single
+   Azure resource.**
+
+   Exactly like Priya. **Authenticated, unauthorised.** A valid identity and **zero** Azure RBAC.
+
+5. Return to your own identity with `az login`. **✅**
+
+    !!! note "Why that flag exists at all, and why it's worth remembering"
+        `--allow-no-subscriptions` is not a workaround or a hack — it's the supported way to sign in
+        for **directory work rather than resource work**: managing users, groups or app registrations
+        with the CLI, where you never touch a subscription.
+
+        It's also a genuinely useful diagnostic. If a pipeline's service principal suddenly starts
+        failing with *"No subscriptions were found"*, that is almost never a broken secret. **The
+        credential is fine and the role assignment is missing or was deleted.** Knowing the
+        difference between those two failures will save you a very confusing hour one day.
 
 !!! warning "You just handled a real credential"
     That secret is a password to your tenant, and it's now in your Cloud Shell history. In production it belongs in **Key Vault** (Day 18) — or better, it shouldn't exist at all, which is exactly what the next part is about. Delete this app registration at cleanup.
