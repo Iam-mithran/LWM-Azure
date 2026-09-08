@@ -65,11 +65,11 @@ So: **the Standard-tier lab we're doing today rounds to zero**, but Key Vault is
 
 ---
 
-# PART ONE — THE VAULT
+## PART ONE — THE VAULT
 
-## Part 1 — Why Key Vault Exists
+### Part 1 — Why Key Vault Exists
 
-### The Problem, Honestly Stated
+#### The Problem, Honestly Stated
 
 Your application needs a database password. Where do you put it?
 
@@ -81,7 +81,7 @@ Every beginner answers the same way, in the same order, and every answer is wron
 
 The problem underneath all three is the same: **the secret is copied.** Once a secret exists in more than one place, you have lost control of it, because you can no longer answer the two questions that matter — *who can read this?* and *if I change it, what breaks?*
 
-### What Key Vault Actually Is
+#### What Key Vault Actually Is
 
 **Azure Key Vault is a managed service whose entire job is to hold sensitive values, hand them out only to identities you've authorised, and write down every single access in a log.**
 
@@ -94,7 +94,7 @@ Four properties make it different from a config file:
 
 Underneath, Key Vault is multi-tenant, backed by hardware security modules, and **regional** — the vault lives in a region, and Azure automatically replicates its contents to the paired region for durability.
 
-### The Three Things a Vault Holds
+#### The Three Things a Vault Holds
 
 This is the first thing people get wrong, and it's an easy interview mark. A vault holds three object types, and they are **not** three names for the same idea.
 
@@ -114,11 +114,11 @@ Certificates are the interesting hybrid: **a certificate in Key Vault is actuall
 
 ---
 
-## Part 2 — Creating Your First Vault
+### Part 2 — Creating Your First Vault
 
 Every option on this blade matters, and two of them are permanent, so we're going to walk it slowly rather than clicking Next four times.
 
-### Hands-On: Create the Vault ✅
+#### Hands-On: Create the Vault ✅
 
 1. Search **Key vaults** → **+ Create**. **✅**
 
@@ -163,11 +163,11 @@ Every option on this blade matters, and two of them are permanent, so we're goin
 
 ---
 
-## Part 3 — The Permission Model, and the Deadline
+### Part 3 — The Permission Model, and the Deadline
 
 This is the one genuinely new idea in today's video, it changed a few months ago, and it has a hard cutoff in February 2027. If you learned Key Vault from a tutorial recorded before 2026, this part is the bit you need to unlearn.
 
-### Two Models, One Recommendation
+#### Two Models, One Recommendation
 
 Key Vault has always had two ways to answer "who may read this secret?"
 
@@ -182,7 +182,7 @@ Access policies have four real problems, and they're worth being able to list:
 - **They're coarse.** Access policy permissions are per-*operation-type* across the whole vault. You cannot express "read only the secrets whose names start with `prod-`." RBAC can, with conditions.
 - **They're outside the tooling.** PIM, access reviews, Check access, custom roles, Azure Policy on role assignments — all of it understands RBAC and none of it understands access policies.
 
-### What Changed in February 2026
+#### What Changed in February 2026
 
 **Key Vault API version `2026-02-01` made Azure RBAC the default access control model for newly created vaults.** In the underlying resource, the property is `enableRbacAuthorization`, and it now defaults to `true`.
 
@@ -201,7 +201,7 @@ Three consequences that are worth stating precisely, because the details get gar
 
     One footnote with a sting: **Azure Cloud Shell always uses the latest API version.** So a `az keyvault create` script that worked last year and didn't specify a permission model will now produce an **RBAC** vault instead of an access-policy vault. If you inherit a script like that and the vault suddenly seems to have "lost" its permissions, that's why.
 
-### Hands-On: Look at Both Models ✅
+#### Hands-On: Look at Both Models ✅
 
 1. **Key vault → Settings → Access configuration.** **✅**
 2. Confirm **Azure role-based access control** is selected. Click **Vault access policy** to see what the alternative looks like — a permission grid with checkbox columns for Key, Secret and Certificate permissions. Read it, understand its shape, then **click away without saving.** **✅**
@@ -218,11 +218,11 @@ Three consequences that are worth stating precisely, because the details get gar
 
 ---
 
-## Part 4 — Secrets
+### Part 4 — Secrets
 
 A secret is a name, a value up to 25 KB, and a surprising amount of metadata. Let's use the metadata, because almost nobody does and it's where the operational maturity lives.
 
-### Versions
+#### Versions
 
 **Every time you set a value, Key Vault creates a new version** and keeps the old one. Versions are immutable — you never edit a secret's value, you add a version. Each has its own GUID and its own URI:
 
@@ -236,7 +236,7 @@ That distinction is a design decision you will make repeatedly:
 - **Reference without a version** and your app automatically picks up rotations. Convenient, and the right default.
 - **Reference with a version** and your app is pinned. Nothing changes under it — which is exactly what you want when a value must stay in lockstep with a deployment.
 
-### The Lifecycle Fields
+#### The Lifecycle Fields
 
 Three fields, all optional, all under-used:
 
@@ -252,7 +252,7 @@ Three fields, all optional, all under-used:
 
     So: set expiry dates, because they're the trigger for rotation and every compliance framework wants them — but set up the alerting at the same time, or you've just scheduled an outage.
 
-### Hands-On: Store a Real Secret ✅
+#### Hands-On: Store a Real Secret ✅
 
 We're going to store the connection string for `db-lwm-demo`, the SQL database from Day 16. A real value, for a real resource.
 
@@ -280,11 +280,11 @@ We're going to store the connection string for `db-lwm-demo`, the SQL database f
 
 ---
 
-## Part 5 — Keys: Cryptography as a Service
+### Part 5 — Keys: Cryptography as a Service
 
 This is the part students skim and interviewers ask about, so let's do it properly.
 
-### The Idea
+#### The Idea
 
 With a secret, the vault stores a value and gives it back. **With a key, the vault stores the key and never gives it back — instead, it does the work for you.**
 
@@ -292,13 +292,13 @@ Your application sends the vault some data and an instruction: *sign this*, *unw
 
 Think about what that removes. If an attacker fully compromises your application server — root access, memory dumps, everything — **they still do not have your private key.** They can ask the vault to perform operations while they hold that access, which is bad, but the moment you cut their access the key is untouched. There is no key to steal, revoke and reissue. That is a fundamentally different blast radius from a stolen key file, and it's why keys are their own object type.
 
-### What Keys Are Used For
+#### What Keys Are Used For
 
 - **Encryption at rest with customer-managed keys (CMK).** Azure Storage, SQL, Disks and Cosmos all encrypt your data by default with Microsoft-managed keys. Point them at a Key Vault key instead and *you* hold the root of that encryption — including the ability to revoke access to your own data by disabling the key. This is the single most common reason enterprises use Key Vault keys, and it's why **purge protection is mandatory** for it.
 - **Digital signing** — tokens, documents, code.
 - **Key wrapping** — encrypting other keys, the building block of envelope encryption.
 
-### Key Types and Where They Live
+#### Key Types and Where They Live
 
 | Type | Meaning |
 |---|---|
@@ -309,13 +309,13 @@ Think about what that removes. If an attacker fully compromises your application
 
 The `-HSM` suffix is the entire difference between Standard and Premium. In both cases the key material is protected and never exported; in Premium it's protected by validated dedicated hardware, which is what regulated industries are required to be able to prove.
 
-### Rotation Policies
+#### Rotation Policies
 
 Keys support **automatic rotation** — you set a policy ("rotate 30 days before expiry") and Key Vault generates a new version on schedule, with no human involved. Azure services using the key pick up the new version automatically.
 
 This is worth contrasting sharply with secrets: **keys can rotate themselves; secrets cannot.** Key Vault has no idea what your database password *is* — rotating it means changing it in SQL Server too, which is application-specific work. That's why secret rotation needs an Azure Function and keys don't, and it's a nice distinction to be able to draw in an interview.
 
-### Hands-On: Create and Use a Key ✅
+#### Hands-On: Create and Use a Key ✅
 
 1. **Key vault → Objects → Keys → + Generate/Import**. **✅**
 2. **Options:** Generate. **Name:** `key-lwm-demo`. **Key type:** RSA. **RSA key size:** 2048. **✅**
@@ -331,11 +331,11 @@ This is worth contrasting sharply with secrets: **keys can rotate themselves; se
 
 ---
 
-## Part 6 — Certificates
+### Part 6 — Certificates
 
 A certificate in Key Vault is a managed object with a lifecycle, not a file you uploaded.
 
-### What You Get
+#### What You Get
 
 - **Creation or import** — generate a new certificate, or import an existing PFX/PEM.
 - **A policy** attached to the certificate describing subject name, key type, validity period, and **what to do when it's about to expire**.
@@ -347,7 +347,7 @@ That last pair is the real value. **Expired TLS certificates are one of the most
 !!! note "Key Vault does not sell you certificates"
     Worth being precise, because it's a common misconception: Key Vault **integrates with** public CAs to automate enrolment and renewal. It does not issue or resell public certificates. You still have an account with the CA. Key Vault automates the paperwork.
 
-### Hands-On: Create a Self-Signed Certificate ✅
+#### Hands-On: Create a Self-Signed Certificate ✅
 
 Self-signed means no CA, no cost beyond normal operations, and no browser will trust it — perfect for learning the mechanics.
 
@@ -381,11 +381,11 @@ Self-signed means no CA, no cost beyond normal operations, and no browser will t
 
 ---
 
-## Part 7 — Tiers, Limits, and What This Costs
+### Part 7 — Tiers, Limits, and What This Costs
 
 Short part, mostly so nothing surprises you later.
 
-### The Three Product Tiers
+#### The Three Product Tiers
 
 | | **Standard** | **Premium** 💳 | **Managed HSM** 💳 |
 |---|---|---|---|
@@ -397,7 +397,7 @@ Short part, mostly so nothing surprises you later.
 
 Two things to remember from that table. **Managed HSM is a completely separate resource type, not a tier of a vault, and it does not hold secrets or certificates — keys only.** And **you can upgrade Standard to Premium later, but you cannot downgrade.**
 
-### Limits Worth Knowing
+#### Limits Worth Knowing
 
 Key Vault is **throttled per vault**, and this is the operational gotcha that produces the most confusing production incidents.
 
@@ -414,15 +414,15 @@ Where this bites: an app that fetches its connection string from Key Vault **on 
 
 ---
 
-# PART TWO — ACCESS, INTEGRATION AND OPERATIONS
+## PART TWO — ACCESS, INTEGRATION AND OPERATIONS
 
 > **Halfway point.** You have a vault holding a real database connection string, an RSA key that cannot be read, and a certificate. Right now exactly one person can reach any of it: you. Everything from here is about opening that up safely — to a colleague, and then to an application — and then about running the thing properly once it's real.
 
 ---
 
-## Part 8 — Key Vault RBAC Roles, and Why Owner Can't Read a Secret
+### Part 8 — Key Vault RBAC Roles, and Why Owner Can't Read a Secret
 
-### The Roles
+#### The Roles
 
 Key Vault's RBAC roles split along two lines: **which object type** (secrets, keys, certificates), and **read versus manage**. Learn the shape and you can predict the names.
 
@@ -445,11 +445,11 @@ Three patterns to lock in:
 - **Every data-plane role only works on vaults using the RBAC permission model.** Assign *Key Vault Secrets User* on an access-policy vault and it does nothing at all — silently. That's a genuinely nasty debugging session if you don't know it.
 - **`Key Vault Contributor` is control plane only.** The docs state it flatly: it does not allow access to keys, secrets and certificates.
 
-### The Proof
+#### The Proof
 
 Yesterday: a Contributor on a storage account could delete the account and could not read a blob in it. Today, the same demonstration, with higher stakes — and it's the version that shows up in real jobs, because vaults are exactly where the separation matters.
 
-### Hands-On: Prove Owner ≠ Secret Reader ✅
+#### Hands-On: Prove Owner ≠ Secret Reader ✅
 
 1. As admin, **Key vault → Access control (IAM) → Role assignments**. Find your own account — **Owner**, inherited from the subscription. **✅**
 2. Go to **Objects → Secrets**. You can see `DbConnectionString` and read its value. **✅**
@@ -474,9 +474,9 @@ Yesterday: a Contributor on a storage account could delete the account and could
 
 ---
 
-## Part 9 — Delegating Access, and the Contributor Back Door
+### Part 9 — Delegating Access, and the Contributor Back Door
 
-### The Back Door
+#### The Back Door
 
 I just alluded to it; now let's be blunt about it, because **this is the most important operational fact in today's video.**
 
@@ -496,7 +496,7 @@ The practical consequences:
 - Give applications and people **data-plane roles at vault scope**, and nothing broader.
 - Put production vaults in **their own resource group**, so resource-group-scoped Contributor assignments elsewhere can't reach them. This is the single most effective structural mitigation, and it costs nothing.
 
-### Delegating Without Handing Over the Keys
+#### Delegating Without Handing Over the Keys
 
 There's a purpose-built role for "let this person manage who can read secrets, but don't let them read secrets themselves": **Key Vault Data Access Administrator**.
 
@@ -509,7 +509,7 @@ That's the pattern you want for a platform team: they onboard applications to va
 
     You don't need to author these to pass an interview. You need to know the word, know it's a *condition attached to a role assignment*, and know **Key Vault Data Access Administrator** is the built-in role that ships with one.
 
-### Hands-On: Read the Constrained Role ✅
+#### Hands-On: Read the Constrained Role ✅
 
 1. **Key vault → Access control (IAM) → Roles** tab. Filter for `Key Vault`. Count them — there are more than you'd guess. **✅**
 2. Open **Key Vault Data Access Administrator** → **View** → **JSON**. Look at `Actions`: it has `roleAssignments/write`, but read the `conditions` — that's the ABAC rule limiting it to Key Vault roles only. **✅**
@@ -519,11 +519,11 @@ That's the pattern you want for a platform team: they onboard applications to va
 
 ---
 
-## Part 10 — The Payoff: An App That Reads a Secret It Cannot See
+### Part 10 — The Payoff: An App That Reads a Secret It Cannot See
 
 This is what the whole video has been building to, and it's the pattern you'll use in every real Azure project for the rest of your career.
 
-### What We're Building
+#### What We're Building
 
 ```text
 App Service                    Microsoft Entra ID              Key Vault
@@ -545,7 +545,7 @@ App Service                    Microsoft Entra ID              Key Vault
 
 Count the credentials in that diagram. **Zero.** No password, no key, no connection string in any configuration file. The App Service proves who it is with an identity the platform manages, and the vault checks a role assignment. That's Day 17's managed identity and Day 17's RBAC, doing the job Day 18 built the vault for.
 
-### Hands-On, Step 1: Create the App and Give It an Identity ✅
+#### Hands-On, Step 1: Create the App and Give It an Identity ✅
 
 We deleted last video's App Service at cleanup, so we need a fresh one.
 
@@ -553,7 +553,7 @@ We deleted last video's App Service at cleanup, so we need a fresh one.
 2. Open it → **Settings → Identity → System assigned → Status: On → Save → Yes.** **✅**
 3. Copy the **Object (principal) ID** that appears. Entra ID has just created a service principal for this app. **✅**
 
-### Hands-On, Step 2: Grant It Exactly One Role ✅
+#### Hands-On, Step 2: Grant It Exactly One Role ✅
 
 4. **Key vault → Access control (IAM) → + Add → Add role assignment.** **✅**
 5. **Role:** `Key Vault Secrets User`. **Next.** **✅**
@@ -565,7 +565,7 @@ We deleted last video's App Service at cleanup, so we need a fresh one.
     !!! tip "Least privilege, on camera"
         We picked *Key Vault Secrets User*, not *Key Vault Administrator* and definitely not *Contributor*. The app reads one secret; it gets exactly the permission to read secrets, at exactly the scope of one vault. If this app is ever compromised, that's the entire blast radius.
 
-### Hands-On, Step 3: The Key Vault Reference ✅
+#### Hands-On, Step 3: The Key Vault Reference ✅
 
 Here's the elegant part. App Service understands a special syntax in app settings: put a **Key Vault reference** in as the value, and the platform resolves it at runtime, using the app's managed identity, before your code ever sees it. **Your application code reads a normal environment variable and has no idea Key Vault is involved.** No SDK, no library, no code change.
 
@@ -589,7 +589,7 @@ Here's the elegant part. App Service understands a special syntax in app setting
 
     **That green tick is the whole video.** It means App Service authenticated as the managed identity, called the vault, was authorised by your role assignment, and got the secret. There is no credential anywhere in this configuration — click **Edit** on the setting and the only thing stored is the reference string itself.
 
-### When It Doesn't Work
+#### When It Doesn't Work
 
 It will fail for someone watching this, so here's the debugging path in the order you should try it:
 
@@ -616,11 +616,11 @@ Two portal tools worth knowing: **Edit the setting** and the dialog shows the li
 
 ---
 
-## Part 11 — Networking: Firewall, Trusted Services and Private Endpoints
+### Part 11 — Networking: Firewall, Trusted Services and Private Endpoints
 
 Right now your vault accepts connections from **anywhere on the internet**. Authentication and RBAC still protect it — an attacker with no valid token gets nothing — but the front door is publicly reachable, which means it's reachable by password sprays, by misconfigured scripts, and by anyone who finds the hostname.
 
-### Three Levels of Network Lockdown
+#### Three Levels of Network Lockdown
 
 **Level 1 — Public, all networks.** The default. Fine for learning.
 
@@ -630,7 +630,7 @@ Right now your vault accepts connections from **anywhere on the internet**. Auth
 
 You met all three concepts on Day 11 with storage accounts. **Key Vault behaves identically**, which is the point — Azure's networking model is consistent across services, so learning it once transfers.
 
-### The Trap Everyone Falls Into
+#### The Trap Everyone Falls Into
 
 Turn on the firewall and a long list of things breaks at once, because plenty of Azure services need to reach your vault and they don't come from an IP address you can list.
 
@@ -645,7 +645,7 @@ That's what **"Allow trusted Microsoft services to bypass this firewall"** is fo
 
     Know the constraint. It's a very common real-world design conversation.
 
-### Hands-On: Look, Don't Touch ✅
+#### Hands-On: Look, Don't Touch ✅
 
 1. **Key vault → Settings → Networking → Firewalls and virtual networks.** **✅**
 2. Click **Selected networks** to reveal the options — the **+ Add existing virtual network** control, the **Firewall / IP address ranges** box with a helpful *Add your client IP address* link, and the **Exception: Allow trusted Microsoft services** checkbox. **✅**
@@ -661,9 +661,9 @@ That's what **"Allow trusted Microsoft services to bypass this firewall"** is fo
 
 ---
 
-## Part 12 — Soft Delete, Purge Protection and Recovery
+### Part 12 — Soft Delete, Purge Protection and Recovery
 
-### Soft Delete Is Not Optional Any More
+#### Soft Delete Is Not Optional Any More
 
 **Soft delete is mandatory on all key vaults and cannot be turned off.** It was optional years ago; it isn't now. Microsoft enabled it across all vaults, and every vault you create today has it.
 
@@ -674,7 +674,7 @@ Two things it costs you, both of which surprise people:
 - **The name is reserved.** You cannot create a new vault with a deleted vault's name until it's purged or the window expires. Global uniqueness applies to deleted vaults too.
 - **You may still be billed for the storage of a soft-deleted vault's contents** during the retention window.
 
-### Purge Protection: The Switch With No Off
+#### Purge Protection: The Switch With No Off
 
 Covered in Part 2, but now you've seen the mechanics, the point should land harder. Without purge protection, an admin can delete *and immediately purge* a vault — genuinely gone, keys and all. With purge protection, the deletion always waits out the full retention window, and **no permission level can shortcut it**.
 
@@ -682,7 +682,7 @@ The attack it defends against is specific: an attacker with admin access destroy
 
 **Turn it on in production. Especially if the vault holds encryption keys — where it is a hard requirement, not a suggestion.**
 
-### Hands-On: Delete and Recover ✅
+#### Hands-On: Delete and Recover ✅
 
 1. **Key vault → Objects → Secrets.** Create a throwaway: **+ Generate/Import**, name `TempSecret`, any value, **Create**. **✅**
 2. Select it → **Delete**. Confirm. It disappears from the list. **✅**
@@ -704,11 +704,11 @@ The attack it defends against is specific: an attacker with admin access destroy
 
 ---
 
-## Part 13 — Monitoring, Expiry and Rotation
+### Part 13 — Monitoring, Expiry and Rotation
 
 A vault that nobody watches is a vault that fails silently, and Key Vault fails in two specific ways: **secrets expire**, and **access is denied**.
 
-### Logging
+#### Logging
 
 **Key Vault does not log data-plane operations by default.** You turn it on with a **diagnostic setting**, exactly as you would for any other Azure service, sending `AuditEvent` logs to a **Log Analytics workspace**.
 
@@ -716,7 +716,7 @@ Once that's on, every operation is recorded: who, what object, what operation, f
 
 That's Day 19's territory, and Key Vault is the perfect motivation for it.
 
-### Expiry: The Silent Outage
+#### Expiry: The Silent Outage
 
 Part 4 warned about this; here's the fix. Key Vault raises **Event Grid events** for object lifecycle:
 
@@ -727,7 +727,7 @@ Part 4 warned about this; here's the fix. Key Vault raises **Event Grid events**
 
 Two prerequisites nobody mentions and both matter: **the object must have an expiration date set** (no date, no event, ever), and **Key Vault evaluates near-expiry on a periodic sweep**, so the first event can take up to 24 hours to appear.
 
-### Rotation
+#### Rotation
 
 Recall the distinction from Part 5, because it's the crisp answer to a common question:
 
@@ -736,7 +736,7 @@ Recall the distinction from Part 5, because it's the crisp answer to a common qu
 
 Which brings the day full circle: **because the secret lives in exactly one place, rotating it is one operation instead of a hunt through five repositories.** That's the payoff for all of today's discipline.
 
-### Hands-On: Turn On the Audit Trail ✅
+#### Hands-On: Turn On the Audit Trail ✅
 
 1. **Key vault → Monitoring → Diagnostic settings → + Add diagnostic setting.** **✅**
 2. **Name:** `kv-audit`. **Logs:** tick **Audit Logs** (`AuditEvent`). **Destination:** *Send to Log Analytics workspace* — create one in `rg-day18-demo` if you don't have one. **Save**. **✅**
@@ -759,11 +759,11 @@ Which brings the day full circle: **because the secret lives in exactly one plac
 
 ---
 
-## Part 14 — Defender for Cloud, Sentinel and Interview Prep
+### Part 14 — Defender for Cloud, Sentinel and Interview Prep
 
 We finish with the layer above everything: the tooling that watches your whole subscription and tells you what you got wrong — including, as you'll see, a few things from today.
 
-### Microsoft Defender for Cloud
+#### Microsoft Defender for Cloud
 
 **Defender for Cloud** is Azure's security posture and threat-protection service. It has two halves, and the licensing question is the one interviewers ask.
 
@@ -785,7 +785,7 @@ The distinction to hold: **free CSPM tells you what's misconfigured. Paid Defend
 
     If you're watching this after that date and the next demo shows an empty dashboard, that's why. Enable the free plan and come back in a few hours.
 
-### Microsoft Sentinel — Vocabulary Only
+#### Microsoft Sentinel — Vocabulary Only
 
 **Sentinel is Azure's SIEM and SOAR** — Security Information and Event Management, and Security Orchestration, Automation and Response. It sits on top of a Log Analytics workspace, ingests logs from across your estate (including the Key Vault audit logs you just enabled), correlates them, hunts for threats, and can run automated playbooks in response.
 
@@ -793,7 +793,7 @@ It is **consumption-priced on data ingestion** and gets expensive quickly, so th
 
 **Defender for Cloud protects your Azure resources. Sentinel is a SIEM for your whole organisation** — Azure, on-premises, other clouds, Microsoft 365 — and it's where a security operations centre actually works.
 
-### Hands-On: Read Your Secure Score ✅
+#### Hands-On: Read Your Secure Score ✅
 
 1. Search **Microsoft Defender for Cloud** → **Overview**. **✅**
 2. Look at your **Secure Score**. It won't be great, and that's the point. **✅**
@@ -810,7 +810,7 @@ It is **consumption-priced on data ingestion** and gets expensive quickly, so th
 
         In interviews, *"how would you assess the security posture of an Azure environment you've just inherited?"* has a very strong opening: **"Start with Defender for Cloud's Secure Score and work the recommendations by weight."**
 
-### Interview and Exam Quick Reference
+#### Interview and Exam Quick Reference
 
 | If you're asked… | The answer is… |
 |---|---|

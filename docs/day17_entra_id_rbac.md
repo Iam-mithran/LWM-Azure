@@ -55,9 +55,9 @@ That second column still matters — it comes up in interviews constantly, and y
 
 ---
 
-# PART ONE — IDENTITY
+## PART ONE — IDENTITY
 
-## Part 1 — What Entra ID Is, and the Two Planes
+### Part 1 — What Entra ID Is, and the Two Planes
 
 You type `portal.azure.com`, enter a password, approve a prompt, and the portal loads. In that half-second, two separate questions were answered:
 
@@ -69,7 +69,7 @@ Every security problem in every cloud reduces to those two questions. **Microsof
 !!! note "The name"
     You'll see this called **Azure Active Directory**, **Azure AD** and **AAD** all over the internet. Microsoft renamed it **Microsoft Entra ID** in 2023 — same product, no migration, pure branding. When you read older content, mentally substitute.
 
-### The Two Planes — The Idea That Explains Everything
+#### The Two Planes — The Idea That Explains Everything
 
 This is the most important mental model today. Azure has **two separate planes**, managed in different places, by different services, with different permission systems:
 
@@ -86,7 +86,7 @@ Look at that last row. Everything you built for sixteen days had a region. **Ent
 
 And look at the permissions row, because it's the trap: **being a Global Administrator in Entra ID gives you access to zero Azure resources.** Not one VM. Different planes, different role systems. We prove it in Part 8.
 
-### Tenant, Directory, Subscription
+#### Tenant, Directory, Subscription
 
 Three words, constantly confused:
 
@@ -100,7 +100,7 @@ The rules that show up in interviews almost verbatim:
 - **A subscription can be moved to another tenant — and all its RBAC assignments are permanently deleted**, because the users they referenced don't exist there. This is one of the nastiest surprises in Azure.
 - **A user cannot be moved between tenants.** You invite them as a guest instead.
 
-### Entra ID Is Not Active Directory
+#### Entra ID Is Not Active Directory
 
 If you've worked in corporate IT you've met **Active Directory Domain Services** — domain controllers, Group Policy, OUs. It's tempting to assume Entra ID is that, hosted by Microsoft. It isn't.
 
@@ -113,14 +113,14 @@ If you've worked in corporate IT you've met **Active Directory Domain Services**
 
 You cannot domain-join a machine to Entra ID in the AD DS sense, and there are no OUs. Most real organisations run **both** — AD DS on-premises, Entra ID in the cloud, and a sync tool joining them (Part 7).
 
-### Two Portals, One Tenant
+#### Two Portals, One Tenant
 
 - **`portal.azure.com`** — the Azure portal you've used all course. Everything in Part Two lives here.
 - **`entra.microsoft.com`** — the **Microsoft Entra admin center**, a dedicated identity console. Newer features land here first, and Microsoft's docs now write every set of steps for it.
 
 Same tenant, two front doors. I'll use the Entra admin center for identity and the Azure portal for RBAC — exactly the split you'll use in real life.
 
-### Hands-On: Find Your Tenant ✅
+#### Hands-On: Find Your Tenant ✅
 
 1. Go to **`entra.microsoft.com`** and sign in. In the left navigation, expand **Entra ID → Overview**. **✅**
 2. Note three things: **✅**
@@ -132,7 +132,7 @@ Same tenant, two front doors. I'll use the Entra admin center for identity and t
 
 ---
 
-## Part 2 — Users
+### Part 2 — Users
 
 A **user object** is a set of attributes plus credentials plus role assignments. It's the thing that can sign in.
 
@@ -150,7 +150,7 @@ Two attributes matter today:
 !!! tip "Deleting a user is reversible for 30 days"
     Deleted users go to a holding area for **30 days** and can be restored completely — **same object ID**, so their Azure role assignments come back working. Creating a fresh user with the same name would *not* restore access, because the GUID would be different. This is a favourite interview question.
 
-### Hands-On: Create a User ✅
+#### Hands-On: Create a User ✅
 
 1. **Entra ID → Users → All users → + New user → Create new user**. **✅**
 2. **Basics tab:** **✅**
@@ -165,7 +165,7 @@ Two attributes matter today:
 4. Skip **Assignments** — you *could* attach groups, Entra roles and an administrative unit right here, but that's the entire second half of this video and I want you to feel its absence first. **Review + create → Create**. **✅**
 5. Open `Priya Sharma` and copy her **Object ID**. Look down the left menu — **Assigned roles** (Entra roles, Part 8), **Groups**, **Authentication methods** (the helpdesk blade), and **Azure role assignments**, which is empty and which we fill in Part 9. **✅**
 
-### Hands-On: Sign In as Priya — and See Nothing ✅
+#### Hands-On: Sign In as Priya — and See Nothing ✅
 
 This is the hinge the whole video turns on. Don't skip it.
 
@@ -186,9 +186,9 @@ Hold onto that empty screen. In Part 9 we fix it in about forty seconds, and the
 
 ---
 
-## Part 3 — Groups
+### Part 3 — Groups
 
-### Never Assign Permissions to a Person
+#### Never Assign Permissions to a Person
 
 That's the rule, and it's the most important operational habit in this video.
 
@@ -198,7 +198,7 @@ Assign to **groups** and access becomes a membership question. New analyst joins
 
 There's a hard technical reason too: **a subscription supports a maximum of 4,000 role assignments, and that limit cannot be raised.** (Management groups have their own, much tighter ceiling of **500**.) Per-user assignments burn through it. One group assignment can serve ten thousand people. Microsoft's own documented remedy for hitting the ceiling is literally "replace principal-based assignments with group-based assignments."
 
-### Two Group Types, Two Membership Types
+#### Two Group Types, Two Membership Types
 
 | | **Security group** | **Microsoft 365 group** |
 |---|---|---|
@@ -220,7 +220,7 @@ The power is operational: HR changes someone's department, it syncs to Entra ID,
 
 **Group owners** can manage membership without being directory admins — proper delegation. And **Azure RBAC honours nested groups**: if you're in group A, and A is in B, and B has a role assignment, you have that role. Two levels is plenty; deeper becomes impossible to audit.
 
-### Hands-On: Create a Security Group ✅
+#### Hands-On: Create a Security Group ✅
 
 1. **Entra ID → Groups → All groups → + New group**. **✅**
 2. **Group type:** *Security*. **Name:** `grp-finance-team`. **Membership type:** *Assigned* — open that dropdown first and notice *Dynamic User* is listed but blocked. **That greyed-out option is the P1 paywall, visible.** **✅**
@@ -229,15 +229,15 @@ The power is operational: HR changes someone's department, it syncs to Entra ID,
 
 ---
 
-## Part 4 — Authentication: MFA, Security Defaults and SSPR
+### Part 4 — Authentication: MFA, Security Defaults and SSPR
 
-### Why Passwords Lose
+#### Why Passwords Lose
 
 A password is a shared secret, and shared secrets leak — phished, reused, breached in bulk from some unrelated site, sprayed against your tenant. Microsoft's published figure is the one to remember: **MFA blocks over 99% of identity-based attacks.** Not because the second factor is unbreakable, but because it breaks the attacker's economics.
 
 Real MFA needs factors from **different categories** — something you know (password), something you have (phone, security key), something you are (fingerprint, face). Password plus security question is *not* MFA. Password plus Authenticator push *is*.
 
-### The Methods, Ranked
+#### The Methods, Ranked
 
 | Method | Strength | Notes |
 |---|---|---|
@@ -258,7 +258,7 @@ Real MFA needs factors from **different categories** — something you know (pas
 
     Practical takeaway: **do not design around SMS.** If you're advising an organisation, this is a this-quarter project, not a next-year one — and migrating SMS/voice users to passkeys costs nothing.
 
-### Security Defaults — Free, Blunt, Better Than Nothing
+#### Security Defaults — Free, Blunt, Better Than Nothing
 
 **Security defaults** is one on/off switch applying a fixed bundle of protections to your whole tenant. It's free, needs no configuration, and if your tenant was created after October 2019 it's very likely **already on**.
 
@@ -273,7 +273,7 @@ What it enforces:
 
 Its limitation is that it's binary. On or off, everyone or nobody. No exclusions, no service accounts, no trusted locations. Fine for a small organisation, unworkable for a large one.
 
-### Conditional Access — The Paid If/Then Engine 💳
+#### Conditional Access — The Paid If/Then Engine 💳
 
 **Conditional Access requires P1, so we won't build one — but you must know what it is, because it's asked in every identity interview.**
 
@@ -297,7 +297,7 @@ Two rules that prevent disaster, worth knowing even though we're not clicking:
 !!! note "Security defaults and Conditional Access are mutually exclusive"
     You cannot run both. Enabling a CA policy requires turning security defaults off. That's a reliable exam question — and if you ever do turn security defaults off, replace them the same hour.
 
-### Mandatory MFA for Azure — Already Here
+#### Mandatory MFA for Azure — Already Here
 
 Independently of all of the above, Microsoft has made **MFA mandatory across all tenants** for Azure administration, in two phases. **Phase 1** covered the **Azure portal** and the admin centers. **Phase 2** pushed it down to the **Azure Resource Manager layer** — meaning **Azure CLI, Azure PowerShell, the mobile app, the REST APIs, the SDKs, and IaC tools like Terraform and Bicep**.
 
@@ -310,11 +310,11 @@ Two details that will save you a confusing afternoon:
 
 This matters for the rest of the course. When we reach Bicep on Day 25 and Terraform on Day 26, those deployments authenticate through ARM and they *write* resources — so **that authentication requires MFA**. It's the floor now, for everybody, which is one more reason to register MFA properly in the next demo rather than skipping past it.
 
-### Self-Service Password Reset (SSPR)
+#### Self-Service Password Reset (SSPR)
 
 Password resets are the single largest category of helpdesk tickets in most organisations. SSPR removes them — the user proves identity with registered methods and resets their own password at `aka.ms/sspr`. **Free for cloud-only users.** (Writing the new password back to on-premises AD needs P1.)
 
-### Hands-On: Security Defaults, MFA and SSPR ✅
+#### Hands-On: Security Defaults, MFA and SSPR ✅
 
 1. **Entra ID → Overview → Properties → Manage security defaults**. Read the current state and read the bullet list on the panel — this is the free security baseline for the entire Microsoft cloud. **Leave it Enabled.** It's doing real work. **✅**
 2. In your normal browser, go to **`aka.ms/mfasetup`** → **+ Add sign-in method** → **Microsoft Authenticator** and follow the QR-code flow. **✅**
@@ -336,13 +336,13 @@ Password resets are the single largest category of helpdesk tickets in most orga
 
 ---
 
-## Part 5 — Applications: App Registrations and Service Principals
+### Part 5 — Applications: App Registrations and Service Principals
 
 Everything so far has been about humans. But most authentication in a modern system isn't human — it's a web app calling an API, a script reading a storage account, a pipeline deploying infrastructure at 2am with nobody watching. Those need identities too.
 
 And here's why this sits in the identity half but pays off in the authorisation half: **a service principal is a security principal.** Everything you learn about RBAC in Part Two applies to applications exactly as it applies to people. Azure genuinely does not care whether the thing holding a token has a face.
 
-### Three Terms People Mix Up
+#### Three Terms People Mix Up
 
 - **App registration** — the **global definition** of your application: name, redirect URIs, permissions, credentials. There's exactly **one**, in the tenant where the app was created. The blueprint.
 - **Service principal** — the **local instance** of that application in a specific tenant. **It's what actually gets role assignments.** Registering an app in your own tenant creates both automatically.
@@ -350,7 +350,7 @@ And here's why this sits in the identity half but pays off in the authorisation 
 
 One blueprint, many buildings — one per tenant. That's the analogy that sticks.
 
-### Three Ways an App Proves Who It Is
+#### Three Ways an App Proves Who It Is
 
 | Credential | Reality |
 |---|---|
@@ -358,7 +358,7 @@ One blueprint, many buildings — one per tenant. That's the analogy that sticks
 | **Certificate** | Private key — harder to leak by accident, but still something you store and rotate. |
 | **Federated credential** | **No secret exists at all.** An external issuer (GitHub Actions, Kubernetes) presents its own token and Entra ID exchanges it. The modern answer for CI/CD — we'll use it on Day 22. |
 
-### Delegated vs Application Permissions
+#### Delegated vs Application Permissions
 
 When an app requests access to an API like Microsoft Graph, there are two fundamentally different kinds of permission, and the distinction gets asked about:
 
@@ -370,7 +370,7 @@ An over-permissioned application permission is one of the most common serious fi
 !!! note "Graph permissions are not Azure RBAC"
     Same two-planes idea wearing a different hat. **Graph permissions** control access to *directory data* — users, groups, mail. **Azure RBAC roles** control access to *Azure resources*. An app can have `Directory.ReadWrite.All` and still not read a single blob.
 
-### Hands-On: Register an Application ✅
+#### Hands-On: Register an Application ✅
 
 1. **Entra ID → App registrations → + New registration**. **Name:** `app-lwm-demo`, **Supported account types:** *Single tenant*. Leave the redirect URI blank. **Register**. **✅**
 2. On **Overview**, note the **Application (client) ID** and **Directory (tenant) ID**. Click **Managed application in local directory** — you land in **Enterprise applications**, looking at the service principal. Same app, other view. **✅**
@@ -378,7 +378,7 @@ An over-permissioned application permission is one of the most common serious fi
 4. **Copy the Value immediately.** Not the Secret ID — the **Value**. It's shown exactly once. Everyone learns this the hard way. **✅**
 5. Click the **Federated credentials** tab and read the scenario dropdown — *GitHub Actions deploying Azure resources*, *Kubernetes*, *Managed identity*. Bookmark this screen mentally for Day 22. **✅**
 
-### Hands-On: Sign In as the Application — and Watch It Fail Like Priya ✅
+#### Hands-On: Sign In as the Application — and Watch It Fail Like Priya ✅
 
 A rare, justified use of the CLI, because there's no portal equivalent for "authenticate as an application."
 
@@ -386,7 +386,8 @@ A rare, justified use of the CLI, because there's no portal equivalent for "auth
 
     !!! tip "First time in Cloud Shell? Choose 'No storage account required'"
         Cloud Shell offers to create a storage account so your files persist. **You don't need it here, and it isn't free.** Pick **No storage account required** for an **ephemeral session** — it starts faster, costs nothing, and everything in it is destroyed when you close the window. Which is ideal, because the only thing we're about to type is a credential we'd rather not keep lying around.
-2. ```bash
+2. Authenticate as the application:
+   ```bash
    az login --service-principal \
      --username <application-client-id> \
      --password <the-secret-value> \
@@ -405,15 +406,15 @@ A rare, justified use of the CLI, because there's no portal equivalent for "auth
 
 ---
 
-## Part 6 — Managed Identities
+### Part 6 — Managed Identities
 
-### The Problem, Stated Plainly
+#### The Problem, Stated Plainly
 
 You just created a client secret. Now answer honestly: where does it live in production? Who could read it? What happens in three months when it expires — is there a calendar reminder, or does the app just break at 2am? Is it in your git history right now?
 
 Credentials in configuration are the single most common cause of cloud compromise. **Managed identities delete the entire problem.**
 
-### What It Is
+#### What It Is
 
 A managed identity is a **service principal that Azure creates and manages for an Azure resource**, where the credentials are handled entirely by the platform, rotated automatically, and **never exposed to you or anyone else**.
 
@@ -432,7 +433,7 @@ No password crosses the wire. No password exists in your code.
 
 Note step 6 carefully. **A managed identity solves authentication completely and authorisation not at all.** A brand-new managed identity, like Priya, can do nothing until you give it a role. We do that in Part 11.
 
-### System-Assigned vs User-Assigned
+#### System-Assigned vs User-Assigned
 
 | | **System-assigned** | **User-assigned** |
 |---|---|---|
@@ -443,7 +444,7 @@ Note step 6 carefully. **A managed identity solves authentication completely and
 
 The interview answer: if the identity must **survive VM recreation or be shared**, it's **user-assigned**. If it should be **cleaned up automatically with the resource**, it's **system-assigned**.
 
-### Hands-On: Give an App Service an Identity ✅
+#### Hands-On: Give an App Service an Identity ✅
 
 1. **App Services → + Create → Web App**. **Resource group:** `rg-day17-demo`, **Name:** `app-lwm-day17-<yourname>`, **Publish:** Code, **Runtime:** any, **OS:** Linux, **Pricing plan: Free F1**. **Review + create → Create**. **✅**
 2. Open it → **Settings → Identity → System assigned** → **Status: On** → **Save → Yes**. **✅**
@@ -456,11 +457,11 @@ The interview answer: if the identity must **survive VM recreation or be shared*
 
 ---
 
-## Part 7 — Guests and Hybrid Identity
+### Part 7 — Guests and Hybrid Identity
 
 Two short topics that come up constantly in interviews and almost never need clicking.
 
-### B2B Guests
+#### B2B Guests
 
 You hire a contractor. An auditor needs read access for six weeks. Do you create them an account in your tenant, with a password you now manage?
 
@@ -470,7 +471,7 @@ No. **B2B collaboration** lets you invite someone using **their own existing ide
 - Their employer disables their account when they leave, and **their access to your resources dies with it automatically.**
 - A guest object appears in your tenant with a `#EXT#` in the UPN, and **guests can hold Azure RBAC role assignments exactly like members** — a guest can absolutely be a Reader on your subscription.
 
-### Hybrid Identity
+#### Hybrid Identity
 
 Most enterprises have twenty years of on-premises Active Directory and aren't throwing it away. Hybrid identity connects the two so a user has **one identity and one password** across both, using **Microsoft Entra Connect Sync** (the mature agent) or **Entra Cloud Sync** (lighter, cloud-configured, Microsoft's direction of travel).
 
@@ -488,13 +489,13 @@ And note: a synced user is a normal security principal with a normal object ID. 
 
 ---
 
-# PART TWO — AUTHORISATION
+## PART TWO — AUTHORISATION
 
 > **Halfway point.** Everything above answered *"who are you?"* Everything below answers *"and what exactly are you allowed to do?"* Right now you have a user who can sign in and see nothing, a group with no permissions, an application with a token and no access, and a managed identity that can't touch a single resource. Four identities, four empty permission sets. Let's fix them.
 
 ---
 
-## Part 8 — Entra Roles vs Azure Roles
+### Part 8 — Entra Roles vs Azure Roles
 
 Before we build anything, we clear up the most misunderstood topic in Azure. There are **two completely separate role systems**, and people mix them up in interviews, in exams and in production incidents.
 
@@ -509,7 +510,7 @@ Before we build anything, we clear up the most misunderstood topic in Azure. The
 
 **A Global Administrator has total control over identity and zero access to Azure resources.** They can create a hundred users, reset every password, delete the entire directory — and still not see a single virtual machine. Conversely, a subscription **Owner** can do anything to every resource and cannot create a user.
 
-### The Bridge: The Elevate Access Toggle
+#### The Bridge: The Elevate Access Toggle
 
 There is exactly one connection between the two systems, and it's a switch: **Entra ID → Overview → Properties → Access management for Azure resources.**
 
@@ -517,7 +518,7 @@ Flip it to **Yes** and your Global Administrator identity is granted **User Acce
 
 This is the emergency door, for exactly one scenario: someone left, they were the only Owner on a subscription, and nobody can get in. A Global Admin elevates, grants themselves Owner, fixes it, and **switches the toggle back off**. Leaving it on permanently means every Global Admin silently holds access-admin rights over every subscription in your tenant.
 
-### Hands-On: Prove the Split ✅
+#### Hands-On: Prove the Split ✅
 
 1. **Entra ID → Roles & admins → All roles**. Scan the list — over a hundred built-in Entra roles. **✅**
 2. Open **Global Reader** and read the description: everything Global Admin can *see*, nothing it can *change*. **This is the single most underused role in Azure** — auditors and new team members should get Global Reader, not Global Administrator. **✅**
@@ -533,9 +534,9 @@ This is the emergency door, for exactly one scenario: someone left, they were th
 
 ---
 
-## Part 9 — Azure RBAC: Who, What, Where
+### Part 9 — Azure RBAC: Who, What, Where
 
-### The Whole Model, In One Line
+#### The Whole Model, In One Line
 
 Azure RBAC is the authorisation system built into Azure Resource Manager, and every access decision it makes comes from one construct: the **role assignment**. A role assignment is always, without exception, three things:
 
@@ -549,7 +550,7 @@ Bolt those three together and you've granted access. Delete the assignment and y
 
 Say it out loud a few times. It's the answer to roughly a third of the RBAC questions you'll ever be asked: **security principal, role definition, scope.**
 
-### Scope and Inheritance
+#### Scope and Inheritance
 
 ```text
 Root management group
@@ -566,7 +567,7 @@ Assign a role at any level and it applies to that level **and everything beneath
 
 A **management group** is a container for subscriptions. It exists for exactly this: applying one role assignment or one policy across many subscriptions at once.
 
-### Two Rules That Follow From This
+#### Two Rules That Follow From This
 
 **The golden rule:** *assign the least privileged role, at the narrowest scope, to a group rather than a person.* Microsoft adds a hard number — **a maximum of three subscription Owners**.
 
@@ -575,7 +576,7 @@ A **management group** is a container for subscriptions. It exists for exactly t
 !!! note "Why your new permission 'didn't work'"
     When you sign in, your token is issued **with your group memberships baked into it**. So adding someone to a group — or granting a new role — doesn't take effect until they get a **new token**. Sign out and back in. That single fact explains most "I granted access and nothing happened" complaints. Role assignment changes can also take **up to 10 minutes** to propagate.
 
-### Hands-On: The Payoff — Give Priya Access ✅
+#### Hands-On: The Payoff — Give Priya Access ✅
 
 Priya has been staring at an empty portal for an hour. Let's fix it.
 
@@ -603,9 +604,9 @@ She can open it, see the App Service, read its configuration. That empty portal 
 
 ---
 
-## Part 10 — Inside a Role Definition, and the Built-in Roles
+### Part 10 — Inside a Role Definition, and the Built-in Roles
 
-### A Role Is Just a List of Strings
+#### A Role Is Just a List of Strings
 
 A role definition looks impressive in the portal. Underneath it's JSON with five interesting properties:
 
@@ -641,7 +642,7 @@ Actions      −  NotActions      =  effective management permissions
 DataActions  −  NotDataActions  =  effective data permissions
 ```
 
-### The Big Four
+#### The Big Four
 
 | Role | Read resources | Create/modify/delete | Assign roles to others |
 |---|---|---|---|
@@ -659,7 +660,7 @@ Azure sorts roles into **job function roles** (Virtual Machine Contributor, Stor
 
     **Prefer Role Based Access Control Administrator over User Access Administrator.** Same job — assigning roles — with strictly fewer permissions. Most tutorials haven't caught up with this one, and mentioning it in an interview lands well.
 
-### Hands-On: Read a Built-in Role ✅
+#### Hands-On: Read a Built-in Role ✅
 
 1. **Subscription → Access control (IAM) → Roles** tab. You're looking at the full catalogue. **✅**
 2. Find **Contributor** → **…** → **View** → **JSON** tab. Read the `NotActions` array aloud: **✅**
@@ -681,9 +682,9 @@ Azure sorts roles into **job function roles** (Virtual Machine Contributor, Stor
 
 ---
 
-## Part 11 — Control Plane vs Data Plane
+### Part 11 — Control Plane vs Data Plane
 
-### The Question Nobody Gets Right
+#### The Question Nobody Gets Right
 
 Here's the question: **if I make you a Contributor on a storage account — full management rights, you can delete the entire account — can you read a file inside it?**
 
@@ -698,7 +699,7 @@ Azure splits operations into two categories:
 
 That's not a quirk. It's deliberate, it's the foundation of separation of duties in Azure, and it's why separate roles like *Storage Blob Data Reader*, *Key Vault Secrets User* and *AcrPull* exist.
 
-### Hands-On: Prove It ✅
+#### Hands-On: Prove It ✅
 
 **Set up:**
 
@@ -729,7 +730,7 @@ Sit in that for a second. **She can delete the container. She cannot list what's
 !!! warning "The back door worth knowing about"
     A Contributor *can* call `listKeys` — a **control-plane** action — and use the returned account key to reach the data anyway. That's why serious environments disable shared key access entirely and force all access through Entra ID and RBAC. Data-plane roles only give you real separation of duties once that back door is closed.
 
-### Closing the Loop: Give the Managed Identity a Role ✅
+#### Closing the Loop: Give the Managed Identity a Role ✅
 
 Everything you just did for Priya applies identically to software. That App Service identity from Part 6 is a **security principal**. It can hold role assignments. Azure does not care that it has no face.
 
@@ -748,7 +749,7 @@ Your App Service can now read that blob — with no username, no password, no ke
 
 ---
 
-## Part 12 — Custom Roles
+### Part 12 — Custom Roles
 
 With 900+ built-in roles, your first move is always to search the catalogue. But sometimes nothing fits:
 
@@ -759,7 +760,7 @@ Custom roles are **free**, work with any principal type, and behave identically 
 
 Three starting points: **clone a role** (usually right), **start from scratch**, or **start from JSON** (which is how you keep roles in source control — the grown-up answer).
 
-### Hands-On: Build "VM Operator" ✅
+#### Hands-On: Build "VM Operator" ✅
 
 The scenario: your team needs to restart misbehaving VMs at 3am. They must **not** be able to create, resize or delete them.
 
@@ -785,7 +786,7 @@ The scenario: your team needs to restart misbehaving VMs at 3am. They must **not
 
 ---
 
-## Part 13 — Azure Policy vs RBAC
+### Part 13 — Azure Policy vs RBAC
 
 Students confuse these constantly, so one line separates them:
 
@@ -807,7 +808,7 @@ Policies group into **initiatives** (for example an entire ISO 27001 benchmark a
 !!! note "Deny assignments — know the term, that's all"
     There's one thing that *can* override a role assignment: a **deny assignment**, which blocks actions for a principal and beats every role, even Owner. **You cannot create them by hand.** Azure creates them for managed applications and deployment stacks. The **Deny assignments** tab exists on every IAM blade and will be empty on your subscription. Know it exists; move on.
 
-### Hands-On: A Policy That Blocks an Owner ✅
+#### Hands-On: A Policy That Blocks an Owner ✅
 
 1. Search **Policy** → **Authoring → Definitions**. Find **`Require a tag on resources`** and open it. Read the JSON — an `if` block (the tag is missing) and a `then` block (`"effect": "deny"`). **✅**
 2. **Assign** it: **Scope:** `rg-day17-demo`, **Parameters → Tag Name:** `CostCenter`. **Review + create → Create**. **✅**
@@ -824,9 +825,9 @@ Policies group into **initiatives** (for example an entire ISO 27001 benchmark a
 
 ---
 
-## Part 14 — PIM, Troubleshooting and Interview Prep
+### Part 14 — PIM, Troubleshooting and Interview Prep
 
-### Privileged Identity Management 💳
+#### Privileged Identity Management 💳
 
 **PIM requires Entra ID P2, so there's no demo — but the vocabulary comes up in interviews constantly, so know it cold.**
 
@@ -847,7 +848,7 @@ Two bonus facts worth having: PIM covers **Entra roles, Azure resource roles, an
 
 The trigger words: *"just-in-time," "temporary elevation," "approval workflow," "time-bound admin access," "access must expire automatically"* → **PIM, and the licence is P2.**
 
-### The Gotchas That Actually Waste Your Day
+#### The Gotchas That Actually Waste Your Day
 
 These four cause most real-world RBAC support tickets:
 
@@ -857,7 +858,7 @@ These four cause most real-world RBAC support tickets:
 - **Subscription transfer wipes RBAC.** Move a subscription to a different tenant and **all** role assignments are permanently deleted. Worth saying twice, because people get bitten exactly once.
 - **Management groups have a 500-assignment ceiling**, not 4,000. It's a much easier limit to hit than people expect, because management-group assignments are exactly the broad ones teams like to make.
 
-### Where the Evidence Lives
+#### Where the Evidence Lives
 
 Two logs, two planes, both free:
 
@@ -866,13 +867,13 @@ Two logs, two planes, both free:
 
 **Retention is the catch:** free tenants keep Entra logs **7 days**, the Activity Log keeps 90. For anything real you export via **Diagnostic settings** to a Log Analytics workspace — that's **Day 19, Azure Monitor**, and it's the same pattern for every service in Azure.
 
-### Hands-On: Audit What You Did Today ✅
+#### Hands-On: Audit What You Did Today ✅
 
 1. **`rg-day17-demo` → Activity log** → filter **Operation: Create role assignment**. Every assignment you made today, with who made it and when. **This is the answer to "who granted that?"** **✅**
 2. **Entra ID → Sign-in logs.** Find your own sign-in and work through the tabs. Find **Priya's**. Then switch the view to **Service principal sign-ins** and find `app-lwm-demo` from Part 5. **✅**
 3. **Subscription → Access control (IAM) → Role assignments** and look at the count chart at the top of the page, showing where you stand against the 4,000 limit. **✅**
 
-### Interview and Exam Quick Reference
+#### Interview and Exam Quick Reference
 
 | If you're asked… | The answer is… |
 |---|---|

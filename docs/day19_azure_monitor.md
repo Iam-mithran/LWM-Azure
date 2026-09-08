@@ -68,11 +68,11 @@
 
 ---
 
-# PART ONE — COLLECT AND QUERY
+## PART ONE — COLLECT AND QUERY
 
-## Part 1 — What Azure Monitor Actually Is
+### Part 1 — What Azure Monitor Actually Is
 
-### One Platform, Four Kinds of Data
+#### One Platform, Four Kinds of Data
 
 "Azure Monitor" is not a single blade — it's the umbrella name for the whole observability platform. Everything in it is built on **four kinds of telemetry**, and knowing which is which tells you where to look, what it costs, and what you can do with it.
 
@@ -91,7 +91,7 @@ Two things to take from that table before we go further.
 
 **The bill is one column.** Logs. Data ingestion into a Log Analytics workspace is, for almost every customer, the entirety of their Azure Monitor bill. Which means cost control in Azure Monitor is really one question: *what am I ingesting, and do I need it?* We come back to this properly in Part 7.
 
-### The Shape of the Whole Thing
+#### The Shape of the Whole Thing
 
 ```text
       SOURCES                    ROUTING              STORES              CONSUMERS
@@ -113,13 +113,13 @@ Everything today is somewhere on that diagram. **Diagnostic settings in the midd
 
 ---
 
-## Part 2 — Metrics: The Data You Already Have
+### Part 2 — Metrics: The Data You Already Have
 
 Metrics are numerical values sampled at regular intervals — CPU percentage, requests per second, bytes in, queue depth. They're **collected automatically for every Azure resource**, stored in a purpose-built time-series database, available within **a minute or two of happening**, kept for **93 days**, and they cost **nothing**.
 
 That combination — fast, free, already on — makes metrics the right first place to look at almost any problem.
 
-### What Makes a Metric
+#### What Makes a Metric
 
 Three properties worth knowing by name, because the alert wizard in Part 11 asks about all three:
 
@@ -127,14 +127,14 @@ Three properties worth knowing by name, because the alert wizard in Part 11 asks
 - **Granularity.** The bucket size — one minute, five minutes, an hour. Finer granularity is available for recent data and gets rolled up as it ages.
 - **Dimensions.** Name–value pairs that split a metric into series. Storage account *Transactions* has an `ApiName` dimension; App Service *Requests* can split by status code. **Splitting by a dimension turns one line into many** — and, in an alert rule, turns one billable time series into many, which is worth remembering when the invoice arrives.
 
-### Hands-On: Build Something to Watch ✅
+#### Hands-On: Build Something to Watch ✅
 
 We need real telemetry, so first we need something real that produces it.
 
 1. **App Services → + Create → Web App.** **Resource group:** `rg-day19-demo`. **Name:** `app-lwm-day19-<yourname>`. **Publish:** Code. **Runtime:** any. **OS:** Linux. **Pricing plan: Free F1.** **Review + create → Create.** **✅**
 2. When it deploys, open it and click the **Default domain** URL. You should get the Azure placeholder page. **Refresh it fifteen or twenty times** — you're generating request telemetry, and we'll be using it all day. **✅**
 
-### Hands-On: Metric Explorer ✅
+#### Hands-On: Metric Explorer ✅
 
 3. **App Service → Monitoring → Metrics.** **✅**
 4. **Metric:** `Requests`. **Aggregation:** `Sum`. There's your traffic. **✅**
@@ -156,7 +156,7 @@ We need real telemetry, so first we need something real that produces it.
 
 ---
 
-## Part 3 — The Activity Log: Who Did That?
+### Part 3 — The Activity Log: Who Did That?
 
 The **Activity log** is a subscription-level record of every **control-plane** operation — every create, update and delete performed through Azure Resource Manager, with the identity that did it, when, and whether it succeeded.
 
@@ -167,7 +167,7 @@ Note what it is and isn't, because this is exactly the control-plane/data-plane 
 - **It records:** someone deleted a resource group, someone assigned a role, someone restarted a VM, someone changed a network security group rule.
 - **It does not record:** someone read a blob, someone fetched a secret, someone queried a database. Those are **data-plane** operations, and they only exist if you enabled a diagnostic setting on that service — which is exactly what we did to Key Vault yesterday.
 
-### The Categories
+#### The Categories
 
 | Category | What it contains |
 |---|---|
@@ -179,7 +179,7 @@ Note what it is and isn't, because this is exactly the control-plane/data-plane 
 | **Policy** | Azure Policy effects — including deny events |
 | **Recommendation** | Azure Advisor recommendations |
 
-### Hands-On: Read the Audit Trail ✅
+#### Hands-On: Read the Audit Trail ✅
 
 1. Search **Monitor → Activity log**. Or open it on any resource for a pre-filtered view. **✅**
 2. Set **Timespan** to the last 24 hours and look at what's there — everything you created today, and probably yesterday's Key Vault work too. **✅**
@@ -200,13 +200,13 @@ Note what it is and isn't, because this is exactly the control-plane/data-plane 
 
 ---
 
-## Part 4 — The Log Analytics Workspace
+### Part 4 — The Log Analytics Workspace
 
 A **Log Analytics workspace** is the store and query engine for all log data in Azure Monitor. It is a real Azure resource with a region, an access model, a retention setting and a bill.
 
 It's also the thing that Microsoft Sentinel, Microsoft Defender for Cloud, Application Insights, VM Insights and Container Insights are all built on top of. **Learn the workspace and you've learned the foundation of half of Azure's security and operations tooling** — which is why yesterday's Key Vault audit logs went into one.
 
-### How Many Should You Have?
+#### How Many Should You Have?
 
 This is a real design question and it comes up in interviews.
 
@@ -220,7 +220,7 @@ Reasons that genuinely justify splitting:
 
 The anti-pattern is **a workspace per application**, which people reach for by instinct. It fragments your data so cross-service queries become impossible, and it's the reason nobody can answer "did the database slowdown and the app errors happen at the same moment?"
 
-### Hands-On: Create a Workspace ✅
+#### Hands-On: Create a Workspace ✅
 
 1. Search **Log Analytics workspaces → + Create**. **✅**
 2. **Resource group:** `rg-day19-demo`. **Name:** `law-lwm-day19`. **Region:** the same region as your App Service. **Review + create → Create.** **✅**
@@ -240,7 +240,7 @@ The anti-pattern is **a workspace per application**, which people reach for by i
 
 ---
 
-## Part 5 — Diagnostic Settings: The Hinge
+### Part 5 — Diagnostic Settings: The Hinge
 
 Here is the single most transferable thing in today's video.
 
@@ -248,7 +248,7 @@ Here is the single most transferable thing in today's video.
 
 Yesterday you configured one on Key Vault and I said "this is how every Azure service does it." This is where I prove that.
 
-### The Four Destinations
+#### The Four Destinations
 
 | Destination | Use it for | Cost shape |
 |---|---|---|
@@ -268,7 +268,7 @@ You can send to **several at once**, and the classic production pattern uses two
 
     The scalable answer is **Azure Policy with a `DeployIfNotExists` effect** — a policy that automatically creates the diagnostic setting on every resource of a given type, including ones created next year by someone who's never heard of you. That's Day 17's policy lesson meeting today's, and it's how mature organisations do this.
 
-### Hands-On: Route the Activity Log ✅
+#### Hands-On: Route the Activity Log ✅
 
 The first diagnostic setting to create in any new subscription.
 
@@ -279,7 +279,7 @@ The first diagnostic setting to create in any new subscription.
 
    The subscription's control-plane audit trail is now flowing into a queryable table called `AzureActivity`, with whatever retention you choose, instead of expiring at 90 days in a blade you can't query properly.
 
-### Hands-On: Route the App Service Logs ✅
+#### Hands-On: Route the App Service Logs ✅
 
 5. **App Service → Monitoring → Diagnostic settings → + Add diagnostic setting.** **✅**
 6. **Name:** `app-to-law`. **✅**
@@ -300,11 +300,11 @@ The first diagnostic setting to create in any new subscription.
 
 ---
 
-## Part 6 — KQL: The Query Language
+### Part 6 — KQL: The Query Language
 
 **Kusto Query Language** is how you ask questions of log data. It is the skill from today that you will use most, it's the same language used by Sentinel, Defender, Azure Data Explorer and Resource Graph, and it is genuinely pleasant once the shape clicks.
 
-### The Shape
+#### The Shape
 
 A KQL query is **a table, then a pipeline of operators**, each taking rows in and passing rows out:
 
@@ -317,7 +317,7 @@ TableName
 
 Read top to bottom, left to right. That's it. If you can read a sentence you can read KQL.
 
-### The Operators That Cover 90% of Real Work
+#### The Operators That Cover 90% of Real Work
 
 Let's build one query up, adding a line at a time, so each operator earns its place.
 
@@ -402,7 +402,7 @@ AppServiceHTTPLogs
 
 **`union` and `join`** combine tables — `union` stacks rows, `join` matches them on a key. You need to know they exist; you'll reach for them the first time you ask a question spanning two services.
 
-### Hands-On: Query Your Own Data ✅
+#### Hands-On: Query Your Own Data ✅
 
 1. **Log Analytics workspace → Logs.** Dismiss the queries dialog if it appears. **✅**
 2. Look at the left panel — every table you have data in, grouped by solution. **This is how you discover what you've actually got.** **✅**
@@ -457,11 +457,11 @@ AppServiceHTTPLogs
 
 ---
 
-## Part 7 — Table Plans, Retention, and Not Getting a Shocking Bill
+### Part 7 — Table Plans, Retention, and Not Getting a Shocking Bill
 
 This part has no demo and it is the most financially valuable ten minutes in the video.
 
-### Three Table Plans
+#### Three Table Plans
 
 Not all log data deserves the same treatment. A security audit log you query weekly and a firewall log you keep purely for compliance should not cost the same, and since 2024 they don't have to.
 
@@ -475,7 +475,7 @@ The trade is straightforward: **cheaper to store, more expensive to look at, and
 
 The mistake to avoid: **moving a table to Basic to save money, then querying it constantly.** You can end up paying more, not less. Basic and Auxiliary are for data you *store* and rarely *read*.
 
-### Retention: Two Numbers, Not One
+#### Retention: Two Numbers, Not One
 
 The retention model has two settings, and mixing them up is common:
 
@@ -486,14 +486,14 @@ The default retention for Analytics tables in a new workspace is **30 days** —
 
 And the feature that saves real money: **retention is configurable per table.** You don't have to choose one number for everything. Keep `AzureActivity` for two years because it's small and it's your audit trail; keep verbose HTTP logs for 30 days because there's a lot of it and it ages badly.
 
-### The Four Ways People Overspend
+#### The Four Ways People Overspend
 
 1. **Ticking every category on every diagnostic setting.** By far the biggest one. Someone enables "all logs" on a chatty service — Application Gateway, AKS, Front Door — and the volume is enormous. **Enable the categories you'll actually query.**
 2. **Ticking `AllMetrics` everywhere out of habit.** Paying to ingest data that was already free in the metrics store, for 93 days, with a better query experience for charting.
 3. **Long retention on everything.** Two years of debug logs nobody has read since the week they were written.
 4. **Verbose application logging left at Debug in production.** A single chatty app can outweigh your entire infrastructure's telemetry.
 
-### The Controls
+#### The Controls
 
 - **Daily cap.** Set a hard ceiling on GB per day for the workspace. Ingestion **stops** when it's hit — which protects the bill and blinds you, so **always create an alert on the cap being reached**. Excellent as a runaway guard, dangerous as a routine mechanism.
 - **Commitment tiers.** Commit to 100 GB/day or more for a substantial discount over pay-as-you-go. Only relevant at real scale.
@@ -515,19 +515,19 @@ Usage
 
 ---
 
-# PART TWO — DETECT AND RESPOND
+## PART TWO — DETECT AND RESPOND
 
 > **Halfway point.** You can now collect telemetry and ask it questions. But everything so far has required *you* to go and look — and nobody is looking at 3am on a Sunday. The rest of the day is about the system looking for you, and telling you when something is wrong.
 
 ---
 
-## Part 8 — Getting Data Off a Machine: Agents and Data Collection Rules
+### Part 8 — Getting Data Off a Machine: Agents and Data Collection Rules
 
 Azure collects platform metrics and resource logs about your VM for free — but that's data about the **virtual machine as a resource**. It tells you nothing about what's happening **inside** the operating system: disk space, memory pressure, the Windows Event Log, syslog, application log files.
 
 For that you need an agent, and this is an area where the landscape changed and a lot of published material is now simply wrong.
 
-### The Agents That No Longer Exist
+#### The Agents That No Longer Exist
 
 | Agent | Status |
 |---|---|
@@ -538,7 +538,7 @@ For that you need an agent, and this is an area where the landscape changed and 
 
 If a tutorial tells you to install the Log Analytics agent and paste a workspace ID and key, **it is describing a product that no longer exists.** Given how much Azure content on the internet predates 2024, this is worth being alert to.
 
-### Data Collection Rules
+#### Data Collection Rules
 
 The Azure Monitor Agent works differently from what it replaced, and the difference is the important part.
 
@@ -560,13 +560,13 @@ That's a genuine improvement, and it's why "AMA plus DCR" is the phrase to remem
 
     If you inherit an environment with a script POSTing to a workspace with a shared key, **that is the thing to look at first.** By the time most people watch this, that date is here or just passed.
 
-### Transformations
+#### Transformations
 
 One capability worth knowing by name because it's the modern answer to cost control at the source. A DCR can apply a **KQL transformation to data in flight** — before it's stored, and therefore before you're billed.
 
 You can drop rows you don't care about, drop columns nobody reads, or mask a field containing personal data. **Filtering out 60% of a verbose log at ingestion time removes 60% of its cost**, which is a far better lever than deleting data later.
 
-### Hands-On: Look at the Machinery ✅
+#### Hands-On: Look at the Machinery ✅
 
 We're not building a VM today — it wouldn't stay free, and everything that matters here is visible without one.
 
@@ -581,11 +581,11 @@ We're not building a VM today — it wouldn't stay free, and everything that mat
 
 ---
 
-## Part 9 — Alerts: The Three Types, and What They Cost
+### Part 9 — Alerts: The Three Types, and What They Cost
 
 An alert rule is three things: **a signal to watch**, **a condition that makes it fire**, and **an action group that does something about it.** Same three parts every time.
 
-### The Three Types That Matter
+#### The Three Types That Matter
 
 | | **Metric alert** | **Log search alert** | **Activity log alert** |
 |---|---|---|---|
@@ -599,13 +599,13 @@ The practical guidance follows from that table: **use a metric alert if a metric
 
 There's also **resource health** and **service health** alerts, both free, and both worth having: *is my resource unhealthy*, and *is Azure itself having a problem in my region*. That second one saves you from spending an hour debugging Microsoft's outage.
 
-### Severity, and Using It Properly
+#### Severity, and Using It Properly
 
 Alerts carry a severity from **Sev 0 (Critical)** to **Sev 4 (Verbose)**. It's not decoration — it's what lets an action group route a Sev 0 to someone's phone and a Sev 3 to a mailbox.
 
 The discipline: **Sev 0 and Sev 1 must mean "wake someone up."** The fastest way to make monitoring worthless is to mark everything critical. When every alert is urgent, people stop reading them — and the one that mattered arrives in a mailbox nobody opens. **Alert fatigue is the most common failure mode of monitoring, and it's self-inflicted.**
 
-### Stateful vs Stateless
+#### Stateful vs Stateless
 
 A subtlety that catches people out. By default, **metric alerts are stateless**: the condition is met, it fires; still met on the next evaluation, it fires again. Notifications keep coming.
 
@@ -613,7 +613,7 @@ Tick **Automatically resolve alerts** and the rule becomes **stateful**: it fire
 
 **You almost always want this on.** It's the difference between "your disk filled up, and then recovered" and four hundred identical emails.
 
-### Alert Processing Rules
+#### Alert Processing Rules
 
 One more piece of vocabulary, because it solves a problem you'll hit within a month of running real alerts: **alert processing rules** sit between an alert firing and the notification going out. They can **suppress** notifications during a planned maintenance window, or **add an action group** to every alert in a scope without editing each rule.
 
@@ -621,11 +621,11 @@ That maintenance-window suppression is the answer to *"we're doing a deployment 
 
 ---
 
-## Part 10 — Action Groups: What Actually Happens
+### Part 10 — Action Groups: What Actually Happens
 
 An **action group** is a reusable list of who gets notified and what gets triggered. Define it once, attach it to fifty alert rules, change the on-call email in one place.
 
-### Notifications vs Actions
+#### Notifications vs Actions
 
 | **Notifications** — tell a human | **Actions** — do something |
 |---|---|
@@ -642,7 +642,7 @@ That last notification type is quietly excellent: **Email Azure Resource Manager
 
 And the **actions** column is where this stops being notification and becomes automation. An alert that fires a Logic App can restart the app, scale out, open a ticket and post to Teams, with no human in the loop. That's the ceiling of what's possible here, and it's how mature teams handle the routine failures.
 
-### Hands-On: Create an Action Group ✅
+#### Hands-On: Create an Action Group ✅
 
 1. **Monitor → Alerts → Action groups → + Create.** **✅**
 2. **Basics:** **Resource group** `rg-day19-demo`, **Action group name** `ag-lwm-oncall`, **Display name** `LWM OnCall` (12 characters max — it prefixes SMS and emails). **✅**
@@ -657,11 +657,11 @@ And the **actions** column is where this stops being notification and becomes au
 
 ---
 
-## Part 11 — Building Alerts That Actually Fire
+### Part 11 — Building Alerts That Actually Fire
 
 Three alerts, in increasing order of cleverness. Two are free; I'll tell you clearly when we cross into the one that isn't.
 
-### Hands-On: A Metric Alert ✅ (free — within the 10-series allowance)
+#### Hands-On: A Metric Alert ✅ (free — within the 10-series allowance)
 
 *"Tell me when my web app starts returning server errors."*
 
@@ -692,7 +692,7 @@ Three alerts, in increasing order of cleverness. Two are free; I'll tell you cle
 
         Also, **it takes 10–15 minutes after creating a resource before its metrics are available at all**, which is a real cause of "my brand new alert isn't working."
 
-### Hands-On: An Activity Log Alert ✅ (completely free)
+#### Hands-On: An Activity Log Alert ✅ (completely free)
 
 *"Tell me when someone deletes something."* This is the alert I'd put in every subscription I owned.
 
@@ -704,7 +704,7 @@ Three alerts, in increasing order of cleverness. Two are free; I'll tell you cle
 
    **This rule costs nothing to run, ever.** Activity log alerts are free, which makes them the best value in Azure Monitor — and "someone deleted a resource group" is exactly the event you want to hear about within the minute.
 
-### Hands-On: A Log Search Alert ⚠️ (~$0.50/month — build it, then delete it)
+#### Hands-On: A Log Search Alert ⚠️ (~$0.50/month — build it, then delete it)
 
 *"Tell me when there are more than five failed requests in five minutes."* A metric can't easily express this, so it's a genuine log alert.
 
@@ -733,11 +733,11 @@ Three alerts, in increasing order of cleverness. Two are free; I'll tell you cle
 
 ---
 
-## Part 12 — Application Insights
+### Part 12 — Application Insights
 
 Everything so far has monitored **infrastructure**. Application Insights monitors **the application** — and it answers a completely different class of question. Not *"is the server up?"* but *"why is checkout slow for some users, and which line of code is throwing?"*
 
-### What It Gives You
+#### What It Gives You
 
 - **Request rates, response times and failure rates**, per endpoint
 - **Dependency tracking** — every outbound call your app makes to SQL, Storage, Key Vault or an external API, timed individually. **This is usually where the answer is.** "The app is slow" is nearly always "one dependency is slow."
@@ -747,14 +747,14 @@ Everything so far has monitored **infrastructure**. Application Insights monitor
 - **Live Metrics** — a real-time stream with roughly a one-second lag, invaluable during a deployment
 - **Availability tests** — synthetic requests from Azure regions worldwide, alerting when your site is unreachable from somewhere
 
-### Two Things That Changed
+#### Two Things That Changed
 
 Both worth knowing, because they invalidate a lot of older material:
 
 - **Classic Application Insights was retired on 29 February 2024.** Every Application Insights resource is now **workspace-based** — its data lives in a Log Analytics workspace. Which is excellent news, because it means you can **query application telemetry and infrastructure logs in the same KQL query**, and it's why App Insights bills as workspace ingestion rather than separately.
 - **Instrumentation keys are out; connection strings are in.** Support for instrumentation-key ingestion ended **31 March 2025**. If you see `InstrumentationKey=...` alone in a config file, that's the old way. **Use the connection string.**
 
-### Hands-On: Turn It On ✅
+#### Hands-On: Turn It On ✅
 
 Auto-instrumentation means no code changes at all.
 
@@ -799,7 +799,7 @@ Auto-instrumentation means no code changes at all.
 
 ---
 
-## Part 13 — Visualising It: Dashboards, Workbooks and Insights
+### Part 13 — Visualising It: Dashboards, Workbooks and Insights
 
 Four ways to put this on a screen, and knowing which to reach for is the whole point.
 
@@ -818,7 +818,7 @@ The reason they matter operationally: a workbook can encode an **investigation**
 
 And **Azure ships dozens of them free** — every workspace and most services come with a gallery of prebuilt workbooks.
 
-### Hands-On: Both ✅
+#### Hands-On: Both ✅
 
 1. **Log Analytics workspace → Workbooks.** Browse the gallery. Open **Workspace Usage** and explore it. **✅**
 2. **+ New → + Add → Add text**, type `## Day 19 Monitoring`, then **Done Editing**. **✅**
@@ -841,9 +841,9 @@ And **Azure ships dozens of them free** — every workspace and most services co
 
 ---
 
-## Part 14 — Cost Control, Gotchas and Interview Prep
+### Part 14 — Cost Control, Gotchas and Interview Prep
 
-### Check What Today Cost You
+#### Check What Today Cost You
 
 1. **Log Analytics workspace → Settings → Usage and estimated costs.** Empty three hours ago, populated now. **✅**
 2. Run the billing query and see exactly where your (tiny) volume went: **✅**
@@ -860,7 +860,7 @@ And **Azure ships dozens of them free** — every workspace and most services co
 
    Then remember the rule from Part 7: **a daily cap that is hit stops ingestion, which means it blinds you.** Always pair it with an alert on the cap being reached. It's a runaway guard, not a budgeting tool.
 
-### The Gotchas That Waste Real Days
+#### The Gotchas That Waste Real Days
 
 - **Logs are off by default and not retroactive.** The single biggest one. No diagnostic setting on Tuesday means no Tuesday data, ever. Use **Azure Policy `DeployIfNotExists`** to enforce diagnostic settings at scale.
 - **The 5 GB free grant is per month, per billing account.** Not per day, not per workspace. This is *the* Azure Monitor billing misconception.
@@ -873,7 +873,7 @@ And **Azure ships dozens of them free** — every workspace and most services co
 - **The Log Analytics agent is retired**, the diagnostics extension is deprecated, **and the Data Collector API retires 14 September 2026.** If you're following a guide that uses any of them, the guide is out of date.
 - **Alert fatigue is a real outage cause.** If everything is Sev 0, nothing is.
 
-### Interview and Exam Quick Reference
+#### Interview and Exam Quick Reference
 
 | If you're asked… | The answer is… |
 |---|---|
