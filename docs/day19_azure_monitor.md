@@ -44,6 +44,9 @@
 | **Querying Analytics-plan data** | **Free**, however much you query | ✅ |
 | **Log search alert rules** | ~**$0.50/month** for the first time series, $0.05 each additional | ⚠️ **Tiny but not free — we build one and delete it** |
 | **Application Insights** | No separate charge — it bills as **Log Analytics ingestion**, so the 5 GB grant covers it | ✅ |
+| **`Standard_B1s` Linux VM** — today's test machine | **Free account: 750 B1s hours/month.** Otherwise ~**$0.0104/hr** — about **3 cents** for this lab | ✅ |
+| **Its public IP and 30 GB Standard SSD OS disk** | ~$0.005/hr + ~$0.08/day. Pennies — but note the **disk bills even when the VM is stopped** | ✅ |
+| **Azure Monitor Agent** | **The agent itself is free.** You pay only for what its data collection rule ingests — a few MB today | ✅ |
 | **SMS / voice notifications** | Charged per message | 💳 — we use email only |
 | **Basic logs / Auxiliary logs** | Cheaper to ingest, **charged per GB scanned to query** | 💳 — explained, not used |
 
@@ -60,6 +63,8 @@
 
 - A resource group called `rg-day19-demo`.
 - Nothing else. **Everything we monitor today, we build today** — because the honest way to learn monitoring is to watch real telemetry from something real, not to stare at an empty workspace.
+
+    At the end of Part 1 we build the two things we'll watch all day: **a web app** and **a small Linux VM**. The VM matters. Most of what you'll monitor in a real job is a machine, and half of monitoring a machine is getting data out of the operating system — which Azure does **not** do for you by default. Part 8 is where we fix that, and it needs a real VM to fix it on.
 
 !!! tip "Day 18 left three loose ends, and they're all today's job"
     Yesterday I answered three monitoring questions in one sentence each and moved past them: **the Log Analytics workspace** that received Key Vault audit logs, **the alert on denied vault access**, and **the Event Grid notification for an expiring secret.** All three were "that's Day 19."
@@ -111,6 +116,48 @@ Two things to take from that table before we go further.
 
 Everything today is somewhere on that diagram. **Diagnostic settings in the middle are the hinge** — they're the single mechanism, identical across every Azure service, that says "take this resource's telemetry and send it over there." Learn that box once and you've learned it for all of Azure.
 
+Look at the left column for a second, though, because it's the one that catches people out. **Azure resources and the control plane report themselves automatically. The guest OS does not.** Everything happening *inside* a virtual machine — disk space, syslog, the Windows Event Log, your application's log file — needs an agent, and that agent needs configuring. That row on the diagram is Part 8, and it's the reason we're building a VM in the next two minutes.
+
+#### Hands-On: Build the Two Things We'll Watch All Day ✅
+
+Monitoring an empty subscription teaches nothing. We need real telemetry, so first we need something real producing it — one PaaS service and one virtual machine, because they're monitored in genuinely different ways and the difference is half of today's lesson.
+
+**First, the web app:**
+
+1. **App Services → + Create → Web App.** **Resource group:** `rg-day19-demo`. **Name:** `app-lwm-day19-<yourname>`. **Publish:** Code. **Runtime:** any. **OS:** Linux. **Pricing plan: Free F1.** **Review + create → Create.** **✅**
+2. When it deploys, open it and click the **Default domain** URL. You should get the Azure placeholder page. **Refresh it fifteen or twenty times** — you're generating request telemetry, and we'll be using it all day. **✅**
+
+**Now the virtual machine.** Every setting here has a reason, so don't click through on autopilot:
+
+3. **Virtual machines → + Create → Azure virtual machine.** **✅**
+
+   | Setting | Value | Why this value |
+   |---|---|---|
+   | **Resource group** | `rg-day19-demo` | Everything in one group, deleted in one action |
+   | **Virtual machine name** | `vm-lwm-day19` | |
+   | **Image** | **Ubuntu Server 24.04 LTS — x64 Gen2** | |
+   | **Size** | **Standard_B1s** | Free account includes **750 B1s hours a month**, and B-series burstable VMs expose CPU-credit metrics nothing else has — we'll watch those in Part 2 |
+   | **Authentication type** | SSH public key → **Generate new key pair** | |
+   | **Public inbound ports** | **None** | We are never going to SSH into this machine |
+   | **Public IP** | Leave the default (a new Standard IP) | It's for **outbound** traffic only — see the note below |
+   | **OS disk type** | **Standard SSD**, 30 GB default | Cheapest option, and small enough that Part 8's disk-fill demo visibly moves the needle |
+   | **Boot diagnostics** | On, with a managed storage account | Free, and the only way to see the console if a VM won't boot |
+
+4. **Review + create → Create.** When it prompts you to download the private key, **download it and then ignore it** — we won't use it once today. **✅**
+
+    !!! note "Why a public IP on a machine with no open ports?"
+        Those two settings sound contradictory and they aren't. **Public inbound ports: None** means the NSG blocks every inbound connection — nobody can reach this VM. The public IP exists purely so the VM can make **outbound** calls, and it needs those, because in Part 8 the Azure Monitor Agent has to reach Azure Monitor's endpoints to send anything.
+
+        This used to be free and automatic. It isn't any more: **default outbound access for new VMs has been retired**, so a VM with no public IP and no NAT gateway has **no internet access at all** — and an agent on it would install and then silently fail to send data. That is a genuinely common "why is my agent not reporting?" and you now know the answer.
+
+        If you'd rather not have a public IP at all, the production-grade alternative is a **NAT gateway** (Day 11) — outbound only, nothing reachable inbound, about $1.10/day. For a three-hour lab the public IP is the cheaper, simpler choice.
+
+5. When it deploys, open `vm-lwm-day19` and stay on the **Overview** page. Scroll to the bottom. **✅**
+
+   **There are charts there already.** CPU percentage, network in and out, disk bytes — the VM has been running for ninety seconds and Azure is already recording it. Nobody enabled anything, nobody installed anything, and it costs nothing.
+
+   That's the whole point of Part 2, which is next.
+
 ---
 
 ### Part 2 — Metrics: The Data You Already Have
@@ -127,32 +174,94 @@ Three properties worth knowing by name, because the alert wizard in Part 11 asks
 - **Granularity.** The bucket size — one minute, five minutes, an hour. Finer granularity is available for recent data and gets rolled up as it ages.
 - **Dimensions.** Name–value pairs that split a metric into series. Storage account *Transactions* has an `ApiName` dimension; App Service *Requests* can split by status code. **Splitting by a dimension turns one line into many** — and, in an alert rule, turns one billable time series into many, which is worth remembering when the invoice arrives.
 
-#### Hands-On: Build Something to Watch ✅
+#### Hands-On: Metric Explorer on the VM ✅
 
-We need real telemetry, so first we need something real that produces it.
+We'll start on the VM, because a machine is what most people end up monitoring, and because it has the richest free metric set in Azure.
 
-1. **App Services → + Create → Web App.** **Resource group:** `rg-day19-demo`. **Name:** `app-lwm-day19-<yourname>`. **Publish:** Code. **Runtime:** any. **OS:** Linux. **Pricing plan: Free F1.** **Review + create → Create.** **✅**
-2. When it deploys, open it and click the **Default domain** URL. You should get the Azure placeholder page. **Refresh it fifteen or twenty times** — you're generating request telemetry, and we'll be using it all day. **✅**
+1. **`vm-lwm-day19` → Monitoring → Metrics.** **✅**
+2. **Metric:** `Percentage CPU`. **Aggregation:** `Average`. A mostly flat line near zero — the VM is idle. **✅**
+3. **+ Add metric** → **`Available Memory Bytes`**. **✅**
 
-#### Hands-On: Metric Explorer ✅
+    !!! warning "Yes, memory. This one has changed, and a lot of course material hasn't caught up"
+        For years the standard line was *"Azure can't see memory without an agent."* **That is no longer true.** `Available Memory Bytes` and `Available Memory Percentage` are **platform metrics** — collected by the host, free, no agent, no configuration.
 
-3. **App Service → Monitoring → Metrics.** **✅**
-4. **Metric:** `Requests`. **Aggregation:** `Sum`. There's your traffic. **✅**
-5. Now work the controls, because this blade is genuinely powerful and most people only ever use a tenth of it: **✅**
+        If you read a blog post or watch a video telling you to install an agent just to see memory, check its date. There are still real gaps that need an agent — we'll find them at the end of this part — but memory stopped being one of them.
+
+4. **+ Add metric** → **`CPU Credits Remaining`**. **✅**
+
+   This one only exists on **B-series burstable** VMs, which is exactly why we chose a B1s. Remember Day 3: a B1s doesn't get a full CPU, it gets a **baseline** plus a bank of credits it spends when it bursts above that baseline. This metric is the bank balance. Watch what happens to it in a moment.
+
+#### Hands-On: Make the Chart Move ✅
+
+An idle VM makes a boring chart. Let's give it something to do — **without opening a single port or touching an SSH key.**
+
+5. **`vm-lwm-day19` → Operations → Run command → `RunShellScript`.** **✅**
+6. Paste this and click **Run**: **✅**
+
+   ```bash
+   nohup timeout 300 bash -c 'while :; do :; done' >/dev/null 2>&1 &
+   nohup timeout 300 bash -c 'while :; do :; done' >/dev/null 2>&1 &
+   echo "CPU load started - will stop by itself in 5 minutes"
+   ```
+
+   Two busy loops on a one-core VM, pegged for five minutes, then they kill themselves.
+
+    !!! tip "Run command is the tool most people never discover"
+        It executes a script **as root** on the VM, through the Azure VM agent, using the **control plane** — so it needs **no open port, no SSH key, no public IP reachability and no Bastion.** It's an RBAC-gated operation: anyone with the right role can run commands on the machine.
+
+        That's worth two thoughts. Operationally it's the fastest way to fix a VM you've locked yourself out of. From a security angle, **`Microsoft.Compute/virtualMachines/runCommand/action` is effectively root on the box**, which is a very good reason not to hand out Contributor on production VMs — Day 17's lesson showing up in a place people don't expect.
+
+        It's also why our VM has no inbound rules at all today. We never needed them.
+
+7. Wait **two minutes** (metrics lag by a minute or two — say that out loud rather than clicking refresh in silence), then watch the chart. **✅**
+
+   **`Percentage CPU` climbs to ~100%.** And on the same chart, **`CPU Credits Remaining` starts falling** — you are watching the VM spend its burst budget in real time. Leave it long enough on a B1s and CPU gets throttled back to the baseline. That is the single clearest demonstration of burstable sizing anywhere in this course, and it cost nothing.
+
+#### Hands-On: The Controls, and Dimensions on the App Service ✅
+
+8. Still in Metric Explorer, work the toolbar — this blade is powerful and most people use a tenth of it: **✅**
    - **Time range** (top right) → last 30 minutes, then last 24 hours. Watch the granularity change automatically.
-   - **Add metric** → `Average Response Time`. Two metrics, one chart.
-   - **Apply splitting** → split `Requests` by **Http Status**. One line becomes several — this is dimensions, live.
-   - **Add filter** → restrict to a single status code.
-   - Change the chart type to **Bar** or **Area** from the toolbar.
-6. Click **Save to dashboard → Pin to dashboard**. Part 13 comes back to this. **✅**
-7. Now the useful trick nobody shows you: click **New alert rule** at the top of the Metrics blade. **✅**
+   - Change the chart type to **Bar** or **Area**.
+   - **Add filter** and **Apply splitting** — both greyed out or empty for most VM metrics, because **VM metrics have almost no dimensions.**
 
-   It opens the alert wizard **with your metric, aggregation and splitting already filled in**. Building an alert by first getting the chart right, then clicking that button, is far easier than building the rule from scratch. Close it without saving — Part 11 does this properly.
+9. So switch to the web app for that lesson: **App Service → Monitoring → Metrics**. **Metric:** `Requests`, **Aggregation:** `Sum`. **✅**
+10. **Apply splitting** → split by **Http Status**. One line becomes several. **✅**
+
+    That's dimensions, live — and it's why the App Service is the better teaching example here. The VM has the richer metrics; the App Service has the richer *shape*.
+
+11. Click **Save to dashboard → Pin to dashboard**. Part 13 comes back to this. **✅**
+12. Now the trick nobody shows you: click **New alert rule** at the top of the Metrics blade. **✅**
+
+    It opens the alert wizard **with your metric, aggregation and splitting already filled in**. Building an alert by first getting the chart right, then clicking that button, is far easier than building the rule from scratch. Close it without saving — Part 11 does this properly.
 
 !!! tip "The 93 days is already there, on everything"
     Go and open the Metrics blade on any resource you built earlier in this course and change the time range to the last 30 days. **The history is there**, because platform metrics were collected the whole time without anyone enabling anything.
 
     That's genuinely useful during an incident: *"has this been happening for weeks or did it start today?"* is often the most valuable question, and metrics can answer it retroactively even in an environment where nobody set up monitoring.
+
+#### What Metrics Cannot Tell You — Find the Gap Yourself
+
+Before we leave metrics, one exercise, and it sets up the second half of today.
+
+13. Back on the **VM's Metrics** blade, open the metric dropdown and type **`disk`** in the search box. **✅**
+
+    Count what comes back: *Disk Read Bytes*, *Disk Write Operations/Sec*, *OS Disk Latency*, *OS Disk Queue Depth*, *OS Disk IOPS Consumed Percentage*, data disk versions of all of them, burst credit percentages. **Dozens of disk metrics.**
+
+    Now find the one that tells you **how full the disk is**.
+
+    **It isn't there.** Azure will tell you your disk is doing 40 IOPS at 3 milliseconds of latency, and it cannot tell you that it is 98% full and about to take your application down tonight.
+
+That's not an oversight — it's the boundary. **Platform metrics are measured by the host, from outside the machine.** The host can see the virtual disk's I/O because it's serving it. It cannot see the *filesystem* on that disk, because filesystems exist inside the guest OS, and Azure deliberately does not look inside your VM.
+
+Three things sit on the far side of that boundary:
+
+| Not available from platform metrics | Why |
+|---|---|
+| **Disk space used and free** | A filesystem concept, invisible from the host |
+| **Per-process data** — what's actually eating the CPU | Inside the guest |
+| **Every log in the OS** — syslog, Windows Event Log, your application's log file | Inside the guest |
+
+Getting at those three needs an **agent inside the machine**, and that is **Part 8**. Hold that thought — we come back to this exact VM and get the disk number the portal just refused to give us.
 
 ---
 
@@ -223,7 +332,9 @@ The anti-pattern is **a workspace per application**, which people reach for by i
 #### Hands-On: Create a Workspace ✅
 
 1. Search **Log Analytics workspaces → + Create**. **✅**
-2. **Resource group:** `rg-day19-demo`. **Name:** `law-lwm-day19`. **Region:** the same region as your App Service. **Review + create → Create.** **✅**
+2. **Resource group:** `rg-day19-demo`. **Name:** `law-lwm-day19`. **Region:** the same region as your App Service and VM. **Review + create → Create.** **✅**
+
+    Keep everything in one region today. Part 8's data collection rule **must** live in the same region as this workspace, and one region for the whole lab removes a class of confusing failures.
 3. Open it and read the left menu — this is the map of the rest of the day: **✅**
    - **Logs** — the KQL query editor (Part 6)
    - **Tables** — every table, with its **table plan** and retention (Part 7)
@@ -410,10 +521,17 @@ AppServiceHTTPLogs
 
    **What am I even collecting?**
    ```kusto
-   union withsource=TableName *
-   | summarize Records = count() by TableName
+   search *
+   | summarize Records = count() by ["$table"]
    | order by Records desc
    ```
+
+    !!! tip "What `$table` is"
+        `search *` scans every table in the workspace and adds a built-in column called **`$table`** holding the name of the table each row came from. Summarising by it gives you one row per table with a record count — a complete inventory of what you're actually ingesting, in three lines.
+
+        The square brackets and quotes around `["$table"]` are required, because `$` isn't a legal character in a bare KQL column name. Leave them off and the query fails to parse.
+
+        Run this on any unfamiliar workspace as your very first query. It tells you what's being collected before you waste time guessing at table names — and it's often the fastest way to spot something expensive that nobody meant to switch on.
 
    **Every control-plane operation in the last day:**
    ```kusto
@@ -566,13 +684,135 @@ One capability worth knowing by name because it's the modern answer to cost cont
 
 You can drop rows you don't care about, drop columns nobody reads, or mask a field containing personal data. **Filtering out 60% of a verbose log at ingestion time removes 60% of its cost**, which is a far better lever than deleting data later.
 
-#### Hands-On: Look at the Machinery ✅
+#### Hands-On: Build a Real Data Collection Rule ✅
 
-We're not building a VM today — it wouldn't stay free, and everything that matters here is visible without one.
+This is the part Part 2 promised. `vm-lwm-day19` has been running since Part 1 and we still cannot see how full its disk is. Let's fix that properly.
 
-1. Search **Monitor → Settings → Data Collection Rules.** Empty, and now you know what would live here. **✅**
-2. Click **+ Create** and walk the wizard **without saving**: **Resources** (which machines), **Collect and deliver** (data sources and destinations), where you'd add *Performance Counters*, *Windows Event Logs* or *Linux Syslog*. **Cancel out.** **✅**
-3. **Log Analytics workspace → Settings → Agents.** Read it, and note there's no "download the agent and paste this key" flow any more. **✅**
+!!! tip "Build first, talk second — a recording-order note"
+    The agent takes **five to fifteen minutes** to install and start sending. So create the rule **now**, then go back and read the concept sections above while it works. Don't create it and then sit watching an empty table — that's the most boring five minutes you can put in a video, and it's entirely avoidable.
+
+1. **Monitor → Settings → Data Collection Rules → + Create.** **✅**
+
+    You may see a banner offering the **classic creation experience**. Either works; the steps below follow the current default one, and the classic version differs mainly in having an explicit Windows/Linux **Platform Type** selector on the Basics tab.
+
+2. **Basics:** **✅**
+
+   | Field | Value |
+   |---|---|
+   | **Rule Name** | `dcr-lwm-day19` |
+   | **Resource group** | `rg-day19-demo` |
+   | **Region** | **the same region as `law-lwm-day19`** |
+   | **Data Collection Endpoint** | **Leave empty** |
+
+    !!! warning "The region has to match the workspace"
+        A DCR must be in the **same region as any Log Analytics workspace it delivers to.** Get it wrong and the workspace simply won't appear in the destination dropdown later, with no explanation of why. If you have machines spread across regions, you need one DCR per region pointing at the same workspace.
+
+    !!! note "Why no data collection endpoint?"
+        A **DCE** is only needed for specific scenarios — **Azure Monitor Private Link**, or the **Logs Ingestion API** for custom data. Performance counters and syslog from AMA don't need one. Know the acronym for the exam; don't create one today.
+
+3. **Resources → + Add resources →** tick **`vm-lwm-day19`** → **Apply**. **✅**
+
+   Stop here for a second, because three things just happened that you didn't ask for:
+
+   - **The Azure Monitor Agent will be installed automatically** on that VM. There is no separate "install the extension" step any more — creating a DCR and adding resources **is** the recommended way to deploy AMA from the portal.
+   - **An association** between the rule and the machine is created. That's a real object you can list later.
+   - **A system-assigned managed identity is enabled on the VM**, because that's how the agent authenticates to Azure Monitor. Day 17's managed identity, switched on for you, holding a credential nobody has to store.
+
+4. **Collect and deliver → + Add new dataflow** (or **+ Add data source** in the classic experience). **Data source type: Performance Counters.** **✅**
+5. Choose **Custom**, set **sample rate to 60 seconds**, and select these four: **✅**
+
+   ```text
+   Processor(*)\% Processor Time
+   Memory(*)\% Used Memory
+   Logical Disk(*)\% Used Space        ← the one Part 2 could not give us
+   Logical Disk(*)\Free Megabytes
+   ```
+
+6. **Destination:** *Azure Monitor Logs* → `law-lwm-day19`. **Add data source.** **✅**
+7. **+ Add new dataflow** again. **Data source type: Linux Syslog.** **✅**
+8. Select only the facilities you actually want — **`user`**, **`auth`** and **`daemon`** — with a minimum log level of **`LOG_INFO`**. Destination: the same workspace. **✅**
+
+    !!! danger "This screen is where people burn the 5 GB grant"
+        The syslog picker lets you tick **every facility at `LOG_DEBUG`** in about two seconds. Do that across a fleet and you will ingest gigabytes a day of noise nobody will ever read, at ~$2.30 a gigabyte.
+
+        **Collect the facilities you'd actually investigate, at the level you'd actually act on.** Everything else is a bill with no reader. This is the single highest-leverage cost decision in Azure Monitor, and it's made on a checkbox screen that looks harmless.
+
+9. **Review + create → Create.** **✅**
+
+#### Hands-On: Verify the Agent Before You Blame the Query ✅
+
+Now go and teach the rest of Part 8 while that installs. When you come back:
+
+10. **Log Analytics workspace → Logs**, and run the check that should always come first: **✅**
+
+    ```kusto
+    Heartbeat
+    | where TimeGenerated > ago(30m)
+    | summarize arg_max(TimeGenerated, *) by Computer
+    | project Computer, TimeGenerated, Category, Version, OSType
+    ```
+
+    **A healthy agent writes a `Heartbeat` record every single minute.** If `vm-lwm-day19` is there with a timestamp under a minute old, the agent is installed, authenticated and talking to Azure Monitor.
+
+    **Make this your reflex.** When guest data is missing, check `Heartbeat` before you touch the query. No heartbeat is an agent, network or identity problem; a heartbeat with no data is a DCR configuration problem. Those are two completely different afternoons.
+
+    !!! note "If there's no heartbeat after fifteen minutes"
+        | Check | Why |
+        |---|---|
+        | **VM → Extensions + applications** | Is `AzureMonitorLinuxAgent` listed, and does it say **Provisioning succeeded**? |
+        | **VM → Identity** | Is the system-assigned identity **On**? The agent authenticates with it |
+        | **Outbound internet** | No public IP and no NAT gateway means the agent can install and never send. The single most common cause |
+        | **DCR region** | Must match the workspace region |
+
+#### Hands-On: Get the Number the Portal Refused to Give You ✅
+
+11. Give the agent a couple of minutes of perf samples, then run: **✅**
+
+    ```kusto
+    Perf
+    | where TimeGenerated > ago(1h)
+    | where ObjectName == "Logical Disk" and CounterName == "% Used Space"
+    | summarize avg(CounterValue) by bin(TimeGenerated, 5m), InstanceName
+    | render timechart
+    ```
+
+    **There it is.** The percentage of disk used, per filesystem — the exact number that does not exist anywhere in platform metrics, now sitting in a table you can query, chart, alert on and keep for a year.
+
+12. Make it move. **VM → Run command → `RunShellScript`:** **✅**
+
+    ```bash
+    logger -p user.err "LWM Day 19 - simulated application error"
+    logger -p user.info "LWM Day 19 - routine informational message"
+    fallocate -l 4G /var/tmp/bigfile
+    df -h /
+    ```
+
+    `df` reports the disk several gigabytes fuller than it was. Wait a few minutes and **re-run the query** — the line **steps up**.
+
+13. And the logs from inside the machine: **✅**
+
+    ```kusto
+    Syslog
+    | where TimeGenerated > ago(1h)
+    | project TimeGenerated, Computer, Facility, SeverityLevel, SyslogMessage
+    | order by TimeGenerated desc
+    ```
+
+    Your two `logger` messages are in there, alongside everything else the OS has been saying — sudo invocations, systemd units starting, the Run command extension itself doing its work. **None of this was visible to Azure twenty minutes ago.**
+
+14. Put the disk back: **Run command** → `rm /var/tmp/bigfile`, and watch the chart come down. **✅**
+
+    That round trip — a real change inside a VM, visible as a queryable number in Azure — is the whole reason agents exist.
+
+#### One Click That Does All Of This: VM Insights
+
+15. **Monitor → Virtual Machines → Insights**, or **VM → Monitoring → Insights**. **Read it, don't enable it.** **✅**
+
+    **VM Insights** is the packaged version of everything you just built by hand: enable it on a VM and Azure creates its own DCR (you'll see them named `MSVMI-*`), installs AMA, collects a standard performance set, and gives you pre-built charts plus — with the Dependency Agent — a **Map** view showing which processes are talking to what.
+
+    It's genuinely good, and it's what most teams use. Two reasons we built the DCR manually first: **you can't tune what you don't understand**, and VM Insights collects **considerably more data** than our four counters. On one lab VM that's fine. On two hundred, it's a conversation with whoever owns the bill.
+
+16. **Log Analytics workspace → Settings → Agents.** Read it and note what's *missing*: no "download the agent, paste this workspace ID and key" flow. That world is gone. **✅**
 
 !!! tip "The exam-shaped answer"
     *"How do you collect the Windows Security Event Log from 200 VMs into Azure Monitor?"* → **Azure Monitor Agent, configured with a data collection rule, associated with those machines — deployed at scale with Azure Policy.**
@@ -922,7 +1162,12 @@ And **Azure ships dozens of them free** — every workspace and most services co
     !!! warning "Don't skip step 3"
         It's the same trap as yesterday's soft-deleted vault: the resource group delete looks like cleanup and leaves something behind, in a blade you weren't looking at. A diagnostic setting pointing at a deleted workspace is harmless but messy — and if you'd pointed it at a workspace you kept, it would quietly keep ingesting and billing.
 
-4. **Delete the resource group `rg-day19-demo`.** This removes the App Service, the plan, the workspace, Application Insights, the action group and the workbook. **✅**
+4. **Delete the resource group `rg-day19-demo`.** This removes the App Service, the plan, the VM, its disk, NIC and public IP, the data collection rule, the workspace, Application Insights, the action group and the workbook. **✅**
+
+    !!! warning "Stopping the VM is not the same as deleting it"
+        If you want to keep the lab for another session, **deallocating the VM stops the compute charge but not the rest of it** — the OS disk and the public IP keep billing whether the machine runs or not. That's roughly $0.10 a day for something switched off.
+
+        The data collection rule costs nothing on its own, but the agent keeps ingesting for as long as the VM is running. Delete the group and all of it goes at once.
 5. **Keep `Priya Sharma` and `grp-finance-team`** — Day 30's capstone uses them. **✅**
 6. **Keep `db-lwm-demo`** — Day 30 needs it. **✅**
 

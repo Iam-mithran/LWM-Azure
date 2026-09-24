@@ -45,6 +45,8 @@ Researched against current Microsoft documentation before writing. What shaped t
 | **What is genuinely free** | Docs are explicit: platform metric collection/analysis **and activity log collection *and alerting*** incur no charge. Metric alerts include **10 free time series**. | Part 9 — shapes which demos are free |
 | **Log alerts cost** | ~$0.50/month first time series, $0.05 each additional; splitting by dimensions multiplies it. | Part 11 — the one flagged paid step |
 | **Data Collector API retires 14 Sept 2026** | Days after this script was written. Replacement is the DCR-based **Logs Ingestion API** (Entra auth, not shared keys). | Part 8 |
+| **Memory is a platform metric now** | **`Available Memory Bytes` and `Available Memory Percentage` need no agent.** The old "Azure can't see memory without an agent" line is wrong. The genuine agent-only gaps are **disk fullness, per-process data and guest logs**. B-series also exposes `CPU Credits Remaining/Consumed`. | Part 2 — the gap reveal, and the hook for Part 8 |
+| **Portal installs AMA for you** | Creating a DCR and adding a VM **auto-installs the Azure Monitor Agent**, creates the association, and **enables a system-assigned managed identity** on the machine. No DCE needed for perf counters or syslog. DCR region must match the workspace region. | Part 8 — the hands-on build |
 | **Agent landscape** | **MMA retired 31 Aug 2024**; Azure Diagnostics extension **deprecated 31 Mar 2026**; Dependency Agent retires 30 June 2028. **AMA + DCR is the only current answer.** | Part 8 |
 | **App Insights** | Classic **retired 29 Feb 2024** — workspace-based only. **Instrumentation key ingestion support ended 31 Mar 2025** — connection strings now. | Part 12 |
 | **Table plans** | Analytics / Basic / Auxiliary, with Basic and Auxiliary **charged per GB scanned to query**. Retention split into **interactive** (31 days free) and **total/long-term** (12 years), configurable **per table**. Default Analytics retention 30 days. | Part 7 |
@@ -62,12 +64,22 @@ incident or receiving a surprise bill for the privilege of watching.
 Four data types — metrics, logs, traces, changes — in one table with cost and retention. **The free
 column is bigger than beginners expect; the bill is one column: logs.** ASCII diagram of
 sources → diagnostic settings → stores → consumers, which the rest of the day walks through.
+**The guest-OS row on that diagram is the one that needs an agent** — the setup for Part 8.
+*Demo: build the two things we watch all day — the Free F1 App Service and `vm-lwm-day19`, a
+`Standard_B1s` Ubuntu VM with **no inbound ports** (public IP for outbound only, because default
+outbound access is retired). Then look at the VM Overview charts already populating with nobody
+having enabled anything.*
 
 **2. Metrics: The Data You Already Have**
 Free, 93 days, near real-time, already collected on everything. Aggregation / granularity /
 dimensions — the three things the alert wizard will ask about. **Average hides spikes; Max finds them.**
-*Demo: create the Free F1 App Service we monitor all day, generate traffic, then work Metric Explorer
-properly — splitting, filters, multiple metrics, pin, and the "New alert rule" shortcut.*
+*Demo: Metric Explorer on the VM — `Percentage CPU`, `Available Memory Bytes` and the B-series-only
+`CPU Credits Remaining`. **Run command** (no port, no key, no Bastion) burns CPU for five minutes and
+the credit balance visibly drains. Then the App Service for the dimensions lesson — `Requests` split
+by Http Status — plus pin-to-dashboard and the "New alert rule" shortcut.*
+**Closes with the gap that sets up Part 8:** search the VM metric picker for `disk` and find dozens of
+IOPS/latency/burst metrics and **nothing about how full the disk is**. Memory is NOT the gap any more —
+say so explicitly. The real gaps are **disk fullness, per-process data, and every log inside the OS**.
 
 **3. The Activity Log: Who Did That?**
 Free, 90 days, control plane only — the third outing for the control/data-plane split. The seven
@@ -105,7 +117,14 @@ people overspend.** Daily cap, commitment tiers, and the `Usage` query to run on
 The retirement table. **Why DCRs are better than the old workspace-level config** — many-to-many,
 deployable, governable. **The 14 Sept 2026 Data Collector API retirement.** Transformations as
 cost control at ingestion.
-*Demo: walk the DCR wizard and cancel — no VM, so the lab stays free.*
+*Demo: build a real DCR against `vm-lwm-day19` — perf counters (including
+`Logical Disk(*)\% Used Space`, the number Part 2 could not get) plus Linux syslog, into the workspace.
+Verify with **`Heartbeat`** before querying anything else, then Run command writes `logger` messages and
+`fallocate`s a 4 GB file so the `Perf` disk line visibly steps up and `Syslog` fills. Closes by reading
+**VM Insights** as the packaged one-click version, without enabling it.*
+**Build the rule first and teach the concept sections while AMA installs** — it takes 5–15 minutes.
+The VM costs about 3 cents for the lab (free on a free account's 750 B1s hours), so "no VM to stay
+free" no longer applies.
 
 **9. Alerts: The Three Types, and What They Cost**
 Comparison table with **cost per type** as a first-class column. Severity as a routing decision and
