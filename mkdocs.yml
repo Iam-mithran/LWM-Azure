@@ -66,3 +66,4 @@ nav:
   - "Day 17 — Microsoft Entra ID & Azure RBAC": day17_entra_id_rbac.md
   - "Day 18 — Azure Key Vault": day18_key_vault.md
   - "Day 19 — Azure Monitor, Log Analytics & Alerts": day19_azure_monitor.md
+  - "Day 20 — Capstone: Build a Complete Three-Tier Application": day20_capstone.md
