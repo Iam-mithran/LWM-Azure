@@ -125,7 +125,7 @@ Three things are now fully established and should be **used, not re-taught**, wh
 - **Key Vault + variable groups.** Day 18 Part 10 builds managed identity → data-plane role → reference, and Part 10's closing tip names **Azure DevOps variable groups linked to a vault** as "the same shape, that's Day 22."
 - **Azure Monitor.** Day 19's closing section promises both of the above by name. Deployments should emit telemetry somewhere the student already knows how to query.
 
-Also reusable: `Priya Sharma`, `grp-finance-team` and `db-lwm-demo` are still alive after all three cleanups, kept deliberately for Day 30's capstone.
+Nothing is carried forward as a live resource: every day's resources are deleted after recording, and the Day 20 capstone builds its SQL server, database and everything else from scratch.
 
 ### Standard to hold
 

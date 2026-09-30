@@ -22,7 +22,9 @@ application, and **stopping halfway through would leave them with an app that do
 - **Chapters carry the weight** that a shorter runtime normally would. Every part gets a timestamp,
   and the four phase boundaries get obvious "you can stop here for a break" markers.
 - **The full cleanup happens at the end of this video.** Unlike the two-part plan this replaces,
-  nothing has to survive until next time except `db-lwm-demo`, `Priya Sharma` and `grp-finance-team`.
+  nothing has to survive until next time.
+- **Built entirely from scratch.** Nothing from earlier days is reused — the SQL server and database
+  are created fresh inside `rg-lwm-capstone`, so one resource-group delete removes the whole system.
 
 ## Numbering — Unresolved, Deliberately
 
@@ -80,7 +82,7 @@ and **two of them are corrections to our own earlier days**:
 | **VNet integration needs Basic, not Premium** ⚠️ | Regional VNet integration requires a **Basic, Standard, Premium, Premium v2/v3/v4 or Elastic Premium** plan. **B1 works.** Free F1 does not. There is **no extra charge** for the feature beyond the plan. | Part 13. **Day 6's plan table lists VNet integration as a Premium feature and Day 18 Part 11 says "Standard or higher" — both are wrong and should be corrected in those scripts.** |
 | **Bastion Developer SKU is free** ⚠️ | Free, needs **no `AzureBastionSubnet`**, dev/test only, **one VM connection at a time**, and **does not work across VNet peering**. | Part 10. **Day 11 teaches only Basic (~$0.19/hr) and Standard — it should gain a Developer row**, because it removes the one genuinely painful cost from that day. |
 | **Integration subnet sizing** | The subnet must be **delegated to `Microsoft.Web/serverFarms`**, hard minimum **/28**, **/26 recommended** by Microsoft (and /27 is the portal minimum when the subnet is created during integration), one IP per plan instance, and **at most two integrations per App Service plan**. | Parts 4 and 13 |
-| **Azure SQL free offer still current** | ~**100,000 vCore-seconds/month**, **32 GB** data, **32 GB** backup, on every subscription type, not time-limited. Auto-pause keeps the worst case at "paused", not "billed". | Part 7 — we reuse `db-lwm-demo` from Day 16 |
+| **Azure SQL free offer still current** | ~**100,000 vCore-seconds/month**, **32 GB** data, **32 GB** backup, on every subscription type, not time-limited. Auto-pause keeps the worst case at "paused", not "billed". | Part 7 — we create `db-lwm-expenses` fresh on the free offer |
 | **Basic Load Balancer is gone** | Standard only. Internal and public Standard LBs bill the same way: ~**$0.025/hr** plus ~**$0.005/hr per rule**. | Part 11 |
 
 ## Goal
@@ -120,7 +122,7 @@ password.**
         ┌─────────────────────────────────────────┐
         │  DATA TIER                              │   Azure SQL — public access DISABLED
         │  snet-data  10.20.3.0/24                │   Private endpoint + privatelink zone
-        │  db-lwm-demo (free offer)               │   NSG: only snet-app may reach :1433
+        │  db-lwm-expenses (free offer)           │   NSG: only snet-app may reach :1433
         └─────────────────────────────────────────┘
 
   Secrets:     kv-lwm-capstone-<name>  — connection string, read via managed identity
@@ -135,7 +137,7 @@ password.**
 |---|---|---|
 | VNet, subnets, NSGs, ASGs, private DNS zone | **Free** (private DNS zone ~$0.50/mo) | ✅ |
 | 2 × `Standard_B1s` VMs | **Free tier: 750 B1s hours/month.** Otherwise ~$0.012/hr each | ✅ |
-| Azure SQL `db-lwm-demo` | **Free offer** — already running since Day 16 | ✅ |
+| Azure SQL `db-lwm-expenses` | **Free offer** — created fresh in Part 7 | ✅ |
 | Azure Bastion **Developer SKU** | **Free** | ✅ |
 | **App Service plan B1** | ~**$0.018/hr** (~$13/mo). **Not free, and F1 cannot do VNet integration** | ✅ *cents for a session* |
 | Internal Load Balancer (Standard) | ~$0.025/hr + ~$0.005/hr per rule ≈ **$0.72/day** | ✅ *cents for a session* |
@@ -206,16 +208,19 @@ destination instead of hardcoded IPs.
 *Demo: build `nsg-app` and `nsg-data`, attach them, and read the effective rules.* ✅
 
 **7. The Data Tier: SQL Behind a Private Endpoint**
-Reuse `db-lwm-demo` from Day 16. **Turn public network access off** — the moment that makes this a
+Create `sql-lwm-cap-<name>` / `db-lwm-expenses` from scratch in `rg-lwm-capstone` on the free offer,
+with the AdventureWorksLT sample, public endpoint and client IP allowed. Query it from the portal once
+so it visibly works. Then **turn public network access off** — the moment that makes this a
 real architecture. Create the private endpoint into `snet-data`, watch Azure create the
 `privatelink.database.windows.net` private DNS zone and link it to the VNet, and explain why the
 connection string does not change (Day 13 and Day 11 paying off together).
-*Demo: disable public access, add the private endpoint, inspect the DNS zone's A record.* ✅
+*Demo: create the server and database, query it, disable public access, add the private endpoint,
+inspect the DNS zone's A record.* ✅
 
 **8. Prove the Database Is Private**
 Three proofs, in order, because "trust me" is not an architecture:
 1. From your **laptop**, connect with SSMS or the portal query editor → **fails**.
-2. From `vm-app-1` via Bastion, `nslookup sql-lwm-<name>.database.windows.net` → **10.20.3.x**.
+2. From `vm-app-1` via Bastion, `nslookup sql-lwm-cap-<name>.database.windows.net` → **10.20.3.x**.
 3. From the same VM, `sqlcmd` → **connects**.
 *Demo: all three. This is the emotional high point of the first half — don't rush it.* ✅
 
@@ -325,7 +330,7 @@ with the **27 October 2026 opt-in change** repeated from Day 18.
 number that makes the cost table above real.* ✅
 Then cleanup in the right order: remove the resource lock, delete `rg-lwm-capstone`, **purge the
 soft-deleted vault** (Day 18's trap), and confirm the private endpoint went with it.
-**Keep `db-lwm-demo`, `Priya Sharma` and `grp-finance-team`.**
+The SQL server and database go with the group — **nothing is kept**; confirm the subscription is empty.
 Closing interview table — every architecture question this build answers — then what the next phase
 of the course does with it.
 

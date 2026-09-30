@@ -2,7 +2,7 @@
 
 **Phase 9 — Capstone Project**
 
-> Nineteen days. Virtual machines, web apps, storage accounts, virtual networks, subnets, network security groups, load balancers, DNS zones, a SQL database, users and roles, a key vault, and a monitoring workspace. Every one of those was a lesson, and every one of them ended with a cleanup step. Today none of it gets thrown away, because today we stop learning services and start **building a system**. One brief, one architecture, one continuous build — and at the end of it a real application where a person opens a browser, sees data that came from a database **no one on the internet can reach**, served by machines that have **no public IP addresses**, using a password that exists in **exactly one place** and is typed into **no configuration screen anywhere**. This is the video where all nineteen days become one thing.
+> Nineteen days. Virtual machines, web apps, storage accounts, virtual networks, subnets, network security groups, load balancers, DNS zones, a SQL database, users and roles, a key vault, and a monitoring workspace. Every one of those was a lesson, and every one of them ended with a cleanup step — so today we start from an **empty subscription** and build every piece again, from scratch, and this time they work together. Today we stop learning services and start **building a system**. One brief, one architecture, one continuous build — and at the end of it a real application where a person opens a browser, sees data that came from a database **no one on the internet can reach**, served by machines that have **no public IP addresses**, using a password that exists in **exactly one place** and is typed into **no configuration screen anywhere**. This is the video where all nineteen days become one thing.
 
 ---
 
@@ -28,7 +28,7 @@
 
 - A VNet carved into four planned subnets, with a budget alert set before anything billable exists
 - NSGs and ASGs that make it three tiers instead of one flat network — including **the default rule that quietly undoes your work**
-- Azure SQL with **public network access switched off entirely**, reachable only through a private endpoint
+- A brand-new Azure SQL database on the free offer, then **public network access switched off entirely**, reachable only through a private endpoint
 - **Three proofs** that the database really is private
 
 **Phase Three — App tier and web tier**
@@ -61,7 +61,7 @@ Most of this build is free. Three things are not, and I'd rather you saw the num
 |---|---|---|
 | VNet, subnets, NSGs, ASG, private DNS zone | **Free** (a private DNS zone is ~$0.50/month) | ✅ |
 | 2 × `Standard_B1s` VMs | **Free account: 750 B1s hours/month.** Otherwise ~$0.012/hr each | ✅ |
-| Azure SQL `db-lwm-demo` | **Free offer** — already running since Day 16 | ✅ |
+| Azure SQL `db-lwm-expenses` | **Free offer** — created fresh in Part 7 | ✅ |
 | **Azure Bastion Developer SKU** | **Free** | ✅ |
 | Key Vault (Standard) | No base fee; operations $0.03 per 10,000 | ✅ |
 | Log Analytics + Application Insights | Inside the **5 GB per billing account per month** free grant | ✅ |
@@ -74,7 +74,7 @@ Most of this build is free. Three things are not, and I'd rather you saw the num
 | Application Gateway + WAF instead of the internal load balancer | ~$0.246/hr + capacity units ≈ **$180+/month** | 💳 discussed in Part 20, never deployed |
 
 !!! warning "Four meters run continuously, and none of them sleep"
-    Your Day 16 database auto-pauses when nobody uses it. **The App Service plan, the load balancer, the NAT gateway and the private endpoint do not.** They bill by the hour from creation to deletion whether you're watching or not.
+    The serverless database auto-pauses when nobody uses it. **The App Service plan, the load balancer, the NAT gateway and the private endpoint do not.** They bill by the hour from creation to deletion whether you're watching or not.
 
     That is exactly why **Part 5 sets a budget alert before creating anything billable**, and why **Part 22 deletes everything**. If you have to stop mid-build, deallocate both VMs and stop the App Service — that parks most of it at around a dollar a day — but the honest advice is: **block out an afternoon and finish it.**
 
@@ -82,8 +82,8 @@ Most of this build is free. Three things are not, and I'd rather you saw the num
 
 ### Set this up first
 
-- **`db-lwm-demo` and `sql-lwm-<yourname>` from Day 16** — still on the free offer. Today it becomes a real data tier. If you deleted it, Day 16 Part 3 recreates it in about five minutes.
-- **`Priya Sharma` and `grp-finance-team` from Day 17** — we kept them alive for exactly this day.
+- **Nothing from earlier days.** Every resource today — including the SQL server and database — is created from scratch, inside one resource group, purely for this project. If you still have leftovers from previous days, leave them alone; nothing here touches them.
+- **The Azure SQL free offer still available on your subscription.** Each subscription gets up to **10** free-offer databases, so an old Day 16 database doesn't block you — but if the *Apply offer* banner doesn't appear in Part 7, that's the first thing to check.
 - A region you've been using consistently. **Everything today must be in one region** — VNet, VMs, App Service plan and SQL server. An App Service plan cannot integrate with a VNet in a different region.
 - Roughly **four hours**, or two sessions with the break marker in between.
 
@@ -120,7 +120,7 @@ Here is everything we're building. Screenshot this — we'll come back to it at 
                             ▼
         ┌─────────────────────────────────────────────────┐
         │  DATA TIER — state                              │
-        │  db-lwm-demo on sql-lwm-<name>                  │
+        │  db-lwm-expenses on sql-lwm-cap-<name>          │
         │  PUBLIC NETWORK ACCESS: DISABLED                │
         │  private endpoint in snet-data  10.20.3.0/24    │
         │  privatelink.database.windows.net DNS zone      │
@@ -344,11 +344,12 @@ A convention is worth having for one reason: **six months from now, in a subscri
 | App Service plan / app | `asp-lwm-capstone` / `app-lwm-capstone-<yourname>` | **The app name is globally unique** — it becomes `<name>.azurewebsites.net` |
 | Key Vault | `kv-lwm-cap-<yourname>` | **Globally unique**, 3–24 characters, so the short form |
 | Log Analytics / App Insights | `law-lwm-capstone` / `appi-lwm-capstone` | |
+| SQL logical server / database | `sql-lwm-cap-<yourname>` / `db-lwm-expenses` | **The server name is globally unique** — it becomes `<name>.database.windows.net` |
 | Private endpoint | `pe-sql-capstone` | |
 | Private DNS zone | `lwm.internal` | |
 
 !!! warning "Three names in this build are globally unique across all of Azure"
-    The **App Service name**, the **Key Vault name** and (from Day 16) the **SQL server name**. All three become DNS names, so `app-lwm-capstone` is almost certainly already taken by somebody. **Append something personal** — that's what `<yourname>` means every time you see it today.
+    The **App Service name**, the **Key Vault name** and the **SQL server name**. All three become DNS names, so `app-lwm-capstone` is almost certainly already taken by somebody. **Append something personal** — that's what `<yourname>` means every time you see it today.
 
     And from Day 18: a deleted vault **keeps its name reserved** for the whole soft-delete retention period. If you re-run this lab next month and the vault name is refused, that's why — Part 22 purges it deliberately.
 
@@ -571,7 +572,67 @@ This one is genuinely obscure and it would silently ruin the data tier's securit
 
 ### Part 7 — The Data Tier: SQL With No Public Endpoint
 
-Now the piece the brief was really about. `db-lwm-demo` has been running on the free offer since Day 16, reachable from the internet and protected by a firewall rule. We're going to take it off the internet entirely.
+Now the piece the brief was really about. We don't have a database yet, so we build one — a brand-new logical server and database on the free offer, living in `rg-lwm-capstone` with everything else, so it disappears with the group at the end.
+
+We'll create it the way Day 16 did — **public endpoint, your client IP allowed** — and prove it works from your laptop. Then we take it off the internet entirely, and watch that same test fail. Seeing it work first is what makes the failure mean something.
+
+#### Hands-On: Create the SQL Server and Database ✅
+
+1. **Azure SQL → + Create → SQL databases (Single database) → Create.** **✅**
+2. **Basics:** **✅**
+
+   | Field | Value |
+   |---|---|
+   | **Resource group** | `rg-lwm-capstone` |
+   | **Database name** | `db-lwm-expenses` |
+   | **Server** | **Create new** (next step) |
+
+3. **Create new server:** **✅**
+
+   | Field | Value |
+   |---|---|
+   | **Server name** | `sql-lwm-cap-<yourname>` — **globally unique**, it becomes `sql-lwm-cap-<yourname>.database.windows.net` |
+   | **Location** | **the same region as `vnet-capstone`** — the private endpoint and the VNet must match |
+   | **Authentication method** | **Use both SQL and Microsoft Entra authentication** |
+   | **Set Microsoft Entra admin** | your own account |
+   | **Server admin login** | `sqladmin` |
+   | **Password** | something strong — **write it down**, it goes into the connection string in Part 16 |
+
+   Click **OK**.
+
+4. Back on Basics, click **Apply offer** on the *"Want to try Azure SQL Database for free?"* banner. **✅**
+
+    !!! warning "No banner, no free database"
+        If the banner isn't there, open **Compute + storage** and look for the free-offer option. If it genuinely isn't offered, your subscription has used all ten free-offer databases — delete an old one rather than creating a paid database. The free offer is what keeps the data tier at **$0** today.
+
+5. **Want to use SQL elastic pool?** **No.** **Workload environment:** **Development**. **✅**
+6. **Compute + storage:** confirm it shows **General Purpose — Serverless** with **auto-pause** enabled. Set **Behavior when free limit reached** to **Auto-pause the database until next month** — that makes an accidental bill impossible. **✅**
+7. **Backup storage redundancy:** **Locally-redundant.** **✅**
+8. **Networking** tab: **✅**
+
+   | Field | Value |
+   |---|---|
+   | **Connectivity method** | **Public endpoint** — for now |
+   | **Allow Azure services and resources to access this server** | **No** — Day 16 explained why it's wider than it sounds, and we won't need it |
+   | **Add current client IP address** | **Yes** |
+   | **Minimum TLS version** | 1.2 |
+
+    !!! tip "Why not pick Private endpoint right here?"
+        The wizard *can* create a private endpoint at the same time. We deliberately don't, for two reasons: we want to **see the database reachable first** so that disabling public access is a visible change, and the **Private access** tab on the server gives a cleaner walkthrough of the DNS integration in a moment.
+
+9. **Additional settings:** **Use existing data → Sample.** That loads the AdventureWorksLT tables, so there's real data behind the app. **✅**
+10. **Review + create → Create.** Two to four minutes. **✅**
+
+#### Hands-On: Prove It Works From the Internet — Once ✅
+
+11. Open **`db-lwm-expenses` → Query editor (preview)** and sign in with `sqladmin` and your password. **✅**
+12. Run: **✅**
+
+    ```sql
+    SELECT TOP 5 FirstName, LastName, CompanyName FROM SalesLT.Customer;
+    ```
+
+    Five rows. **Remember this moment** — your laptop, over the public internet, reading data. In about sixty seconds, the exact same action will be refused.
 
 #### What a private endpoint actually does
 
@@ -581,47 +642,47 @@ Three things happen when you create one, and understanding all three is what mak
 2. **A private link connection** is established between that NIC and the SQL service. Traffic to that IP is delivered to your database over Microsoft's backbone, never the public internet.
 3. **A private DNS zone** called `privatelink.database.windows.net` is created and linked to your VNet, containing an A record that points your server's name at `10.20.3.4`.
 
-Step 3 is the elegant part. Your connection string stays **exactly the same** — `sql-lwm-<yourname>.database.windows.net`. From inside the VNet, that name now resolves to a private IP. From outside, it resolves to the public one, which we're about to switch off. **The application never knows anything changed.**
+Step 3 is the elegant part. Your connection string stays **exactly the same** — `sql-lwm-cap-<yourname>.database.windows.net`. From inside the VNet, that name now resolves to a private IP. From outside, it resolves to the public one, which we're about to switch off. **The application never knows anything changed.**
 
 #### Hands-On: Disable Public Access ✅
 
-1. Go to **SQL servers → `sql-lwm-<yourname>`** — the *server*, not the database. **✅**
-2. **Security → Networking → Public access** tab. **✅**
-3. Set **Public network access** to **Disable**. Note what disappears: the firewall rules and the *Allow Azure services* toggle grey out, because they're meaningless now. **Save.** **✅**
+13. Go to **SQL servers → `sql-lwm-cap-<yourname>`** — the *server*, not the database. **✅**
+14. **Security → Networking → Public access** tab. **✅**
+15. Set **Public network access** to **Disable**. Note what disappears: the client IP firewall rule you added five minutes ago greys out, because it's meaningless now. **Save.** **✅**
 
-4. Prove it immediately, while it's fresh: go to the **database → Query editor (preview)** and try to sign in. **✅**
+16. Prove it immediately, while it's fresh: go back to **`db-lwm-expenses` → Query editor (preview)** and sign in exactly as you did in step 11. **✅**
 
-   **It fails**, with a message about public network access being disabled. The portal's query editor connects from the internet like any other client, so it is now locked out — **including for you, the owner.** That is the requirement working as intended, and it's worth sitting with for a second: you have just made your own database unreachable from your own laptop.
+    **It fails**, with a message about public network access being disabled. Same laptop, same password, same query editor that returned five rows a minute ago. The portal's query editor connects from the internet like any other client, so it is now locked out — **including for you, the owner.** That is the requirement working as intended, and it's worth sitting with for a second: you have just made your own database unreachable from your own laptop.
 
 #### Hands-On: Create the Private Endpoint ✅
 
-5. Still on the server: **Security → Networking → Private access** tab → **+ Create a private endpoint**. **✅**
-6. **Basics:** **✅**
+17. Still on the server: **Security → Networking → Private access** tab → **+ Create a private endpoint**. **✅**
+18. **Basics:** **✅**
 
-   | Field | Value |
-   |---|---|
-   | **Resource group** | `rg-lwm-capstone` |
-   | **Name** | `pe-sql-capstone` |
-   | **Network interface name** | leave the generated default |
-   | **Region** | same region as the VNet |
+    | Field | Value |
+    |---|---|
+    | **Resource group** | `rg-lwm-capstone` |
+    | **Name** | `pe-sql-capstone` |
+    | **Network interface name** | leave the generated default |
+    | **Region** | same region as the VNet |
 
-7. **Resource tab:** the target sub-resource is **`sqlServer`**. **✅**
+19. **Resource tab:** the target sub-resource is **`sqlServer`**. **✅**
 
     !!! note "Sub-resources are why one service can have several private endpoints"
         A storage account has `blob`, `file`, `queue`, `table`, `web` and `dfs` — each is a separate private endpoint. A SQL server has exactly one: `sqlServer`. When an exam question asks how many private endpoints a storage account needs for blobs *and* files, the answer is **two**.
 
-8. **Virtual Network tab:** **Virtual network** `vnet-capstone`, **Subnet** `snet-data`. Leave **Dynamically allocate IP address** selected. **✅**
-9. **DNS tab:** **Integrate with private DNS zone: Yes**. It will create `privatelink.database.windows.net` in `rg-lwm-capstone`. **✅**
-10. **Review + create → Create.** It takes a minute or two. **✅**
+20. **Virtual Network tab:** **Virtual network** `vnet-capstone`, **Subnet** `snet-data`. Leave **Dynamically allocate IP address** selected. **✅**
+21. **DNS tab:** **Integrate with private DNS zone: Yes**. It will create `privatelink.database.windows.net` in `rg-lwm-capstone`. **✅**
+22. **Review + create → Create.** It takes a minute or two. **✅**
 
 #### Hands-On: Look at What Was Created ✅
 
-11. Open `pe-sql-capstone` → **Overview**. Note the **private IP** — probably `10.20.3.4`, because `.0` to `.3` are reserved. **Write it down.** **✅**
-12. Go to **Private DNS zones → `privatelink.database.windows.net` → Overview**. **✅**
+23. Open `pe-sql-capstone` → **Overview**. Note the **private IP** — probably `10.20.3.4`, because `.0` to `.3` are reserved. **Write it down.** **✅**
+24. Go to **Private DNS zones → `privatelink.database.windows.net` → Overview**. **✅**
 
-    There's an **A record** for `sql-lwm-<yourname>` pointing at that private IP. Nobody typed it — the DNS integration checkbox created it.
+    There's an **A record** for `sql-lwm-cap-<yourname>` pointing at that private IP. Nobody typed it — the DNS integration checkbox created it.
 
-13. Click **Virtual network links** in that zone. There's a link to `vnet-capstone`, also created automatically. **This is the piece that makes the name resolve**: a private DNS zone only affects VNets that are linked to it. **✅**
+25. Click **Virtual network links** in that zone. There's a link to `vnet-capstone`, also created automatically. **This is the piece that makes the name resolve**: a private DNS zone only affects VNets that are linked to it. **✅**
 
 !!! warning "The most common private endpoint failure is a DNS failure"
     When somebody says "the private endpoint isn't working," it is almost never the endpoint. It's DNS, and it's one of these three:
@@ -643,13 +704,13 @@ We can't finish these until the VMs exist — proof 2 and 3 need a machine insid
 | # | Test | Run from | Expected result |
 |---|---|---|---|
 | 1 | Portal **Query editor** or SSMS | Your laptop, over the internet | ❌ **Refused** — public network access is disabled |
-| 2 | `nslookup sql-lwm-<yourname>.database.windows.net` | `vm-app-1`, inside the VNet | ✅ Resolves through `privatelink...` to **10.20.3.4** |
-| 3 | `nc -zv sql-lwm-<yourname>.database.windows.net 1433` | `vm-app-1`, inside the VNet | ✅ **Connection succeeded** |
+| 2 | `nslookup sql-lwm-cap-<yourname>.database.windows.net` | `vm-app-1`, inside the VNet | ✅ Resolves through `privatelink...` to **10.20.3.4** |
+| 3 | `nc -zv sql-lwm-cap-<yourname>.database.windows.net 1433` | `vm-app-1`, inside the VNet | ✅ **Connection succeeded** |
 
-Proof 1 you already did, in Part 7 step 4. Proofs 2 and 3 happen in Part 10, the moment we can get a shell on a VM.
+Proof 1 you already did, in Part 7 step 16 — and you saw it succeed first in step 11, which is what makes the refusal convincing. Proofs 2 and 3 happen in Part 10, the moment we can get a shell on a VM.
 
 !!! tip "Do the same nslookup from Cloud Shell to see the other half"
-    Run `nslookup sql-lwm-<yourname>.database.windows.net` in **Cloud Shell** — which is outside your VNet — and you'll get the **public** IP back. Same name, two answers, depending on which network you're asking from.
+    Run `nslookup sql-lwm-cap-<yourname>.database.windows.net` in **Cloud Shell** — which is outside your VNet — and you'll get the **public** IP back. Same name, two answers, depending on which network you're asking from.
 
     That single comparison explains Azure Private Link better than any diagram. The name never changed. The answer did.
 
@@ -718,7 +779,7 @@ write_files:
     permissions: '0755'
     content: |
       #!/bin/bash
-      SQL_FQDN="sql-lwm-<yourname>.database.windows.net"
+      SQL_FQDN="sql-lwm-cap-<yourname>.database.windows.net"
       ZONE=$(curl -s -H Metadata:true "http://169.254.169.254/metadata/instance/compute/zone?api-version=2021-02-01&format=text")
       if nc -z -w 3 "$SQL_FQDN" 1433; then DB=true; else DB=false; fi
       mkdir -p /var/www/html/api
@@ -876,14 +937,14 @@ Now we can finish what Part 8 started. Still in the Bastion terminal:
 4. **Proof 2 — DNS resolves to a private address:** **✅**
 
    ```bash
-   nslookup sql-lwm-<yourname>.database.windows.net
+   nslookup sql-lwm-cap-<yourname>.database.windows.net
    ```
 
    ```text
    Non-authoritative answer:
-   sql-lwm-<yourname>.database.windows.net
-       canonical name = sql-lwm-<yourname>.privatelink.database.windows.net.
-   Name:   sql-lwm-<yourname>.privatelink.database.windows.net
+   sql-lwm-cap-<yourname>.database.windows.net
+       canonical name = sql-lwm-cap-<yourname>.privatelink.database.windows.net.
+   Name:   sql-lwm-cap-<yourname>.privatelink.database.windows.net
    Address: 10.20.3.4
    ```
 
@@ -892,11 +953,11 @@ Now we can finish what Part 8 started. Still in the Bastion terminal:
 5. **Proof 3 — the port actually answers:** **✅**
 
    ```bash
-   nc -zv sql-lwm-<yourname>.database.windows.net 1433
+   nc -zv sql-lwm-cap-<yourname>.database.windows.net 1433
    ```
 
    ```text
-   Connection to sql-lwm-<yourname>.database.windows.net 1433 port [tcp/ms-sql-s] succeeded!
+   Connection to sql-lwm-cap-<yourname>.database.windows.net 1433 port [tcp/ms-sql-s] succeeded!
    ```
 
 6. **The contrast that makes the point.** Open **Cloud Shell** (the `>_` icon in the portal, which runs *outside* your VNet) and run the same `nslookup`. **✅**
@@ -912,11 +973,12 @@ Now we can finish what Part 8 started. Still in the Bastion terminal:
     curl -sSL -O https://packages.microsoft.com/config/ubuntu/24.04/packages-microsoft-prod.deb
     sudo dpkg -i packages-microsoft-prod.deb && sudo apt-get update
     sudo ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev
-    /opt/mssql-tools18/bin/sqlcmd -S sql-lwm-<yourname>.database.windows.net \
-      -U <admin> -P '<password>' -d db-lwm-demo -C -Q "SELECT @@VERSION"
+    /opt/mssql-tools18/bin/sqlcmd -S sql-lwm-cap-<yourname>.database.windows.net \
+      -U sqladmin -P '<password>' -d db-lwm-expenses -C \
+      -Q "SELECT TOP 5 FirstName, LastName, CompanyName FROM SalesLT.Customer"
     ```
 
-    It's a couple of minutes of downloads, so it's optional on camera — but it's the difference between "the port is open" and "the database answered."
+    It's a couple of minutes of downloads, so it's optional on camera — but it's the difference between "the port is open" and "the database answered." And it's the same five customers your laptop read in Part 7, now arriving over a private IP from a machine your laptop can't even see.
 
 ---
 
@@ -1388,7 +1450,7 @@ Day 18 built this pattern on a throwaway app. Today it goes into a real architec
 
 #### Hands-On: Store the Connection String ✅
 
-4. Get the real value: **SQL databases → `db-lwm-demo` → Settings → Connection strings → ADO.NET** tab, and copy it. **✅**
+4. Get the real value: **SQL databases → `db-lwm-expenses` → Settings → Connection strings → ADO.NET** tab, and copy it. **✅**
 5. Replace `{your_password}` with your actual SQL admin password. **✅**
 6. **Vault → Objects → Secrets → + Generate/Import:** **✅**
 
@@ -1578,7 +1640,7 @@ Same pattern four times — **Monitoring → Diagnostic settings → + Add diagn
 
 4. **Load balancer `lb-app-internal`:** name `lb-to-law`, tick **Load Balancer Health Event** and **AllMetrics**, same destination. **✅**
 
-5. **SQL database `db-lwm-demo`:** name `sql-to-law`, tick **Errors**, **Timeouts**, **Deadlocks** and **Basic** metrics, same destination. **✅**
+5. **SQL database `db-lwm-expenses`:** name `sql-to-law`, tick **Errors**, **Timeouts**, **Deadlocks** and **Basic** metrics, same destination. **✅**
 
 6. Generate some traffic — refresh the website fifteen or twenty times, and hit a URL that doesn't exist (`/nope`) two or three times so there's something interesting in the logs. **✅**
 
@@ -1846,7 +1908,7 @@ You've just told me what's wrong with your architecture. Now let's see whether M
 
 3. **Delete the resource group.** `rg-lwm-capstone` → **Delete resource group**, type the name, confirm. **✅**
 
-   This takes several minutes and removes, in dependency order: the App Service and plan, the VMs and disks, the load balancer, the NAT gateway and its public IP, the private endpoint, the NSGs, the ASG, the VNet, the workspace, App Insights, the vault and the private DNS zones.
+   This takes several minutes and removes, in dependency order: the App Service and plan, the VMs and disks, the load balancer, the NAT gateway and its public IP, the private endpoint, the SQL database and its logical server, the NSGs, the ASG, the VNet, the workspace, App Insights, the vault and the private DNS zones.
 
     !!! warning "If the delete fails, it's almost always the integration subnet"
         A VNet with an integrated App Service can refuse to delete, because a **service association link** is still attached to `snet-web-integration`. Deleting the whole resource group usually sequences this correctly, but if it stalls: delete the **App Service** on its own first, then retry the group.
@@ -1859,18 +1921,9 @@ You've just told me what's wrong with your architecture. Now let's see whether M
 
 6. **Delete the budget** if you don't want it, though I'd keep it: **Cost Management → Budgets → `budget-capstone`**. **✅**
 
-7. **Keep these three things:** **✅**
+7. **Confirm the subscription is back to empty.** **All resources** should show nothing from today — in particular, no **SQL servers** and no **Private endpoints**. Because every single thing was built inside `rg-lwm-capstone`, one delete removed the whole system. **✅**
 
-   | Keep | Why |
-   |---|---|
-   | `db-lwm-demo` and `sql-lwm-<yourname>` | Free offer, and re-enable **public network access** on the server so Day 16's query editor works again |
-   | `Priya Sharma` | Free, and still the demo identity for later days |
-   | `grp-finance-team` | Free, same reason |
-
-    !!! danger "Don't forget to turn SQL's public access back on"
-        We disabled it in Part 7 and the private endpoint that replaced it has just been deleted with the resource group. **Right now that database is reachable from nowhere at all** — including by you.
-
-        **SQL server → Security → Networking → Public network access → Selected networks**, then re-add your client IP firewall rule. Do it now, while you remember, not in three weeks when you can't work out what's wrong.
+    That's Decision 6 paying off. Nothing today depended on anything outside the group, so there's nothing outside it to forget.
 
 #### The interview and exam quick reference
 
