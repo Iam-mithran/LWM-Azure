@@ -7,7 +7,7 @@
 ---
 
 !!! danger "This is a project video, and it is long on purpose"
-    Every other day in this course is capped at two hours. **This one is not.** Expect around **three and a half hours**, in four phases, with break markers where you can safely stop and come back.
+    Every other day in this course is capped at two hours. **This one is not.** Expect around **three hours**, in four phases, with break markers where you can safely stop and come back. After the video there's a **homework** section — monitoring for the whole build — and two **add-ons** you work through on your own, including the cleanup.
 
     **Don't skim it.** Each phase depends on the one before, and unlike every other day, stopping halfway leaves you with an application that doesn't run. Use the chapter markers, take the breaks where I tell you to, and finish it.
 
@@ -40,14 +40,22 @@
 - **App Service VNet integration** — the one new concept today, and the glue that makes PaaS and IaaS one application
 - Watching the web tier fail *before* integration, then work *after*
 
-**Phase Four — Secrets, names, monitoring, hardening**
+**Phase Four — Secrets and a real domain**
 
 - The connection string moves into Key Vault and gets read **two different ways** — a Key Vault reference on PaaS, an IMDS token on IaaS
-- Private DNS so the app tier has a name instead of an IP
+- An **Azure DNS public zone** for `learnwithmithran.com`, **delegated from GoDaddy** by swapping the name servers
+- **A custom domain on the App Service** — the CNAME, the TXT ownership record, and why App Service insists on both
+- A **free App Service Managed Certificate** that renews itself, and what it can't do
+
+**Homework — monitor the whole workspace**
+
 - One workspace collecting every tier, and KQL that follows a single request across all three
 - Alerts that fire while you watch, on purpose
-- **An honest list of everything still wrong with this architecture, with prices** — the senior skill
-- Secure Score reading your own decisions back to you, then a complete cleanup
+
+**Add-ons — on your own**
+
+- **An honest list of everything still wrong with this architecture, with prices** — the senior skill — and Secure Score reading your decisions back to you
+- The real bill, and a complete cleanup — including undoing the delegation at the registrar
 
 ---
 
@@ -64,28 +72,32 @@ Most of this build is free. Three things are not, and I'd rather you saw the num
 | Azure SQL `db-lwm-expenses` | **Free offer** — created fresh in Part 7 | ✅ |
 | **Azure Bastion Developer SKU** | **Free** | ✅ |
 | Key Vault (Standard) | No base fee; operations $0.03 per 10,000 | ✅ |
-| Log Analytics + Application Insights | Inside the **5 GB per billing account per month** free grant | ✅ |
+| **Azure DNS public zone** (`learnwithmithran.com`) | ~**$0.50/month** per zone + ~$0.40 per million queries | ✅ effectively free |
+| **App Service Managed Certificate** | **Free**, auto-renewing | 💳 needs a domain you own |
+| A registered domain | Paid to the registrar (~$10–15/year), not to Azure | 💳 instructor's domain |
+| Log Analytics + Application Insights | Inside the **5 GB per billing account per month** free grant | ✅ homework |
 | **App Service plan, Basic B1** | ~**$0.018/hr** (~$13/month) | ⚠️ **Not free.** Free F1 cannot do VNet integration |
 | **Internal Load Balancer** (Standard) | ~$0.025/hr + ~$0.005/hr per rule ≈ **$0.72/day** | ⚠️ small but constant |
 | **NAT Gateway** | ~$0.045/hr + $0.045/GB ≈ **$1.10/day** | ⚠️ small but constant |
 | **Private endpoint** | ~$0.01/hr ≈ **$0.25/day** + tiny data processing | ⚠️ small but constant |
 | **A four-hour build, everything running, deleted at the end** | **≈ $0.35** | ✅ |
 | **The same build left running for a week** | **≈ $16** | ⚠️ |
-| Application Gateway + WAF instead of the internal load balancer | ~$0.246/hr + capacity units ≈ **$180+/month** | 💳 discussed in Part 20, never deployed |
+| Application Gateway + WAF instead of the internal load balancer | ~$0.246/hr + capacity units ≈ **$180+/month** | 💳 discussed in Add-on A, never deployed |
 
 !!! warning "Four meters run continuously, and none of them sleep"
     The serverless database auto-pauses when nobody uses it. **The App Service plan, the load balancer, the NAT gateway and the private endpoint do not.** They bill by the hour from creation to deletion whether you're watching or not.
 
-    That is exactly why **Part 5 sets a budget alert before creating anything billable**, and why **Part 22 deletes everything**. If you have to stop mid-build, deallocate both VMs and stop the App Service — that parks most of it at around a dollar a day — but the honest advice is: **block out an afternoon and finish it.**
+    That is exactly why **Part 5 sets a budget alert before creating anything billable**, and why **Add-on B deletes everything** the moment you finish. If you have to stop mid-build, deallocate both VMs and stop the App Service — that parks most of it at around a dollar a day — but the honest advice is: **block out an afternoon and finish it.**
 
-**There are no 💳 instructor-only steps today.** Every single thing we build, you can build.
+**Parts 1 to 16 have no 💳 instructor-only steps** — every single thing in them, you can build. **Part 17 is the one exception**, and only partly: anyone can create the DNS zone and its records, but delegating a domain, binding it to the app and issuing its certificate need a domain you actually own. I'm using `learnwithmithran.com`, registered at GoDaddy. If you own a domain, use yours and every step works the same.
 
 ### Set this up first
 
 - **Nothing from earlier days.** Every resource today — including the SQL server and database — is created from scratch, inside one resource group, purely for this project. If you still have leftovers from previous days, leave them alone; nothing here touches them.
 - **The Azure SQL free offer still available on your subscription.** Each subscription gets up to **10** free-offer databases, so an old Day 16 database doesn't block you — but if the *Apply offer* banner doesn't appear in Part 7, that's the first thing to check.
 - A region you've been using consistently. **Everything today must be in one region** — VNet, VMs, App Service plan and SQL server. An App Service plan cannot integrate with a VNet in a different region.
-- Roughly **four hours**, or two sessions with the break marker in between.
+- Roughly **three to four hours** for the build, or two sessions with the break marker in between — plus an hour for the homework.
+- **Optional, for Part 17:** a domain you own, and access to its registrar's name-server settings.
 
 !!! tip "One habit that will save you today"
     Open the portal in **two browser tabs**. One stays on the resource group so you can watch things appear; the other does the work. Most confusion in a long build comes from losing track of where you are.
@@ -99,10 +111,14 @@ Here is everything we're building. Screenshot this — we'll come back to it at 
 ```text
                               Internet
                                   │
+              https://www.learnwithmithran.com
+     GoDaddy ──NS──▶ Azure DNS public zone ──CNAME──▶ the app
+                                  │
                                   ▼
         ┌─────────────────────────────────────────────────┐
         │  WEB TIER — presentation                        │
         │  app-lwm-capstone-<name>   App Service B1       │
+        │  custom domain + free managed TLS certificate   │
         │  system-assigned managed identity               │
         │  app setting = @Microsoft.KeyVault(...)         │
         └───────────────────┬─────────────────────────────┘
@@ -128,7 +144,7 @@ Here is everything we're building. Screenshot this — we'll come back to it at 
 
    Secrets       kv-lwm-cap-<name>   — one secret, two identities read it
    Management    Azure Bastion Developer SKU (free) — no public IP on any VM
-   Monitoring    law-lwm-capstone + appi-lwm-capstone — every tier reports in
+   Monitoring    law-lwm-capstone + appi-lwm-capstone — every tier (homework)
    Reserved      10.20.0.0/26 — AzureBastionSubnet, if Bastion is ever upgraded
 ```
 
@@ -153,7 +169,8 @@ That's it. That's the whole brief. Four requirements hiding in five sentences:
 | "A web page… the data goes in SQL" | Three tiers: presentation, logic, data |
 | "Not reachable from the internet" | Private endpoint, public network access disabled, NSGs |
 | "Two people, without sharing a login" | Entra ID users and **RBAC**, not a shared admin account |
-| "Know when it breaks" | Diagnostic settings, a Log Analytics workspace, alert rules |
+| "Know when it breaks" | Diagnostic settings, a Log Analytics workspace, alert rules — **your homework** |
+| "Staff log in on a web page" | A real domain with HTTPS, not `*.azurewebsites.net` |
 | "Keep the cost sensible" | Every choice gets priced, and a budget alert exists from minute one |
 
 **Notice what the brief does not say.** It doesn't say "use Kubernetes." It doesn't say "microservices." It doesn't mention a single Azure service by name — because the person asking doesn't know any, and **it isn't their job to know.** Translating that paragraph into resources *is* the job, and doing it with the smallest set of services that satisfies every line is what "good architecture" means.
@@ -172,12 +189,14 @@ This is the part I want to land before we touch anything. **There is no new mate
 | VNets, subnets, NSGs, ASGs | Day 10 | Four subnets and the rules between them |
 | Private endpoints, Bastion, NAT gateway | Day 11 | Private SQL, VM access, outbound internet |
 | Load Balancer (internal), health probes | Day 12 | Spreading traffic across the app tier |
-| Private DNS zones, A records | Day 13 | Giving the app tier a name |
+| Private DNS zones | Day 13 | Resolving SQL to its private endpoint |
+| Public DNS zones, delegation, CNAME and TXT records | Day 13 | A real domain in front of the web tier |
+| Custom domains, managed certificates | Day 6 | HTTPS on that domain |
 | Azure SQL, the free offer | Day 16 | The data tier |
 | Entra ID, RBAC, managed identity | Day 17 | Who can administer it, and how machines authenticate |
 | Key Vault, references, data-plane roles | Day 18 | The one place the password lives |
-| Log Analytics, diagnostic settings, KQL, alerts | Day 19 | Knowing when it breaks |
-| Defender for Cloud Secure Score | Day 18 | Grading our own work at the end |
+| Log Analytics, diagnostic settings, KQL, alerts | Day 19 | Knowing when it breaks — the homework |
+| Defender for Cloud Secure Score | Day 18 | Grading our own work — Add-on A |
 
 **The one new thing:** **App Service regional VNet integration** (Part 13). Day 6 never reached it, and there is no way to connect a PaaS web tier to VMs inside a VNet without it. It gets a proper explanation rather than a quick click.
 
@@ -343,15 +362,15 @@ A convention is worth having for one reason: **six months from now, in a subscri
 | Load balancer | `lb-app-internal` | The word *internal* is doing real work here |
 | App Service plan / app | `asp-lwm-capstone` / `app-lwm-capstone-<yourname>` | **The app name is globally unique** — it becomes `<name>.azurewebsites.net` |
 | Key Vault | `kv-lwm-cap-<yourname>` | **Globally unique**, 3–24 characters, so the short form |
-| Log Analytics / App Insights | `law-lwm-capstone` / `appi-lwm-capstone` | |
+| Log Analytics / App Insights | `law-lwm-capstone` / `appi-lwm-capstone` | The workspace is created in the homework |
 | SQL logical server / database | `sql-lwm-cap-<yourname>` / `db-lwm-expenses` | **The server name is globally unique** — it becomes `<name>.database.windows.net` |
 | Private endpoint | `pe-sql-capstone` | |
-| Private DNS zone | `lwm.internal` | |
+| Public DNS zone | `learnwithmithran.com` | **Your own domain** — the zone name is the domain itself |
 
 !!! warning "Three names in this build are globally unique across all of Azure"
     The **App Service name**, the **Key Vault name** and the **SQL server name**. All three become DNS names, so `app-lwm-capstone` is almost certainly already taken by somebody. **Append something personal** — that's what `<yourname>` means every time you see it today.
 
-    And from Day 18: a deleted vault **keeps its name reserved** for the whole soft-delete retention period. If you re-run this lab next month and the vault name is refused, that's why — Part 22 purges it deliberately.
+    And from Day 18: a deleted vault **keeps its name reserved** for the whole soft-delete retention period. If you re-run this lab next month and the vault name is refused, that's why — Add-on B purges it deliberately.
 
 > **BREAK MARKER 1.** That's the entire design: four subnets, three tiers, six decisions with prices attached, and a naming convention. Everything from here is building it. If you're splitting this over two sittings, this is the natural place to stop — **nothing exists yet, so nothing is billing you.**
 
@@ -1275,7 +1294,7 @@ Select **both files** — not the folder — and zip them into `webtier.zip`. Th
     !!! warning "Do not pick Free F1 here"
         The portal will happily offer it, and everything will work right up until Part 13's integration step, where the option simply won't be available. **F1 cannot integrate with a VNet.** If you've already created the app on F1, **Scale up (App Service plan) → B1** fixes it without recreating anything.
 
-3. **Monitoring** tab: set **Enable Application Insights** to **Yes** and let it create `appi-lwm-capstone` — we use it in Part 19. **✅**
+3. **Monitoring** tab: set **Enable Application Insights** to **Yes** and let it create `appi-lwm-capstone` — the monitoring homework uses it. **✅**
 4. **Networking** tab: leave everything default for now. **Review + create → Create.** **✅**
 
 #### Hands-On: Deploy the Code ✅
@@ -1406,9 +1425,9 @@ The web tier is now the **only** public surface in this architecture, which make
    - **Front Door or Application Gateway in front:** allow only the `AzureFrontDoor.Backend` service tag, so nobody can bypass the WAF by hitting the app's default hostname directly. **This is the one people forget**, and it makes an expensive WAF entirely optional for an attacker who reads DNS.
 
 !!! warning "Your app has a public hostname you cannot remove"
-    `app-lwm-capstone-<yourname>.azurewebsites.net` is permanent and publicly resolvable for the life of the app. Adding a custom domain **adds** a name; it doesn't remove that one.
+    `app-lwm-capstone-<yourname>.azurewebsites.net` is permanent and publicly resolvable for the life of the app. In Part 17 we add `www.learnwithmithran.com` — and that **adds** a name; it doesn't remove this one.
 
-    That's why Part 20 lists "the default hostname is still reachable" as a genuine outstanding gap, and why the access restriction above is the standard mitigation.
+    That's why Add-on A lists "the default hostname is still reachable" as a genuine outstanding gap, and why the access restriction above is the standard mitigation.
 
 > **BREAK MARKER 2.** The application works end to end: browser → App Service → internal load balancer → VM → private database. If you're splitting this across two sittings, stop here — but **deallocate both VMs and stop the App Service first**, or you'll pay for idle infrastructure overnight.
 >
@@ -1416,7 +1435,7 @@ The web tier is now the **only** public surface in this architecture, which make
 
 ---
 
-## PHASE FOUR — SECRETS, NAMES, MONITORING AND HARDENING
+## PHASE FOUR — SECRETS AND A REAL DOMAIN
 
 ### Part 16 — The Connection String Leaves the Config File
 
@@ -1437,7 +1456,7 @@ Day 18 built this pattern on a throwaway app. Today it goes into a real architec
    | **Days to retain deleted vaults** | 90 |
    | **Purge protection** | **Disabled** |
 
-    We leave purge protection off for exactly the reason Day 18 gave: **so cleanup in Part 22 actually works.** In production it goes on, and it can never come back off.
+    We leave purge protection off for exactly the reason Day 18 gave: **so the cleanup in Add-on B actually works.** In production it goes on, and it can never come back off.
 
 2. **Access configuration** tab: confirm the permission model is **Azure role-based access control**. It's the default since API version 2026-02-01. **Review + create → Create.** **✅**
 
@@ -1533,83 +1552,248 @@ The same idea on a virtual machine. There's no platform layer resolving referenc
 
 ---
 
-### Part 17 — Giving the App Tier a Name
+### Part 17 — A Real Domain and a Free Certificate
 
-`http://10.20.2.100` works, and it's a terrible thing to have in configuration. IP addresses in config files are how architectures ossify: change the load balancer and you're hunting through every app setting in the estate.
+Look at the address bar: `app-lwm-capstone-<yourname>.azurewebsites.net`. It works, it's HTTPS, and no member of staff is ever going to type it. A real application has a **real name**, and HTTPS on *that* name — not on Microsoft's.
 
-#### Hands-On: A Private DNS Zone for Internal Names ✅
+So the last part of the build puts the whole thing behind a domain I own: **`learnwithmithran.com`**, registered at GoDaddy. We'll host its DNS in an **Azure DNS public zone**, hand authority for the domain to Azure by changing the name servers at GoDaddy, point `www` at the App Service, and have App Service issue and bind a **free TLS certificate** that renews itself forever.
 
-1. **Private DNS zones → + Create.** Resource group `rg-lwm-capstone`, **Name** `lwm.internal`. **Create.** **✅**
+!!! note "Who can follow which steps"
+    **Creating the zone and its records is ✅ free tier for everyone** — Azure lets you create a zone for any name you type, and Day 13 showed how to query Azure's name servers directly to prove the records work.
 
-    !!! note "Why `.internal` and not `.com`?"
-        A private zone can be any name, including one you don't own — it only resolves inside VNets you link it to. But using a name you **don't** own publicly is risky: if it ever leaks outside the VNet, the lookup goes to the real internet and reaches somebody else's server.
+    **Delegating at the registrar, binding the domain to the app and issuing the certificate are 💳 instructor demo** — not because of an Azure charge, but because they need a domain you actually own. If you own one at any registrar (they're around $10–15 a year), every step works identically for you: substitute your domain wherever you see mine.
 
-        Use a name reserved for this (`.internal`, `.local`), or a subdomain of a domain you genuinely own (`azure.mycompany.com`). Never invent `mycompany.com` if it isn't yours.
+#### What has to be true for `https://www.learnwithmithran.com` to work
 
-2. Open the zone → **Virtual network links → + Add:** **✅**
+Three separate things, owned by three separate systems. When a custom domain "doesn't work," it's always one of these:
+
+| # | What must be true | Who makes it true | How we prove it |
+|---|---|---|---|
+| 1 | The **name resolves** to the app | DNS: GoDaddy delegates to Azure DNS, Azure DNS holds a CNAME | `nslookup` |
+| 2 | **App Service accepts the name** as belonging to this app | A **custom domain binding**, allowed only after a **TXT record proves you own the domain** | The *Custom domains* blade |
+| 3 | A **certificate for that name** is presented | An **App Service Managed Certificate**, bound with SNI | The padlock in the browser |
+
+Item 2 surprises people. DNS alone is not enough — if it were, **anyone could point a CNAME at your app** and serve your application under their domain, or point their domain at a deleted app's name and hijack it. App Service refuses any hostname until you prove you control it.
+
+#### Decision 7 — Leave DNS at GoDaddy, or move it to Azure?
+
+**Leave it at the registrar:** GoDaddy hosts DNS for free with the domain. Add two records there and you're done. Nothing new to pay for.
+
+**Move it to Azure DNS:** the records live next to the resources they point at, under the **same RBAC**, the same **Activity Log** (who changed `www`, and when), the same **resource lock**, and — on the next phase of this course — the same **Bicep and Terraform** files as everything else. You also get **alias records**, which a registrar can't offer.
+
+> **Decision: Azure DNS, ~$0.50/month for the zone plus fractions of a cent in queries.** Fifty cents a month buys you DNS that's governed, audited and deployable exactly like the rest of the architecture. The registrar keeps one job — saying *"Azure is authoritative for this domain"* — and nothing else.
+
+#### Hands-On: Create the Public DNS Zone ✅
+
+1. **DNS zones → + Create.** **✅**
 
    | Field | Value |
    |---|---|
-   | **Link name** | `link-vnet-capstone` |
-   | **Virtual network** | `vnet-capstone` |
-   | **Enable auto registration** | **unticked** |
+   | **Resource group** | `rg-lwm-capstone` |
+   | **Name** | `learnwithmithran.com` — **your own domain**, or any name to follow along |
 
-    Auto-registration would create A records for every VM automatically — useful for a server estate, unnecessary here, and it only handles VMs anyway. Our record points at a load balancer, which auto-registration would never create.
+   **Review + create → Create.** There's no region to choose: a public zone is **global**, served from Microsoft's anycast name servers around the world. The resource group's region only stores the metadata.
 
-3. **+ Record set:** **✅**
+    !!! warning "The zone name is the domain itself"
+        Type `learnwithmithran.com`, **not** `www.learnwithmithran.com`. The zone holds *every* name under the domain; `www` is just one record inside it.
 
-   | Field | Value |
-   |---|---|
-   | **Name** | `api` |
-   | **Type** | A |
-   | **TTL** | 300 seconds |
-   | **IP address** | `10.20.2.100` |
+2. Open the zone → **Overview**. Copy the **four name servers** Azure assigned — something like: **✅**
 
-   You now have `api.lwm.internal` → the internal load balancer.
-
-4. From a Bastion session on `vm-app-2`: **✅**
-
-   ```bash
-   nslookup api.lwm.internal
-   curl -s http://api.lwm.internal/api/info | jq
+   ```text
+   ns1-05.azure-dns.com.
+   ns2-05.azure-dns.net.
+   ns3-05.azure-dns.org.
+   ns4-05.azure-dns.info.
    ```
 
-#### Hands-On: Point the Web Tier at the Name ✅
+   **Notice the four different top-level domains.** That's deliberate: even an outage of an entire TLD's infrastructure can't take all four down. Then look at **Recordsets** — the **NS** and **SOA** records are already there. Azure created them; you never edit them.
 
-5. **App Service → Settings → Environment variables → + Add:** **✅**
+    !!! tip "Name servers belong to the zone, not the domain"
+        If you delegated this domain on Day 13, that zone has since been deleted. **A new zone usually gets a different set of name servers**, so GoDaddy must be updated again — the old ones point at a zone that no longer exists. Always copy the name servers from the zone you're actually using.
+
+#### Hands-On: Delegate the Domain at GoDaddy 💳
+
+3. **GoDaddy → My Products → `learnwithmithran.com` → DNS → Nameservers → Change Nameservers → I'll use my own nameservers.** Enter **all four** Azure name servers, without the trailing dot. **Save**, and accept the warning. **💳**
+
+   That warning is real: from this moment **GoDaddy's own DNS records for this domain stop being used.** If the domain had email (MX records) or a website, you'd recreate those records in the Azure zone *first*, then switch. `learnwithmithran.com` has nothing else on it, so there's nothing to break.
+
+4. Check the delegation from **Cloud Shell**: **💳**
+
+   ```bash
+   nslookup -type=NS learnwithmithran.com
+   ```
+
+   ```text
+   learnwithmithran.com    nameserver = ns1-05.azure-dns.com.
+   learnwithmithran.com    nameserver = ns2-05.azure-dns.net.
+   learnwithmithran.com    nameserver = ns3-05.azure-dns.org.
+   learnwithmithran.com    nameserver = ns4-05.azure-dns.info.
+   ```
+
+   When you see Azure's names, the `.com` registry is now sending every resolver on the internet to Azure for this domain. At GoDaddy that usually takes **minutes**; the worst case is the **48-hour TTL on the `.com` delegation** from Day 13 — the one TTL in the chain that neither you nor Azure controls.
+
+#### Hands-On: Get the App's Verification ID ✅
+
+5. **`app-lwm-capstone-<yourname>` → Settings → Custom domains.** Copy two values from the top of the page: **✅**
+
+   - **Custom Domain Verification ID** — a long hex string. It's unique to your **subscription**, not to this app.
+   - **IP address** — the app's inbound IP. We only need it for the bare domain, in step 13.
+
+#### Hands-On: Create the Two Records ✅
+
+6. **DNS zone → Recordsets → + Add** — the CNAME that points the name at the app: **✅**
 
    | Field | Value |
    |---|---|
-   | **Name** | `API_URL` |
-   | **Value** | `http://api.lwm.internal/api/info` |
+   | **Name** | `www` |
+   | **Type** | **CNAME** |
+   | **Alias record set** | No |
+   | **TTL** | **5 minutes** |
+   | **Alias** (the target) | `app-lwm-capstone-<yourname>.azurewebsites.net` |
 
-   **Apply → Apply.** **✅**
+   Five minutes because we're still building — if we get something wrong, the mistake is cached for five minutes, not an hour. Once it's settled, raising it to an hour is Day 13's TTL lesson applied for real.
 
-6. Refresh the website. **Still works** — and now the configuration contains a name, not an address. **✅**
+    !!! danger "The mistake almost everybody makes once"
+        In the **Name** box, type **`www`** — not `www.learnwithmithran.com`. Azure appends the zone name for you, so typing the full name creates **`www.learnwithmithran.com.learnwithmithran.com`**, which resolves perfectly and is useless. The preview under the box shows the full name; read it before you click **Add**.
 
-    **That is a bigger deal than it looks.** The App Service is resolving a **private DNS zone that only exists inside your VNet**, from a platform service that lives outside it. That works because of a rule worth memorising: *once an app is integrated with a VNet, it uses that VNet's DNS — including every private zone linked to it.* Change the load balancer's IP tomorrow and you edit one DNS record, not every consumer.
+7. **+ Add** again — the TXT record that proves ownership: **✅**
 
-#### Public DNS — how the custom domain works
+   | Field | Value |
+   |---|---|
+   | **Name** | `asuid.www` |
+   | **Type** | **TXT** |
+   | **TTL** | 5 minutes |
+   | **Value** | the **Custom Domain Verification ID** from step 5 |
 
-We're not buying a domain on camera, but you should know the exact shape, because it's a standard interview question and a standard first-week task.
+   The name is **`asuid.`** plus the hostname you're verifying. For `www` it's `asuid.www`. For the bare domain it would be just `asuid`.
 
-To put `expenses.yourcompany.com` in front of this app you create **two** records at your DNS provider — Azure DNS if the zone lives there, which Day 13 covered:
+    !!! tip "Why a TXT record, and why it's separate from the CNAME"
+        Only someone who controls the domain's DNS can create `asuid.www.learnwithmithran.com`, and only someone in your subscription can see the ID it must contain. Together they prove both sides.
 
-| Record | Name | Value | Purpose |
-|---|---|---|---|
-| **CNAME** | `expenses` | `app-lwm-capstone-<yourname>.azurewebsites.net` | Points the name at your app |
-| **TXT** | `asuid.expenses` | the **Custom Domain Verification ID** from the app's *Custom domains* blade | Proves you own the domain |
+        Being separate is also what makes **zero-downtime migrations** possible: you can add *only* the TXT record, bind and certify the domain on the new app while the CNAME still points at the old site, and then flip the CNAME last.
 
-Then **App Service → Custom domains → + Add custom domain**, and afterwards create a **free App Service Managed Certificate** for TLS, which auto-renews.
+8. Prove both records from **Cloud Shell**: **✅/💳**
 
-The TXT record is the part people miss. Without it Azure refuses the domain — otherwise anyone could point a CNAME at your app and serve their traffic from your infrastructure.
+   ```bash
+   nslookup www.learnwithmithran.com
+   nslookup -type=TXT asuid.www.learnwithmithran.com
+   ```
 
-!!! warning "A root domain needs an A record or an alias, not a CNAME"
-    `www.company.com` → CNAME, fine. `company.com` with no subdomain → **DNS does not allow a CNAME at a zone apex.** You need an **A record** pointing at the app's inbound IP (which can change), or — much better — an **Azure DNS alias record**, which tracks the resource automatically. That's Day 13's alias record earning its keep.
+   The first shows the chain: `www.learnwithmithran.com` → **canonical name** `app-lwm-capstone-<yourname>.azurewebsites.net` → Microsoft's own front-end names → a public IP. The second returns your verification ID.
+
+   **No domain of your own?** Ask Azure's name server directly, exactly like Day 13 — this proves your records are correct even though the rest of the internet isn't being sent to them:
+
+   ```bash
+   nslookup www.yourdomain.com ns1-05.azure-dns.com
+   ```
+
+#### Hands-On: Bind the Domain and Issue the Certificate 💳
+
+9. **App Service → Settings → Custom domains → + Add custom domain.** **💳**
+
+   | Field | Value |
+   |---|---|
+   | **Domain provider** | **All other domain services** — the domain wasn't bought through Azure |
+   | **TLS/SSL certificate** | **App Service Managed Certificate** |
+   | **TLS/SSL type** | **SNI SSL** |
+   | **Domain** | `www.learnwithmithran.com` |
+   | **Hostname record type** | **CNAME** |
+
+10. Click **Validate**. The panel lists the two records it expects — the CNAME and the `asuid.www` TXT — with a green tick next to each, because they already exist. **💳**
+
+    That's the reward for doing DNS first. If you open this panel *before* creating the records, it simply shows you what to create, and you'd be switching between two tabs.
+
+11. Click **Add**. The domain appears in the list. For a minute or two its status reads **No binding** while the certificate is issued, then changes to **Secured**. **💳**
+
+    !!! note "SNI SSL, and why it's the right choice"
+        **Server Name Indication** lets the browser say *which* hostname it wants during the TLS handshake, so one shared IP can serve the right certificate for thousands of different sites. It's what every modern browser does, and it's **free**. The alternative, **IP-based SSL**, gives the hostname a dedicated IP — it costs extra and **changes the app's inbound IP**, which matters in step 13. Choose it only if you must support truly ancient clients.
+
+12. Open a new tab and go to **`https://www.learnwithmithran.com`**. **💳**
+
+    The same card, the same *Reached the app tier*, the same alternating `vm-app-1` / `vm-app-2` — under a real domain. Click the **padlock → Connection is secure → Certificate is valid**:
+
+    - **Issued to:** `www.learnwithmithran.com`
+    - **Issued by:** a DigiCert-family certificate authority
+    - **Valid for:** about **six months**
+
+    Now type **`http://www.learnwithmithran.com`**. It redirects to `https://` — Part 15's **HTTPS Only** applies to every hostname on the app, custom ones included.
+
+    Then **App Service → Settings → Certificates → Managed certificates**. There it is: thumbprint, expiry date, and no renewal button — because there's nothing for you to do.
+
+#### Optional: The Bare Domain Too 💳
+
+`www.learnwithmithran.com` works. Plain `learnwithmithran.com` doesn't — and the fix isn't another CNAME.
+
+13. Remember Day 13: **DNS doesn't allow a CNAME at the zone apex.** And an **alias record can't target an App Service** — alias targets are public IPs, Traffic Manager, Front Door and CDN endpoints. So for the bare domain it's an **A record** pointing at the app's inbound IP: **💳**
+
+    | Record | Name | Type | Value |
+    |---|---|---|---|
+    | 1 | `@` | **A** | the **IP address** from step 5 |
+    | 2 | `asuid` | **TXT** | the same **Custom Domain Verification ID** |
+
+    Then **+ Add custom domain** again with **Domain** `learnwithmithran.com` and **Hostname record type: A**. The managed certificate works for the apex domain too.
+
+    !!! warning "An A record to an App Service is a hardcoded IP"
+        The inbound IP is stable in normal use, but it **can change** — for example if you delete every app in the resource group and region and recreate it, or add or remove an IP-based SSL binding. If it changes, the A record silently points at nothing.
+
+        That's exactly why production sites put **Azure Front Door** in front of App Service: the apex becomes an **alias record to Front Door**, which Azure keeps correct for you. Day 14 territory, and it's on the gap list in Add-on A.
+
+#### What the free certificate does and doesn't do
+
+| | **App Service Managed Certificate** |
+|---|---|
+| **Cost** | **Free** |
+| **Renewal** | **Automatic**, well before expiry — nothing to remember, ever |
+| **Plan tier** | **Basic B1 or higher.** F1 can't use custom domains at all — the second reason we're on B1 |
+| **Wildcards** (`*.learnwithmithran.com`) | **No** — one certificate per hostname |
+| **Export** | **No** — it can't be downloaded and used on a VM or anywhere else |
+| **Needs the app to be publicly reachable** | **Yes.** The certificate authority validates over the internet. Lock the app behind access restrictions or a private endpoint and issuance — and later, **renewal** — will fail |
+| **CAA records** | If your zone has CAA records, they must allow **`digicert.com`** |
+
+When those limits matter — wildcards, an exportable certificate, an EV certificate — you buy or import a certificate, store it in **Key Vault**, and import it into App Service from there. Same Key Vault, same managed-identity pattern as Part 16.
+
+!!! danger "When the custom domain won't validate or won't secure"
+    | Symptom | Cause | Fix |
+    |---|---|---|
+    | **Validate** shows the CNAME as missing | Delegation hasn't propagated, or the record is named `www.learnwithmithran.com.learnwithmithran.com` | `nslookup -type=NS` first; then check the record's full name in the zone |
+    | The TXT check fails | Named `asuid` instead of `asuid.www`, or the ID was copied from another subscription | The name is `asuid.` + the hostname; recopy the ID from **this** app |
+    | Domain added, stuck at **No binding** | Certificate still issuing, or a CAA record blocks DigiCert | Wait five minutes; check for CAA records |
+    | Browser warns that the certificate is for `*.azurewebsites.net` | The domain is added but no certificate is bound to it | **Certificates → Managed certificates**, or **Add binding** on the domain |
+    | Works for you, fails for a colleague | They're getting an older cached answer | That's the TTL — wait it out, or test with `nslookup` against an Azure name server |
+
+!!! tip "The interview version of Part 17"
+    *"How do you put a custom domain and HTTPS on an App Service?"*
+
+    **"Delegate the domain to an Azure DNS zone by setting its name servers at the registrar. Add a CNAME for the subdomain pointing at the app's `azurewebsites.net` name, and a TXT record at `asuid.<subdomain>` containing the app's verification ID to prove ownership. Add the custom domain to the app on Basic tier or higher, and bind a free App Service Managed Certificate with SNI. For the apex, a CNAME isn't allowed, so it's an A record to the app's inbound IP — or, properly, Front Door with an alias record."**
+
+> **You are now here:** `https://www.learnwithmithran.com` loads a page from a platform-managed web tier, which reaches into a private network, through an internal load balancer, to VMs in two datacentres that can reach a database nothing on the internet can touch — with a password no human ever typed into a config screen, under a real domain with a certificate that renews itself. **That is the build.**
 
 ---
 
-### Part 18 — One Workspace, Every Tier
+## YOUR HOMEWORK — MONITOR THE WHOLE WORKSPACE
+
+The application works. Now answer the last line of the brief yourself: *"we need to **know when it breaks** — we found out about the last outage from a customer."*
+
+Right now, if the app started failing, **nothing would tell you**, and nothing is recording anything you could look at afterwards. Your homework is to fix that, using what Day 19 taught you — across every tier at once. The three tasks below are the complete guide: every step, every query, and the alert you'll fire on purpose.
+
+!!! tip "Before you start"
+    - **The build must be running.** If you stopped it after the video, start both VMs and the App Service first — monitoring something that's switched off produces a very quiet workspace.
+    - **Budget about an hour**, plus a wait of five to fifteen minutes for the first logs to arrive.
+    - Everything here is **✅ free tier**: the logging fits inside the **5 GB per billing account per month** free grant, email notifications are free, and activity log alerts are free.
+
+**You're done when you have all five:**
+
+1. One Log Analytics workspace, `law-lwm-capstone`, receiving logs from the **App Service, Key Vault, load balancer and SQL database**
+1. A KQL query showing **which identity read the database secret** from the vault
+1. The **Application Map** in Application Insights showing the web tier calling the app tier
+1. An **action group** that emails you, and **three alert rules** using it
+1. An alert that **fired and then resolved itself**, with both emails in your inbox
+
+Post a screenshot of your fired alert in the Discord. And if you hit something you can't solve, that's what the Discord is for, too.
+
+---
+
+### Homework Task 1 — One Workspace, Every Tier
 
 Right now this architecture is invisible. If the app started throwing 500s ten minutes ago, nothing would tell you, and nothing is recording anything you could look at afterwards.
 
@@ -1619,7 +1803,7 @@ Day 19's rule applies to every tier we just built: **Azure collects metrics for 
 
 1. **Log Analytics workspaces → + Create.** Resource group `rg-lwm-capstone`, **Name** `law-lwm-capstone`, same region. **Review + create → Create.** **✅**
 
-   One workspace for the whole application. That's the right instinct: **you cannot correlate across tiers if the tiers log to different places**, and the whole point of Part 19 is following one request across three of them.
+   One workspace for the whole application. That's the right instinct: **you cannot correlate across tiers if the tiers log to different places**, and the whole point of Task 2 is following one request across three of them.
 
 #### Hands-On: Wire Up Every Tier ✅
 
@@ -1645,7 +1829,7 @@ Same pattern four times — **Monitoring → Diagnostic settings → + Add diagn
 6. Generate some traffic — refresh the website fifteen or twenty times, and hit a URL that doesn't exist (`/nope`) two or three times so there's something interesting in the logs. **✅**
 
 !!! note "Give it five to fifteen minutes"
-    First-time log flow is never instant. The tables have to be created and the pipeline has to warm up. If Part 19's queries come back empty, that is almost certainly why — it is not you doing it wrong.
+    First-time log flow is never instant. The tables have to be created and the pipeline has to warm up. If Task 2's queries come back empty, that is almost certainly why — it is not you doing it wrong.
 
 !!! warning "Looking for NSG flow logs? They're gone."
     If you go hunting for flow logs on `nsg-app`, you'll find you can't create them. **Since 30 June 2025 no new NSG flow logs can be created, and NSG flow logs retire completely on 30 September 2027.**
@@ -1661,7 +1845,7 @@ All of today's logging fits inside the **5 GB per billing account per month** fr
 
 ---
 
-### Part 19 — Following One Request Across Three Tiers
+### Homework Task 2 — Following One Request Across Three Tiers
 
 Data's arriving. Now the skill that actually gets used at 2am.
 
@@ -1698,7 +1882,7 @@ Open **`law-lwm-capstone` → Logs** and run these one at a time.
    | order by TimeGenerated desc
    ```
 
-   There's the App Service's managed identity performing `SecretGet`, and there's your own `SecretSet` from Part 16. **Every secret read, with the identity that made it.** That's the trail an auditor asks for, and it exists only because you enabled it fifteen minutes ago.
+   There's the App Service's managed identity performing `SecretGet`, and there's your own `SecretSet` from Part 16. **Every secret read, with the identity that made it.** That's the trail an auditor asks for, and it exists only because you enabled it in Task 1.
 
 4. **Was the app tier healthy?** **✅**
 
@@ -1710,13 +1894,13 @@ Open **`law-lwm-capstone` → Logs** and run these one at a time.
    | render timechart
    ```
 
-   If you still have Part 12's outage in the window, **you can see it** — the dip where `vm-app-1` failed its probes, and the recovery when you restarted Nginx. That's an incident reconstructed after the fact from data you didn't know you'd need.
+   If Part 12's outage is still inside the time window, **you can see it** — the dip where `vm-app-1` failed its probes, and the recovery when you restarted Nginx. That's an incident reconstructed after the fact from data you didn't know you'd need.
 
 #### Hands-On: Application Insights Draws Your Architecture ✅
 
 5. **`appi-lwm-capstone` → Investigate → Application map.** **✅**
 
-   Application Insights has been watching the web tier since Part 13, and the map shows the app plus its **outbound dependency** — the HTTP call to `api.lwm.internal`, with its call count and average duration. Nobody drew that. It was inferred from live traffic.
+   Application Insights has been watching the web tier since Part 13, and the map shows the app plus its **outbound dependency** — the HTTP call to `10.20.2.100`, with its call count and average duration. Nobody drew that. It was inferred from live traffic.
 
 6. **Investigate → Failures** and **Performance**, then **Monitoring → Live metrics**. Refresh the site in another tab and watch requests appear in real time. **✅**
 
@@ -1736,7 +1920,7 @@ Open **`law-lwm-capstone` → Logs** and run these one at a time.
 
 ---
 
-### Part 20 — Alerts, and an Honest Look at What's Still Wrong
+### Homework Task 3 — Alerts That Fire While You Watch
 
 Queries answer questions you thought to ask. **Alerts wake you up about the ones you didn't.**
 
@@ -1828,21 +2012,34 @@ This is the one that tells you a backend died. It's also the one we're going to 
 
     Redeploy with that change and repeat the test, and both alerts fire. Worth doing once, because the lesson underneath it is the point: **your monitoring is only as honest as the status codes your application returns.**
 
-#### What is still wrong with this architecture
+---
 
-Here's the part that separates a senior engineer from someone who just finished a tutorial. **This build is good. It is not production.** Naming the gaps out loud, with prices, is the actual skill:
+## ADD-ONS — GO FURTHER ON YOUR OWN
+
+Two more parts that aren't in the video, written out in full so you can do them yourself. **Add-on A** is the senior skill: an honest, priced list of what's still wrong, then checked against Defender for Cloud. **Add-on B** is the bill and the cleanup.
+
+!!! danger "Add-on B is not optional for your wallet"
+    These are add-ons because they weren't part of the recording — **not because you can skip the cleanup.** The App Service plan, the load balancer, the NAT gateway and the private endpoint bill by the hour until you delete them. Whenever you've finished the homework, do Add-on B.
+
+### Add-on A — Grade Your Own Work
+
+Here's the part that separates a senior engineer from someone who just finished a tutorial. **This build is good. It is not production.** Naming the gaps out loud, with prices, is the actual skill — and then checking your list against what Azure itself thinks.
+
+#### First, grade it yourself: what is still wrong
 
 | Gap | Risk | The fix | Cost |
 |---|---|---|---|
+| **Bare domain on a hardcoded A record** | If the app's inbound IP changes, `learnwithmithran.com` silently breaks | **Front Door** in front, with an **alias record** at the apex | ~$35/month base |
 | **No WAF** | SQL injection, XSS and bot traffic reach the app directly | **Application Gateway v2 + WAF** in front, with an access restriction so only it can reach the app | ~$180+/month |
 | **Single region** | A regional outage takes the whole app down | Second region + **Front Door** or Traffic Manager, plus SQL geo-replication | Roughly double, plus Front Door |
 | **No autoscale** | 9am load spike degrades the service; 3am idle capacity is wasted | **VM Scale Set** for the app tier, autoscale rules on the App Service plan | Same or less, if tuned |
 | **No backup** | A bad deployment or a dropped table is unrecoverable beyond SQL's own retention | **Azure Backup** + Recovery Services vault for the VMs; SQL already has PITR | A few dollars/month |
 | **VMs patched by hand** | Unpatched CVEs on two internet-connected (outbound) machines | **Azure Update Manager**, maintenance windows | Free for Azure VMs |
 | **No deployment slots** | Every deployment is a live deployment with no rollback | **Staging slot + swap** — B1 doesn't include slots, Standard does | ~$70/month for S1 |
-| **Default hostname still public** | Anyone can bypass a future WAF by using `*.azurewebsites.net` | Access restriction allowing only `AzureFrontDoor.Backend` | Free |
+| **Default hostname still public** | `www.learnwithmithran.com` is the front door, but `*.azurewebsites.net` still reaches the same app — and would bypass any future WAF | Access restriction allowing only `AzureFrontDoor.Backend` | Free |
 | **Vault shares a resource group** | **Contributor on this group is effectively data access to the vault** | Put the vault in its own resource group | Free |
 | **One admin** | Bus factor of one; no separation of duties | RBAC groups, PIM for standing access | PIM needs Entra P2 |
+| **No monitoring — unless you did the homework** | You find out about outages from customers, which is exactly what the brief complained about | The three homework tasks | Free tier |
 | **Everything built by clicking** | Unrepeatable, undocumented, and undiffable | **Bicep or Terraform** — and that's exactly where this course goes next | Free |
 
 !!! tip "Say this in an interview and you'll sound three years more experienced than you are"
@@ -1854,11 +2051,11 @@ Here's the part that separates a senior engineer from someone who just finished 
 
 ---
 
-### Part 21 — Let Azure Grade Your Work
+#### Then let Azure grade it
 
-You've just told me what's wrong with your architecture. Now let's see whether Microsoft agrees — using the free tool from Day 18.
+You've just listed what's wrong with your architecture. Now see whether Microsoft agrees — using the free tool from Day 18.
 
-#### Hands-On: Secure Score ✅
+##### Secure Score ✅
 
 1. Search **Microsoft Defender for Cloud → Overview**. Look at your **Secure Score**. **✅**
 2. **Recommendations**, and filter to `rg-lwm-capstone`. **✅**
@@ -1872,7 +2069,7 @@ You've just told me what's wrong with your architecture. Now let's see whether M
    | *Private endpoint should be configured for Key Vault* | **True gap.** The vault is still publicly reachable (RBAC-protected, but reachable). ~$7.30/month to fix |
    | *Management ports of virtual machines should be protected* | **Pass** — no public IPs, Bastion only |
    | *Virtual machines should be migrated to new Azure Resource Manager resources* / *System updates should be installed* | Patching, which we named ourselves |
-   | *Auditing on SQL server should be enabled* | **True gap** — we enabled diagnostics but not SQL auditing |
+   | *Auditing on SQL server should be enabled* | **True gap** — the monitoring homework adds diagnostic settings, not SQL auditing |
    | *App Service apps should only be accessible over HTTPS* | **Pass** — Part 15 |
    | *Subscriptions should have a contact email for security issues* | Free to fix, and everyone ignores it |
 
@@ -1892,7 +2089,9 @@ You've just told me what's wrong with your architecture. Now let's see whether M
 
 ---
 
-### Part 22 — The Bill, the Cleanup, and What You've Actually Learned
+---
+
+### Add-on B — The Bill and the Cleanup
 
 #### Hands-On: Look at the Real Number ✅
 
@@ -1908,7 +2107,7 @@ You've just told me what's wrong with your architecture. Now let's see whether M
 
 3. **Delete the resource group.** `rg-lwm-capstone` → **Delete resource group**, type the name, confirm. **✅**
 
-   This takes several minutes and removes, in dependency order: the App Service and plan, the VMs and disks, the load balancer, the NAT gateway and its public IP, the private endpoint, the SQL database and its logical server, the NSGs, the ASG, the VNet, the workspace, App Insights, the vault and the private DNS zones.
+   This takes several minutes and removes, in dependency order: the App Service and plan, the VMs and disks, the load balancer, the NAT gateway and its public IP, the private endpoint, the SQL database and its logical server, the NSGs, the ASG, the VNet, the workspace, App Insights, the vault, the `privatelink` private DNS zone and the `learnwithmithran.com` public DNS zone.
 
     !!! warning "If the delete fails, it's almost always the integration subnet"
         A VNet with an integrated App Service can refuse to delete, because a **service association link** is still attached to `snet-web-integration`. Deleting the whole resource group usually sequences this correctly, but if it stalls: delete the **App Service** on its own first, then retry the group.
@@ -1917,15 +2116,23 @@ You've just told me what's wrong with your architecture. Now let's see whether M
 
    Day 18's trap, and it's why we left purge protection off. Deleting the resource group only **soft-deleted** the vault: it still exists, its **name is still reserved for 90 days**, and it may still bill you for stored content. This step is the one everybody skips and then wonders why the name is taken next month.
 
-5. **Check the Bastion resource.** Bastion Developer deploys into your VNet, so it goes with the resource group — but confirm nothing is left behind under **Bastions**. **✅**
+5. **Undo the delegation at GoDaddy — straight away.** **💳**
 
-6. **Delete the budget** if you don't want it, though I'd keep it: **Cost Management → Budgets → `budget-capstone`**. **✅**
+   The `learnwithmithran.com` zone has just been deleted, but **GoDaddy is still telling the whole internet to ask Azure's name servers about it.** That's called a **dangling delegation**, and it's worse than it sounds: if someone else creates a zone with the same name that lands on the same name servers, they can answer for your domain — and serve whatever they like under it.
 
-7. **Confirm the subscription is back to empty.** **All resources** should show nothing from today — in particular, no **SQL servers** and no **Private endpoints**. Because every single thing was built inside `rg-lwm-capstone`, one delete removed the whole system. **✅**
+   **GoDaddy → My Products → `learnwithmithran.com` → DNS → Nameservers → Change Nameservers → GoDaddy Nameservers**, or point it at whichever zone the domain should use next. If you plan to keep a domain on Azure long-term, keep its DNS zone in **its own resource group** that never gets deleted with a lab.
 
-    That's Decision 6 paying off. Nothing today depended on anything outside the group, so there's nothing outside it to forget.
+6. **Check the Bastion resource.** Bastion Developer deploys into your VNet, so it goes with the resource group — but confirm nothing is left behind under **Bastions**. **✅**
 
-#### The interview and exam quick reference
+7. **Delete the budget** if you don't want it, though I'd keep it: **Cost Management → Budgets → `budget-capstone`**. **✅**
+
+8. **Confirm the subscription is back to empty.** **All resources** should show nothing from today — in particular, no **SQL servers**, no **Private endpoints** and no **DNS zones**. Because every single thing was built inside `rg-lwm-capstone`, one delete removed the whole system — and one registrar change undid the only thing that lives outside Azure. **✅**
+
+    That's Decision 6 paying off. Nothing inside Azure depended on anything outside the group, so the only thing left to remember is the one piece that was never in Azure: the registrar.
+
+---
+
+## The Interview and Exam Quick Reference
 
 | If you're asked… | The answer is… |
 |---|---|
@@ -1947,7 +2154,13 @@ You've just told me what's wrong with your architecture. Now let's see whether M
 | "Who read that secret last Tuesday?" | Key Vault **diagnostic settings → AuditEvent → Log Analytics**. Not on by default, not retroactive |
 | "How do you correlate across tiers?" | **One Log Analytics workspace**, diagnostic settings on every resource, KQL across tables, App Insights for the app's own view |
 | "NSG flow logs?" | **No new ones since 30 June 2025, retiring 30 September 2027.** Use **VNet flow logs** |
+| "How do you put a custom domain on an App Service?" | **CNAME** to `<app>.azurewebsites.net` plus a **TXT** record at `asuid.<host>` with the verification ID, then add the domain on **Basic or higher** |
+| "Free TLS for that domain?" | **App Service Managed Certificate** — free, auto-renewing, **SNI**, no wildcards, not exportable, needs the app publicly reachable |
+| "CNAME at the zone apex?" | **Not allowed by DNS.** An A record to the app's inbound IP, or **Front Door with an alias record** |
+| "How do you move a domain's DNS to Azure?" | Create a **public zone**, then set its **four Azure name servers** at the registrar. That's **delegation** |
 | "What would you add for production?" | **WAF, second region, autoscale, backup, patching, deployment slots, vault in its own resource group, and all of it in IaC** |
+
+---
 
 ---
 
@@ -1967,9 +2180,11 @@ Twenty days ago you didn't have an Azure account. Today you designed an architec
 
 **The web tier was the moment it all became one system** — and it was the *failure* that taught more than the success. Every component healthy, and the request still died, because there was no network path. VNet integration built the path, and one refresh turned three architectures into one application.
 
-**Then the two ideas that make this employable rather than just working.** No credential anywhere: a managed identity and a role assignment, resolved by the platform on PaaS and by a token request on IaaS. And nothing invisible: every tier reporting into one workspace, four queries that reconstruct an incident you caused yourself, and an alert that fired while you watched.
+**Then the idea that makes this employable rather than just working: no credential anywhere.** A managed identity and a role assignment, resolved by the platform on PaaS and by a token request on IaaS. The password exists once, in the vault, and no human typed it into a configuration screen.
 
-**Finally, the honest part.** You listed what's still wrong with your own architecture, with prices, before Defender for Cloud listed most of the same things back at you. Knowing the gap between *working* and *production* — and what closing it costs — is the difference between someone who finished a tutorial and someone worth hiring.
+**And finally, a real name.** An Azure DNS public zone, delegated from GoDaddy with four name servers. A CNAME to point `www` at the app, and a TXT record to prove the domain was ours to point. Then a free certificate that renews itself forever. `https://www.learnwithmithran.com` is the same application — it just looks like something a company would actually ship.
+
+**The rest is yours.** The brief's last line was *"we need to know when it breaks"* — and the homework answers it: one workspace for every tier, KQL that follows a single request across all three, and an alert you fire on purpose. Then the add-ons: an honest, priced list of what's still wrong, checked against Defender for Cloud, and the cleanup — **including the registrar**, the one piece of this system that never lived in Azure.
 
 ### What's Next
 
@@ -1977,7 +2192,7 @@ Everything you built today, you built **by clicking**. It works, and it is unrep
 
 That's where the course goes next: **Azure DevOps** — boards, repos and pipelines — and then **Infrastructure as Code** with Bicep and Terraform, where this entire architecture becomes a file you can diff, review, version and deploy in minutes.
 
-Day 17 gave your applications identities. Day 18 gave them secrets. Day 19 gave you visibility. **Today gave you a system.** Next, we make building it repeatable.
+Day 17 gave your applications identities. Day 18 gave them secrets. Day 19 gave you visibility. **Today gave you a system — with a real name.** Next, we make building it repeatable.
 
 ---
 
@@ -2008,6 +2223,15 @@ Day 17 gave your applications identities. Day 18 gave them secrets. Day 19 gave 
 - **App Service VNet integration is outbound only, needs Basic or higher, must be same-region, and costs nothing extra.** Inbound private access is a **private endpoint** — a different feature.
 - **An integrated app uses the VNet's DNS**, including every private zone linked to it.
 
+**Domain and certificate**
+
+- **Delegation** means setting the domain's name servers at the registrar to the **four Azure name servers** of your public zone. Those name servers belong to the **zone** — a recreated zone usually gets new ones.
+- **A custom domain needs two records:** a **CNAME** to `<app>.azurewebsites.net`, and a **TXT** record at `asuid.<host>` holding the app's verification ID. The TXT record stops anyone else claiming your app — or you claiming theirs.
+- **In the record's Name box, type `www`, not the full name** — or you create `www.yourdomain.com.yourdomain.com`.
+- **A CNAME is not allowed at the zone apex**, and App Service isn't an alias-record target. The apex gets an **A record** to the inbound IP — or Front Door with an alias record.
+- **App Service Managed Certificates are free and renew themselves** — Basic tier or higher, SNI, no wildcards, not exportable, and the app must be publicly reachable for issuance and renewal.
+- **Deleting a delegated zone leaves a dangling delegation.** Repoint the registrar's name servers the same day.
+
 **Data, identity and secrets**
 
 - **Private endpoint + public access disabled** is the only configuration that satisfies "not reachable from the internet." A service endpoint still leaves a public endpoint.
@@ -2016,7 +2240,7 @@ Day 17 gave your applications identities. Day 18 gave them secrets. Day 19 gave 
 - **Owner cannot read a secret.** Control plane and data plane are separate — assign **Key Vault Secrets User**, nothing broader.
 - **App Service caches Key Vault references for ~24 hours**; any config change forces an immediate refetch.
 
-**Operations**
+**Operations (the homework)**
 
 - **Metrics are free; logs are collected for nobody until you create a diagnostic setting.** The audit trail cannot be recovered retroactively.
 - **One workspace per application**, or you cannot correlate across tiers.

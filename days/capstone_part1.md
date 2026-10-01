@@ -278,7 +278,7 @@ production answer, priced in Part 20.
 
 ---
 
-## Phase Four — Secrets, Names, Monitoring, Hardening (Parts 16–22)
+## Phase Four — Secrets and a Real Domain (Parts 16–17)
 
 **16. Secrets: The Connection String Leaves the Config File**
 Day 18's pattern in its natural habitat. **System-assigned managed identity** on the web app,
@@ -290,49 +290,33 @@ Then the same idea on IaaS: **enable managed identity on both VMs** and read the
 `vm-app-1` over the **IMDS endpoint** (`169.254.169.254`) with curl — identical concept, different
 plumbing, no credential either way.
 
-**17. Names: Public DNS and Private DNS**
-Day 13 in a real architecture. A **CNAME** to the App Service and the domain-verification TXT record
-(explained; buying a domain is optional and flagged 💳 if the instructor demonstrates it), plus a
-**private DNS zone** so the app tier is reachable as `api.internal.lwm` instead of `10.20.2.100`.
-*Demo: create `privatelink`-style internal zone, link it to the VNet, add an A record for the ILB,
-update the web app's setting to the name, and prove it resolves from a VM.* ✅
+**17. A Real Domain and a Free Certificate** *(as recorded — replaced the planned private DNS part)*
+An **Azure DNS public zone** for `learnwithmithran.com`, **delegated from GoDaddy** by replacing its
+name servers with the zone's four Azure name servers. A **CNAME** `www` → the app's
+`azurewebsites.net` name and a **TXT** `asuid.www` record with the app's verification ID, then
+**Add custom domain** with an **App Service Managed Certificate** (SNI). Optional bare domain via an
+A record + `asuid` TXT, since a CNAME isn't allowed at the apex and App Service isn't an alias target.
+*Demo: zone, delegation, records, validation, binding, padlock, HTTP→HTTPS redirect.* ✅ for the zone
+and records; 💳 for delegation, binding and certificate (needs an owned domain).
 
-**18. One Workspace, Every Tier**
-Day 19's payoff. **Diagnostic settings on all of it** — App Service, the load balancer, the NSGs, the
-SQL database and the vault — into a single Log Analytics workspace, plus **Application Insights** on
-the web tier.
-*Demo: wire up every diagnostic setting, then generate traffic and watch it arrive.* ✅
+> **End of the recording.** Everything below is written up in the published notes, not recorded.
 
-**19. Following One Request Across Three Tiers**
-*Demo: three KQL queries — App Service HTTP logs (`AppServiceHTTPLogs`), vault reads
-(`AzureDiagnostics` where ResourceType == "VAULTS"), and SQL. Then the Application Insights
-**application map**, which draws the architecture back at you from live telemetry.* ✅
-The lesson: **you cannot debug what you did not instrument, and instrumenting afterwards is too
-late** — the 5 GB free grant covers all of this.
+## Homework — Monitor the Whole Workspace (formerly Parts 18–20)
 
-**20. Four Alerts, and What Is Still Wrong With This Architecture**
-The alerts first: backend pool health degraded, HTTP 5xx rate, App Service response time, and a
-**budget** alert. Action group with an email (SMS/voice flagged 💳, as on Day 19).
-*Demo: create two of the four, show them firing by stopping both app VMs.* ✅
-Then the honest design review — **everything this architecture still gets wrong, with prices**:
-no WAF (Application Gateway v2 + WAF ≈ $180+/mo), single region (no Front Door, no failover), no
-autoscale (VMSS), no backup (Azure Backup, Day 5), no deployment slots in use, VMs patched by hand,
-and the App Service still publicly resolvable by its default hostname. **None of it gets built.**
-Naming the gaps is the senior skill; pretending a demo is production is the junior mistake.
+**Task 1. One Workspace, Every Tier** — diagnostic settings on the App Service, vault, load balancer
+and SQL database into `law-lwm-capstone`, plus Application Insights. ✅
+**Task 2. Following One Request Across Three Tiers** — four KQL queries and the application map. ✅
+**Task 3. Alerts That Fire While You Watch** — action group, three alert rules, fired by stopping
+Nginx on both VMs, then resolved. ✅
 
-**21. Secure Score Reads It Back**
-*Demo: Defender for Cloud → Recommendations, filtered to this resource group. It hands back several
-of the decisions just made — and the ones deliberately skipped.* ✅ Free Foundational CSPM only,
-with the **27 October 2026 opt-in change** repeated from Day 18.
+## Add-ons — On Your Own (formerly Parts 20–22)
 
-**22. Cleanup, Cost Review, Interview Table and What's Next**
-*Demo: the actual bill for the session in **Cost analysis**, filtered to the resource group — the
-number that makes the cost table above real.* ✅
-Then cleanup in the right order: remove the resource lock, delete `rg-lwm-capstone`, **purge the
-soft-deleted vault** (Day 18's trap), and confirm the private endpoint went with it.
-The SQL server and database go with the group — **nothing is kept**; confirm the subscription is empty.
-Closing interview table — every architecture question this build answers — then what the next phase
-of the course does with it.
+**Add-on A. Grade Your Own Work** — the priced gap list (WAF, single region, autoscale, backup,
+patching, slots, default hostname, apex A record, vault RG, IaC), then Defender for Cloud Secure
+Score on this resource group. ✅
+**Add-on B. The Bill and the Cleanup** — Cost analysis, remove the lock, delete `rg-lwm-capstone`,
+purge the vault, **repoint GoDaddy's name servers** so no dangling delegation is left, and confirm
+the subscription is empty. ✅ / 💳 for the registrar step.
 
 ---
 
@@ -352,15 +336,14 @@ of the course does with it.
 | 14 | The failure before integration, then the working three-tier request | ✅ |
 | 15 | HTTPS only, TLS 1.2, FTP off, access restrictions | ✅ |
 | 16 | Managed identity → Key Vault reference (PaaS) and IMDS read (IaaS) | ✅ |
-| 17 | Public CNAME explained, private DNS zone for the app tier | ✅ |
-| 18 | Diagnostic settings on every tier + Application Insights | ✅ |
-| 19 | Three KQL queries and the application map | ✅ |
-| 20 | Two alert rules, fired live by stopping both app VMs | ✅ |
-| 21 | Defender for Cloud Secure Score on this resource group | ✅ |
-| 22 | Cost analysis, full cleanup, vault purge | ✅ |
+| 17 | Azure DNS public zone, GoDaddy delegation, custom domain, managed certificate | ✅ zone / 💳 domain |
+| Homework 1–3 | Diagnostic settings, KQL, application map, three alerts fired live | ✅ |
+| Add-on A | Priced gap list + Defender for Cloud Secure Score | ✅ |
+| Add-on B | Cost analysis, full cleanup, vault purge, registrar name servers reverted | ✅ / 💳 |
 
-**No 💳 steps.** Application Gateway, WAF, Front Door, VMSS autoscale, Azure Backup, multi-region
-failover and a purchased custom domain are all discussed with prices attached; none are deployed.
+**The only 💳 steps are in Part 17**, and only because they need an owned domain. Application
+Gateway, WAF, Front Door, VMSS autoscale, Azure Backup and multi-region failover are discussed with
+prices attached; none are deployed.
 
 ## Summary
 
