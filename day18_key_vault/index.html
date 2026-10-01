@@ -1,0 +1,3794 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A complete beginner's guide to Azure Cloud and Azure DevOps — 31 days plus bonus content, zero assumed cloud knowledge.">
+      
+      
+      
+        <link rel="canonical" href="https://iam-mithran.github.io/LWM-Azure/day18_key_vault/">
+      
+      
+        <link rel="prev" href="../day17_entra_id_rbac/">
+      
+      
+        <link rel="next" href="../day19_azure_monitor/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Day 18 — Azure Key Vault - LearnWithMithran — Azure Complete Beginner's Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#day-18-azure-key-vault" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-header__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LearnWithMithran — Azure Complete Beginner's Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Day 18 — Azure Key Vault
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-nav__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LearnWithMithran — Azure Complete Beginner's Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day01_account_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day02_fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day03_vms_part1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day04_web_hosting_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day05_vms_part3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day06_app_service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day07_storage_account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day08_storage_files_queue_tables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day09_intro_to_networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day10_virtual_network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day11_vnet_advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day12_load_balancer_vmss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day13_azure_dns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 13 — Azure DNS: Public & Private Zones
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day14_traffic_frontdoor_cdn_waf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 14 — Traffic Manager, Front Door, CDN & WAF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day15_vpn_expressroute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 15 — VPN Gateway & ExpressRoute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day16_azure_sql_database/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 16 — Azure SQL Database + Other Databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day17_entra_id_rbac/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 17 — Microsoft Entra ID & Azure RBAC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 18 — Azure Key Vault
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 18 — Azure Key Vault
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-one-the-vault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PART ONE — THE VAULT
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PART ONE — THE VAULT">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#part-1-why-key-vault-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Why Key Vault Exists
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Why Key Vault Exists">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-honestly-stated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem, Honestly Stated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-key-vault-actually-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Key Vault Actually Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-three-things-a-vault-holds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Three Things a Vault Holds
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-2-creating-your-first-vault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Creating Your First Vault
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Creating Your First Vault">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-the-vault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create the Vault ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-3-the-permission-model-and-the-deadline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — The Permission Model, and the Deadline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — The Permission Model, and the Deadline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#two-models-one-recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two Models, One Recommendation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-changed-in-february-2026" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Changed in February 2026
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-look-at-both-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Look at Both Models ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-4-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Secrets
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Secrets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Versions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-lifecycle-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Lifecycle Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-store-a-real-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Store a Real Secret ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-5-keys-cryptography-as-a-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — Keys: Cryptography as a Service
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — Keys: Cryptography as a Service">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-idea" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Idea
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-keys-are-used-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Keys Are Used For
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-types-and-where-they-live" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Types and Where They Live
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rotation-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rotation Policies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-and-use-a-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create and Use a Key ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-6-certificates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6 — Certificates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6 — Certificates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-you-get" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You Get
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-a-self-signed-certificate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create a Self-Signed Certificate ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-7-tiers-limits-and-what-this-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 7 — Tiers, Limits, and What This Costs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 7 — Tiers, Limits, and What This Costs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-three-product-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Three Product Tiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limits-worth-knowing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limits Worth Knowing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-two-access-integration-and-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PART TWO — ACCESS, INTEGRATION AND OPERATIONS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PART TWO — ACCESS, INTEGRATION AND OPERATIONS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#part-8-key-vault-rbac-roles-and-why-owner-cant-read-a-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 8 — Key Vault RBAC Roles, and Why Owner Can't Read a Secret
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 8 — Key Vault RBAC Roles, and Why Owner Can&#39;t Read a Secret">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-proof" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Proof
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-prove-owner-secret-reader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Prove Owner ≠ Secret Reader ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-9-delegating-access-and-the-contributor-back-door" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 9 — Delegating Access, and the Contributor Back Door
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 9 — Delegating Access, and the Contributor Back Door">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-back-door" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Back Door
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delegating-without-handing-over-the-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delegating Without Handing Over the Keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-read-the-constrained-role" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Read the Constrained Role ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-10-the-payoff-an-app-that-reads-a-secret-it-cannot-see" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 10 — The Payoff: An App That Reads a Secret It Cannot See
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 10 — The Payoff: An App That Reads a Secret It Cannot See">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-were-building" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What We're Building
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-step-1-create-the-app-and-give-it-an-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On, Step 1: Create the App and Give It an Identity ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-step-2-grant-it-exactly-one-role" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On, Step 2: Grant It Exactly One Role ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-step-3-the-key-vault-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On, Step 3: The Key Vault Reference ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-it-doesnt-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When It Doesn't Work
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-11-networking-firewall-trusted-services-and-private-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 11 — Networking: Firewall, Trusted Services and Private Endpoints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 11 — Networking: Firewall, Trusted Services and Private Endpoints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#three-levels-of-network-lockdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three Levels of Network Lockdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-trap-everyone-falls-into" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Trap Everyone Falls Into
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-look-dont-touch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Look, Don't Touch ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-12-soft-delete-purge-protection-and-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 12 — Soft Delete, Purge Protection and Recovery
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 12 — Soft Delete, Purge Protection and Recovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#soft-delete-is-not-optional-any-more" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Soft Delete Is Not Optional Any More
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#purge-protection-the-switch-with-no-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purge Protection: The Switch With No Off
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-delete-and-recover" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Delete and Recover ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-13-monitoring-expiry-and-rotation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 13 — Monitoring, Expiry and Rotation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 13 — Monitoring, Expiry and Rotation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expiry-the-silent-outage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expiry: The Silent Outage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rotation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rotation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-turn-on-the-audit-trail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Turn On the Audit Trail ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-14-defender-for-cloud-sentinel-and-interview-prep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 14 — Defender for Cloud, Sentinel and Interview Prep
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 14 — Defender for Cloud, Sentinel and Interview Prep">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#microsoft-defender-for-cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Microsoft Defender for Cloud
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#microsoft-sentinel-vocabulary-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Microsoft Sentinel — Vocabulary Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-read-your-secure-score" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Read Your Secure Score ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interview-and-exam-quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interview and Exam Quick Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleanup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleanup ✅
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day19_azure_monitor/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 19 — Azure Monitor, Log Analytics & Alerts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day20_capstone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 20 — Capstone: Build a Complete Three-Tier Application
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-one-the-vault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PART ONE — THE VAULT
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PART ONE — THE VAULT">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#part-1-why-key-vault-exists" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — Why Key Vault Exists
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — Why Key Vault Exists">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-problem-honestly-stated" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Problem, Honestly Stated
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-key-vault-actually-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Key Vault Actually Is
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-three-things-a-vault-holds" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Three Things a Vault Holds
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-2-creating-your-first-vault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Creating Your First Vault
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Creating Your First Vault">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-the-vault" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create the Vault ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-3-the-permission-model-and-the-deadline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — The Permission Model, and the Deadline
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — The Permission Model, and the Deadline">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#two-models-one-recommendation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two Models, One Recommendation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-changed-in-february-2026" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Changed in February 2026
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-look-at-both-models" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Look at Both Models ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-4-secrets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — Secrets
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — Secrets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#versions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Versions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-lifecycle-fields" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Lifecycle Fields
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-store-a-real-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Store a Real Secret ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-5-keys-cryptography-as-a-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — Keys: Cryptography as a Service
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — Keys: Cryptography as a Service">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-idea" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Idea
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-keys-are-used-for" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Keys Are Used For
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#key-types-and-where-they-live" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Types and Where They Live
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rotation-policies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rotation Policies
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-and-use-a-key" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create and Use a Key ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-6-certificates" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6 — Certificates
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6 — Certificates">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-you-get" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You Get
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-a-self-signed-certificate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create a Self-Signed Certificate ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-7-tiers-limits-and-what-this-costs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 7 — Tiers, Limits, and What This Costs
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 7 — Tiers, Limits, and What This Costs">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-three-product-tiers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Three Product Tiers
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#limits-worth-knowing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Limits Worth Knowing
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-two-access-integration-and-operations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PART TWO — ACCESS, INTEGRATION AND OPERATIONS
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PART TWO — ACCESS, INTEGRATION AND OPERATIONS">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#part-8-key-vault-rbac-roles-and-why-owner-cant-read-a-secret" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 8 — Key Vault RBAC Roles, and Why Owner Can't Read a Secret
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 8 — Key Vault RBAC Roles, and Why Owner Can&#39;t Read a Secret">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-roles" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Roles
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-proof" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Proof
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-prove-owner-secret-reader" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Prove Owner ≠ Secret Reader ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-9-delegating-access-and-the-contributor-back-door" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 9 — Delegating Access, and the Contributor Back Door
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 9 — Delegating Access, and the Contributor Back Door">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-back-door" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Back Door
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#delegating-without-handing-over-the-keys" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Delegating Without Handing Over the Keys
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-read-the-constrained-role" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Read the Constrained Role ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-10-the-payoff-an-app-that-reads-a-secret-it-cannot-see" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 10 — The Payoff: An App That Reads a Secret It Cannot See
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 10 — The Payoff: An App That Reads a Secret It Cannot See">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-were-building" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What We're Building
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-step-1-create-the-app-and-give-it-an-identity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On, Step 1: Create the App and Give It an Identity ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-step-2-grant-it-exactly-one-role" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On, Step 2: Grant It Exactly One Role ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-step-3-the-key-vault-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On, Step 3: The Key Vault Reference ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-it-doesnt-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        When It Doesn't Work
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-11-networking-firewall-trusted-services-and-private-endpoints" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 11 — Networking: Firewall, Trusted Services and Private Endpoints
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 11 — Networking: Firewall, Trusted Services and Private Endpoints">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#three-levels-of-network-lockdown" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three Levels of Network Lockdown
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-trap-everyone-falls-into" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Trap Everyone Falls Into
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-look-dont-touch" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Look, Don't Touch ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-12-soft-delete-purge-protection-and-recovery" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 12 — Soft Delete, Purge Protection and Recovery
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 12 — Soft Delete, Purge Protection and Recovery">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#soft-delete-is-not-optional-any-more" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Soft Delete Is Not Optional Any More
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#purge-protection-the-switch-with-no-off" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Purge Protection: The Switch With No Off
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-delete-and-recover" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Delete and Recover ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-13-monitoring-expiry-and-rotation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 13 — Monitoring, Expiry and Rotation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 13 — Monitoring, Expiry and Rotation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#logging" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Logging
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#expiry-the-silent-outage" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Expiry: The Silent Outage
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#rotation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Rotation
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-turn-on-the-audit-trail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Turn On the Audit Trail ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-14-defender-for-cloud-sentinel-and-interview-prep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 14 — Defender for Cloud, Sentinel and Interview Prep
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 14 — Defender for Cloud, Sentinel and Interview Prep">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#microsoft-defender-for-cloud" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Microsoft Defender for Cloud
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#microsoft-sentinel-vocabulary-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Microsoft Sentinel — Vocabulary Only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-read-your-secure-score" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Read Your Secure Score ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interview-and-exam-quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interview and Exam Quick Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleanup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleanup ✅
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="day-18-azure-key-vault">Day 18 — Azure Key Vault</h1>
+<p><strong>Phase 5 — Identity, Security + Monitoring</strong></p>
+<blockquote>
+<p>Yesterday you created a client secret. Remember what I said at the time? <em>"That secret is a password to your tenant, and it's now in your Cloud Shell history."</em> We deleted it at cleanup and moved on. But that question never actually went away, and today we answer it properly. Because every application you will ever build needs to know something it must not tell anyone — a database password, an API key, a certificate's private key — and it needs to know it at 3am on a Sunday with nobody watching. Where does that thing <em>live</em>? Not in your code. Not in your config file. Not in an environment variable someone can print. Today you build the answer, and by the end of this video you'll have a running web app that reads a database password it cannot see, from a vault it has no credential for, and you will not have typed a single secret into a single configuration screen.</p>
+</blockquote>
+<hr />
+<h2 id="what-youll-learn">What You'll Learn</h2>
+<p><strong>Part One — The Vault itself</strong></p>
+<ul>
+<li>What Key Vault is, and the three genuinely different things it stores: <strong>secrets, keys and certificates</strong></li>
+<li>Every option on the create blade — and what each one commits you to, some of them <strong>permanently</strong></li>
+<li><strong>The permission model decision</strong>, which changed in February 2026 and has a hard deadline in February 2027</li>
+<li>Storing secrets properly: versions, expiry dates, and the enable/disable switch nobody uses</li>
+<li><strong>Cryptography as a service</strong> — the idea that a key can be used without ever being read</li>
+<li>Certificates, tiers, limits, and what this actually costs you</li>
+</ul>
+<p><strong>Part Two — Access, integration and operations</strong></p>
+<ul>
+<li>The Key Vault RBAC roles, and the proof that <strong>a subscription Owner cannot read a secret</strong></li>
+<li>The <strong>Contributor back door</strong> — the most important thing on this page for a real job</li>
+<li><strong>The payoff:</strong> App Service + managed identity + a Key Vault reference, with zero credentials anywhere</li>
+<li>Networking: firewall, trusted services, and where private endpoints fit</li>
+<li><strong>Soft delete and purge protection</strong> — the safety net, and the switch you can never turn off</li>
+<li>Monitoring, expiry and rotation</li>
+<li>Defender for Cloud's free Secure Score, and an interview keyword table</li>
+</ul>
+<hr />
+<h2 id="before-we-begin">Before We Begin</h2>
+<p><strong>What today costs.</strong> Key Vault is the first service in this course where I can't just say "it's free." So let me be exact, because vague answers about money are how people get surprise bills.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Cost</th>
+<th>Today</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Storing</strong> secrets, keys, certificates</td>
+<td><strong>No charge at all.</strong> There is no base fee and no per-object fee.</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Operations</strong> (every get, set, list)</td>
+<td><strong>$0.03 per 10,000 operations</strong>, Standard tier</td>
+<td>✅ — our entire lab is a few hundred operations, so roughly <strong>a third of one cent</strong></td>
+</tr>
+<tr>
+<td><strong>Self-signed certificate</strong> created in the vault</td>
+<td>Charged as normal operations</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Certificate renewal</strong> through an integrated public CA</td>
+<td><strong>$3 per renewal request</strong></td>
+<td>💳 — explained, not demonstrated</td>
+</tr>
+<tr>
+<td><strong>Premium tier</strong> (HSM-backed keys)</td>
+<td>~<strong>$1/month per key</strong>, plus operations</td>
+<td>💳 — explained, not demonstrated</td>
+</tr>
+<tr>
+<td><strong>Managed HSM</strong> (dedicated hardware pool)</td>
+<td><strong>~$2,300+/month</strong></td>
+<td>💳 — vocabulary only. Do not click this.</td>
+</tr>
+<tr>
+<td><strong>Private endpoint</strong></td>
+<td>~<strong>$7.30/month</strong> plus data processing</td>
+<td>💳 — instructor demo</td>
+</tr>
+</tbody>
+</table>
+<p>So: <strong>the Standard-tier lab we're doing today rounds to zero</strong>, but Key Vault is not on the free tier and it does bill from the first transaction. That's an honest distinction and it's worth internalising — "costs nothing meaningful" and "is free" are different sentences, and in a job interview you want to say the accurate one.</p>
+<div class="admonition danger">
+<p class="admonition-title">Two settings today are genuinely permanent</p>
+<p>Most things in Azure are undoable. Two settings on the Key Vault create blade are not, and I want you to see them coming rather than discover them:</p>
+<ol>
+<li><strong>Soft-delete retention period</strong> — once the vault is created, that number <strong>cannot be changed for the life of the vault</strong>.</li>
+<li><strong>Purge protection</strong> — once enabled, <strong>it cannot be disabled by you, by your Global Administrator, or by Microsoft support.</strong> That is the entire point of it, and it is not a bug.</li>
+</ol>
+<p>We'll set both deliberately in Part 2. Read the warnings when we get there.</p>
+</div>
+<p><strong>Set this up first:</strong></p>
+<ul>
+<li>A resource group called <code>rg-day18-demo</code>.</li>
+<li><strong><code>Priya Sharma</code> and <code>grp-finance-team</code> from Day 17.</strong> We kept them alive on purpose — today they earn their keep. If you deleted them, recreate the user and the security group; it takes two minutes and Day 17 Parts 2 and 3 have the steps.</li>
+<li><strong><code>db-lwm-demo</code>, your Azure SQL database from Day 16</strong>, still alive on the free offer. Its connection string is the secret we're going to protect.</li>
+<li>Your <strong>private/incognito window</strong> again, for signing in as Priya.</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">One idea from yesterday does most of the work today</p>
+<p>Day 17 Part 11 proved that <strong>control plane and data plane are separate</strong>: a Contributor on a storage account could delete the account and could not read a blob inside it. Key Vault is the <em>second</em> instance of exactly that pattern, and it's the one that shows up most in real jobs. If that demo made sense, today will feel familiar fast. If it didn't, go back and watch it — everything from Part 8 onwards is built on it.</p>
+</div>
+<hr />
+<h2 id="part-one-the-vault">PART ONE — THE VAULT</h2>
+<h3 id="part-1-why-key-vault-exists">Part 1 — Why Key Vault Exists</h3>
+<h4 id="the-problem-honestly-stated">The Problem, Honestly Stated</h4>
+<p>Your application needs a database password. Where do you put it?</p>
+<p>Every beginner answers the same way, in the same order, and every answer is wrong:</p>
+<ul>
+<li><strong>"In the code."</strong> Now it's in git. Git has history. Deleting the line doesn't delete the secret — it's still in the commit from four months ago, and anyone who clones the repo has it forever. This is the single most common way real secrets leak, and there are bots that do nothing but scan public repositories for exactly this.</li>
+<li><strong>"In a config file that's gitignored."</strong> Better, until someone copies the file to a colleague on Slack, or the file gets baked into a container image, or a new developer doesn't have it and someone pastes it into a chat to unblock them.</li>
+<li><strong>"In an App Service application setting."</strong> Genuinely better — App Service encrypts those at rest. But now <strong>anyone with Contributor on that app can read every setting in the portal</strong>, there's no audit trail of who read what, no expiry, no rotation, and if the same password is used by five apps you now have five copies to update when it changes.</li>
+</ul>
+<p>The problem underneath all three is the same: <strong>the secret is copied.</strong> Once a secret exists in more than one place, you have lost control of it, because you can no longer answer the two questions that matter — <em>who can read this?</em> and <em>if I change it, what breaks?</em></p>
+<h4 id="what-key-vault-actually-is">What Key Vault Actually Is</h4>
+<p><strong>Azure Key Vault is a managed service whose entire job is to hold sensitive values, hand them out only to identities you've authorised, and write down every single access in a log.</strong></p>
+<p>Four properties make it different from a config file:</p>
+<ul>
+<li><strong>One copy.</strong> The secret lives in exactly one place. Applications fetch it at runtime. Change it in the vault and every consumer picks up the new value — nothing to redeploy.</li>
+<li><strong>Access is an identity decision, not a file-permission decision.</strong> You grant <em>this managed identity</em> the right to read <em>these secrets</em>, using the same RBAC model you learned yesterday.</li>
+<li><strong>Everything is logged.</strong> Every read, every write, every failed attempt, with the identity that made it. When an auditor asks "who accessed the production database password in March?", there's an answer.</li>
+<li><strong>Objects have lifecycle.</strong> Versions, activation dates, expiry dates, enable/disable — a secret is a managed object, not a string.</li>
+</ul>
+<p>Underneath, Key Vault is multi-tenant, backed by hardware security modules, and <strong>regional</strong> — the vault lives in a region, and Azure automatically replicates its contents to the paired region for durability.</p>
+<h4 id="the-three-things-a-vault-holds">The Three Things a Vault Holds</h4>
+<p>This is the first thing people get wrong, and it's an easy interview mark. A vault holds three object types, and they are <strong>not</strong> three names for the same idea.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Secret</strong></th>
+<th><strong>Key</strong></th>
+<th><strong>Certificate</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>What it is</strong></td>
+<td>Any value up to 25 KB — a password, connection string, API token</td>
+<td>An asymmetric crypto key — RSA or EC</td>
+<td>An X.509 certificate</td>
+</tr>
+<tr>
+<td><strong>Can you read the value back?</strong></td>
+<td><strong>Yes.</strong> That's the point.</td>
+<td><strong>No. Never.</strong> Not you, not an admin, not Microsoft.</td>
+<td>Partly — see below</td>
+</tr>
+<tr>
+<td><strong>What the vault does for you</strong></td>
+<td>Stores it and hands it back to authorised callers</td>
+<td><strong>Performs cryptographic operations on your behalf</strong> — sign, verify, encrypt, decrypt, wrap, unwrap</td>
+<td>Manages the whole certificate lifecycle, including renewal</td>
+</tr>
+<tr>
+<td><strong>Typical use</strong></td>
+<td>Database connection string, third-party API key</td>
+<td>Encrypting data at rest, signing tokens, customer-managed keys</td>
+<td>TLS/SSL for a website</td>
+</tr>
+</tbody>
+</table>
+<p>The row that matters is the third one. <strong>A secret is something the vault gives you. A key is something the vault uses for you.</strong> With a key, you never receive the key material — you send the vault your data and say "sign this," and it sends back a signature. The private key never crosses the network, never lands in your application's memory, and cannot be exfiltrated even by someone who fully compromises your app. That's a genuinely different security property, and it's the reason keys and secrets are separate object types instead of one.</p>
+<p>Certificates are the interesting hybrid: <strong>a certificate in Key Vault is actually three objects at once</strong> — the certificate itself, plus an addressable <em>key</em> (the private key) and an addressable <em>secret</em> (the full PFX bundle). Which is why the role that lets someone read a certificate's private key is called <strong>Key Vault Certificate User</strong>, and why <em>Key Vault Secrets User</em> can also read the secret half of a certificate. Store that away; we come back to it in Part 8.</p>
+<div class="admonition tip">
+<p class="admonition-title">The one-sentence version for interviews</p>
+<p><em>"Secrets are values you get back. Keys never leave the vault — the vault does the cryptography for you. Certificates are managed X.509 objects with a key and a secret underneath."</em></p>
+</div>
+<hr />
+<h3 id="part-2-creating-your-first-vault">Part 2 — Creating Your First Vault</h3>
+<p>Every option on this blade matters, and two of them are permanent, so we're going to walk it slowly rather than clicking Next four times.</p>
+<h4 id="hands-on-create-the-vault">Hands-On: Create the Vault ✅</h4>
+<ol>
+<li>
+<p>Search <strong>Key vaults</strong> → <strong>+ Create</strong>. <strong>✅</strong></p>
+</li>
+<li>
+<p><strong>Basics tab:</strong> <strong>✅</strong></p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Resource group</strong></td>
+<td><code>rg-day18-demo</code></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Key vault name</strong></td>
+<td><code>kv-lwm-day18-&lt;yourname&gt;</code></td>
+<td><strong>Globally unique</strong> — it becomes a DNS name, <code>https://&lt;name&gt;.vault.azure.net</code>. Alphanumerics and hyphens, 3–24 characters.</td>
+</tr>
+<tr>
+<td><strong>Region</strong></td>
+<td>Same region you've been using</td>
+<td>The vault is regional. Put it near the apps that will read from it — every secret fetch is a network call.</td>
+</tr>
+<tr>
+<td><strong>Pricing tier</strong></td>
+<td><strong>Standard</strong></td>
+<td>Premium's only difference is HSM-backed keys. More on this in Part 7.</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li><strong>Days to retain deleted vaults:</strong> leave at <strong>90</strong>. <strong>✅</strong></li>
+</ol>
+<p>Read that field carefully, because the portal is being slightly coy about what it controls. This is the <strong>soft-delete retention period</strong> — how long a deleted vault, <em>and every deleted object inside it</em>, stays recoverable before it can be permanently purged. Legal range is <strong>7 to 90 days</strong>.</p>
+<pre><code>!!! danger "This number can never be changed"
+    Once the vault is created, the retention period is **fixed for the life of the vault**. There is no setting to edit, no support ticket that changes it. If you need 7 days and you created it with 90, your only option is to create a new vault and migrate.
+
+    Why would anyone want 7? Because during the retention window, **the vault's name is reserved and cannot be reused.** Delete `kv-prod-01` with 90-day retention and you cannot create a new vault called `kv-prod-01` for ninety days. That has ruined more than one redeployment. For learning, and for production, **90 is the right answer** — you want the long safety net. Just know why the option exists.
+</code></pre>
+<ol>
+<li>
+<p><strong>Purge protection:</strong> for this demo, leave it <strong>disabled</strong>. <strong>✅</strong></p>
+<div class="admonition danger">
+<p class="admonition-title">The one switch in Azure you can never turn off</p>
+<p>Purge protection means that during the retention period, a deleted vault or object <strong>cannot be permanently purged by anyone</strong>. Not you. Not the subscription Owner. Not a Global Administrator. Not Microsoft support. The deletion simply waits out the full retention window.</p>
+<p>And <strong>enabling it is irreversible.</strong> There is no path back.</p>
+<p>That sounds alarming and it's actually the correct setting for production. It's the protection against a specific, real attack: an attacker who gains admin access deletes <em>and purges</em> your vault, destroying the encryption keys that protect your data — a ransomware pattern with no ransom. Purge protection makes that impossible, and it is <strong>required</strong> if the vault holds customer-managed keys for Azure Storage or SQL encryption.</p>
+<p>We're leaving it off today for exactly one reason: <strong>so that cleanup at the end of this video actually works.</strong> Turn it on in production. Never turn it on casually on a test vault, because you'll be living with that vault name until the retention period expires.</p>
+</div>
+</li>
+<li>
+<p><strong>Access configuration tab.</strong> Confirm the <strong>Permission model</strong> is set to <strong>Azure role-based access control</strong>. It should already be selected. <strong>✅</strong></p>
+</li>
+</ol>
+<p>Don't change it — but do notice the other option sitting there, <em>Vault access policy</em>, and notice which one the portal picked for you. That default is new, it's the whole subject of Part 3, and it has a deadline attached.</p>
+<ol>
+<li>
+<p><strong>Networking tab:</strong> leave <strong>Public access</strong> enabled, <strong>All networks</strong>. <strong>✅</strong> We'll come back and lock this down properly in Part 11.</p>
+</li>
+<li>
+<p><strong>Review + create → Create.</strong> <strong>✅</strong></p>
+</li>
+<li>
+<p>When it deploys, open it and look at the <strong>Overview</strong> blade. Copy the <strong>Vault URI</strong> — <code>https://kv-lwm-day18-&lt;yourname&gt;.vault.azure.net/</code>. <strong>That hostname is the data plane.</strong> Remember from Day 17 that data-plane traffic goes straight to the service's own endpoint and never touches Azure Resource Manager. This is that endpoint. <strong>✅</strong></p>
+</li>
+</ol>
+<hr />
+<h3 id="part-3-the-permission-model-and-the-deadline">Part 3 — The Permission Model, and the Deadline</h3>
+<p>This is the one genuinely new idea in today's video, it changed a few months ago, and it has a hard cutoff in February 2027. If you learned Key Vault from a tutorial recorded before 2026, this part is the bit you need to unlearn.</p>
+<h4 id="two-models-one-recommendation">Two Models, One Recommendation</h4>
+<p>Key Vault has always had two ways to answer "who may read this secret?"</p>
+<p><strong>Vault access policies (legacy).</strong> A list attached to the vault itself. Each entry says: <em>this principal gets these operations on secrets, these on keys, these on certificates.</em> It predates Azure RBAC for data planes and it's entirely self-contained — the permissions live on the vault, nowhere else.</p>
+<p><strong>Azure RBAC.</strong> Exactly what you learned yesterday. Security principal + role definition + scope. The same <em>Add role assignment</em> wizard, the same <strong>Check access</strong> blade, the same inheritance, the same everything.</p>
+<p>Access policies have four real problems, and they're worth being able to list:</p>
+<ul>
+<li><strong>They're per-vault.</strong> Fifty vaults means fifty separate permission lists, with no single place to ask "what can this identity reach?" RBAC answers that from the identity's own <strong>Azure role assignments</strong> blade, across the whole subscription.</li>
+<li><strong>They don't inherit.</strong> You cannot say "the platform team reads secrets in every vault in this resource group." RBAC does that with one assignment at resource-group scope.</li>
+<li><strong>They're coarse.</strong> Access policy permissions are per-<em>operation-type</em> across the whole vault. You cannot express "read only the secrets whose names start with <code>prod-</code>." RBAC can, with conditions.</li>
+<li><strong>They're outside the tooling.</strong> PIM, access reviews, Check access, custom roles, Azure Policy on role assignments — all of it understands RBAC and none of it understands access policies.</li>
+</ul>
+<h4 id="what-changed-in-february-2026">What Changed in February 2026</h4>
+<p><strong>Key Vault API version <code>2026-02-01</code> made Azure RBAC the default access control model for newly created vaults.</strong> In the underlying resource, the property is <code>enableRbacAuthorization</code>, and it now defaults to <code>true</code>.</p>
+<p>Three consequences that are worth stating precisely, because the details get garbled in blog posts:</p>
+<ul>
+<li><strong>New vaults default to RBAC.</strong> That's why step 5 above found the setting already correct. The change brought the API into line with what the portal was already doing.</li>
+<li><strong>Existing vaults are untouched.</strong> A vault created years ago with access policies keeps them. Updating it with the new API version does <strong>not</strong> silently flip it. Nothing breaks by itself.</li>
+<li><strong>Access policies are still fully supported.</strong> They are <em>not</em> deprecated as a feature. If you genuinely need them on a new vault, you set <code>enableRbacAuthorization</code> to <code>false</code> explicitly at creation time.</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">The date that is actually a deadline: 27 February 2027</p>
+<p>Here's the part that will land on someone's sprint board, so know it.</p>
+<p><strong>All Key Vault control-plane API versions before <code>2026-02-01</code> retire on 27 February 2027.</strong> After that date your vaults keep existing and keep working, but they are only manageable through API version <code>2026-02-01</code> or later.</p>
+<p>That means every <strong>ARM template, Bicep file, Terraform provider, SDK package and REST call</strong> that manages a Key Vault has to be updated before that date, regardless of which permission model you use. Data-plane APIs — the actual reading and writing of secrets — are <strong>not</strong> affected, so your running applications are fine. It's the infrastructure code that needs the attention.</p>
+<p>One footnote with a sting: <strong>Azure Cloud Shell always uses the latest API version.</strong> So a <code>az keyvault create</code> script that worked last year and didn't specify a permission model will now produce an <strong>RBAC</strong> vault instead of an access-policy vault. If you inherit a script like that and the vault suddenly seems to have "lost" its permissions, that's why.</p>
+</div>
+<h4 id="hands-on-look-at-both-models">Hands-On: Look at Both Models ✅</h4>
+<ol>
+<li><strong>Key vault → Settings → Access configuration.</strong> <strong>✅</strong></li>
+<li>
+<p>Confirm <strong>Azure role-based access control</strong> is selected. Click <strong>Vault access policy</strong> to see what the alternative looks like — a permission grid with checkbox columns for Key, Secret and Certificate permissions. Read it, understand its shape, then <strong>click away without saving.</strong> <strong>✅</strong></p>
+<div class="admonition danger">
+<p class="admonition-title">Switching models invalidates the old one instantly</p>
+<p>Flipping a live vault from access policies to RBAC <strong>immediately invalidates every access policy on it</strong>. If you haven't already assigned equivalent RBAC roles, every application using that vault loses access at that moment. This is a documented, well-known way to cause a production outage.</p>
+<p>The correct migration order is always: <strong>assign the RBAC roles first, verify they work, and only then switch the model.</strong> Never the other way round.</p>
+</div>
+</li>
+<li>
+<p>Now click <strong>Access control (IAM)</strong> on the vault. <strong>This is the blade that matters now</strong> — the same one you used on a resource group and a storage account yesterday. Key Vault permissions are just Azure role assignments. <strong>✅</strong></p>
+</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">The interview answer</p>
+<p><em>"Which permission model should I use for Key Vault?"</em> → <strong>Azure RBAC.</strong> It's the default for new vaults as of API version 2026-02-01, it's centrally manageable and inheritable, and it works with the rest of Azure's access tooling. Access policies remain supported but are the legacy path. And separately, <strong>all control-plane API versions before 2026-02-01 retire on 27 February 2027</strong>, so IaC templates need updating either way.</p>
+</div>
+<hr />
+<h3 id="part-4-secrets">Part 4 — Secrets</h3>
+<p>A secret is a name, a value up to 25 KB, and a surprising amount of metadata. Let's use the metadata, because almost nobody does and it's where the operational maturity lives.</p>
+<h4 id="versions">Versions</h4>
+<p><strong>Every time you set a value, Key Vault creates a new version</strong> and keeps the old one. Versions are immutable — you never edit a secret's value, you add a version. Each has its own GUID and its own URI:</p>
+<div class="highlight"><pre><span></span><code>https://myvault.vault.azure.net/secrets/DbPassword              ← "current version", whatever that is now
+https://myvault.vault.azure.net/secrets/DbPassword/a1b2c3d4...  ← this exact version, forever
+</code></pre></div>
+<p>That distinction is a design decision you will make repeatedly:</p>
+<ul>
+<li><strong>Reference without a version</strong> and your app automatically picks up rotations. Convenient, and the right default.</li>
+<li><strong>Reference with a version</strong> and your app is pinned. Nothing changes under it — which is exactly what you want when a value must stay in lockstep with a deployment.</li>
+</ul>
+<h4 id="the-lifecycle-fields">The Lifecycle Fields</h4>
+<p>Three fields, all optional, all under-used:</p>
+<ul>
+<li><strong>Enabled / Disabled</strong> — a disabled secret still exists but cannot be read. It's the "break glass" switch: you suspect a credential leaked, you disable it, everything using it fails immediately and loudly, and you haven't destroyed anything.</li>
+<li><strong>Activation date</strong> — the secret cannot be read <em>before</em> this time. Useful for staging a value ahead of a cutover.</li>
+<li><strong>Expiration date</strong> — the secret cannot be read <em>after</em> this time.</li>
+</ul>
+<div class="admonition warning">
+<p class="admonition-title">Expiry does not delete anything, and it does not stop anyone setting it</p>
+<p>Two things people get wrong about expiration:</p>
+<ol>
+<li>An expired secret is <strong>not deleted</strong>. It sits there, unreadable, until someone updates or removes it.</li>
+<li>Key Vault <strong>does not warn you by default.</strong> It will happily let a production secret expire at 2am and take your app down. Alerting on expiry is something <em>you</em> configure, and we'll do it in Part 13.</li>
+</ol>
+<p>So: set expiry dates, because they're the trigger for rotation and every compliance framework wants them — but set up the alerting at the same time, or you've just scheduled an outage.</p>
+</div>
+<h4 id="hands-on-store-a-real-secret">Hands-On: Store a Real Secret ✅</h4>
+<p>We're going to store the connection string for <code>db-lwm-demo</code>, the SQL database from Day 16. A real value, for a real resource.</p>
+<ol>
+<li>Get the connection string: <strong>SQL databases → <code>db-lwm-demo</code> → Settings → Connection strings → ADO.NET</strong> tab. Copy it. <strong>✅</strong></li>
+<li>Notice it contains <code>Password={your_password}</code> as a placeholder. Replace that with your actual SQL admin password. <strong>Look at what you're now holding in your clipboard</strong> — that is exactly the string that, in a less careful project, would be sitting in an <code>appsettings.json</code> in a git repository. <strong>✅</strong></li>
+<li><strong>Key vault → Objects → Secrets → + Generate/Import</strong>. <strong>✅</strong></li>
+<li>Fill it in: <strong>✅</strong></li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Upload options</strong></td>
+<td>Manual</td>
+</tr>
+<tr>
+<td><strong>Name</strong></td>
+<td><code>DbConnectionString</code> — alphanumerics and hyphens only; <strong>no underscores</strong>, which catches people out</td>
+</tr>
+<tr>
+<td><strong>Secret value</strong></td>
+<td>Paste the connection string</td>
+</tr>
+<tr>
+<td><strong>Set expiration date</strong></td>
+<td>Tick it, choose a date about 90 days out</td>
+</tr>
+<tr>
+<td><strong>Enabled</strong></td>
+<td>Yes</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li><strong>Create</strong>. Open the secret and click into the version that appears. Note the <strong>Secret Identifier</strong> — the full versioned URI. <strong>Copy it; Part 10 needs it.</strong> <strong>✅</strong></li>
+<li>Click <strong>Show Secret Value</strong> and confirm it round-trips. <strong>✅</strong></li>
+<li>Now create a <strong>second version</strong>: back on the secret, <strong>+ New Version</strong>, change the value slightly (add a space), <strong>Create</strong>. You now have two versions listed, the newer one current. <strong>Click the older version and set it to Disabled</strong> — you've just retired a credential without destroying your ability to audit it. <strong>✅</strong></li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Naming matters more than it looks</p>
+<p>Secret names are visible to anyone with even <em>Key Vault Reader</em>, so <strong>never put anything sensitive in the name</strong>. <code>prod-sql-admin-password</code> is a fine name. <code>sql-password-Winter2026</code> is a catastrophe — you've leaked the secret to everyone who can list the vault.</p>
+<p>Pick a convention and hold it: <code>&lt;environment&gt;-&lt;system&gt;-&lt;purpose&gt;</code>. Your future self, reading a list of two hundred secrets, will be grateful.</p>
+</div>
+<hr />
+<h3 id="part-5-keys-cryptography-as-a-service">Part 5 — Keys: Cryptography as a Service</h3>
+<p>This is the part students skim and interviewers ask about, so let's do it properly.</p>
+<h4 id="the-idea">The Idea</h4>
+<p>With a secret, the vault stores a value and gives it back. <strong>With a key, the vault stores the key and never gives it back — instead, it does the work for you.</strong></p>
+<p>Your application sends the vault some data and an instruction: <em>sign this</em>, <em>unwrap this</em>. The vault performs the operation using a private key that has never left it and returns the result. Your application receives a signature or a plaintext — never the key.</p>
+<p>Think about what that removes. If an attacker fully compromises your application server — root access, memory dumps, everything — <strong>they still do not have your private key.</strong> They can ask the vault to perform operations while they hold that access, which is bad, but the moment you cut their access the key is untouched. There is no key to steal, revoke and reissue. That is a fundamentally different blast radius from a stolen key file, and it's why keys are their own object type.</p>
+<h4 id="what-keys-are-used-for">What Keys Are Used For</h4>
+<ul>
+<li><strong>Encryption at rest with customer-managed keys (CMK).</strong> Azure Storage, SQL, Disks and Cosmos all encrypt your data by default with Microsoft-managed keys. Point them at a Key Vault key instead and <em>you</em> hold the root of that encryption — including the ability to revoke access to your own data by disabling the key. This is the single most common reason enterprises use Key Vault keys, and it's why <strong>purge protection is mandatory</strong> for it.</li>
+<li><strong>Digital signing</strong> — tokens, documents, code.</li>
+<li><strong>Key wrapping</strong> — encrypting other keys, the building block of envelope encryption.</li>
+</ul>
+<h4 id="key-types-and-where-they-live">Key Types and Where They Live</h4>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>RSA</strong></td>
+<td>Software-protected RSA key (2048 / 3072 / 4096) — Standard tier</td>
+</tr>
+<tr>
+<td><strong>RSA-HSM</strong></td>
+<td>The same, but generated and held inside a <strong>hardware security module</strong> — <strong>Premium tier only</strong> 💳</td>
+</tr>
+<tr>
+<td><strong>EC</strong></td>
+<td>Elliptic curve (P-256, P-384, P-521) — smaller and faster than RSA</td>
+</tr>
+<tr>
+<td><strong>EC-HSM</strong></td>
+<td>Elliptic curve in an HSM — <strong>Premium tier only</strong> 💳</td>
+</tr>
+</tbody>
+</table>
+<p>The <code>-HSM</code> suffix is the entire difference between Standard and Premium. In both cases the key material is protected and never exported; in Premium it's protected by validated dedicated hardware, which is what regulated industries are required to be able to prove.</p>
+<h4 id="rotation-policies">Rotation Policies</h4>
+<p>Keys support <strong>automatic rotation</strong> — you set a policy ("rotate 30 days before expiry") and Key Vault generates a new version on schedule, with no human involved. Azure services using the key pick up the new version automatically.</p>
+<p>This is worth contrasting sharply with secrets: <strong>keys can rotate themselves; secrets cannot.</strong> Key Vault has no idea what your database password <em>is</em> — rotating it means changing it in SQL Server too, which is application-specific work. That's why secret rotation needs an Azure Function and keys don't, and it's a nice distinction to be able to draw in an interview.</p>
+<h4 id="hands-on-create-and-use-a-key">Hands-On: Create and Use a Key ✅</h4>
+<ol>
+<li><strong>Key vault → Objects → Keys → + Generate/Import</strong>. <strong>✅</strong></li>
+<li><strong>Options:</strong> Generate. <strong>Name:</strong> <code>key-lwm-demo</code>. <strong>Key type:</strong> RSA. <strong>RSA key size:</strong> 2048. <strong>✅</strong></li>
+<li>Expand <strong>Set key rotation policy</strong>: switch <strong>Enabled</strong> on, set <strong>Rotation time</strong> to something like 90 days, and note the <strong>Notification time</strong> field — an Event Grid event fires that far ahead. Read it, then set it back to disabled for this demo. <strong>✅</strong></li>
+<li><strong>Create</strong>. Open the key. <strong>✅</strong></li>
+<li><strong>Look for a "show value" button.</strong> There isn't one. There is no way — through the portal, the CLI, the API, or a support ticket — to extract that private key. <strong>The absence of that button is the entire feature.</strong> <strong>✅</strong></li>
+<li>Click the current version and note the <strong>Permitted operations</strong> list: encrypt, decrypt, sign, verify, wrapKey, unwrapKey. That's the menu of things the vault will do <em>for</em> you. <strong>✅</strong></li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Which one do I actually use?</p>
+<p>Rough rule: <strong>if you need the value back, it's a secret. If you need an operation performed, it's a key.</strong></p>
+<p>A database password is a secret — your app has to send the actual password to SQL Server. A customer-managed encryption key is a key — nothing outside the vault ever needs the raw bytes.</p>
+</div>
+<hr />
+<h3 id="part-6-certificates">Part 6 — Certificates</h3>
+<p>A certificate in Key Vault is a managed object with a lifecycle, not a file you uploaded.</p>
+<h4 id="what-you-get">What You Get</h4>
+<ul>
+<li><strong>Creation or import</strong> — generate a new certificate, or import an existing PFX/PEM.</li>
+<li><strong>A policy</strong> attached to the certificate describing subject name, key type, validity period, and <strong>what to do when it's about to expire</strong>.</li>
+<li><strong>Automatic renewal</strong> — for certificates issued by an integrated public CA (DigiCert, GlobalSign), Key Vault will request the renewal itself, before expiry, with nobody involved.</li>
+<li><strong>Automatic distribution</strong> — App Service, Application Gateway and Front Door can all reference a certificate directly from Key Vault, so a renewal propagates without a redeploy.</li>
+</ul>
+<p>That last pair is the real value. <strong>Expired TLS certificates are one of the most common causes of self-inflicted outages in the industry</strong>, and the cause is always the same: renewal was a human's calendar reminder, and the human left the company. Key Vault turns it into infrastructure.</p>
+<div class="admonition note">
+<p class="admonition-title">Key Vault does not sell you certificates</p>
+<p>Worth being precise, because it's a common misconception: Key Vault <strong>integrates with</strong> public CAs to automate enrolment and renewal. It does not issue or resell public certificates. You still have an account with the CA. Key Vault automates the paperwork.</p>
+</div>
+<h4 id="hands-on-create-a-self-signed-certificate">Hands-On: Create a Self-Signed Certificate ✅</h4>
+<p>Self-signed means no CA, no cost beyond normal operations, and no browser will trust it — perfect for learning the mechanics.</p>
+<ol>
+<li><strong>Key vault → Objects → Certificates → + Generate/Import</strong>. <strong>✅</strong></li>
+<li>Fill it in: <strong>✅</strong></li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Method of Certificate Creation</strong></td>
+<td>Generate</td>
+</tr>
+<tr>
+<td><strong>Certificate Name</strong></td>
+<td><code>cert-lwm-demo</code></td>
+</tr>
+<tr>
+<td><strong>Type of Certificate Authority</strong></td>
+<td><strong>Self-signed certificate</strong></td>
+</tr>
+<tr>
+<td><strong>Subject</strong></td>
+<td><code>CN=lwm-demo.local</code></td>
+</tr>
+<tr>
+<td><strong>Validity Period</strong></td>
+<td>12 months</td>
+</tr>
+<tr>
+<td><strong>Content Type</strong></td>
+<td>PKCS #12</td>
+</tr>
+<tr>
+<td><strong>Lifetime Action Type</strong></td>
+<td><em>Automatically renew at a given percentage lifetime</em> — 80%</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li><strong>Create.</strong> It takes a few seconds to issue. <strong>✅</strong></li>
+<li>Open the certificate → the current version. Note the <strong>Certificate Identifier</strong>, and <strong>Download in CER format</strong> — that's the public half, safe to share. <strong>✅</strong></li>
+<li>Now the thing that surprises people. Go to <strong>Objects → Keys</strong>. <strong>✅</strong></li>
+</ol>
+<p><strong><code>cert-lwm-demo</code> is in the keys list.</strong></p>
+<p>Go to <strong>Objects → Secrets</strong>. <strong>It's there too.</strong> One certificate, three addressable objects: the certificate, its private key, and the full PFX bundle as a secret.</p>
+<ol>
+<li>Click <strong>Issuance Policy</strong> on the certificate and read it. Everything about how this certificate renews lives here. Note the <strong>Advanced Policy Configuration</strong> — including the option to select an integrated CA instead of self-signed. <strong>💳 That path costs $3 per renewal request, so we're reading it, not clicking it.</strong> <strong>✅</strong></li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">That three-objects thing is a real access-control trap</p>
+<p>Because a certificate's private key is addressable as a secret, <strong>anyone with <em>Key Vault Secrets User</em> on the vault can retrieve the full PFX — private key included — for every certificate in it.</strong></p>
+<p>This catches teams out constantly. They grant an app "just secrets access," reasonably assuming that's a narrow permission, and hand it every private key in the vault. The fix is the boring one that keeps being the answer: <strong>separate vaults for separate concerns.</strong> Application secrets in one vault, certificates in another.</p>
+</div>
+<hr />
+<h3 id="part-7-tiers-limits-and-what-this-costs">Part 7 — Tiers, Limits, and What This Costs</h3>
+<p>Short part, mostly so nothing surprises you later.</p>
+<h4 id="the-three-product-tiers">The Three Product Tiers</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Standard</strong></th>
+<th><strong>Premium</strong> 💳</th>
+<th><strong>Managed HSM</strong> 💳</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Key protection</strong></td>
+<td>Software, FIPS 140-2 Level 1</td>
+<td><strong>HSM</strong>, FIPS 140-2 Level 3</td>
+<td>Dedicated single-tenant HSM pool, FIPS 140-3 Level 3</td>
+</tr>
+<tr>
+<td><strong>Shared with other customers?</strong></td>
+<td>Yes (multi-tenant service)</td>
+<td>Yes</td>
+<td><strong>No — hardware reserved for you</strong></td>
+</tr>
+<tr>
+<td><strong>Secrets &amp; certificates</strong></td>
+<td>✅</td>
+<td>✅</td>
+<td>❌ <strong>Keys only</strong></td>
+</tr>
+<tr>
+<td><strong>Cost</strong></td>
+<td>No base fee; $0.03/10k ops</td>
+<td>Same, <strong>plus ~$1/month per HSM key</strong></td>
+<td><strong>~$2,300+/month, always on</strong></td>
+</tr>
+<tr>
+<td><strong>You'd choose it when</strong></td>
+<td>Almost always</td>
+<td>A regulation names FIPS 140-2 Level 3</td>
+<td>Regulation demands single-tenant hardware and full key sovereignty</td>
+</tr>
+</tbody>
+</table>
+<p>Two things to remember from that table. <strong>Managed HSM is a completely separate resource type, not a tier of a vault, and it does not hold secrets or certificates — keys only.</strong> And <strong>you can upgrade Standard to Premium later, but you cannot downgrade.</strong></p>
+<h4 id="limits-worth-knowing">Limits Worth Knowing</h4>
+<p>Key Vault is <strong>throttled per vault</strong>, and this is the operational gotcha that produces the most confusing production incidents.</p>
+<p>Roughly: <strong>2,000 secret/certificate transactions per 10 seconds per vault</strong>, with key operations having their own separate and often lower limits depending on key type. Exceed it and you get <strong>HTTP 429 — Too Many Requests</strong>.</p>
+<p>Where this bites: an app that fetches its connection string from Key Vault <strong>on every single request</strong>. That works beautifully in testing with one user and falls over the moment real traffic arrives.</p>
+<div class="admonition tip">
+<p class="admonition-title">The mitigation is one word: cache</p>
+<p><strong>Fetch secrets at startup, cache them in memory, and refresh on an interval.</strong> Key Vault is a <em>secret store</em>, not a high-throughput configuration database, and it is not designed to sit in your per-request hot path.</p>
+<p>App Service's Key Vault references — which we build in Part 10 — do this for you automatically, caching values and refetching every 24 hours. That's not a limitation of the feature; it's the correct pattern, implemented for you.</p>
+<p>If one vault genuinely can't take your load, the answer is <strong>more vaults</strong> — which lines up neatly with the recommended practice anyway: <strong>one vault per application, per environment.</strong></p>
+</div>
+<hr />
+<h2 id="part-two-access-integration-and-operations">PART TWO — ACCESS, INTEGRATION AND OPERATIONS</h2>
+<blockquote>
+<p><strong>Halfway point.</strong> You have a vault holding a real database connection string, an RSA key that cannot be read, and a certificate. Right now exactly one person can reach any of it: you. Everything from here is about opening that up safely — to a colleague, and then to an application — and then about running the thing properly once it's real.</p>
+</blockquote>
+<hr />
+<h3 id="part-8-key-vault-rbac-roles-and-why-owner-cant-read-a-secret">Part 8 — Key Vault RBAC Roles, and Why Owner Can't Read a Secret</h3>
+<h4 id="the-roles">The Roles</h4>
+<p>Key Vault's RBAC roles split along two lines: <strong>which object type</strong> (secrets, keys, certificates), and <strong>read versus manage</strong>. Learn the shape and you can predict the names.</p>
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>What it grants</th>
+<th>Plane</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Key Vault Contributor</strong></td>
+<td>Manage the <strong>vault</strong> — create, delete, configure networking. <strong>No data access whatsoever.</strong></td>
+<td>Control</td>
+</tr>
+<tr>
+<td><strong>Key Vault Reader</strong></td>
+<td>Read vault metadata and <strong>list</strong> objects — names, versions, expiry dates. <strong>Cannot read any value.</strong></td>
+<td>Control-ish</td>
+</tr>
+<tr>
+<td><strong>Key Vault Administrator</strong></td>
+<td><strong>All data operations on everything</strong> — secrets, keys, certificates. Cannot manage the vault resource or role assignments.</td>
+<td>Data</td>
+</tr>
+<tr>
+<td><strong>Key Vault Secrets User</strong></td>
+<td><strong>Read secret values.</strong> The workhorse role for applications.</td>
+<td>Data</td>
+</tr>
+<tr>
+<td><strong>Key Vault Secrets Officer</strong></td>
+<td>Everything on secrets — create, update, delete, recover, purge</td>
+<td>Data</td>
+</tr>
+<tr>
+<td><strong>Key Vault Crypto User</strong></td>
+<td><strong>Use</strong> keys for cryptographic operations</td>
+<td>Data</td>
+</tr>
+<tr>
+<td><strong>Key Vault Crypto Officer</strong></td>
+<td>Manage keys — create, rotate, delete</td>
+<td>Data</td>
+</tr>
+<tr>
+<td><strong>Key Vault Certificate User</strong></td>
+<td>Read a certificate <strong>including its private key</strong></td>
+<td>Data</td>
+</tr>
+<tr>
+<td><strong>Key Vault Certificates Officer</strong></td>
+<td>Manage certificates</td>
+<td>Data</td>
+</tr>
+<tr>
+<td><strong>Key Vault Purge Operator</strong></td>
+<td>Permanently delete soft-deleted vaults</td>
+<td>Control</td>
+</tr>
+</tbody>
+</table>
+<p>Three patterns to lock in:</p>
+<ul>
+<li><strong>"User" reads and uses. "Officer" manages.</strong> Once you've got that, you don't need to memorise the list.</li>
+<li><strong>Every data-plane role only works on vaults using the RBAC permission model.</strong> Assign <em>Key Vault Secrets User</em> on an access-policy vault and it does nothing at all — silently. That's a genuinely nasty debugging session if you don't know it.</li>
+<li><strong><code>Key Vault Contributor</code> is control plane only.</strong> The docs state it flatly: it does not allow access to keys, secrets and certificates.</li>
+</ul>
+<h4 id="the-proof">The Proof</h4>
+<p>Yesterday: a Contributor on a storage account could delete the account and could not read a blob in it. Today, the same demonstration, with higher stakes — and it's the version that shows up in real jobs, because vaults are exactly where the separation matters.</p>
+<h4 id="hands-on-prove-owner-secret-reader">Hands-On: Prove Owner ≠ Secret Reader ✅</h4>
+<ol>
+<li>As admin, <strong>Key vault → Access control (IAM) → Role assignments</strong>. Find your own account — <strong>Owner</strong>, inherited from the subscription. <strong>✅</strong></li>
+<li>Go to <strong>Objects → Secrets</strong>. You can see <code>DbConnectionString</code> and read its value. <strong>✅</strong></li>
+</ol>
+<p>Now here's the question, and answer it before you click: <strong>is that because you're the Owner?</strong></p>
+<ol>
+<li><strong>Access control (IAM) → + Add → Add role assignment → <code>Key Vault Secrets User</code> → Members: <code>grp-finance-team</code> → Review + assign.</strong> <strong>✅</strong></li>
+<li>In the private window, sign Priya out and back in for a fresh token, and go to the vault. <strong>✅</strong></li>
+<li><strong>Objects → Secrets → <code>DbConnectionString</code> → current version → Show Secret Value.</strong> <strong>✅</strong></li>
+</ol>
+<p><strong>She reads it.</strong> Priya has no Owner role, no Contributor role, nothing at subscription level. One data-plane role assignment, scoped to one vault, and she can read exactly the secrets in it — and nothing else in your entire Azure estate.</p>
+<ol>
+<li>Have her click <strong>Objects → Keys</strong>. <strong>Denied.</strong> Secrets User is secrets only. <strong>✅</strong></li>
+<li>Now the reveal. Back as admin: <strong>IAM → Role assignments</strong>, find <strong>your own</strong> Owner assignment and read what it grants. Then go to <strong>Objects → Secrets</strong> and try to read the value again. <strong>✅</strong></li>
+</ol>
+<p><strong>It still works — but not for the reason you think.</strong> Owner includes <code>Microsoft.Authorization/*</code>, which means Owner can <em>grant itself</em> any Key Vault data role at any moment. The portal leans on that. Assign someone <strong>Contributor</strong> instead — which has no <code>roleAssignments/write</code> — and watch the difference: they can delete the entire vault, reconfigure its networking, change its permission model, and <strong>the secret list comes back as an access error.</strong></p>
+<pre><code>!!! warning "State this one precisely in an interview"
+    The clean, correct sentence is: **"Control-plane roles like Contributor and Key Vault Contributor grant no data access. A subscription Owner can read secrets, but only because Owner can assign itself the data role — not because Owner includes data permissions."**
+
+    That nuance is exactly what separates someone who has read a docs page from someone who has actually debugged a vault.
+</code></pre>
+<hr />
+<h3 id="part-9-delegating-access-and-the-contributor-back-door">Part 9 — Delegating Access, and the Contributor Back Door</h3>
+<h4 id="the-back-door">The Back Door</h4>
+<p>I just alluded to it; now let's be blunt about it, because <strong>this is the most important operational fact in today's video.</strong></p>
+<p><strong>Anyone with Contributor on a key vault can give themselves full access to its data.</strong></p>
+<p>Two routes, both trivial:</p>
+<ol>
+<li>On an <strong>access-policy</strong> vault, Contributor includes the permission to write access policies. They add themselves. Done.</li>
+<li>On an <strong>RBAC</strong> vault, Contributor includes <code>Microsoft.KeyVault/vaults/write</code> — so they can flip the permission model back to access policies and add themselves. (This is slightly harder now: the portal requires <code>roleAssignments/write</code> to change the model, specifically to stop people locking themselves out. But at the API layer, control-plane write on a vault is a very powerful permission.)</li>
+</ol>
+<p>Microsoft's own documentation says it plainly: <em>"If a user has Contributor permissions to a key vault control plane, the user can grant themselves access to the data plane... You should tightly control who has Contributor role access to your key vaults."</em></p>
+<p>The practical consequences:</p>
+<ul>
+<li><strong>Never hand out Contributor at subscription or resource-group scope casually</strong> if any vault lives underneath. That's not a vault permission in anyone's mental model, and it is one.</li>
+<li>Give vault operators <strong>Key Vault Contributor</strong> if they must manage vault settings — still powerful, but narrower than full Contributor.</li>
+<li>Give applications and people <strong>data-plane roles at vault scope</strong>, and nothing broader.</li>
+<li>Put production vaults in <strong>their own resource group</strong>, so resource-group-scoped Contributor assignments elsewhere can't reach them. This is the single most effective structural mitigation, and it costs nothing.</li>
+</ul>
+<h4 id="delegating-without-handing-over-the-keys">Delegating Without Handing Over the Keys</h4>
+<p>There's a purpose-built role for "let this person manage who can read secrets, but don't let them read secrets themselves": <strong>Key Vault Data Access Administrator</strong>.</p>
+<p>It can add and remove role assignments — but <strong>only the Key Vault ones</strong> (Administrator, Secrets Officer/User, Crypto Officer/User, Certificates Officer, Reader). It cannot grant Owner. It cannot grant Contributor. It is constrained by a built-in <strong>ABAC condition</strong> — an attribute-based rule attached to the role definition that restricts <em>which</em> roles it may assign.</p>
+<p>That's the pattern you want for a platform team: they onboard applications to vaults all day without ever being able to read a production secret or escalate themselves.</p>
+<div class="admonition note">
+<p class="admonition-title">ABAC in one paragraph, because it's new to this course</p>
+<p>Everything in Day 17 was <strong>RBAC</strong> — principal, role, scope. <strong>ABAC</strong> adds a fourth element: a <strong>condition</strong>, evaluated at access time against attributes of the request. On Key Vault it currently applies to <strong>secret data actions</strong>, and lets you write rules like <em>"this principal may read secrets whose name starts with <code>dev-</code>."</em></p>
+<p>You don't need to author these to pass an interview. You need to know the word, know it's a <em>condition attached to a role assignment</em>, and know <strong>Key Vault Data Access Administrator</strong> is the built-in role that ships with one.</p>
+</div>
+<h4 id="hands-on-read-the-constrained-role">Hands-On: Read the Constrained Role ✅</h4>
+<ol>
+<li><strong>Key vault → Access control (IAM) → Roles</strong> tab. Filter for <code>Key Vault</code>. Count them — there are more than you'd guess. <strong>✅</strong></li>
+<li>Open <strong>Key Vault Data Access Administrator</strong> → <strong>View</strong> → <strong>JSON</strong>. Look at <code>Actions</code>: it has <code>roleAssignments/write</code>, but read the <code>conditions</code> — that's the ABAC rule limiting it to Key Vault roles only. <strong>✅</strong></li>
+<li>Open <strong>Key Vault Contributor</strong> → <strong>JSON</strong>. <code>Actions</code> covers <code>Microsoft.KeyVault/*</code>. Now look at <strong><code>DataActions</code></strong>. <strong>✅</strong></li>
+</ol>
+<p><strong>It's empty.</strong> The whole of Part 8 in one screenshot.</p>
+<hr />
+<h3 id="part-10-the-payoff-an-app-that-reads-a-secret-it-cannot-see">Part 10 — The Payoff: An App That Reads a Secret It Cannot See</h3>
+<p>This is what the whole video has been building to, and it's the pattern you'll use in every real Azure project for the rest of your career.</p>
+<h4 id="what-were-building">What We're Building</h4>
+<div class="highlight"><pre><span></span><code>App Service                    Microsoft Entra ID              Key Vault
+    │                                 │                            │
+    │ 1. "I'm this managed identity,  │                            │
+    │     give me a token for KV"     │                            │
+    ├────────────────────────────────►│                            │
+    │◄────────────────────────────────┤                            │
+    │        access token             │                            │
+    │                                                              │
+    │ 2. GET /secrets/DbConnectionString   (Bearer &lt;token&gt;)         │
+    ├─────────────────────────────────────────────────────────────►│
+    │                                          3. Is this identity  │
+    │                                             Key Vault Secrets │
+    │                                             User on me? Yes.  │
+    │◄─────────────────────────────────────────────────────────────┤
+    │        the secret value                                       │
+</code></pre></div>
+<p>Count the credentials in that diagram. <strong>Zero.</strong> No password, no key, no connection string in any configuration file. The App Service proves who it is with an identity the platform manages, and the vault checks a role assignment. That's Day 17's managed identity and Day 17's RBAC, doing the job Day 18 built the vault for.</p>
+<h4 id="hands-on-step-1-create-the-app-and-give-it-an-identity">Hands-On, Step 1: Create the App and Give It an Identity ✅</h4>
+<p>We deleted last video's App Service at cleanup, so we need a fresh one.</p>
+<ol>
+<li><strong>App Services → + Create → Web App.</strong> <strong>Resource group:</strong> <code>rg-day18-demo</code>. <strong>Name:</strong> <code>app-lwm-day18-&lt;yourname&gt;</code>. <strong>Publish:</strong> Code. <strong>Runtime:</strong> any (.NET or Node is fine). <strong>OS:</strong> Linux. <strong>Pricing plan: Free F1.</strong> <strong>Review + create → Create.</strong> <strong>✅</strong></li>
+<li>Open it → <strong>Settings → Identity → System assigned → Status: On → Save → Yes.</strong> <strong>✅</strong></li>
+<li>Copy the <strong>Object (principal) ID</strong> that appears. Entra ID has just created a service principal for this app. <strong>✅</strong></li>
+</ol>
+<h4 id="hands-on-step-2-grant-it-exactly-one-role">Hands-On, Step 2: Grant It Exactly One Role ✅</h4>
+<ol>
+<li><strong>Key vault → Access control (IAM) → + Add → Add role assignment.</strong> <strong>✅</strong></li>
+<li><strong>Role:</strong> <code>Key Vault Secrets User</code>. <strong>Next.</strong> <strong>✅</strong></li>
+<li><strong>Members:</strong> change <strong>Assign access to</strong> from <em>User, group, or service principal</em> to <strong>Managed identity</strong> → <strong>+ Select members</strong> → <strong>Managed identity: App Service</strong> → pick <code>app-lwm-day18-&lt;yourname&gt;</code>. <strong>✅</strong></li>
+<li><strong>Review + assign.</strong> <strong>✅</strong></li>
+</ol>
+<p>Note what you did not do: you did not create a credential, copy a client ID, or store a password. <strong>The role assignment <em>is</em> the integration.</strong></p>
+<pre><code>!!! tip "Least privilege, on camera"
+    We picked *Key Vault Secrets User*, not *Key Vault Administrator* and definitely not *Contributor*. The app reads one secret; it gets exactly the permission to read secrets, at exactly the scope of one vault. If this app is ever compromised, that's the entire blast radius.
+</code></pre>
+<h4 id="hands-on-step-3-the-key-vault-reference">Hands-On, Step 3: The Key Vault Reference ✅</h4>
+<p>Here's the elegant part. App Service understands a special syntax in app settings: put a <strong>Key Vault reference</strong> in as the value, and the platform resolves it at runtime, using the app's managed identity, before your code ever sees it. <strong>Your application code reads a normal environment variable and has no idea Key Vault is involved.</strong> No SDK, no library, no code change.</p>
+<ol>
+<li><strong>App Service → Settings → Environment variables → App settings → + Add.</strong> <strong>✅</strong></li>
+<li><strong>Name:</strong> <code>DbConnection</code>. <strong>Value</strong> — one of these two forms: <strong>✅</strong></li>
+</ol>
+<div class="highlight"><pre><span></span><code>@Microsoft.KeyVault(SecretUri=https://kv-lwm-day18-&lt;yourname&gt;.vault.azure.net/secrets/DbConnectionString)
+</code></pre></div>
+<p>or the equivalent, which many people find easier to read:</p>
+<div class="highlight"><pre><span></span><code>@Microsoft.KeyVault(VaultName=kv-lwm-day18-&lt;yourname&gt;;SecretName=DbConnectionString)
+</code></pre></div>
+<p><strong>Leave the version off</strong>, so the app follows the current version and picks up rotations automatically.</p>
+<ol>
+<li><strong>Apply → Apply</strong> to save. The app restarts. <strong>✅</strong></li>
+<li>
+<p>Wait a moment, then look at the app settings list. Next to <code>DbConnection</code> you should see a <strong>green tick and the source shown as "Key Vault Reference"</strong>. <strong>✅</strong></p>
+<p><strong>That green tick is the whole video.</strong> It means App Service authenticated as the managed identity, called the vault, was authorised by your role assignment, and got the secret. There is no credential anywhere in this configuration — click <strong>Edit</strong> on the setting and the only thing stored is the reference string itself.</p>
+</li>
+</ol>
+<h4 id="when-it-doesnt-work">When It Doesn't Work</h4>
+<p>It will fail for someone watching this, so here's the debugging path in the order you should try it:</p>
+<table>
+<thead>
+<tr>
+<th>Symptom</th>
+<th>Cause</th>
+<th>Fix</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Red X, "Key Vault reference not resolved"</td>
+<td>The managed identity has no role on the vault, or it hasn't propagated</td>
+<td>Check the vault's IAM → Role assignments. Wait 10 minutes.</td>
+</tr>
+<tr>
+<td>No status icon at all, value shows literally</td>
+<td><strong>Syntax error</strong> — the portal didn't even recognise it as a reference</td>
+<td>Check the <code>@Microsoft.KeyVault(...)</code> spelling exactly, and that there are no spaces</td>
+</tr>
+<tr>
+<td>Worked yesterday, broken today</td>
+<td>Secret expired, disabled, or deleted</td>
+<td>Check the secret's status in the vault</td>
+</tr>
+<tr>
+<td>Works locally, fails in the app</td>
+<td>Vault firewall is on and the app isn't allowed through</td>
+<td>Part 11</td>
+</tr>
+</tbody>
+</table>
+<p>Two portal tools worth knowing: <strong>Edit the setting</strong> and the dialog shows the live resolution status including the error, and <strong>Diagnose and solve problems → Availability and Performance → Web app down → Key Vault Application Settings Diagnostics</strong> runs a purpose-built detector.</p>
+<div class="admonition note">
+<p class="admonition-title">How rotation actually behaves</p>
+<p>App Service <strong>caches</strong> resolved references and refetches them roughly <strong>every 24 hours</strong>. So rotating a secret in the vault does not instantly change what your running app sees.</p>
+<p>If you need it immediately, <strong>any configuration change to the app forces a restart and an immediate refetch</strong> — that's the practical trick. There's also a documented REST endpoint to force resolution without a restart.</p>
+<p>This caching is a feature, not a limitation. It's exactly the caching Part 7 said you should be doing, implemented for you.</p>
+</div>
+<div class="admonition tip">
+<p class="admonition-title">The same pattern, everywhere</p>
+<p>Key Vault references work identically in <strong>Azure Functions</strong> and <strong>Logic Apps (Standard)</strong>. <strong>AKS</strong> does the equivalent with the Secrets Store CSI driver. <strong>Azure DevOps</strong> pipelines do it with a variable group linked to a vault — that's Day 22. <strong>Data Factory, App Configuration, API Management</strong> — all the same shape: managed identity, data-plane role, reference instead of value.</p>
+<p>Learn it once here and you've learned it for the whole platform.</p>
+</div>
+<hr />
+<h3 id="part-11-networking-firewall-trusted-services-and-private-endpoints">Part 11 — Networking: Firewall, Trusted Services and Private Endpoints</h3>
+<p>Right now your vault accepts connections from <strong>anywhere on the internet</strong>. Authentication and RBAC still protect it — an attacker with no valid token gets nothing — but the front door is publicly reachable, which means it's reachable by password sprays, by misconfigured scripts, and by anyone who finds the hostname.</p>
+<h4 id="three-levels-of-network-lockdown">Three Levels of Network Lockdown</h4>
+<p><strong>Level 1 — Public, all networks.</strong> The default. Fine for learning.</p>
+<p><strong>Level 2 — Firewall with selected networks.</strong> The vault rejects traffic except from IP ranges you list and virtual network subnets you allow (via <strong>service endpoints</strong>). Traffic still goes over the Azure backbone to a public endpoint, but the vault refuses everyone else. <strong>Free.</strong> ✅</p>
+<p><strong>Level 3 — Private endpoint.</strong> The vault gets a <strong>private IP address inside your VNet</strong>. Traffic never touches the public internet at all, and you can disable public access entirely. This is the production answer for anything sensitive. 💳 — about <strong>$7.30/month</strong> plus data processing, so it's an instructor demo.</p>
+<p>You met all three concepts on Day 11 with storage accounts. <strong>Key Vault behaves identically</strong>, which is the point — Azure's networking model is consistent across services, so learning it once transfers.</p>
+<h4 id="the-trap-everyone-falls-into">The Trap Everyone Falls Into</h4>
+<p>Turn on the firewall and a long list of things breaks at once, because plenty of Azure services need to reach your vault and they don't come from an IP address you can list.</p>
+<p>That's what <strong>"Allow trusted Microsoft services to bypass this firewall"</strong> is for. It lets specifically-listed first-party services through — App Service certificate deployment, Azure Backup, Disk Encryption, Event Grid, Azure SQL for customer-managed keys.</p>
+<div class="admonition warning">
+<p class="admonition-title">Trusted services does NOT cover Key Vault references</p>
+<p>This is the one to remember, because it wastes entire afternoons.</p>
+<p><strong>App Service Key Vault references are not covered by the trusted-services bypass.</strong> If you enable the vault firewall, the app we just built in Part 10 stops resolving its secret — and the error message will not tell you it's a networking problem.</p>
+<p>The supported fix is <strong>VNet integration on the app plus a service endpoint or private endpoint on the vault</strong> — which requires a Standard or higher App Service plan, not Free F1. That's why we are <strong>not</strong> enabling the firewall on our vault today: it would break the demo we just built, on a plan tier that can't fix it.</p>
+<p>Know the constraint. It's a very common real-world design conversation.</p>
+</div>
+<h4 id="hands-on-look-dont-touch">Hands-On: Look, Don't Touch ✅</h4>
+<ol>
+<li><strong>Key vault → Settings → Networking → Firewalls and virtual networks.</strong> <strong>✅</strong></li>
+<li>Click <strong>Selected networks</strong> to reveal the options — the <strong>+ Add existing virtual network</strong> control, the <strong>Firewall / IP address ranges</strong> box with a helpful <em>Add your client IP address</em> link, and the <strong>Exception: Allow trusted Microsoft services</strong> checkbox. <strong>✅</strong></li>
+<li><strong>Set it back to All networks and don't save any change</strong>, for the reason in the warning above. <strong>✅</strong></li>
+<li>Click the <strong>Private endpoint connections</strong> tab and read it. 💳 In production this is where you'd create the private endpoint, and it's how a serious environment runs a vault. <strong>✅</strong></li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">The exam-style answer</p>
+<p><em>"Key Vault must not be reachable from the public internet"</em> → <strong>private endpoint</strong>, and set public network access to <strong>Disabled</strong>.</p>
+<p><em>"Only our corporate office and our app subnet may reach the vault"</em> → <strong>firewall with IP rules and a service endpoint</strong>.</p>
+<p><em>"Azure Backup can't reach the vault after we enabled the firewall"</em> → <strong>allow trusted Microsoft services</strong>.</p>
+</div>
+<hr />
+<h3 id="part-12-soft-delete-purge-protection-and-recovery">Part 12 — Soft Delete, Purge Protection and Recovery</h3>
+<h4 id="soft-delete-is-not-optional-any-more">Soft Delete Is Not Optional Any More</h4>
+<p><strong>Soft delete is mandatory on all key vaults and cannot be turned off.</strong> It was optional years ago; it isn't now. Microsoft enabled it across all vaults, and every vault you create today has it.</p>
+<p>What it does: when you delete a vault or an object inside it, the thing enters a <strong>deleted state</strong> rather than vanishing. During the retention window (your 7–90 days from Part 2) it is invisible in normal listings but fully recoverable — and critically, <strong>recovery restores the same object, with the same identifiers</strong>, so applications pointing at it start working again.</p>
+<p>Two things it costs you, both of which surprise people:</p>
+<ul>
+<li><strong>The name is reserved.</strong> You cannot create a new vault with a deleted vault's name until it's purged or the window expires. Global uniqueness applies to deleted vaults too.</li>
+<li><strong>You may still be billed for the storage of a soft-deleted vault's contents</strong> during the retention window.</li>
+</ul>
+<h4 id="purge-protection-the-switch-with-no-off">Purge Protection: The Switch With No Off</h4>
+<p>Covered in Part 2, but now you've seen the mechanics, the point should land harder. Without purge protection, an admin can delete <em>and immediately purge</em> a vault — genuinely gone, keys and all. With purge protection, the deletion always waits out the full retention window, and <strong>no permission level can shortcut it</strong>.</p>
+<p>The attack it defends against is specific: an attacker with admin access destroys the customer-managed keys that encrypt your storage and databases. The data is still there and permanently unreadable. Purge protection means the keys are recoverable for up to 90 days, which is enough time to notice and respond.</p>
+<p><strong>Turn it on in production. Especially if the vault holds encryption keys — where it is a hard requirement, not a suggestion.</strong></p>
+<h4 id="hands-on-delete-and-recover">Hands-On: Delete and Recover ✅</h4>
+<ol>
+<li><strong>Key vault → Objects → Secrets.</strong> Create a throwaway: <strong>+ Generate/Import</strong>, name <code>TempSecret</code>, any value, <strong>Create</strong>. <strong>✅</strong></li>
+<li>Select it → <strong>Delete</strong>. Confirm. It disappears from the list. <strong>✅</strong></li>
+<li>Click <strong>Manage deleted secrets</strong> at the top of the Secrets blade. <strong>✅</strong></li>
+</ol>
+<p><strong>There it is</strong> — with the deletion date and the scheduled purge date.</p>
+<ol>
+<li>Select it → <strong>Recover</strong>. Go back to the Secrets list. <strong>It's back, same name, same versions, same identifiers.</strong> <strong>✅</strong></li>
+<li>Delete it again, go back into <strong>Manage deleted secrets</strong>, and this time select it and click <strong>Purge</strong>. <strong>Now it is genuinely gone.</strong> <strong>✅</strong></li>
+</ol>
+<p>Notice that Purge was available — because we left purge protection <strong>off</strong>. With it on, that button would be there and would refuse. That's the difference in one screen.</p>
+<ol>
+<li>Bonus: search <strong>Key vaults</strong> in the portal and click <strong>Manage deleted vaults</strong> on the toolbar. Any vault you've soft-deleted in this subscription is listed there. <strong>This is the blade to remember when Azure tells you a vault name is taken and you're certain it isn't.</strong> <strong>✅</strong></li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">The interview question, and it's asked a lot</p>
+<p><em>"You deleted a key vault by accident. How do you get it back?"</em> → <strong>Soft delete. It's on by default and mandatory, retention is 7–90 days, recover it from Manage deleted vaults, and it comes back with the same URI and contents.</strong></p>
+<p>Follow-up: <em>"What if purge protection was enabled?"</em> → <strong>Then it couldn't have been permanently purged in the first place — it's guaranteed recoverable for the full retention period.</strong></p>
+</div>
+<hr />
+<h3 id="part-13-monitoring-expiry-and-rotation">Part 13 — Monitoring, Expiry and Rotation</h3>
+<p>A vault that nobody watches is a vault that fails silently, and Key Vault fails in two specific ways: <strong>secrets expire</strong>, and <strong>access is denied</strong>.</p>
+<h4 id="logging">Logging</h4>
+<p><strong>Key Vault does not log data-plane operations by default.</strong> You turn it on with a <strong>diagnostic setting</strong>, exactly as you would for any other Azure service, sending <code>AuditEvent</code> logs to a <strong>Log Analytics workspace</strong>.</p>
+<p>Once that's on, every operation is recorded: who, what object, what operation, from which IP, and whether it succeeded. That's the audit trail that answers <em>"who read the production connection string last Tuesday?"</em> — and it's a question you cannot answer retroactively, so this is a thing to switch on <strong>before</strong> you need it, not after.</p>
+<p>That's Day 19's territory, and Key Vault is the perfect motivation for it.</p>
+<h4 id="expiry-the-silent-outage">Expiry: The Silent Outage</h4>
+<p>Part 4 warned about this; here's the fix. Key Vault raises <strong>Event Grid events</strong> for object lifecycle:</p>
+<ul>
+<li><strong><code>SecretNearExpiry</code></strong> — fires <strong>30 days before</strong> the expiration date by default</li>
+<li><strong><code>SecretExpired</code></strong> — fires when it lapses</li>
+<li><strong><code>SecretNewVersionCreated</code></strong> — the hook for rotation automation</li>
+<li>Equivalent events exist for keys and certificates</li>
+</ul>
+<p>Two prerequisites nobody mentions and both matter: <strong>the object must have an expiration date set</strong> (no date, no event, ever), and <strong>Key Vault evaluates near-expiry on a periodic sweep</strong>, so the first event can take up to 24 hours to appear.</p>
+<h4 id="rotation">Rotation</h4>
+<p>Recall the distinction from Part 5, because it's the crisp answer to a common question:</p>
+<ul>
+<li><strong>Keys rotate themselves.</strong> Set a rotation policy; Key Vault generates new versions on schedule. No code.</li>
+<li><strong>Secrets cannot rotate themselves.</strong> Key Vault has no idea your secret is a SQL password — changing it means changing it in SQL Server too. That's application-specific, so the standard pattern is: <code>SecretNearExpiry</code> → Event Grid → <strong>Azure Function</strong> → change the credential at the source → write the new version back to the vault. Your apps, referencing without a version, pick it up automatically.</li>
+</ul>
+<p>Which brings the day full circle: <strong>because the secret lives in exactly one place, rotating it is one operation instead of a hunt through five repositories.</strong> That's the payoff for all of today's discipline.</p>
+<h4 id="hands-on-turn-on-the-audit-trail">Hands-On: Turn On the Audit Trail ✅</h4>
+<ol>
+<li><strong>Key vault → Monitoring → Diagnostic settings → + Add diagnostic setting.</strong> <strong>✅</strong></li>
+<li>
+<p><strong>Name:</strong> <code>kv-audit</code>. <strong>Logs:</strong> tick <strong>Audit Logs</strong> (<code>AuditEvent</code>). <strong>Destination:</strong> <em>Send to Log Analytics workspace</em> — create one in <code>rg-day18-demo</code> if you don't have one. <strong>Save</strong>. <strong>✅</strong></p>
+<div class="admonition note">
+<p class="admonition-title">This one has a real, if small, cost</p>
+<p>Log Analytics ingestion is billed per GB with a free monthly allowance, and Key Vault audit logs are tiny. For this lab it's effectively free — but it is <strong>not</strong> zero, and Day 19 covers the cost model properly. If you want to be strict about spending, delete this diagnostic setting at cleanup.</p>
+</div>
+</li>
+<li>
+<p>Go and do a few operations — read a secret, list the keys. Then <strong>Monitoring → Logs</strong> and run: <strong>✅</strong></p>
+</li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="n">AzureDiagnostics</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">ResourceType</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="s">"VAULTS"</span>
+<span class="p">|</span><span class="w"> </span><span class="k">project</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="p">,</span><span class="w"> </span><span class="n">OperationName</span><span class="p">,</span><span class="w"> </span><span class="n">identity_claim_upn_s</span><span class="p">,</span><span class="w"> </span><span class="n">ResultSignature</span>
+<span class="p">|</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="n">desc</span>
+</code></pre></div>
+<p>Logs can take a few minutes to arrive. When they do, <strong>there's your audit trail</strong> — every access to the vault, with the identity that made it. Find the App Service's managed identity fetching <code>DbConnectionString</code>. That's your Part 10 demo, recorded.</p>
+<ol>
+<li>Open <strong>Monitoring → Alerts</strong> and note you could alert on <code>ServiceApiResult</code> — the standard alert for <em>someone is being denied access to the vault</em>, which is either a misconfiguration or an intrusion, and you want to know either way. <strong>✅</strong></li>
+</ol>
+<hr />
+<h3 id="part-14-defender-for-cloud-sentinel-and-interview-prep">Part 14 — Defender for Cloud, Sentinel and Interview Prep</h3>
+<p>We finish with the layer above everything: the tooling that watches your whole subscription and tells you what you got wrong — including, as you'll see, a few things from today.</p>
+<h4 id="microsoft-defender-for-cloud">Microsoft Defender for Cloud</h4>
+<p><strong>Defender for Cloud</strong> is Azure's security posture and threat-protection service. It has two halves, and the licensing question is the one interviewers ask.</p>
+<p><strong>Foundational CSPM — free.</strong> <em>Cloud Security Posture Management</em>. It continuously assesses your resources against the <strong>Microsoft Cloud Security Benchmark</strong> and gives you:</p>
+<ul>
+<li><strong>Secure Score</strong> — a single percentage for how well your environment follows security best practice</li>
+<li><strong>Security recommendations</strong> — a prioritised, actionable list, each weighted by how much it would raise your score</li>
+<li><strong>Asset inventory</strong> — every resource, with its security state</li>
+<li><strong>Regulatory compliance</strong> views against standards like ISO 27001, PCI-DSS and CIS</li>
+</ul>
+<p><strong>Defender plans — paid.</strong> 💳 Per-resource-type threat protection: Defender for Servers, for Storage, for SQL, for Containers, for Key Vault. These do actual <strong>threat detection</strong> — alerting on anomalous access to a vault, malware uploaded to a storage account, suspicious SQL activity. Plus <strong>Defender CSPM</strong>, the paid posture tier, which adds attack path analysis and agentless vulnerability scanning.</p>
+<p>The distinction to hold: <strong>free CSPM tells you what's misconfigured. Paid Defender plans tell you you're being attacked.</strong></p>
+<div class="admonition warning">
+<p class="admonition-title">This changes on 27 October 2026 — worth knowing right now</p>
+<p><strong>From 27 October 2026, Foundational CSPM moves to an opt-in model and is no longer enabled by default on new Azure subscriptions.</strong></p>
+<p>It stays free and you can enable it at any time — but the default changes. So a subscription created after that date will show you <em>nothing</em> until someone switches it on, and "we have no security recommendations" will mean "we aren't looking," not "we're fine."</p>
+<p>If you're watching this after that date and the next demo shows an empty dashboard, that's why. Enable the free plan and come back in a few hours.</p>
+</div>
+<h4 id="microsoft-sentinel-vocabulary-only">Microsoft Sentinel — Vocabulary Only</h4>
+<p><strong>Sentinel is Azure's SIEM and SOAR</strong> — Security Information and Event Management, and Security Orchestration, Automation and Response. It sits on top of a Log Analytics workspace, ingests logs from across your estate (including the Key Vault audit logs you just enabled), correlates them, hunts for threats, and can run automated playbooks in response.</p>
+<p>It is <strong>consumption-priced on data ingestion</strong> and gets expensive quickly, so this is genuinely vocabulary today. The one distinction to be able to draw:</p>
+<p><strong>Defender for Cloud protects your Azure resources. Sentinel is a SIEM for your whole organisation</strong> — Azure, on-premises, other clouds, Microsoft 365 — and it's where a security operations centre actually works.</p>
+<h4 id="hands-on-read-your-secure-score">Hands-On: Read Your Secure Score ✅</h4>
+<ol>
+<li>Search <strong>Microsoft Defender for Cloud</strong> → <strong>Overview</strong>. <strong>✅</strong></li>
+<li>Look at your <strong>Secure Score</strong>. It won't be great, and that's the point. <strong>✅</strong></li>
+<li><strong>Recommendations</strong> → filter for <code>Key Vault</code>. You will very likely see several of today's decisions come back at you: <strong>✅</strong></li>
+<li><em>Key vaults should have deletion protection enabled</em> — that's purge protection, which we deliberately left off</li>
+<li><em>Key vaults should have soft delete enabled</em> — this one you'll pass, because it's mandatory now</li>
+<li><em>Azure Key Vault should use RBAC permission model</em> — pass, because it's the default</li>
+<li><em>Private endpoint should be configured for Key Vault</em> — fail, and now you know exactly what it costs to fix</li>
+<li>Open one recommendation and read its structure: description, affected resources, remediation steps, and often a <strong>Fix</strong> button that applies the change directly. <strong>✅</strong></li>
+<li>
+<p>Click <strong>Regulatory compliance</strong> and look at your subscription against a benchmark. <strong>✅</strong> 💳 <em>Some standards need a paid Defender plan; the default benchmark view is free.</em></p>
+<div class="admonition tip">
+<p class="admonition-title">Secure Score is a genuinely good learning tool</p>
+<p>Work down that recommendations list on your own subscription and you'll learn more practical Azure security than from any course, including this one — because it's specific to things you actually built, and each item explains itself.</p>
+<p>In interviews, <em>"how would you assess the security posture of an Azure environment you've just inherited?"</em> has a very strong opening: <strong>"Start with Defender for Cloud's Secure Score and work the recommendations by weight."</strong></p>
+</div>
+</li>
+</ol>
+<h4 id="interview-and-exam-quick-reference">Interview and Exam Quick Reference</h4>
+<table>
+<thead>
+<tr>
+<th>If you're asked…</th>
+<th>The answer is…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Where do application secrets belong?"</td>
+<td><strong>Key Vault</strong> — never in code, config, or app settings</td>
+</tr>
+<tr>
+<td>"Secret vs key vs certificate?"</td>
+<td><strong>Secrets come back to you; keys never leave the vault (it does the crypto); certificates are managed X.509 objects</strong></td>
+</tr>
+<tr>
+<td>"Which permission model for a new vault?"</td>
+<td><strong>Azure RBAC</strong> — the default since API version 2026-02-01</td>
+</tr>
+<tr>
+<td>"Deadline for Key Vault control-plane APIs"</td>
+<td><strong>27 February 2027</strong> — everything before 2026-02-01 retires</td>
+</tr>
+<tr>
+<td>"App must read a secret with no stored credential"</td>
+<td><strong>Managed identity + Key Vault Secrets User + Key Vault reference</strong></td>
+</tr>
+<tr>
+<td>"Minimum role for an app to read secrets"</td>
+<td><strong>Key Vault Secrets User</strong> — not Administrator, not Contributor</td>
+</tr>
+<tr>
+<td>"User has Contributor on the vault but can't read secrets"</td>
+<td><strong>Correct — control plane only.</strong> Assign a data-plane role</td>
+</tr>
+<tr>
+<td>"…but they granted themselves access anyway"</td>
+<td><strong>The Contributor back door.</strong> Contributor can write vault config / access policies. Restrict it</td>
+</tr>
+<tr>
+<td>"Manage who can read secrets, without being able to read them"</td>
+<td><strong>Key Vault Data Access Administrator</strong> (constrained by an ABAC condition)</td>
+</tr>
+<tr>
+<td>"Recover an accidentally deleted vault"</td>
+<td><strong>Soft delete</strong> — mandatory, 7–90 days, <em>Manage deleted vaults</em></td>
+</tr>
+<tr>
+<td>"Guarantee nobody can permanently destroy the vault"</td>
+<td><strong>Purge protection</strong> — irreversible once enabled</td>
+</tr>
+<tr>
+<td>"Vault name is taken but I can't see the vault"</td>
+<td>It's <strong>soft-deleted</strong>. Purge it or wait out retention</td>
+</tr>
+<tr>
+<td>"Required for customer-managed encryption keys"</td>
+<td><strong>Soft delete + purge protection</strong></td>
+</tr>
+<tr>
+<td>"Regulation demands FIPS 140-2 Level 3"</td>
+<td><strong>Premium tier</strong> (HSM-backed keys)</td>
+</tr>
+<tr>
+<td>"Single-tenant dedicated HSM, keys only"</td>
+<td><strong>Managed HSM</strong> — separate resource, ~$2,300+/month</td>
+</tr>
+<tr>
+<td>"Vault must not be reachable from the internet"</td>
+<td><strong>Private endpoint</strong> + public access disabled</td>
+</tr>
+<tr>
+<td>"Azure Backup broke after enabling the vault firewall"</td>
+<td><strong>Allow trusted Microsoft services</strong></td>
+</tr>
+<tr>
+<td>"App Service Key Vault reference broke after enabling the firewall"</td>
+<td>Trusted services <strong>doesn't</strong> cover it — needs <strong>VNet integration + service/private endpoint</strong></td>
+</tr>
+<tr>
+<td>"HTTP 429 from Key Vault under load"</td>
+<td><strong>Throttling.</strong> Cache secrets; don't fetch per request; split vaults</td>
+</tr>
+<tr>
+<td>"Be warned before a secret expires"</td>
+<td><strong>Event Grid <code>SecretNearExpiry</code></strong> — 30 days by default, and the object must have an expiry date</td>
+</tr>
+<tr>
+<td>"Who read this secret last month?"</td>
+<td><strong>Diagnostic settings → AuditEvent → Log Analytics.</strong> Not on by default</td>
+</tr>
+<tr>
+<td>"Rotate a database password automatically"</td>
+<td><strong>Event Grid → Azure Function → update source → new version.</strong> Keys self-rotate; secrets don't</td>
+</tr>
+<tr>
+<td>"Assess security posture of an unfamiliar subscription"</td>
+<td><strong>Defender for Cloud Secure Score + recommendations</strong> (free Foundational CSPM)</td>
+</tr>
+<tr>
+<td>"Free vs paid Defender for Cloud"</td>
+<td><strong>Free = posture (Secure Score, recommendations). Paid = threat detection</strong></td>
+</tr>
+<tr>
+<td>"SIEM across Azure, on-prem and M365"</td>
+<td><strong>Microsoft Sentinel</strong></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="cleanup">Cleanup ✅</h2>
+<ol>
+<li><strong>Delete the diagnostic setting</strong> if you'd rather not ingest any Log Analytics data: <strong>Key vault → Diagnostic settings → <code>kv-audit</code> → Delete</strong>. <strong>✅</strong></li>
+<li><strong>Remove the App Service's role assignment</strong> — good hygiene, and it stops an orphaned <em>Identity not found</em> entry appearing later: <strong>Key vault → IAM → Role assignments → <code>app-lwm-day18-…</code> → Remove</strong>. <strong>✅</strong></li>
+<li><strong>Delete the resource group <code>rg-day18-demo</code>.</strong> This removes the vault, the App Service, the plan and the Log Analytics workspace in one action. <strong>✅</strong></li>
+<li>
+<p><strong>The vault is now soft-deleted, not gone.</strong> Search <strong>Key vaults → Manage deleted vaults</strong>, find it, and <strong>Purge</strong> it — otherwise its name stays reserved for 90 days and it may keep billing you for stored content. <strong>✅</strong></p>
+<div class="admonition tip">
+<p class="admonition-title">This step is the practical lesson of Part 12</p>
+<p>Deleting the resource group felt like cleanup, and it left something behind that you can only see from a different blade. That is exactly how people end up unable to reuse a vault name six weeks later. <strong>Always purge test vaults deliberately.</strong></p>
+</div>
+</li>
+<li>
+<p><strong>Keep <code>Priya Sharma</code> and <code>grp-finance-team</code>.</strong> Still free, and the Capstone on Day 30 uses them again. <strong>✅</strong></p>
+</li>
+<li><strong>Keep <code>db-lwm-demo</code></strong> — Day 30 needs it. <strong>✅</strong></li>
+</ol>
+<hr />
+<h2 id="summary">Summary</h2>
+<p>Today started with a question we ducked yesterday: <em>where does the secret actually live?</em></p>
+<p><strong>Key Vault is the answer, and its value is that there's exactly one copy.</strong> Not a copy in a repo, a copy in a config file and a copy in someone's Slack history — one object, in one place, with an identity-based access decision in front of it and an audit log behind it. Everything else today followed from that.</p>
+<p><strong>Three object types, and the difference is real.</strong> Secrets come back to you. <strong>Keys never leave</strong> — you send the vault data and it returns a signature, so even a fully compromised application server never holds your private key. Certificates are managed X.509 objects that renew themselves, and quietly exist as three addressable objects at once, which is an access-control trap worth remembering.</p>
+<p><strong>The permission model is the decision that changed.</strong> As of API version <strong>2026-02-01</strong>, Azure RBAC is the default for new vaults, and every control-plane API version before it <strong>retires on 27 February 2027</strong>. Access policies still work, but they're per-vault, don't inherit, and none of Azure's access tooling understands them. Choose RBAC — and if you're migrating a live vault, <strong>assign the roles before you flip the switch</strong>, because flipping it invalidates every access policy instantly.</p>
+<p>Then yesterday's lesson came back with higher stakes. <strong>Key Vault Contributor manages the vault and cannot read one secret</strong> — the same control-plane/data-plane split you proved on a storage account, in the place it matters most. And its dangerous corollary: <strong>Contributor on a vault can grant itself data access</strong>, which is why production vaults belong in their own resource group and why <em>Key Vault Data Access Administrator</em> exists.</p>
+<p>And then the payoff, which is the pattern you'll reuse constantly: <strong>an App Service with a managed identity, one <em>Key Vault Secrets User</em> role assignment, and a <code>@Microsoft.KeyVault(...)</code> reference in an app setting.</strong> A running application reading a database password from a vault, with <strong>no credential anywhere in its configuration</strong> and no code that knows Key Vault exists. Day 17 gave the app an identity; Day 18 gave it something worth protecting.</p>
+<p>Finally the operational reality: <strong>soft delete is mandatory and saves you</strong>, <strong>purge protection is permanent and protects you</strong>, the retention period <strong>can never be changed</strong>, a deleted vault <strong>keeps its name reserved</strong>, the vault <strong>won't tell you a secret is about to expire</strong> unless you wire up the events, and <strong>it doesn't log anything</strong> until you turn on diagnostics. Every one of those is a lesson somebody learned the expensive way.</p>
+<h3 id="whats-next">What's Next</h3>
+<p><strong>Day 19 — Azure Monitor &amp; Alerts.</strong> We hit its edges three times today: the Log Analytics workspace behind those audit logs, the alert on denied vault access, and the Event Grid notification for an expiring secret. Every one of those is a monitoring question we answered in one sentence and moved past.</p>
+<p>Day 19 does it properly — metrics, logs, KQL, alert rules, action groups, Application Insights and workbooks — and by the end you'll know not just how to build things in Azure, but how to find out when they break. Which, on the day it matters, is the more valuable skill.</p>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<p><strong>The vault and its contents</strong></p>
+<ul>
+<li><strong>Never put secrets in code, config files, or plain app settings.</strong> Key Vault gives you one copy, identity-based access, and a full audit trail.</li>
+<li><strong>Secrets return values. Keys never leave the vault — it performs the cryptography for you. Certificates are managed X.509 objects with automatic renewal.</strong></li>
+<li>A certificate is <strong>three addressable objects</strong> — certificate, key and secret. <em>Key Vault Secrets User</em> can therefore read certificate private keys. <strong>Separate your vaults.</strong></li>
+<li><strong>Storing costs nothing; operations cost $0.03 per 10,000.</strong> Certificate renewals through an integrated CA are <strong>$3 each</strong>. Managed HSM is <strong>~$2,300+/month</strong> and holds keys only.</li>
+<li><strong>One vault per application, per environment.</strong> It's the recommended practice and it's also your defence against per-vault throttling.</li>
+<li><strong>Cache secrets — never fetch per request.</strong> HTTP 429 under load is the classic beginner architecture failure.</li>
+</ul>
+<p><strong>Access</strong></p>
+<ul>
+<li><strong>Azure RBAC is the default permission model</strong> for vaults created with API version <strong>2026-02-01</strong> and later. All earlier control-plane API versions <strong>retire on 27 February 2027</strong>.</li>
+<li><strong>Switching a live vault to RBAC invalidates every access policy immediately.</strong> Assign roles first, then switch.</li>
+<li><strong>"User" roles read and use; "Officer" roles manage.</strong> <em>Key Vault Secrets User</em> is the right role for an application.</li>
+<li><strong>Key Vault Contributor has no data access at all.</strong> A subscription Owner can read secrets only because Owner can assign itself the data role.</li>
+<li><strong>The Contributor back door is real:</strong> control-plane write on a vault can be turned into data access. Restrict Contributor, and isolate production vaults in their own resource group.</li>
+<li><strong>Key Vault Data Access Administrator</strong> delegates vault access management without granting data access — constrained by a built-in <strong>ABAC</strong> condition.</li>
+</ul>
+<p><strong>Integration and operations</strong></p>
+<ul>
+<li><strong>Managed identity + data-plane role + Key Vault reference</strong> is the pattern. <code>@Microsoft.KeyVault(SecretUri=…)</code> or <code>@Microsoft.KeyVault(VaultName=…;SecretName=…)</code>, no version if you want automatic rotation pickup.</li>
+<li>App Service <strong>caches references for ~24 hours</strong>; any config change forces an immediate refetch.</li>
+<li><strong>Trusted Microsoft services does not cover App Service Key Vault references</strong> — that combination needs VNet integration plus a service or private endpoint.</li>
+<li><strong>Soft delete is mandatory and cannot be disabled.</strong> Retention is <strong>7–90 days and can never be changed after creation</strong>. A soft-deleted vault <strong>keeps its name reserved</strong>.</li>
+<li><strong>Purge protection cannot be undone by anyone, including Microsoft.</strong> Required for customer-managed encryption keys. Enable it in production; think twice on a test vault.</li>
+<li><strong>Key Vault logs nothing until you add a diagnostic setting</strong>, and <strong>warns you about nothing</strong> until you wire up Event Grid <code>SecretNearExpiry</code> — which needs an expiry date to exist in the first place.</li>
+<li><strong>Keys can rotate themselves; secrets need an Azure Function</strong> to change the credential at its source.</li>
+<li><strong>Defender for Cloud's Foundational CSPM is free</strong> (Secure Score, recommendations) and <strong>becomes opt-in for new subscriptions from 27 October 2026</strong>. Paid Defender plans add threat detection. <strong>Sentinel is the SIEM.</strong></li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../day17_entra_id_rbac/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Day 17 — Microsoft Entra ID &amp; Azure RBAC">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Day 17 — Microsoft Entra ID & Azure RBAC
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../day19_azure_monitor/" class="md-footer__link md-footer__link--next" aria-label="Next: Day 19 — Azure Monitor, Log Analytics &amp; Alerts">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Day 19 — Azure Monitor, Log Analytics & Alerts
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>

@@ -1,0 +1,4268 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+        <meta name="description" content="A complete beginner's guide to Azure Cloud and Azure DevOps — 31 days plus bonus content, zero assumed cloud knowledge.">
+      
+      
+      
+        <link rel="canonical" href="https://iam-mithran.github.io/LWM-Azure/day19_azure_monitor/">
+      
+      
+        <link rel="prev" href="../day18_key_vault/">
+      
+      
+        <link rel="next" href="../day20_capstone/">
+      
+      
+        
+      
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.7.7">
+    
+    
+      
+        <title>Day 19 — Azure Monitor, Log Analytics & Alerts - LearnWithMithran — Azure Complete Beginner's Guide</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.ec1eaa64.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.ab4e12ef.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce(((e,_)=>(e<<5)-e+_.charCodeAt(0)),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#day-19-azure-monitor-log-analytics-alerts" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-header__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3zm0 5h18v2H3zm0 5h18v2H3z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            LearnWithMithran — Azure Complete Beginner's Guide
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Day 19 — Azure Monitor, Log Analytics & Alerts
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a4 4 0 0 0-4 4 4 4 0 0 0 4 4 4 4 0 0 0 4-4 4 4 0 0 0-4-4m0 10a6 6 0 0 1-6-6 6 6 0 0 1 6-6 6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="blue" data-md-color-accent="light-blue"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 18c-.89 0-1.74-.2-2.5-.55C11.56 16.5 13 14.42 13 12s-1.44-4.5-3.5-5.45C10.26 6.2 11.11 6 12 6a6 6 0 0 1 6 6 6 6 0 0 1-6 6m8-9.31V4h-4.69L12 .69 8.69 4H4v4.69L.69 12 4 15.31V20h4.69L12 23.31 15.31 20H20v-4.69L23.31 12z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      
+      
+        <label class="md-header__button md-icon" for="__search">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        </label>
+        <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+        <div class="md-search__suggest" data-md-component="search-suggest"></div>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+      
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="LearnWithMithran — Azure Complete Beginner&#39;s Guide" class="md-nav__button md-logo" aria-label="LearnWithMithran — Azure Complete Beginner's Guide" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
+
+    </a>
+    LearnWithMithran — Azure Complete Beginner's Guide
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/Iam-mithran/LWM-Azure" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 7.1.0 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2025 Fonticons, Inc.--><path d="M439.6 236.1 244 40.5c-5.4-5.5-12.8-8.5-20.4-8.5s-15 3-20.4 8.4L162.5 81l51.5 51.5c27.1-9.1 52.7 16.8 43.4 43.7l49.7 49.7c34.2-11.8 61.2 31 35.5 56.7-26.5 26.5-70.2-2.9-56-37.3L240.3 199v121.9c25.3 12.5 22.3 41.8 9.1 55-6.4 6.4-15.2 10.1-24.3 10.1s-17.8-3.6-24.3-10.1c-17.6-17.6-11.1-46.9 11.2-56v-123c-20.8-8.5-24.6-30.7-18.6-45L142.6 101 8.5 235.1C3 240.6 0 247.9 0 255.5s3 15 8.5 20.4l195.6 195.7c5.4 5.4 12.7 8.4 20.4 8.4s15-3 20.4-8.4l194.7-194.7c5.4-5.4 8.4-12.8 8.4-20.4s-3-15-8.4-20.4"/></svg>
+  </div>
+  <div class="md-source__repository">
+    Iam-mithran/LWM-Azure
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Home
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day01_account_setup/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 1 — Account Setup & Free Tier
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day02_fundamentals/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 2 — Core Concepts & Portal
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day03_vms_part1/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 3 — Virtual Machines Part 1
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day04_web_hosting_architecture/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 4 — Web Servers on Azure VMs: Architecture + IIS & Nginx
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day05_vms_part3/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 5 — VM Management, Availability, Bastion & Backup
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day06_app_service/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 6 — Azure App Service: Deploy Web Apps Without Managing Servers
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day07_storage_account/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 7 — Azure Storage Account: Blob Storage, Static Websites & Versioning
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day08_storage_files_queue_tables/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 8 — Azure Storage: Files, Queues, Tables & Storage Explorer
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day09_intro_to_networking/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 9 — Introduction to Networking: IP Addresses, Binary, CIDR & Subnet Classes
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day10_virtual_network/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 10 — Azure Virtual Network: Address Spaces, Subnets & NSGs
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day11_vnet_advanced/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 11 — VNet Advanced: Peering, Service & Private Endpoints, and Bastion
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day12_load_balancer_vmss/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 12 — Load Balancer, VM Scale Sets & Application Gateway
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day13_azure_dns/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 13 — Azure DNS: Public & Private Zones
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day14_traffic_frontdoor_cdn_waf/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 14 — Traffic Manager, Front Door, CDN & WAF
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day15_vpn_expressroute/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 15 — VPN Gateway & ExpressRoute
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day16_azure_sql_database/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 16 — Azure SQL Database + Other Databases
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day17_entra_id_rbac/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 17 — Microsoft Entra ID & Azure RBAC
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day18_key_vault/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 18 — Azure Key Vault
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 19 — Azure Monitor, Log Analytics & Alerts
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 19 — Azure Monitor, Log Analytics & Alerts
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-one-collect-and-query" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PART ONE — COLLECT AND QUERY
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PART ONE — COLLECT AND QUERY">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#part-1-what-azure-monitor-actually-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — What Azure Monitor Actually Is
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — What Azure Monitor Actually Is">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#one-platform-four-kinds-of-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One Platform, Four Kinds of Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-shape-of-the-whole-thing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Shape of the Whole Thing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-build-the-two-things-well-watch-all-day" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Build the Two Things We'll Watch All Day ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-2-metrics-the-data-you-already-have" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Metrics: The Data You Already Have
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Metrics: The Data You Already Have">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-makes-a-metric" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Makes a Metric
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-metric-explorer-on-the-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Metric Explorer on the VM ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-make-the-chart-move" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Make the Chart Move ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-the-controls-and-dimensions-on-the-app-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: The Controls, and Dimensions on the App Service ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-metrics-cannot-tell-you-find-the-gap-yourself" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Metrics Cannot Tell You — Find the Gap Yourself
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-3-the-activity-log-who-did-that" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — The Activity Log: Who Did That?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — The Activity Log: Who Did That?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Categories
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-read-the-audit-trail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Read the Audit Trail ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-4-the-log-analytics-workspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — The Log Analytics Workspace
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — The Log Analytics Workspace">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-many-should-you-have" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Many Should You Have?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-a-workspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create a Workspace ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-5-diagnostic-settings-the-hinge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — Diagnostic Settings: The Hinge
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — Diagnostic Settings: The Hinge">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-four-destinations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Four Destinations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-route-the-activity-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Route the Activity Log ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-route-the-app-service-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Route the App Service Logs ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-6-kql-the-query-language" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6 — KQL: The Query Language
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6 — KQL: The Query Language">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Shape
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-operators-that-cover-90-of-real-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Operators That Cover 90% of Real Work
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-query-your-own-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Query Your Own Data ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-7-table-plans-retention-and-not-getting-a-shocking-bill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 7 — Table Plans, Retention, and Not Getting a Shocking Bill
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 7 — Table Plans, Retention, and Not Getting a Shocking Bill">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#three-table-plans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three Table Plans
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#retention-two-numbers-not-one" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Retention: Two Numbers, Not One
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-four-ways-people-overspend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Four Ways People Overspend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Controls
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-two-detect-and-respond" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PART TWO — DETECT AND RESPOND
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PART TWO — DETECT AND RESPOND">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#part-8-getting-data-off-a-machine-agents-and-data-collection-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 8 — Getting Data Off a Machine: Agents and Data Collection Rules
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 8 — Getting Data Off a Machine: Agents and Data Collection Rules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-agents-that-no-longer-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Agents That No Longer Exist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-collection-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Collection Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transformations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transformations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-build-a-real-data-collection-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Build a Real Data Collection Rule ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-verify-the-agent-before-you-blame-the-query" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Verify the Agent Before You Blame the Query ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-get-the-number-the-portal-refused-to-give-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Get the Number the Portal Refused to Give You ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#one-click-that-does-all-of-this-vm-insights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One Click That Does All Of This: VM Insights
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-9-alerts-the-three-types-and-what-they-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 9 — Alerts: The Three Types, and What They Cost
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 9 — Alerts: The Three Types, and What They Cost">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-three-types-that-matter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Three Types That Matter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#severity-and-using-it-properly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Severity, and Using It Properly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stateful-vs-stateless" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stateful vs Stateless
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alert-processing-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alert Processing Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-10-action-groups-what-actually-happens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 10 — Action Groups: What Actually Happens
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 10 — Action Groups: What Actually Happens">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#notifications-vs-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notifications vs Actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-an-action-group" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create an Action Group ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-11-building-alerts-that-actually-fire" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 11 — Building Alerts That Actually Fire
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 11 — Building Alerts That Actually Fire">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-a-metric-alert-free-within-the-10-series-allowance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: A Metric Alert ✅ (free — within the 10-series allowance)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-an-activity-log-alert-completely-free" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: An Activity Log Alert ✅ (completely free)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-a-log-search-alert-050month-build-it-then-delete-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: A Log Search Alert ⚠️ (~$0.50/month — build it, then delete it)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-12-application-insights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 12 — Application Insights
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 12 — Application Insights">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-it-gives-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What It Gives You
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-things-that-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two Things That Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-turn-it-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Turn It On ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-13-visualising-it-dashboards-workbooks-and-insights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 13 — Visualising It: Dashboards, Workbooks and Insights
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 13 — Visualising It: Dashboards, Workbooks and Insights">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-both" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Both ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-14-cost-control-gotchas-and-interview-prep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 14 — Cost Control, Gotchas and Interview Prep
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 14 — Cost Control, Gotchas and Interview Prep">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#check-what-today-cost-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Check What Today Cost You
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-gotchas-that-waste-real-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Gotchas That Waste Real Days
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interview-and-exam-quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interview and Exam Quick Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleanup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleanup ✅
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../day20_capstone/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Day 20 — Capstone: Build a Complete Three-Tier Application
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-youll-learn" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What You'll Learn
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#before-we-begin" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Before We Begin
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-one-collect-and-query" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PART ONE — COLLECT AND QUERY
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PART ONE — COLLECT AND QUERY">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#part-1-what-azure-monitor-actually-is" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 1 — What Azure Monitor Actually Is
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 1 — What Azure Monitor Actually Is">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#one-platform-four-kinds-of-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One Platform, Four Kinds of Data
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-shape-of-the-whole-thing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Shape of the Whole Thing
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-build-the-two-things-well-watch-all-day" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Build the Two Things We'll Watch All Day ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-2-metrics-the-data-you-already-have" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 2 — Metrics: The Data You Already Have
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 2 — Metrics: The Data You Already Have">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-makes-a-metric" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Makes a Metric
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-metric-explorer-on-the-vm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Metric Explorer on the VM ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-make-the-chart-move" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Make the Chart Move ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-the-controls-and-dimensions-on-the-app-service" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: The Controls, and Dimensions on the App Service ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#what-metrics-cannot-tell-you-find-the-gap-yourself" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What Metrics Cannot Tell You — Find the Gap Yourself
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-3-the-activity-log-who-did-that" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 3 — The Activity Log: Who Did That?
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 3 — The Activity Log: Who Did That?">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-categories" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Categories
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-read-the-audit-trail" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Read the Audit Trail ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-4-the-log-analytics-workspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 4 — The Log Analytics Workspace
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 4 — The Log Analytics Workspace">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#how-many-should-you-have" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        How Many Should You Have?
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-a-workspace" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create a Workspace ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-5-diagnostic-settings-the-hinge" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 5 — Diagnostic Settings: The Hinge
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 5 — Diagnostic Settings: The Hinge">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-four-destinations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Four Destinations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-route-the-activity-log" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Route the Activity Log ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-route-the-app-service-logs" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Route the App Service Logs ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-6-kql-the-query-language" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 6 — KQL: The Query Language
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 6 — KQL: The Query Language">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-shape" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Shape
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-operators-that-cover-90-of-real-work" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Operators That Cover 90% of Real Work
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-query-your-own-data" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Query Your Own Data ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-7-table-plans-retention-and-not-getting-a-shocking-bill" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 7 — Table Plans, Retention, and Not Getting a Shocking Bill
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 7 — Table Plans, Retention, and Not Getting a Shocking Bill">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#three-table-plans" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three Table Plans
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#retention-two-numbers-not-one" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Retention: Two Numbers, Not One
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-four-ways-people-overspend" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Four Ways People Overspend
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-controls" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Controls
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#part-two-detect-and-respond" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        PART TWO — DETECT AND RESPOND
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="PART TWO — DETECT AND RESPOND">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#part-8-getting-data-off-a-machine-agents-and-data-collection-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 8 — Getting Data Off a Machine: Agents and Data Collection Rules
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 8 — Getting Data Off a Machine: Agents and Data Collection Rules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-agents-that-no-longer-exist" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Agents That No Longer Exist
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#data-collection-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Data Collection Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#transformations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Transformations
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-build-a-real-data-collection-rule" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Build a Real Data Collection Rule ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-verify-the-agent-before-you-blame-the-query" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Verify the Agent Before You Blame the Query ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-get-the-number-the-portal-refused-to-give-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Get the Number the Portal Refused to Give You ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#one-click-that-does-all-of-this-vm-insights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        One Click That Does All Of This: VM Insights
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-9-alerts-the-three-types-and-what-they-cost" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 9 — Alerts: The Three Types, and What They Cost
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 9 — Alerts: The Three Types, and What They Cost">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-three-types-that-matter" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Three Types That Matter
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#severity-and-using-it-properly" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Severity, and Using It Properly
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stateful-vs-stateless" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stateful vs Stateless
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#alert-processing-rules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Alert Processing Rules
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-10-action-groups-what-actually-happens" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 10 — Action Groups: What Actually Happens
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 10 — Action Groups: What Actually Happens">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#notifications-vs-actions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Notifications vs Actions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-create-an-action-group" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Create an Action Group ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-11-building-alerts-that-actually-fire" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 11 — Building Alerts That Actually Fire
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 11 — Building Alerts That Actually Fire">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-a-metric-alert-free-within-the-10-series-allowance" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: A Metric Alert ✅ (free — within the 10-series allowance)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-an-activity-log-alert-completely-free" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: An Activity Log Alert ✅ (completely free)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-a-log-search-alert-050month-build-it-then-delete-it" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: A Log Search Alert ⚠️ (~$0.50/month — build it, then delete it)
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-12-application-insights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 12 — Application Insights
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 12 — Application Insights">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#what-it-gives-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What It Gives You
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#two-things-that-changed" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Two Things That Changed
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-turn-it-on" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Turn It On ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-13-visualising-it-dashboards-workbooks-and-insights" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 13 — Visualising It: Dashboards, Workbooks and Insights
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 13 — Visualising It: Dashboards, Workbooks and Insights">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#hands-on-both" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Hands-On: Both ✅
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#part-14-cost-control-gotchas-and-interview-prep" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Part 14 — Cost Control, Gotchas and Interview Prep
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Part 14 — Cost Control, Gotchas and Interview Prep">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#check-what-today-cost-you" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Check What Today Cost You
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#the-gotchas-that-waste-real-days" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The Gotchas That Waste Real Days
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interview-and-exam-quick-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interview and Exam Quick Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#cleanup" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cleanup ✅
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#summary" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Summary
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Summary">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#whats-next" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What's Next
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#key-takeaways" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Key Takeaways
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+  
+  
+
+
+<h1 id="day-19-azure-monitor-log-analytics-alerts">Day 19 — Azure Monitor, Log Analytics &amp; Alerts</h1>
+<p><strong>Phase 5 — Identity, Security + Monitoring</strong></p>
+<blockquote>
+<p>For eighteen days you have been building things. Virtual machines, web apps, databases, networks, a vault. And every single one of them, right now, is running somewhere with absolutely nobody watching it. If your App Service started returning 500s an hour ago, you would not know. If someone deleted a resource group last Tuesday, you could not prove who. If the secret you stored yesterday expires at 2am on a Sunday, the first person to find out will be a customer. Today we fix that — and I want to be honest about why this day matters more than it looks. Building things in Azure is the part that gets you hired. <strong>Knowing what your things are doing is the part that keeps you employed.</strong> Every serious incident you will ever be part of starts with someone asking "what actually happened?", and today is where you learn to answer.</p>
+</blockquote>
+<hr />
+<h2 id="what-youll-learn">What You'll Learn</h2>
+<p><strong>Part One — Collect and query</strong></p>
+<ul>
+<li>The four kinds of telemetry Azure produces, and which ones are <strong>free and already running right now</strong></li>
+<li><strong>Metrics</strong> — near-real-time numbers, free, 93 days of history you already have</li>
+<li><strong>The Activity Log</strong> — the free audit trail that answers "who deleted that?"</li>
+<li><strong>Log Analytics workspaces</strong> — what they are, how many you should have, and <strong>exactly how they bill</strong></li>
+<li><strong>Diagnostic settings</strong> — the one mechanism that routes everything, for every service in Azure</li>
+<li><strong>KQL</strong> — built up properly from one line to something you'd actually use at work</li>
+<li>Table plans, retention, and the cost traps that produce shocking invoices</li>
+</ul>
+<p><strong>Part Two — Detect and respond</strong></p>
+<ul>
+<li>Getting data off a VM: <strong>Azure Monitor Agent and data collection rules</strong>, and the agents that no longer exist</li>
+<li><strong>The three alert types</strong> — and which ones are free, which cost money, and how much</li>
+<li><strong>Action groups</strong> — what actually happens when something fires</li>
+<li>Building a metric alert, an activity log alert and a log alert, and watching them fire</li>
+<li><strong>Application Insights</strong> — application performance monitoring, and what changed</li>
+<li>Dashboards vs workbooks vs insights — which visualisation to reach for</li>
+<li>Cost control, the gotchas, and an interview keyword table</li>
+</ul>
+<hr />
+<h2 id="before-we-begin">Before We Begin</h2>
+<p><strong>This is the first day of the course where a careless lab can genuinely cost you money</strong>, so let's be precise instead of hand-wavy. Azure Monitor is consumption-priced, and the bill is driven almost entirely by <strong>how much data you ingest</strong>.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Cost</th>
+<th>Today</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Platform metrics</strong> — collection and analysis</td>
+<td><strong>Free. Always. No exceptions.</strong> 93 days of retention included.</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Activity log</strong> — collection and 90-day retention</td>
+<td><strong>Free.</strong></td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Activity log, service health and resource health alerts</strong></td>
+<td><strong>Free.</strong> No charge for the rule at all.</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Metric alert rules</strong></td>
+<td>$0.10 per monitored time series per month — <strong>with the first 10 free</strong></td>
+<td>✅ — we use one</td>
+</tr>
+<tr>
+<td><strong>Log Analytics ingestion (Analytics plan)</strong></td>
+<td><strong>First 5 GB per billing account per month free</strong>, then ~$2.30/GB</td>
+<td>✅ — our lab is a few MB</td>
+</tr>
+<tr>
+<td><strong>Querying Analytics-plan data</strong></td>
+<td><strong>Free</strong>, however much you query</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Log search alert rules</strong></td>
+<td>~<strong>$0.50/month</strong> for the first time series, $0.05 each additional</td>
+<td>⚠️ <strong>Tiny but not free — we build one and delete it</strong></td>
+</tr>
+<tr>
+<td><strong>Application Insights</strong></td>
+<td>No separate charge — it bills as <strong>Log Analytics ingestion</strong>, so the 5 GB grant covers it</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong><code>Standard_B1s</code> Linux VM</strong> — today's test machine</td>
+<td><strong>Free account: 750 B1s hours/month.</strong> Otherwise ~<strong>$0.0104/hr</strong> — about <strong>3 cents</strong> for this lab</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Its public IP and 30 GB Standard SSD OS disk</strong></td>
+<td>~$0.005/hr + ~$0.08/day. Pennies — but note the <strong>disk bills even when the VM is stopped</strong></td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>Azure Monitor Agent</strong></td>
+<td><strong>The agent itself is free.</strong> You pay only for what its data collection rule ingests — a few MB today</td>
+<td>✅</td>
+</tr>
+<tr>
+<td><strong>SMS / voice notifications</strong></td>
+<td>Charged per message</td>
+<td>💳 — we use email only</td>
+</tr>
+<tr>
+<td><strong>Basic logs / Auxiliary logs</strong></td>
+<td>Cheaper to ingest, <strong>charged per GB scanned to query</strong></td>
+<td>💳 — explained, not used</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition danger">
+<p class="admonition-title">Correcting something you'll read everywhere — including in older versions of my own notes</p>
+<p>You will find dozens of blog posts, and plenty of course material, saying <strong>"the first 5 GB per day is free."</strong></p>
+<p><strong>That is wrong, and it is wrong by a factor of about thirty.</strong> The free grant is <strong>5 GB per billing account per month.</strong> Not per day. Not per workspace.</p>
+<p>That distinction is not academic. Someone who believes "5 GB/day is free" will happily switch on verbose diagnostics across twenty resources, ingest 4 GB a day, assume it's covered, and receive an invoice for roughly <strong>$270 for that month</strong>. This is one of the most common surprise bills in all of Azure.</p>
+<p>Say it back to yourself: <strong>five gigabytes, per month, per billing account.</strong></p>
+</div>
+<p><strong>Set this up first:</strong></p>
+<ul>
+<li>A resource group called <code>rg-day19-demo</code>.</li>
+<li>
+<p>Nothing else. <strong>Everything we monitor today, we build today</strong> — because the honest way to learn monitoring is to watch real telemetry from something real, not to stare at an empty workspace.</p>
+<p>At the end of Part 1 we build the two things we'll watch all day: <strong>a web app</strong> and <strong>a small Linux VM</strong>. The VM matters. Most of what you'll monitor in a real job is a machine, and half of monitoring a machine is getting data out of the operating system — which Azure does <strong>not</strong> do for you by default. Part 8 is where we fix that, and it needs a real VM to fix it on.</p>
+</li>
+</ul>
+<div class="admonition tip">
+<p class="admonition-title">Day 18 left three loose ends, and they're all today's job</p>
+<p>Yesterday I answered three monitoring questions in one sentence each and moved past them: <strong>the Log Analytics workspace</strong> that received Key Vault audit logs, <strong>the alert on denied vault access</strong>, and <strong>the Event Grid notification for an expiring secret.</strong> All three were "that's Day 19."</p>
+<p>This is Day 19. By the end you'll be able to build all three properly.</p>
+</div>
+<hr />
+<h2 id="part-one-collect-and-query">PART ONE — COLLECT AND QUERY</h2>
+<h3 id="part-1-what-azure-monitor-actually-is">Part 1 — What Azure Monitor Actually Is</h3>
+<h4 id="one-platform-four-kinds-of-data">One Platform, Four Kinds of Data</h4>
+<p>"Azure Monitor" is not a single blade — it's the umbrella name for the whole observability platform. Everything in it is built on <strong>four kinds of telemetry</strong>, and knowing which is which tells you where to look, what it costs, and what you can do with it.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Metrics</strong></th>
+<th><strong>Logs</strong></th>
+<th><strong>Traces</strong></th>
+<th><strong>Changes</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>What it is</strong></td>
+<td>Numbers over time — CPU %, request count, response time</td>
+<td>Timestamped records with structure — an HTTP request, a sign-in, a role assignment</td>
+<td>The path of a single request through your application</td>
+<td>What changed on your resources, and when</td>
+</tr>
+<tr>
+<td><strong>Shape</strong></td>
+<td>Time series</td>
+<td>Rows in tables</td>
+<td>Distributed traces</td>
+<td>Diffs</td>
+</tr>
+<tr>
+<td><strong>Where it lives</strong></td>
+<td>Azure Monitor Metrics (a time-series database)</td>
+<td><strong>A Log Analytics workspace</strong></td>
+<td>Application Insights (which is logs underneath)</td>
+<td>Activity log + Change Analysis</td>
+</tr>
+<tr>
+<td><strong>Query with</strong></td>
+<td>Metric Explorer / charts</td>
+<td><strong>KQL</strong></td>
+<td>Application Insights</td>
+<td>The portal</td>
+</tr>
+<tr>
+<td><strong>Retention</strong></td>
+<td><strong>93 days</strong>, automatic</td>
+<td>You choose — 30 days to 12 years</td>
+<td>Same as its workspace</td>
+<td>90 days</td>
+</tr>
+<tr>
+<td><strong>Cost</strong></td>
+<td><strong>Free</strong></td>
+<td><strong>Per GB ingested</strong> — this is the bill</td>
+<td>Bills as logs</td>
+<td><strong>Free</strong></td>
+</tr>
+</tbody>
+</table>
+<p>Two things to take from that table before we go further.</p>
+<p><strong>The free column is bigger than beginners expect.</strong> Metrics and the activity log are collected automatically, right now, on everything you have ever built in this course, at no charge — and nobody switched them on. Go and look at any resource's <strong>Metrics</strong> blade after this video and there will be weeks of history sitting there.</p>
+<p><strong>The bill is one column.</strong> Logs. Data ingestion into a Log Analytics workspace is, for almost every customer, the entirety of their Azure Monitor bill. Which means cost control in Azure Monitor is really one question: <em>what am I ingesting, and do I need it?</em> We come back to this properly in Part 7.</p>
+<h4 id="the-shape-of-the-whole-thing">The Shape of the Whole Thing</h4>
+<div class="highlight"><pre><span></span><code>      SOURCES                    ROUTING              STORES              CONSUMERS
+                                                                     ┌── Metric Explorer
+  Azure resources ──┐                             ┌── Metrics ───────┤
+  (automatic)       │                             │   93 days, free  └── Metric alerts
+                    ├──► Diagnostic settings ─────┤
+  Guest OS ─────────┤    (you configure these)    │
+  (needs an agent)  │                             │                  ┌── Logs / KQL
+                    │                             ├── Log Analytics ─┼── Log alerts
+  Applications ─────┤                             │   workspace      ├── Workbooks
+  (App Insights)    │                             │   you pay per GB └── Sentinel, Defender
+                    │                             │
+  Control plane ────┘                             └── Activity log ──── Activity log alerts
+  (automatic)                                         90 days, free
+</code></pre></div>
+<p>Everything today is somewhere on that diagram. <strong>Diagnostic settings in the middle are the hinge</strong> — they're the single mechanism, identical across every Azure service, that says "take this resource's telemetry and send it over there." Learn that box once and you've learned it for all of Azure.</p>
+<p>Look at the left column for a second, though, because it's the one that catches people out. <strong>Azure resources and the control plane report themselves automatically. The guest OS does not.</strong> Everything happening <em>inside</em> a virtual machine — disk space, syslog, the Windows Event Log, your application's log file — needs an agent, and that agent needs configuring. That row on the diagram is Part 8, and it's the reason we're building a VM in the next two minutes.</p>
+<h4 id="hands-on-build-the-two-things-well-watch-all-day">Hands-On: Build the Two Things We'll Watch All Day ✅</h4>
+<p>Monitoring an empty subscription teaches nothing. We need real telemetry, so first we need something real producing it — one PaaS service and one virtual machine, because they're monitored in genuinely different ways and the difference is half of today's lesson.</p>
+<p><strong>First, the web app:</strong></p>
+<ol>
+<li><strong>App Services → + Create → Web App.</strong> <strong>Resource group:</strong> <code>rg-day19-demo</code>. <strong>Name:</strong> <code>app-lwm-day19-&lt;yourname&gt;</code>. <strong>Publish:</strong> Code. <strong>Runtime:</strong> any. <strong>OS:</strong> Linux. <strong>Pricing plan: Free F1.</strong> <strong>Review + create → Create.</strong> <strong>✅</strong></li>
+<li>When it deploys, open it and click the <strong>Default domain</strong> URL. You should get the Azure placeholder page. <strong>Refresh it fifteen or twenty times</strong> — you're generating request telemetry, and we'll be using it all day. <strong>✅</strong></li>
+</ol>
+<p><strong>Now the virtual machine.</strong> Every setting here has a reason, so don't click through on autopilot:</p>
+<ol>
+<li><strong>Virtual machines → + Create → Azure virtual machine.</strong> <strong>✅</strong></li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Setting</th>
+<th>Value</th>
+<th>Why this value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Resource group</strong></td>
+<td><code>rg-day19-demo</code></td>
+<td>Everything in one group, deleted in one action</td>
+</tr>
+<tr>
+<td><strong>Virtual machine name</strong></td>
+<td><code>vm-lwm-day19</code></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Image</strong></td>
+<td><strong>Ubuntu Server 24.04 LTS — x64 Gen2</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Size</strong></td>
+<td><strong>Standard_B1s</strong></td>
+<td>Free account includes <strong>750 B1s hours a month</strong>, and B-series burstable VMs expose CPU-credit metrics nothing else has — we'll watch those in Part 2</td>
+</tr>
+<tr>
+<td><strong>Authentication type</strong></td>
+<td>SSH public key → <strong>Generate new key pair</strong></td>
+<td></td>
+</tr>
+<tr>
+<td><strong>Public inbound ports</strong></td>
+<td><strong>None</strong></td>
+<td>We are never going to SSH into this machine</td>
+</tr>
+<tr>
+<td><strong>Public IP</strong></td>
+<td>Leave the default (a new Standard IP)</td>
+<td>It's for <strong>outbound</strong> traffic only — see the note below</td>
+</tr>
+<tr>
+<td><strong>OS disk type</strong></td>
+<td><strong>Standard SSD</strong>, 30 GB default</td>
+<td>Cheapest option, and small enough that Part 8's disk-fill demo visibly moves the needle</td>
+</tr>
+<tr>
+<td><strong>Boot diagnostics</strong></td>
+<td>On, with a managed storage account</td>
+<td>Free, and the only way to see the console if a VM won't boot</td>
+</tr>
+</tbody>
+</table>
+<ol>
+<li>
+<p><strong>Review + create → Create.</strong> When it prompts you to download the private key, <strong>download it and then ignore it</strong> — we won't use it once today. <strong>✅</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Why a public IP on a machine with no open ports?</p>
+<p>Those two settings sound contradictory and they aren't. <strong>Public inbound ports: None</strong> means the NSG blocks every inbound connection — nobody can reach this VM. The public IP exists purely so the VM can make <strong>outbound</strong> calls, and it needs those, because in Part 8 the Azure Monitor Agent has to reach Azure Monitor's endpoints to send anything.</p>
+<p>This used to be free and automatic. It isn't any more: <strong>default outbound access for new VMs has been retired</strong>, so a VM with no public IP and no NAT gateway has <strong>no internet access at all</strong> — and an agent on it would install and then silently fail to send data. That is a genuinely common "why is my agent not reporting?" and you now know the answer.</p>
+<p>If you'd rather not have a public IP at all, the production-grade alternative is a <strong>NAT gateway</strong> (Day 11) — outbound only, nothing reachable inbound, about $1.10/day. For a three-hour lab the public IP is the cheaper, simpler choice.</p>
+</div>
+</li>
+<li>
+<p>When it deploys, open <code>vm-lwm-day19</code> and stay on the <strong>Overview</strong> page. Scroll to the bottom. <strong>✅</strong></p>
+</li>
+</ol>
+<p><strong>There are charts there already.</strong> CPU percentage, network in and out, disk bytes — the VM has been running for ninety seconds and Azure is already recording it. Nobody enabled anything, nobody installed anything, and it costs nothing.</p>
+<p>That's the whole point of Part 2, which is next.</p>
+<hr />
+<h3 id="part-2-metrics-the-data-you-already-have">Part 2 — Metrics: The Data You Already Have</h3>
+<p>Metrics are numerical values sampled at regular intervals — CPU percentage, requests per second, bytes in, queue depth. They're <strong>collected automatically for every Azure resource</strong>, stored in a purpose-built time-series database, available within <strong>a minute or two of happening</strong>, kept for <strong>93 days</strong>, and they cost <strong>nothing</strong>.</p>
+<p>That combination — fast, free, already on — makes metrics the right first place to look at almost any problem.</p>
+<h4 id="what-makes-a-metric">What Makes a Metric</h4>
+<p>Three properties worth knowing by name, because the alert wizard in Part 11 asks about all three:</p>
+<ul>
+<li><strong>Aggregation.</strong> Metrics are pre-aggregated into time buckets. When you chart CPU you're not seeing every sample — you're seeing the <strong>average</strong>, <strong>minimum</strong>, <strong>maximum</strong>, <strong>sum</strong> or <strong>count</strong> for each bucket. Choosing the wrong one hides problems: a VM averaging 40% CPU can be pegged at 100% for ten minutes inside that window, and the <strong>average</strong> line will never show it. <strong>Max is the aggregation that finds spikes.</strong></li>
+<li><strong>Granularity.</strong> The bucket size — one minute, five minutes, an hour. Finer granularity is available for recent data and gets rolled up as it ages.</li>
+<li><strong>Dimensions.</strong> Name–value pairs that split a metric into series. Storage account <em>Transactions</em> has an <code>ApiName</code> dimension; App Service <em>Requests</em> can split by status code. <strong>Splitting by a dimension turns one line into many</strong> — and, in an alert rule, turns one billable time series into many, which is worth remembering when the invoice arrives.</li>
+</ul>
+<h4 id="hands-on-metric-explorer-on-the-vm">Hands-On: Metric Explorer on the VM ✅</h4>
+<p>We'll start on the VM, because a machine is what most people end up monitoring, and because it has the richest free metric set in Azure.</p>
+<ol>
+<li><strong><code>vm-lwm-day19</code> → Monitoring → Metrics.</strong> <strong>✅</strong></li>
+<li><strong>Metric:</strong> <code>Percentage CPU</code>. <strong>Aggregation:</strong> <code>Average</code>. A mostly flat line near zero — the VM is idle. <strong>✅</strong></li>
+<li>
+<p><strong>+ Add metric</strong> → <strong><code>Available Memory Bytes</code></strong>. <strong>✅</strong></p>
+<div class="admonition warning">
+<p class="admonition-title">Yes, memory. This one has changed, and a lot of course material hasn't caught up</p>
+<p>For years the standard line was <em>"Azure can't see memory without an agent."</em> <strong>That is no longer true.</strong> <code>Available Memory Bytes</code> and <code>Available Memory Percentage</code> are <strong>platform metrics</strong> — collected by the host, free, no agent, no configuration.</p>
+<p>If you read a blog post or watch a video telling you to install an agent just to see memory, check its date. There are still real gaps that need an agent — we'll find them at the end of this part — but memory stopped being one of them.</p>
+</div>
+</li>
+<li>
+<p><strong>+ Add metric</strong> → <strong><code>CPU Credits Remaining</code></strong>. <strong>✅</strong></p>
+</li>
+</ol>
+<p>This one only exists on <strong>B-series burstable</strong> VMs, which is exactly why we chose a B1s. Remember Day 3: a B1s doesn't get a full CPU, it gets a <strong>baseline</strong> plus a bank of credits it spends when it bursts above that baseline. This metric is the bank balance. Watch what happens to it in a moment.</p>
+<h4 id="hands-on-make-the-chart-move">Hands-On: Make the Chart Move ✅</h4>
+<p>An idle VM makes a boring chart. Let's give it something to do — <strong>without opening a single port or touching an SSH key.</strong></p>
+<ol>
+<li><strong><code>vm-lwm-day19</code> → Operations → Run command → <code>RunShellScript</code>.</strong> <strong>✅</strong></li>
+<li>Paste this and click <strong>Run</strong>: <strong>✅</strong></li>
+</ol>
+<div class="highlight"><pre><span></span><code>nohup<span class="w"> </span>timeout<span class="w"> </span><span class="m">300</span><span class="w"> </span>bash<span class="w"> </span>-c<span class="w"> </span><span class="s1">'while :; do :; done'</span><span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">&amp;</span>
+nohup<span class="w"> </span>timeout<span class="w"> </span><span class="m">300</span><span class="w"> </span>bash<span class="w"> </span>-c<span class="w"> </span><span class="s1">'while :; do :; done'</span><span class="w"> </span>&gt;/dev/null<span class="w"> </span><span class="m">2</span>&gt;<span class="p">&amp;</span><span class="m">1</span><span class="w"> </span><span class="p">&amp;</span>
+<span class="nb">echo</span><span class="w"> </span><span class="s2">"CPU load started - will stop by itself in 5 minutes"</span>
+</code></pre></div>
+<p>Two busy loops on a one-core VM, pegged for five minutes, then they kill themselves.</p>
+<pre><code>!!! tip "Run command is the tool most people never discover"
+    It executes a script **as root** on the VM, through the Azure VM agent, using the **control plane** — so it needs **no open port, no SSH key, no public IP reachability and no Bastion.** It's an RBAC-gated operation: anyone with the right role can run commands on the machine.
+
+    That's worth two thoughts. Operationally it's the fastest way to fix a VM you've locked yourself out of. From a security angle, **`Microsoft.Compute/virtualMachines/runCommand/action` is effectively root on the box**, which is a very good reason not to hand out Contributor on production VMs — Day 17's lesson showing up in a place people don't expect.
+
+    It's also why our VM has no inbound rules at all today. We never needed them.
+</code></pre>
+<ol>
+<li>Wait <strong>two minutes</strong> (metrics lag by a minute or two — say that out loud rather than clicking refresh in silence), then watch the chart. <strong>✅</strong></li>
+</ol>
+<p><strong><code>Percentage CPU</code> climbs to ~100%.</strong> And on the same chart, <strong><code>CPU Credits Remaining</code> starts falling</strong> — you are watching the VM spend its burst budget in real time. Leave it long enough on a B1s and CPU gets throttled back to the baseline. That is the single clearest demonstration of burstable sizing anywhere in this course, and it cost nothing.</p>
+<h4 id="hands-on-the-controls-and-dimensions-on-the-app-service">Hands-On: The Controls, and Dimensions on the App Service ✅</h4>
+<ol>
+<li>Still in Metric Explorer, work the toolbar — this blade is powerful and most people use a tenth of it: <strong>✅</strong></li>
+<li><strong>Time range</strong> (top right) → last 30 minutes, then last 24 hours. Watch the granularity change automatically.</li>
+<li>Change the chart type to <strong>Bar</strong> or <strong>Area</strong>.</li>
+<li>
+<p><strong>Add filter</strong> and <strong>Apply splitting</strong> — both greyed out or empty for most VM metrics, because <strong>VM metrics have almost no dimensions.</strong></p>
+</li>
+<li>
+<p>So switch to the web app for that lesson: <strong>App Service → Monitoring → Metrics</strong>. <strong>Metric:</strong> <code>Requests</code>, <strong>Aggregation:</strong> <code>Sum</code>. <strong>✅</strong></p>
+</li>
+<li>
+<p><strong>Apply splitting</strong> → split by <strong>Http Status</strong>. One line becomes several. <strong>✅</strong></p>
+<p>That's dimensions, live — and it's why the App Service is the better teaching example here. The VM has the richer metrics; the App Service has the richer <em>shape</em>.</p>
+</li>
+<li>
+<p>Click <strong>Save to dashboard → Pin to dashboard</strong>. Part 13 comes back to this. <strong>✅</strong></p>
+</li>
+<li>
+<p>Now the trick nobody shows you: click <strong>New alert rule</strong> at the top of the Metrics blade. <strong>✅</strong></p>
+<p>It opens the alert wizard <strong>with your metric, aggregation and splitting already filled in</strong>. Building an alert by first getting the chart right, then clicking that button, is far easier than building the rule from scratch. Close it without saving — Part 11 does this properly.</p>
+</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">The 93 days is already there, on everything</p>
+<p>Go and open the Metrics blade on any resource you built earlier in this course and change the time range to the last 30 days. <strong>The history is there</strong>, because platform metrics were collected the whole time without anyone enabling anything.</p>
+<p>That's genuinely useful during an incident: <em>"has this been happening for weeks or did it start today?"</em> is often the most valuable question, and metrics can answer it retroactively even in an environment where nobody set up monitoring.</p>
+</div>
+<h4 id="what-metrics-cannot-tell-you-find-the-gap-yourself">What Metrics Cannot Tell You — Find the Gap Yourself</h4>
+<p>Before we leave metrics, one exercise, and it sets up the second half of today.</p>
+<ol>
+<li>
+<p>Back on the <strong>VM's Metrics</strong> blade, open the metric dropdown and type <strong><code>disk</code></strong> in the search box. <strong>✅</strong></p>
+<p>Count what comes back: <em>Disk Read Bytes</em>, <em>Disk Write Operations/Sec</em>, <em>OS Disk Latency</em>, <em>OS Disk Queue Depth</em>, <em>OS Disk IOPS Consumed Percentage</em>, data disk versions of all of them, burst credit percentages. <strong>Dozens of disk metrics.</strong></p>
+<p>Now find the one that tells you <strong>how full the disk is</strong>.</p>
+<p><strong>It isn't there.</strong> Azure will tell you your disk is doing 40 IOPS at 3 milliseconds of latency, and it cannot tell you that it is 98% full and about to take your application down tonight.</p>
+</li>
+</ol>
+<p>That's not an oversight — it's the boundary. <strong>Platform metrics are measured by the host, from outside the machine.</strong> The host can see the virtual disk's I/O because it's serving it. It cannot see the <em>filesystem</em> on that disk, because filesystems exist inside the guest OS, and Azure deliberately does not look inside your VM.</p>
+<p>Three things sit on the far side of that boundary:</p>
+<table>
+<thead>
+<tr>
+<th>Not available from platform metrics</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Disk space used and free</strong></td>
+<td>A filesystem concept, invisible from the host</td>
+</tr>
+<tr>
+<td><strong>Per-process data</strong> — what's actually eating the CPU</td>
+<td>Inside the guest</td>
+</tr>
+<tr>
+<td><strong>Every log in the OS</strong> — syslog, Windows Event Log, your application's log file</td>
+<td>Inside the guest</td>
+</tr>
+</tbody>
+</table>
+<p>Getting at those three needs an <strong>agent inside the machine</strong>, and that is <strong>Part 8</strong>. Hold that thought — we come back to this exact VM and get the disk number the portal just refused to give us.</p>
+<hr />
+<h3 id="part-3-the-activity-log-who-did-that">Part 3 — The Activity Log: Who Did That?</h3>
+<p>The <strong>Activity log</strong> is a subscription-level record of every <strong>control-plane</strong> operation — every create, update and delete performed through Azure Resource Manager, with the identity that did it, when, and whether it succeeded.</p>
+<p>It's on by default, free, and kept for <strong>90 days</strong>.</p>
+<p>Note what it is and isn't, because this is exactly the control-plane/data-plane split from Days 17 and 18 wearing a third hat:</p>
+<ul>
+<li><strong>It records:</strong> someone deleted a resource group, someone assigned a role, someone restarted a VM, someone changed a network security group rule.</li>
+<li><strong>It does not record:</strong> someone read a blob, someone fetched a secret, someone queried a database. Those are <strong>data-plane</strong> operations, and they only exist if you enabled a diagnostic setting on that service — which is exactly what we did to Key Vault yesterday.</li>
+</ul>
+<h4 id="the-categories">The Categories</h4>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>What it contains</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Administrative</strong></td>
+<td>Every ARM create/update/delete. The big one. <strong>Includes role assignments.</strong></td>
+</tr>
+<tr>
+<td><strong>Service Health</strong></td>
+<td>Azure-side incidents affecting services you use</td>
+</tr>
+<tr>
+<td><strong>Resource Health</strong></td>
+<td>The health of your specific resources</td>
+</tr>
+<tr>
+<td><strong>Alert</strong></td>
+<td>Records of alerts firing</td>
+</tr>
+<tr>
+<td><strong>Autoscale</strong></td>
+<td>Scale-out and scale-in events</td>
+</tr>
+<tr>
+<td><strong>Policy</strong></td>
+<td>Azure Policy effects — including deny events</td>
+</tr>
+<tr>
+<td><strong>Recommendation</strong></td>
+<td>Azure Advisor recommendations</td>
+</tr>
+</tbody>
+</table>
+<h4 id="hands-on-read-the-audit-trail">Hands-On: Read the Audit Trail ✅</h4>
+<ol>
+<li>Search <strong>Monitor → Activity log</strong>. Or open it on any resource for a pre-filtered view. <strong>✅</strong></li>
+<li>Set <strong>Timespan</strong> to the last 24 hours and look at what's there — everything you created today, and probably yesterday's Key Vault work too. <strong>✅</strong></li>
+<li>Click any entry and work through the tabs: <strong>Summary</strong>, <strong>JSON</strong>, <strong>Change history</strong>. <strong>✅</strong></li>
+</ol>
+<p><strong>The JSON tab has a <code>caller</code> field.</strong> That's the identity — a UPN for a person, a GUID for a service principal or managed identity. <strong>This is the field that answers "who did that?"</strong>, and it's the reason you can prove things after the fact.</p>
+<ol>
+<li>Add a filter: <strong>Operation</strong> → search <code>Delete</code>. Now you're looking at every deletion in the subscription. <strong>✅</strong></li>
+<li>Click <strong>Download as CSV</strong>, and note the <strong>Insights</strong> and <strong>Quick Insights</strong> links. <strong>✅</strong></li>
+</ol>
+<div class="admonition warning">
+<p class="admonition-title">90 days, and it isn't searchable the way you want</p>
+<p>Two limitations that push every serious environment to do one extra thing:</p>
+<ol>
+<li><strong>Retention is 90 days and cannot be extended</strong> in the activity log itself.</li>
+<li>The portal filters are fine for browsing and useless for real analysis — you cannot join it to anything, aggregate it properly, or alert on a pattern.</li>
+</ol>
+<p>Both are solved the same way: <strong>a diagnostic setting on the activity log, exporting it to a Log Analytics workspace.</strong> Then it's the <code>AzureActivity</code> table, queryable with KQL, retained as long as you want, and joinable to everything else. We do that in Part 5, and it's one of the first things I'd set up in any new subscription.</p>
+</div>
+<hr />
+<h3 id="part-4-the-log-analytics-workspace">Part 4 — The Log Analytics Workspace</h3>
+<p>A <strong>Log Analytics workspace</strong> is the store and query engine for all log data in Azure Monitor. It is a real Azure resource with a region, an access model, a retention setting and a bill.</p>
+<p>It's also the thing that Microsoft Sentinel, Microsoft Defender for Cloud, Application Insights, VM Insights and Container Insights are all built on top of. <strong>Learn the workspace and you've learned the foundation of half of Azure's security and operations tooling</strong> — which is why yesterday's Key Vault audit logs went into one.</p>
+<h4 id="how-many-should-you-have">How Many Should You Have?</h4>
+<p>This is a real design question and it comes up in interviews.</p>
+<p><strong>Start with one workspace per region per environment, and add more only for a reason.</strong> A single workspace is simpler, lets you query across everything with one KQL statement, and consolidates your data volume toward better commitment-tier pricing.</p>
+<p>Reasons that genuinely justify splitting:</p>
+<ul>
+<li><strong>Data sovereignty.</strong> Data must stay in a particular geography — the workspace's region determines where data is stored.</li>
+<li><strong>Access isolation.</strong> Different teams must not see each other's logs. There's a middle path here worth knowing: <strong>resource-context RBAC</strong> means a user with read access to a <em>resource</em> can query that resource's logs without access to the whole workspace, which solves a lot of cases without splitting anything.</li>
+<li><strong>Different retention or cost ownership.</strong> Different chargeback boundaries, or one dataset that needs seven years and another that needs thirty days. (Though <strong>per-table retention</strong>, in Part 7, often solves this inside one workspace.)</li>
+</ul>
+<p>The anti-pattern is <strong>a workspace per application</strong>, which people reach for by instinct. It fragments your data so cross-service queries become impossible, and it's the reason nobody can answer "did the database slowdown and the app errors happen at the same moment?"</p>
+<h4 id="hands-on-create-a-workspace">Hands-On: Create a Workspace ✅</h4>
+<ol>
+<li>Search <strong>Log Analytics workspaces → + Create</strong>. <strong>✅</strong></li>
+<li>
+<p><strong>Resource group:</strong> <code>rg-day19-demo</code>. <strong>Name:</strong> <code>law-lwm-day19</code>. <strong>Region:</strong> the same region as your App Service and VM. <strong>Review + create → Create.</strong> <strong>✅</strong></p>
+<p>Keep everything in one region today. Part 8's data collection rule <strong>must</strong> live in the same region as this workspace, and one region for the whole lab removes a class of confusing failures.
+3. Open it and read the left menu — this is the map of the rest of the day: <strong>✅</strong>
+   - <strong>Logs</strong> — the KQL query editor (Part 6)
+   - <strong>Tables</strong> — every table, with its <strong>table plan</strong> and retention (Part 7)
+   - <strong>Usage and estimated costs</strong> — what you're ingesting and what it will cost (Part 14)
+   - <strong>Data collection rules</strong> — how agents get data here (Part 8)
+   - <strong>Agents</strong> — connected machines
+4. On <strong>Overview</strong>, note the <strong>Workspace ID</strong>, and under <strong>Settings → Agents</strong>, note that keys exist. <strong>✅</strong>
+5. <strong>Settings → Usage and estimated costs.</strong> It's empty because we've ingested nothing. <strong>Come back at the end of the video and it won't be.</strong> <strong>✅</strong></p>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">The region matters for two reasons</p>
+<p><strong>Cost</strong> — sending data across regions can incur bandwidth charges (though notably, <strong>data sent via diagnostic settings does not</strong>). And <strong>latency and sovereignty</strong> — the data physically lives in the workspace's region.</p>
+<p>Put the workspace where the things it monitors are.</p>
+</div>
+<hr />
+<h3 id="part-5-diagnostic-settings-the-hinge">Part 5 — Diagnostic Settings: The Hinge</h3>
+<p>Here is the single most transferable thing in today's video.</p>
+<p><strong>Every Azure service produces logs and metrics that it does not send anywhere by default. A diagnostic setting is what routes them.</strong> Storage accounts, Key Vault, App Service, SQL, NSGs, Front Door, AKS — every one of them, same blade, same shape, same four destinations.</p>
+<p>Yesterday you configured one on Key Vault and I said "this is how every Azure service does it." This is where I prove that.</p>
+<h4 id="the-four-destinations">The Four Destinations</h4>
+<table>
+<thead>
+<tr>
+<th>Destination</th>
+<th>Use it for</th>
+<th>Cost shape</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Log Analytics workspace</strong></td>
+<td>Querying with KQL, alerting, dashboards, Sentinel</td>
+<td>Per GB ingested</td>
+</tr>
+<tr>
+<td><strong>Storage account</strong></td>
+<td>Cheap long-term archive, compliance retention</td>
+<td>Storage rates — very cheap, and not queryable</td>
+</tr>
+<tr>
+<td><strong>Event Hub</strong></td>
+<td>Streaming out to a third-party SIEM (Splunk, Datadog, Elastic)</td>
+<td>Event Hub throughput units</td>
+</tr>
+<tr>
+<td><strong>Partner solution</strong></td>
+<td>Direct integration with a partner service</td>
+<td>Varies</td>
+</tr>
+</tbody>
+</table>
+<p>You can send to <strong>several at once</strong>, and the classic production pattern uses two: <strong>Log Analytics for 30–90 days of interactive querying, plus a storage account for years of cheap archive.</strong></p>
+<div class="admonition warning">
+<p class="admonition-title">The Off-By-Default Rule</p>
+<p>Get this wrong and you'll find out in the worst possible way.</p>
+<p><strong>Resource logs are not collected until you create a diagnostic setting.</strong> They are not buffered. They are not retrievable retroactively. <strong>A service that wasn't configured on Tuesday has no Tuesday logs, and there is no support ticket that recovers them.</strong></p>
+<p>Which is why "turn on diagnostic settings" belongs in your resource-creation checklist, not in your incident response. Yesterday's Key Vault lesson, restated: <strong>you cannot answer "who read that secret last month?" if you weren't logging last month.</strong></p>
+<p>The scalable answer is <strong>Azure Policy with a <code>DeployIfNotExists</code> effect</strong> — a policy that automatically creates the diagnostic setting on every resource of a given type, including ones created next year by someone who's never heard of you. That's Day 17's policy lesson meeting today's, and it's how mature organisations do this.</p>
+</div>
+<h4 id="hands-on-route-the-activity-log">Hands-On: Route the Activity Log ✅</h4>
+<p>The first diagnostic setting to create in any new subscription.</p>
+<ol>
+<li><strong>Monitor → Activity log → Export Activity Logs</strong> (top toolbar). <strong>✅</strong></li>
+<li><strong>+ Add diagnostic setting.</strong> <strong>✅</strong></li>
+<li><strong>Name:</strong> <code>activity-to-law</code>. <strong>Categories:</strong> tick <strong>Administrative</strong>, <strong>Policy</strong>, <strong>Security</strong>, <strong>ServiceHealth</strong>, <strong>ResourceHealth</strong>. <strong>✅</strong></li>
+<li><strong>Destination:</strong> <em>Send to Log Analytics workspace</em> → <code>law-lwm-day19</code>. <strong>Save.</strong> <strong>✅</strong></li>
+</ol>
+<p>The subscription's control-plane audit trail is now flowing into a queryable table called <code>AzureActivity</code>, with whatever retention you choose, instead of expiring at 90 days in a blade you can't query properly.</p>
+<h4 id="hands-on-route-the-app-service-logs">Hands-On: Route the App Service Logs ✅</h4>
+<ol>
+<li><strong>App Service → Monitoring → Diagnostic settings → + Add diagnostic setting.</strong> <strong>✅</strong></li>
+<li><strong>Name:</strong> <code>app-to-law</code>. <strong>✅</strong></li>
+<li>
+<p><strong>Logs:</strong> tick <strong>HTTP logs</strong> (<code>AppServiceHTTPLogs</code>) and <strong>App Service Console Logs</strong>. Under <strong>Metrics</strong>, tick <strong>AllMetrics</strong>. <strong>✅</strong></p>
+<div class="admonition tip">
+<p class="admonition-title">Why send metrics to logs when metrics are already free?</p>
+<p>Good instinct, and there's a real answer. Platform metrics are free and kept 93 days — but they live in a <strong>separate store</strong> you can't join to log data, and they expire at 93 days.</p>
+<p>Ticking <strong>AllMetrics</strong> copies them into the workspace as the <code>AzureMetrics</code> table, where you <strong>can</strong> join them to logs and keep them for years. You pay ingestion for that copy.</p>
+<p>So: <strong>don't tick it by default.</strong> Tick it when you specifically need metrics alongside logs in one query, or need them for longer than 93 days. Ticking it on everything out of habit is a good way to inflate a bill for data you already had for free.</p>
+</div>
+</li>
+<li>
+<p><strong>Destination:</strong> <code>law-lwm-day19</code>. <strong>Save.</strong> <strong>✅</strong></p>
+</li>
+<li>
+<p>Go back to your App Service URL and <strong>refresh it another twenty times.</strong> You're now generating log data that lands in the workspace. <strong>✅</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Give it five to fifteen minutes</p>
+<p>First-time log flow is not instant. The table has to be created and the pipeline has to warm up. If Part 6's queries come back empty, that's almost certainly why — go and make a coffee rather than assuming you did it wrong.</p>
+</div>
+</li>
+</ol>
+<hr />
+<h3 id="part-6-kql-the-query-language">Part 6 — KQL: The Query Language</h3>
+<p><strong>Kusto Query Language</strong> is how you ask questions of log data. It is the skill from today that you will use most, it's the same language used by Sentinel, Defender, Azure Data Explorer and Resource Graph, and it is genuinely pleasant once the shape clicks.</p>
+<h4 id="the-shape">The Shape</h4>
+<p>A KQL query is <strong>a table, then a pipeline of operators</strong>, each taking rows in and passing rows out:</p>
+<div class="highlight"><pre><span></span><code><span class="n">TableName</span>
+<span class="p">|</span><span class="w"> </span><span class="n">operator</span>
+<span class="p">|</span><span class="w"> </span><span class="n">operator</span>
+<span class="p">|</span><span class="w"> </span><span class="n">operator</span>
+</code></pre></div>
+<p>Read top to bottom, left to right. That's it. If you can read a sentence you can read KQL.</p>
+<h4 id="the-operators-that-cover-90-of-real-work">The Operators That Cover 90% of Real Work</h4>
+<p>Let's build one query up, adding a line at a time, so each operator earns its place.</p>
+<p><strong>Start with a table.</strong> Always dangerous on its own — this is <em>every</em> row:</p>
+<div class="highlight"><pre><span></span><code><span class="n">AzureActivity</span>
+</code></pre></div>
+<p><strong><code>take</code> — grab a few rows to see the shape.</strong> Your first move with an unfamiliar table, every time:</p>
+<div class="highlight"><pre><span></span><code><span class="n">AzureActivity</span>
+<span class="p">|</span><span class="w"> </span><span class="k">take</span><span class="w"> </span><span class="mi">10</span>
+</code></pre></div>
+<p><strong><code>where</code> — filter.</strong> Put it as early as possible; it makes everything after it faster and, on Basic/Auxiliary tables, cheaper:</p>
+<div class="highlight"><pre><span></span><code><span class="n">AzureActivity</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="n">ago</span><span class="p">(</span><span class="mi">24</span><span class="n">h</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">OperationNameValue</span><span class="w"> </span><span class="k">contains</span><span class="w"> </span><span class="s">"DELETE"</span>
+</code></pre></div>
+<p><code>ago()</code> is the function you'll type most: <code>ago(30m)</code>, <code>ago(7d)</code>.</p>
+<p><strong><code>project</code> — choose columns.</strong> Log tables are wide and mostly noise:</p>
+<div class="highlight"><pre><span></span><code><span class="n">AzureActivity</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="n">ago</span><span class="p">(</span><span class="mi">24</span><span class="n">h</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">OperationNameValue</span><span class="w"> </span><span class="k">contains</span><span class="w"> </span><span class="s">"DELETE"</span>
+<span class="p">|</span><span class="w"> </span><span class="k">project</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="p">,</span><span class="w"> </span><span class="n">Caller</span><span class="p">,</span><span class="w"> </span><span class="n">OperationNameValue</span><span class="p">,</span><span class="w"> </span><span class="n">ActivityStatusValue</span><span class="p">,</span><span class="w"> </span><span class="n">_ResourceId</span>
+</code></pre></div>
+<p><strong><code>summarize</code> — aggregate.</strong> The operator that turns rows into answers:</p>
+<div class="highlight"><pre><span></span><code><span class="n">AzureActivity</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="n">ago</span><span class="p">(</span><span class="mi">7</span><span class="n">d</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">summarize</span><span class="w"> </span><span class="n">OperationCount</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">count</span><span class="p">()</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">Caller</span>
+<span class="p">|</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">OperationCount</span><span class="w"> </span><span class="n">desc</span>
+</code></pre></div>
+<p><em>Who has been busiest in this subscription this week?</em> — answered.</p>
+<p><strong><code>bin()</code> — group time into buckets</strong>, which is what makes a chart possible:</p>
+<div class="highlight"><pre><span></span><code><span class="n">AzureActivity</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="n">ago</span><span class="p">(</span><span class="mi">24</span><span class="n">h</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">summarize</span><span class="w"> </span><span class="k">count</span><span class="p">()</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">bin</span><span class="p">(</span><span class="n">TimeGenerated</span><span class="p">,</span><span class="w"> </span><span class="mi">1</span><span class="n">h</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">render</span><span class="w"> </span><span class="n">timechart</span>
+</code></pre></div>
+<p><strong><code>render</code></strong> turns the result into a chart — <code>timechart</code>, <code>barchart</code>, <code>piechart</code>, <code>columnchart</code>.</p>
+<p><strong><code>extend</code> — add a calculated column:</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">AppServiceHTTPLogs</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="n">ago</span><span class="p">(</span><span class="mi">1</span><span class="n">h</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">extend</span><span class="w"> </span><span class="n">IsError</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">ScStatus</span><span class="w"> </span><span class="p">&gt;=</span><span class="w"> </span><span class="mi">400</span>
+<span class="p">|</span><span class="w"> </span><span class="k">summarize</span><span class="w"> </span><span class="n">Total</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">count</span><span class="p">(),</span><span class="w"> </span><span class="n">Errors</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">countif</span><span class="p">(</span><span class="n">IsError</span><span class="p">)</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">bin</span><span class="p">(</span><span class="n">TimeGenerated</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="n">m</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">extend</span><span class="w"> </span><span class="n">ErrorRate</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">round</span><span class="p">(</span><span class="mf">100.0</span><span class="w"> </span><span class="p">*</span><span class="w"> </span><span class="n">Errors</span><span class="w"> </span><span class="p">/</span><span class="w"> </span><span class="n">Total</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">render</span><span class="w"> </span><span class="n">timechart</span>
+</code></pre></div>
+<p>That one is worth reading twice — it's a real error-rate query, and it's six lines.</p>
+<p><strong><code>let</code> — name things</strong>, so a query stays readable:</p>
+<div class="highlight"><pre><span></span><code><span class="n">let</span><span class="w"> </span><span class="n">lookback</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">24</span><span class="n">h</span><span class="p">;</span>
+<span class="n">let</span><span class="w"> </span><span class="n">errorThreshold</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="mi">400</span><span class="p">;</span>
+<span class="n">AppServiceHTTPLogs</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="n">ago</span><span class="p">(</span><span class="n">lookback</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">ScStatus</span><span class="w"> </span><span class="p">&gt;=</span><span class="w"> </span><span class="n">errorThreshold</span>
+<span class="p">|</span><span class="w"> </span><span class="k">summarize</span><span class="w"> </span><span class="n">Errors</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">count</span><span class="p">()</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">CsUriStem</span>
+<span class="p">|</span><span class="w"> </span><span class="k">top</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">Errors</span><span class="w"> </span><span class="n">desc</span>
+</code></pre></div>
+<p><strong><code>union</code> and <code>join</code></strong> combine tables — <code>union</code> stacks rows, <code>join</code> matches them on a key. You need to know they exist; you'll reach for them the first time you ask a question spanning two services.</p>
+<h4 id="hands-on-query-your-own-data">Hands-On: Query Your Own Data ✅</h4>
+<ol>
+<li><strong>Log Analytics workspace → Logs.</strong> Dismiss the queries dialog if it appears. <strong>✅</strong></li>
+<li>Look at the left panel — every table you have data in, grouped by solution. <strong>This is how you discover what you've actually got.</strong> <strong>✅</strong></li>
+<li>Run each of these, one at a time: <strong>✅</strong></li>
+</ol>
+<p><strong>What am I even collecting?</strong>
+   <div class="highlight"><pre><span></span><code><span class="k">search</span><span class="w"> </span><span class="p">*</span>
+<span class="p">|</span><span class="w"> </span><span class="k">summarize</span><span class="w"> </span><span class="n">Records</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">count</span><span class="p">()</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="p">[</span><span class="s">"$table"</span><span class="p">]</span>
+<span class="p">|</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">Records</span><span class="w"> </span><span class="n">desc</span>
+</code></pre></div></p>
+<pre><code>!!! tip "What `$table` is"
+    `search *` scans every table in the workspace and adds a built-in column called **`$table`** holding the name of the table each row came from. Summarising by it gives you one row per table with a record count — a complete inventory of what you're actually ingesting, in three lines.
+
+    The square brackets and quotes around `["$table"]` are required, because `$` isn't a legal character in a bare KQL column name. Leave them off and the query fails to parse.
+
+    Run this on any unfamiliar workspace as your very first query. It tells you what's being collected before you waste time guessing at table names — and it's often the fastest way to spot something expensive that nobody meant to switch on.
+</code></pre>
+<p><strong>Every control-plane operation in the last day:</strong>
+   <div class="highlight"><pre><span></span><code><span class="n">AzureActivity</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="n">ago</span><span class="p">(</span><span class="mi">1</span><span class="n">d</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">project</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="p">,</span><span class="w"> </span><span class="n">Caller</span><span class="p">,</span><span class="w"> </span><span class="n">OperationNameValue</span><span class="p">,</span><span class="w"> </span><span class="n">ActivityStatusValue</span>
+<span class="p">|</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="n">desc</span>
+</code></pre></div></p>
+<p><strong>Your own web traffic:</strong>
+   <div class="highlight"><pre><span></span><code><span class="n">AppServiceHTTPLogs</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="n">ago</span><span class="p">(</span><span class="mi">1</span><span class="n">h</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">project</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="p">,</span><span class="w"> </span><span class="n">CsMethod</span><span class="p">,</span><span class="w"> </span><span class="n">CsUriStem</span><span class="p">,</span><span class="w"> </span><span class="n">ScStatus</span><span class="p">,</span><span class="w"> </span><span class="n">TimeTaken</span>
+<span class="p">|</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="n">desc</span>
+</code></pre></div></p>
+<p><strong>Requests over time, as a chart:</strong>
+   <div class="highlight"><pre><span></span><code><span class="n">AppServiceHTTPLogs</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="n">ago</span><span class="p">(</span><span class="mi">1</span><span class="n">h</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">summarize</span><span class="w"> </span><span class="n">Requests</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">count</span><span class="p">()</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">bin</span><span class="p">(</span><span class="n">TimeGenerated</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="n">m</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">render</span><span class="w"> </span><span class="n">timechart</span>
+</code></pre></div></p>
+<p><strong>Slowest requests:</strong>
+   <div class="highlight"><pre><span></span><code><span class="n">AppServiceHTTPLogs</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="n">ago</span><span class="p">(</span><span class="mi">1</span><span class="n">h</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">summarize</span><span class="w"> </span><span class="n">AvgMs</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">avg</span><span class="p">(</span><span class="n">TimeTaken</span><span class="p">),</span><span class="w"> </span><span class="n">MaxMs</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">max</span><span class="p">(</span><span class="n">TimeTaken</span><span class="p">),</span><span class="w"> </span><span class="n">Hits</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">count</span><span class="p">()</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">CsUriStem</span>
+<span class="p">|</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">AvgMs</span><span class="w"> </span><span class="n">desc</span>
+</code></pre></div></p>
+<ol>
+<li>Set the time picker to <strong>Last 24 hours</strong>, and try <strong>Save → Save as query</strong> on one you liked. <strong>✅</strong></li>
+<li>Click <strong>Queries</strong> in the toolbar and browse Microsoft's library of prebuilt queries for the tables you have. <strong>This is the fastest way to learn KQL</strong> — find one close to what you want and modify it. <strong>✅</strong></li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Two habits that separate good KQL from bad</p>
+<p><strong>Filter early.</strong> <code>where</code> before <code>summarize</code>, and always bound the time range. A query that scans a month to summarise an hour is slow, and on Basic or Auxiliary tables it's <em>expensive</em>, because those bill per GB scanned.</p>
+<p><strong><code>take 10</code> first.</strong> Before writing anything clever against an unfamiliar table, look at ten rows. You'll discover the column names are never quite what you assumed — <code>OperationNameValue</code> and not <code>OperationName</code>, <code>ScStatus</code> and not <code>StatusCode</code> — and you'll save yourself fifteen minutes of guessing.</p>
+</div>
+<hr />
+<h3 id="part-7-table-plans-retention-and-not-getting-a-shocking-bill">Part 7 — Table Plans, Retention, and Not Getting a Shocking Bill</h3>
+<p>This part has no demo and it is the most financially valuable ten minutes in the video.</p>
+<h4 id="three-table-plans">Three Table Plans</h4>
+<p>Not all log data deserves the same treatment. A security audit log you query weekly and a firewall log you keep purely for compliance should not cost the same, and since 2024 they don't have to.</p>
+<table>
+<thead>
+<tr>
+<th>Plan</th>
+<th>Ingest cost</th>
+<th>Query cost</th>
+<th>Queryable for</th>
+<th>Use it for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Analytics</strong></td>
+<td>~$2.30/GB</td>
+<td><strong>Free</strong></td>
+<td>Full retention</td>
+<td>Anything you query, alert on, or build dashboards from. <strong>The default.</strong></td>
+</tr>
+<tr>
+<td><strong>Basic</strong></td>
+<td>~$0.50/GB</td>
+<td><strong>Charged per GB scanned</strong></td>
+<td>30 days</td>
+<td>High-volume logs you occasionally search during an investigation</td>
+</tr>
+<tr>
+<td><strong>Auxiliary</strong></td>
+<td>~$0.05/GB</td>
+<td><strong>Charged per GB scanned</strong></td>
+<td>Full retention</td>
+<td>Verbose, low-value logs kept mainly for compliance</td>
+</tr>
+</tbody>
+</table>
+<p>The trade is straightforward: <strong>cheaper to store, more expensive to look at, and fewer features.</strong> Basic and Auxiliary tables have restricted KQL and can't be used for log alerts.</p>
+<p>The mistake to avoid: <strong>moving a table to Basic to save money, then querying it constantly.</strong> You can end up paying more, not less. Basic and Auxiliary are for data you <em>store</em> and rarely <em>read</em>.</p>
+<h4 id="retention-two-numbers-not-one">Retention: Two Numbers, Not One</h4>
+<p>The retention model has two settings, and mixing them up is common:</p>
+<ul>
+<li><strong>Interactive retention</strong> — how long data stays immediately queryable with normal KQL. <strong>The first 31 days are included free.</strong> Beyond that, roughly $0.10/GB/month, up to two years.</li>
+<li><strong>Total retention</strong> (long-term) — how long the data exists at all, up to <strong>12 years</strong>, at roughly $0.02/GB/month. Data past the interactive period isn't gone; it needs a <strong>search job</strong> to bring it back, and that's charged.</li>
+</ul>
+<p>The default retention for Analytics tables in a new workspace is <strong>30 days</strong> — comfortably inside the free interactive window, which is not an accident.</p>
+<p>And the feature that saves real money: <strong>retention is configurable per table.</strong> You don't have to choose one number for everything. Keep <code>AzureActivity</code> for two years because it's small and it's your audit trail; keep verbose HTTP logs for 30 days because there's a lot of it and it ages badly.</p>
+<h4 id="the-four-ways-people-overspend">The Four Ways People Overspend</h4>
+<ol>
+<li><strong>Ticking every category on every diagnostic setting.</strong> By far the biggest one. Someone enables "all logs" on a chatty service — Application Gateway, AKS, Front Door — and the volume is enormous. <strong>Enable the categories you'll actually query.</strong></li>
+<li><strong>Ticking <code>AllMetrics</code> everywhere out of habit.</strong> Paying to ingest data that was already free in the metrics store, for 93 days, with a better query experience for charting.</li>
+<li><strong>Long retention on everything.</strong> Two years of debug logs nobody has read since the week they were written.</li>
+<li><strong>Verbose application logging left at Debug in production.</strong> A single chatty app can outweigh your entire infrastructure's telemetry.</li>
+</ol>
+<h4 id="the-controls">The Controls</h4>
+<ul>
+<li><strong>Daily cap.</strong> Set a hard ceiling on GB per day for the workspace. Ingestion <strong>stops</strong> when it's hit — which protects the bill and blinds you, so <strong>always create an alert on the cap being reached</strong>. Excellent as a runaway guard, dangerous as a routine mechanism.</li>
+<li><strong>Commitment tiers.</strong> Commit to 100 GB/day or more for a substantial discount over pay-as-you-go. Only relevant at real scale.</li>
+<li><strong>Table plans and per-table retention</strong>, as above.</li>
+<li><strong>The <code>Usage</code> table</strong>, which tells you exactly where the money is going:</li>
+</ul>
+<div class="highlight"><pre><span></span><code><span class="n">Usage</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="n">ago</span><span class="p">(</span><span class="mi">30</span><span class="n">d</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">IsBillable</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="n">true</span>
+<span class="p">|</span><span class="w"> </span><span class="k">summarize</span><span class="w"> </span><span class="n">BillableGB</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">sum</span><span class="p">(</span><span class="n">Quantity</span><span class="p">)</span><span class="w"> </span><span class="p">/</span><span class="w"> </span><span class="mi">1000</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">DataType</span>
+<span class="p">|</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">BillableGB</span><span class="w"> </span><span class="n">desc</span>
+</code></pre></div>
+<div class="admonition tip">
+<p class="admonition-title">Run that query on any workspace you inherit</p>
+<p>It takes ten seconds and it will tell you, in one sorted list, which table is responsible for the bill. In almost every real environment the top one or two rows account for most of the spend, and at least one of them will be something nobody has queried in a year.</p>
+<p>Being the person who runs that query and then halves the monitoring bill is a very good way to be noticed.</p>
+</div>
+<hr />
+<h2 id="part-two-detect-and-respond">PART TWO — DETECT AND RESPOND</h2>
+<blockquote>
+<p><strong>Halfway point.</strong> You can now collect telemetry and ask it questions. But everything so far has required <em>you</em> to go and look — and nobody is looking at 3am on a Sunday. The rest of the day is about the system looking for you, and telling you when something is wrong.</p>
+</blockquote>
+<hr />
+<h3 id="part-8-getting-data-off-a-machine-agents-and-data-collection-rules">Part 8 — Getting Data Off a Machine: Agents and Data Collection Rules</h3>
+<p>Azure collects platform metrics and resource logs about your VM for free — but that's data about the <strong>virtual machine as a resource</strong>. It tells you nothing about what's happening <strong>inside</strong> the operating system: disk space, memory pressure, the Windows Event Log, syslog, application log files.</p>
+<p>For that you need an agent, and this is an area where the landscape changed and a lot of published material is now simply wrong.</p>
+<h4 id="the-agents-that-no-longer-exist">The Agents That No Longer Exist</h4>
+<table>
+<thead>
+<tr>
+<th>Agent</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Log Analytics agent (MMA/OMS)</strong></td>
+<td><strong>Retired 31 August 2024.</strong> Gone.</td>
+</tr>
+<tr>
+<td><strong>Azure Diagnostics extension (WAD/LAD)</strong></td>
+<td><strong>Deprecated 31 March 2026.</strong></td>
+</tr>
+<tr>
+<td><strong>Azure Monitor Agent (AMA)</strong></td>
+<td><strong>The only current answer.</strong></td>
+</tr>
+<tr>
+<td><strong>Dependency Agent</strong> (VM Insights Map)</td>
+<td>Retires <strong>30 June 2028</strong></td>
+</tr>
+</tbody>
+</table>
+<p>If a tutorial tells you to install the Log Analytics agent and paste a workspace ID and key, <strong>it is describing a product that no longer exists.</strong> Given how much Azure content on the internet predates 2024, this is worth being alert to.</p>
+<h4 id="data-collection-rules">Data Collection Rules</h4>
+<p>The Azure Monitor Agent works differently from what it replaced, and the difference is the important part.</p>
+<p>The old agent's configuration lived <strong>on the workspace</strong>: connect a machine, and it collected whatever that workspace was configured to collect. One setting, everyone gets it.</p>
+<p>AMA's configuration lives in a <strong>data collection rule (DCR)</strong> — a separate Azure resource that says <em>collect this data, from these machines, and send it to these destinations</em>. Rules and machines are associated many-to-many:</p>
+<ul>
+<li><strong>One machine can have several DCRs.</strong> Baseline metrics from one, security event collection from another, an application's log file from a third.</li>
+<li><strong>One DCR can target hundreds of machines.</strong></li>
+<li><strong>One DCR can send different data to different destinations</strong> — security events to the Sentinel workspace, performance counters to the ops workspace.</li>
+<li><strong>It's a resource</strong>, so it's deployable with Bicep or Terraform, governable with Azure Policy, and controlled with RBAC.</li>
+</ul>
+<p>That's a genuine improvement, and it's why "AMA plus DCR" is the phrase to remember rather than just "the new agent."</p>
+<div class="admonition warning">
+<p class="admonition-title">A retirement that lands in days: 14 September 2026</p>
+<p><strong>The Data Collector API retires on 14 September 2026.</strong></p>
+<p>That's the old HTTP endpoint for pushing custom log data into a Log Analytics workspace — the one every "send custom logs to Azure" script and integration on the internet uses. Its replacement is the <strong>Logs Ingestion API</strong>, which is DCR-based, uses Entra ID authentication instead of a shared key, and supports transformations on the way in.</p>
+<p>If you inherit an environment with a script POSTing to a workspace with a shared key, <strong>that is the thing to look at first.</strong> By the time most people watch this, that date is here or just passed.</p>
+</div>
+<h4 id="transformations">Transformations</h4>
+<p>One capability worth knowing by name because it's the modern answer to cost control at the source. A DCR can apply a <strong>KQL transformation to data in flight</strong> — before it's stored, and therefore before you're billed.</p>
+<p>You can drop rows you don't care about, drop columns nobody reads, or mask a field containing personal data. <strong>Filtering out 60% of a verbose log at ingestion time removes 60% of its cost</strong>, which is a far better lever than deleting data later.</p>
+<h4 id="hands-on-build-a-real-data-collection-rule">Hands-On: Build a Real Data Collection Rule ✅</h4>
+<p>This is the part Part 2 promised. <code>vm-lwm-day19</code> has been running since Part 1 and we still cannot see how full its disk is. Let's fix that properly.</p>
+<div class="admonition tip">
+<p class="admonition-title">Build first, talk second — a recording-order note</p>
+<p>The agent takes <strong>five to fifteen minutes</strong> to install and start sending. So create the rule <strong>now</strong>, then go back and read the concept sections above while it works. Don't create it and then sit watching an empty table — that's the most boring five minutes you can put in a video, and it's entirely avoidable.</p>
+</div>
+<ol>
+<li>
+<p><strong>Monitor → Settings → Data Collection Rules → + Create.</strong> <strong>✅</strong></p>
+<p>You may see a banner offering the <strong>classic creation experience</strong>. Either works; the steps below follow the current default one, and the classic version differs mainly in having an explicit Windows/Linux <strong>Platform Type</strong> selector on the Basics tab.</p>
+</li>
+<li>
+<p><strong>Basics:</strong> <strong>✅</strong></p>
+</li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Rule Name</strong></td>
+<td><code>dcr-lwm-day19</code></td>
+</tr>
+<tr>
+<td><strong>Resource group</strong></td>
+<td><code>rg-day19-demo</code></td>
+</tr>
+<tr>
+<td><strong>Region</strong></td>
+<td><strong>the same region as <code>law-lwm-day19</code></strong></td>
+</tr>
+<tr>
+<td><strong>Data Collection Endpoint</strong></td>
+<td><strong>Leave empty</strong></td>
+</tr>
+</tbody>
+</table>
+<pre><code>!!! warning "The region has to match the workspace"
+    A DCR must be in the **same region as any Log Analytics workspace it delivers to.** Get it wrong and the workspace simply won't appear in the destination dropdown later, with no explanation of why. If you have machines spread across regions, you need one DCR per region pointing at the same workspace.
+
+!!! note "Why no data collection endpoint?"
+    A **DCE** is only needed for specific scenarios — **Azure Monitor Private Link**, or the **Logs Ingestion API** for custom data. Performance counters and syslog from AMA don't need one. Know the acronym for the exam; don't create one today.
+</code></pre>
+<ol>
+<li><strong>Resources → + Add resources →</strong> tick <strong><code>vm-lwm-day19</code></strong> → <strong>Apply</strong>. <strong>✅</strong></li>
+</ol>
+<p>Stop here for a second, because three things just happened that you didn't ask for:</p>
+<ul>
+<li><strong>The Azure Monitor Agent will be installed automatically</strong> on that VM. There is no separate "install the extension" step any more — creating a DCR and adding resources <strong>is</strong> the recommended way to deploy AMA from the portal.</li>
+<li><strong>An association</strong> between the rule and the machine is created. That's a real object you can list later.</li>
+<li>
+<p><strong>A system-assigned managed identity is enabled on the VM</strong>, because that's how the agent authenticates to Azure Monitor. Day 17's managed identity, switched on for you, holding a credential nobody has to store.</p>
+</li>
+<li>
+<p><strong>Collect and deliver → + Add new dataflow</strong> (or <strong>+ Add data source</strong> in the classic experience). <strong>Data source type: Performance Counters.</strong> <strong>✅</strong></p>
+</li>
+<li>Choose <strong>Custom</strong>, set <strong>sample rate to 60 seconds</strong>, and select these four: <strong>✅</strong></li>
+</ul>
+<div class="highlight"><pre><span></span><code>Processor(*)\% Processor Time
+Memory(*)\% Used Memory
+Logical Disk(*)\% Used Space        ← the one Part 2 could not give us
+Logical Disk(*)\Free Megabytes
+</code></pre></div>
+<ol>
+<li><strong>Destination:</strong> <em>Azure Monitor Logs</em> → <code>law-lwm-day19</code>. <strong>Add data source.</strong> <strong>✅</strong></li>
+<li><strong>+ Add new dataflow</strong> again. <strong>Data source type: Linux Syslog.</strong> <strong>✅</strong></li>
+<li>
+<p>Select only the facilities you actually want — <strong><code>user</code></strong>, <strong><code>auth</code></strong> and <strong><code>daemon</code></strong> — with a minimum log level of <strong><code>LOG_INFO</code></strong>. Destination: the same workspace. <strong>✅</strong></p>
+<div class="admonition danger">
+<p class="admonition-title">This screen is where people burn the 5 GB grant</p>
+<p>The syslog picker lets you tick <strong>every facility at <code>LOG_DEBUG</code></strong> in about two seconds. Do that across a fleet and you will ingest gigabytes a day of noise nobody will ever read, at ~$2.30 a gigabyte.</p>
+<p><strong>Collect the facilities you'd actually investigate, at the level you'd actually act on.</strong> Everything else is a bill with no reader. This is the single highest-leverage cost decision in Azure Monitor, and it's made on a checkbox screen that looks harmless.</p>
+</div>
+</li>
+<li>
+<p><strong>Review + create → Create.</strong> <strong>✅</strong></p>
+</li>
+</ol>
+<h4 id="hands-on-verify-the-agent-before-you-blame-the-query">Hands-On: Verify the Agent Before You Blame the Query ✅</h4>
+<p>Now go and teach the rest of Part 8 while that installs. When you come back:</p>
+<ol>
+<li>
+<p><strong>Log Analytics workspace → Logs</strong>, and run the check that should always come first: <strong>✅</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">Heartbeat</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="n">ago</span><span class="p">(</span><span class="mi">30</span><span class="n">m</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">summarize</span><span class="w"> </span><span class="n">arg_max</span><span class="p">(</span><span class="n">TimeGenerated</span><span class="p">,</span><span class="w"> </span><span class="p">*)</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">Computer</span>
+<span class="p">|</span><span class="w"> </span><span class="k">project</span><span class="w"> </span><span class="n">Computer</span><span class="p">,</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="p">,</span><span class="w"> </span><span class="n">Category</span><span class="p">,</span><span class="w"> </span><span class="n">Version</span><span class="p">,</span><span class="w"> </span><span class="n">OSType</span>
+</code></pre></div>
+<p><strong>A healthy agent writes a <code>Heartbeat</code> record every single minute.</strong> If <code>vm-lwm-day19</code> is there with a timestamp under a minute old, the agent is installed, authenticated and talking to Azure Monitor.</p>
+<p><strong>Make this your reflex.</strong> When guest data is missing, check <code>Heartbeat</code> before you touch the query. No heartbeat is an agent, network or identity problem; a heartbeat with no data is a DCR configuration problem. Those are two completely different afternoons.</p>
+<div class="admonition note">
+<p class="admonition-title">If there's no heartbeat after fifteen minutes</p>
+<table>
+<thead>
+<tr>
+<th>Check</th>
+<th>Why</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>VM → Extensions + applications</strong></td>
+<td>Is <code>AzureMonitorLinuxAgent</code> listed, and does it say <strong>Provisioning succeeded</strong>?</td>
+</tr>
+<tr>
+<td><strong>VM → Identity</strong></td>
+<td>Is the system-assigned identity <strong>On</strong>? The agent authenticates with it</td>
+</tr>
+<tr>
+<td><strong>Outbound internet</strong></td>
+<td>No public IP and no NAT gateway means the agent can install and never send. The single most common cause</td>
+</tr>
+<tr>
+<td><strong>DCR region</strong></td>
+<td>Must match the workspace region</td>
+</tr>
+</tbody>
+</table>
+</div>
+</li>
+</ol>
+<h4 id="hands-on-get-the-number-the-portal-refused-to-give-you">Hands-On: Get the Number the Portal Refused to Give You ✅</h4>
+<ol>
+<li>
+<p>Give the agent a couple of minutes of perf samples, then run: <strong>✅</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">Perf</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="n">ago</span><span class="p">(</span><span class="mi">1</span><span class="n">h</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">ObjectName</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="s">"Logical Disk"</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">CounterName</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="s">"% Used Space"</span>
+<span class="p">|</span><span class="w"> </span><span class="k">summarize</span><span class="w"> </span><span class="n">avg</span><span class="p">(</span><span class="n">CounterValue</span><span class="p">)</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">bin</span><span class="p">(</span><span class="n">TimeGenerated</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="n">m</span><span class="p">),</span><span class="w"> </span><span class="n">InstanceName</span>
+<span class="p">|</span><span class="w"> </span><span class="k">render</span><span class="w"> </span><span class="n">timechart</span>
+</code></pre></div>
+<p><strong>There it is.</strong> The percentage of disk used, per filesystem — the exact number that does not exist anywhere in platform metrics, now sitting in a table you can query, chart, alert on and keep for a year.</p>
+</li>
+<li>
+<p>Make it move. <strong>VM → Run command → <code>RunShellScript</code>:</strong> <strong>✅</strong></p>
+<div class="highlight"><pre><span></span><code>logger<span class="w"> </span>-p<span class="w"> </span>user.err<span class="w"> </span><span class="s2">"LWM Day 19 - simulated application error"</span>
+logger<span class="w"> </span>-p<span class="w"> </span>user.info<span class="w"> </span><span class="s2">"LWM Day 19 - routine informational message"</span>
+fallocate<span class="w"> </span>-l<span class="w"> </span>4G<span class="w"> </span>/var/tmp/bigfile
+df<span class="w"> </span>-h<span class="w"> </span>/
+</code></pre></div>
+<p><code>df</code> reports the disk several gigabytes fuller than it was. Wait a few minutes and <strong>re-run the query</strong> — the line <strong>steps up</strong>.</p>
+</li>
+<li>
+<p>And the logs from inside the machine: <strong>✅</strong></p>
+<div class="highlight"><pre><span></span><code><span class="n">Syslog</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="n">ago</span><span class="p">(</span><span class="mi">1</span><span class="n">h</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">project</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="p">,</span><span class="w"> </span><span class="n">Computer</span><span class="p">,</span><span class="w"> </span><span class="n">Facility</span><span class="p">,</span><span class="w"> </span><span class="n">SeverityLevel</span><span class="p">,</span><span class="w"> </span><span class="n">SyslogMessage</span>
+<span class="p">|</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="n">desc</span>
+</code></pre></div>
+<p>Your two <code>logger</code> messages are in there, alongside everything else the OS has been saying — sudo invocations, systemd units starting, the Run command extension itself doing its work. <strong>None of this was visible to Azure twenty minutes ago.</strong></p>
+</li>
+<li>
+<p>Put the disk back: <strong>Run command</strong> → <code>rm /var/tmp/bigfile</code>, and watch the chart come down. <strong>✅</strong></p>
+<p>That round trip — a real change inside a VM, visible as a queryable number in Azure — is the whole reason agents exist.</p>
+</li>
+</ol>
+<h4 id="one-click-that-does-all-of-this-vm-insights">One Click That Does All Of This: VM Insights</h4>
+<ol>
+<li>
+<p><strong>Monitor → Virtual Machines → Insights</strong>, or <strong>VM → Monitoring → Insights</strong>. <strong>Read it, don't enable it.</strong> <strong>✅</strong></p>
+<p><strong>VM Insights</strong> is the packaged version of everything you just built by hand: enable it on a VM and Azure creates its own DCR (you'll see them named <code>MSVMI-*</code>), installs AMA, collects a standard performance set, and gives you pre-built charts plus — with the Dependency Agent — a <strong>Map</strong> view showing which processes are talking to what.</p>
+<p>It's genuinely good, and it's what most teams use. Two reasons we built the DCR manually first: <strong>you can't tune what you don't understand</strong>, and VM Insights collects <strong>considerably more data</strong> than our four counters. On one lab VM that's fine. On two hundred, it's a conversation with whoever owns the bill.</p>
+</li>
+<li>
+<p><strong>Log Analytics workspace → Settings → Agents.</strong> Read it and note what's <em>missing</em>: no "download the agent, paste this workspace ID and key" flow. That world is gone. <strong>✅</strong></p>
+</li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">The exam-shaped answer</p>
+<p><em>"How do you collect the Windows Security Event Log from 200 VMs into Azure Monitor?"</em> → <strong>Azure Monitor Agent, configured with a data collection rule, associated with those machines — deployed at scale with Azure Policy.</strong></p>
+<p>If your answer mentions the Log Analytics agent, a workspace key, or the diagnostics extension, it's out of date by two years.</p>
+</div>
+<hr />
+<h3 id="part-9-alerts-the-three-types-and-what-they-cost">Part 9 — Alerts: The Three Types, and What They Cost</h3>
+<p>An alert rule is three things: <strong>a signal to watch</strong>, <strong>a condition that makes it fire</strong>, and <strong>an action group that does something about it.</strong> Same three parts every time.</p>
+<h4 id="the-three-types-that-matter">The Three Types That Matter</h4>
+<table>
+<thead>
+<tr>
+<th></th>
+<th><strong>Metric alert</strong></th>
+<th><strong>Log search alert</strong></th>
+<th><strong>Activity log alert</strong></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Watches</strong></td>
+<td>A platform or custom metric</td>
+<td>A KQL query result</td>
+<td>Control-plane events</td>
+</tr>
+<tr>
+<td><strong>Speed</strong></td>
+<td><strong>Near real-time</strong>, ~1 min</td>
+<td>Depends on frequency (5 min+)</td>
+<td>Near real-time</td>
+</tr>
+<tr>
+<td><strong>Answers</strong></td>
+<td>"CPU is above 80%"</td>
+<td>"More than 10 errors in 5 minutes"</td>
+<td>"Someone deleted a resource group"</td>
+</tr>
+<tr>
+<td><strong>Stateful?</strong></td>
+<td>Optional — <em>Automatically resolve alerts</em></td>
+<td>Optional</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>Cost</strong></td>
+<td>$0.10/time series/month, <strong>10 free</strong></td>
+<td>~<strong>$0.50/month</strong> + $0.05 per extra series</td>
+<td><strong>Free</strong></td>
+</tr>
+</tbody>
+</table>
+<p>The practical guidance follows from that table: <strong>use a metric alert if a metric can express it.</strong> They're faster, simpler, and effectively free at small scale. Reach for a log alert only when the question genuinely needs the query language — correlating fields, counting distinct things, matching text.</p>
+<p>There's also <strong>resource health</strong> and <strong>service health</strong> alerts, both free, and both worth having: <em>is my resource unhealthy</em>, and <em>is Azure itself having a problem in my region</em>. That second one saves you from spending an hour debugging Microsoft's outage.</p>
+<h4 id="severity-and-using-it-properly">Severity, and Using It Properly</h4>
+<p>Alerts carry a severity from <strong>Sev 0 (Critical)</strong> to <strong>Sev 4 (Verbose)</strong>. It's not decoration — it's what lets an action group route a Sev 0 to someone's phone and a Sev 3 to a mailbox.</p>
+<p>The discipline: <strong>Sev 0 and Sev 1 must mean "wake someone up."</strong> The fastest way to make monitoring worthless is to mark everything critical. When every alert is urgent, people stop reading them — and the one that mattered arrives in a mailbox nobody opens. <strong>Alert fatigue is the most common failure mode of monitoring, and it's self-inflicted.</strong></p>
+<h4 id="stateful-vs-stateless">Stateful vs Stateless</h4>
+<p>A subtlety that catches people out. By default, <strong>metric alerts are stateless</strong>: the condition is met, it fires; still met on the next evaluation, it fires again. Notifications keep coming.</p>
+<p>Tick <strong>Automatically resolve alerts</strong> and the rule becomes <strong>stateful</strong>: it fires once, stays in a <em>Fired</em> state while the condition holds, and moves to <em>Resolved</em> when it clears — sending a resolution notification.</p>
+<p><strong>You almost always want this on.</strong> It's the difference between "your disk filled up, and then recovered" and four hundred identical emails.</p>
+<h4 id="alert-processing-rules">Alert Processing Rules</h4>
+<p>One more piece of vocabulary, because it solves a problem you'll hit within a month of running real alerts: <strong>alert processing rules</strong> sit between an alert firing and the notification going out. They can <strong>suppress</strong> notifications during a planned maintenance window, or <strong>add an action group</strong> to every alert in a scope without editing each rule.</p>
+<p>That maintenance-window suppression is the answer to <em>"we're doing a deployment tonight, please stop paging the on-call engineer"</em> — and knowing it exists is much better than the usual alternative, which is disabling rules and forgetting to turn them back on.</p>
+<hr />
+<h3 id="part-10-action-groups-what-actually-happens">Part 10 — Action Groups: What Actually Happens</h3>
+<p>An <strong>action group</strong> is a reusable list of who gets notified and what gets triggered. Define it once, attach it to fifty alert rules, change the on-call email in one place.</p>
+<h4 id="notifications-vs-actions">Notifications vs Actions</h4>
+<table>
+<thead>
+<tr>
+<th><strong>Notifications</strong> — tell a human</th>
+<th><strong>Actions</strong> — do something</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Email</td>
+<td><strong>Webhook</strong> — post to any HTTPS endpoint</td>
+</tr>
+<tr>
+<td>SMS 💳</td>
+<td><strong>Azure Function</strong> — run arbitrary code</td>
+</tr>
+<tr>
+<td>Voice call 💳</td>
+<td><strong>Logic App</strong> — an orchestrated workflow</td>
+</tr>
+<tr>
+<td>Azure mobile app push</td>
+<td><strong>Automation Runbook</strong> — e.g. restart a service</td>
+</tr>
+<tr>
+<td><strong>Email Azure Resource Manager Role</strong> — everyone with a role, no addresses to maintain</td>
+<td><strong>ITSM</strong> — raise a ticket in ServiceNow etc.</td>
+</tr>
+<tr>
+<td></td>
+<td><strong>Secure webhook</strong> — Entra-authenticated</td>
+</tr>
+</tbody>
+</table>
+<p>Email and webhook have generous free allowances; <strong>SMS and voice are charged per message</strong>, so we use email today.</p>
+<p>That last notification type is quietly excellent: <strong>Email Azure Resource Manager Role</strong> notifies everyone holding a role — say, all Owners of the subscription — rather than a hard-coded list that rots the moment someone changes team. Day 17's RBAC, doing useful work on Day 19.</p>
+<p>And the <strong>actions</strong> column is where this stops being notification and becomes automation. An alert that fires a Logic App can restart the app, scale out, open a ticket and post to Teams, with no human in the loop. That's the ceiling of what's possible here, and it's how mature teams handle the routine failures.</p>
+<h4 id="hands-on-create-an-action-group">Hands-On: Create an Action Group ✅</h4>
+<ol>
+<li><strong>Monitor → Alerts → Action groups → + Create.</strong> <strong>✅</strong></li>
+<li><strong>Basics:</strong> <strong>Resource group</strong> <code>rg-day19-demo</code>, <strong>Action group name</strong> <code>ag-lwm-oncall</code>, <strong>Display name</strong> <code>LWM OnCall</code> (12 characters max — it prefixes SMS and emails). <strong>✅</strong></li>
+<li><strong>Notifications tab:</strong> <strong>Notification type</strong> <em>Email/SMS message/Push/Voice</em> → <strong>Name:</strong> <code>Primary email</code> → tick <strong>Email</strong>, enter your address → <strong>OK</strong>. <strong>✅</strong></li>
+<li>Look at the other notification type in the dropdown — <strong>Email Azure Resource Manager Role</strong> — and note you could pick <em>Owner</em> or <em>Monitoring Reader</em>. <strong>✅</strong></li>
+<li><strong>Actions tab:</strong> open the <strong>Action type</strong> dropdown and read the list — Webhook, Azure Function, Logic App, Automation Runbook, ITSM. <strong>Add nothing.</strong> <strong>✅</strong></li>
+<li><strong>Review + create → Create.</strong> <strong>✅</strong></li>
+<li><strong>Check your inbox.</strong> Azure sends a confirmation email immediately, which is also a free test that the action group works. <strong>✅</strong></li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Build the action group first, always</p>
+<p>Create action groups <em>before</em> alert rules, and name them by <strong>who they reach</strong>, not by what triggers them. <code>ag-platform-oncall</code> and <code>ag-app-team-email</code> are good names. <code>ag-cpu-alert</code> is a bad one, because in six weeks it'll be attached to nine rules that have nothing to do with CPU.</p>
+</div>
+<hr />
+<h3 id="part-11-building-alerts-that-actually-fire">Part 11 — Building Alerts That Actually Fire</h3>
+<p>Three alerts, in increasing order of cleverness. Two are free; I'll tell you clearly when we cross into the one that isn't.</p>
+<h4 id="hands-on-a-metric-alert-free-within-the-10-series-allowance">Hands-On: A Metric Alert ✅ (free — within the 10-series allowance)</h4>
+<p><em>"Tell me when my web app starts returning server errors."</em></p>
+<ol>
+<li><strong>App Service → Monitoring → Alerts → + Create → Alert rule.</strong> The <strong>Scope</strong> is pre-filled with your app. <strong>✅</strong></li>
+<li><strong>Condition tab → Signal name:</strong> search and select <strong><code>Http Server Errors</code></strong> (or <code>Http 5xx</code>). <strong>✅</strong></li>
+<li><strong>Alert logic:</strong> <strong>✅</strong></li>
+</ol>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Threshold</strong></td>
+<td>Static</td>
+</tr>
+<tr>
+<td><strong>Aggregation type</strong></td>
+<td>Total</td>
+</tr>
+<tr>
+<td><strong>Operator</strong></td>
+<td>Greater than</td>
+</tr>
+<tr>
+<td><strong>Threshold value</strong></td>
+<td><code>0</code></td>
+</tr>
+<tr>
+<td><strong>Check every</strong></td>
+<td>1 minute</td>
+</tr>
+<tr>
+<td><strong>Lookback period</strong></td>
+<td>5 minutes</td>
+</tr>
+</tbody>
+</table>
+<p>Note the <strong>Dynamic</strong> threshold option next to Static — machine learning that models the metric's normal pattern and alerts on deviation. Genuinely useful for things with a daily rhythm where no fixed number is right. Read it, leave it on Static.</p>
+<ol>
+<li>Note the <strong>Preview</strong> chart showing the metric with your threshold drawn on it — that's how you sanity-check a threshold before saving it. <strong>✅</strong></li>
+<li><strong>Actions tab → Select action group → <code>ag-lwm-oncall</code>.</strong> <strong>✅</strong></li>
+<li><strong>Details tab:</strong> <strong>Severity</strong> <code>2 - Warning</code>. <strong>Name</strong> <code>alert-app-5xx</code>. Under <strong>Advanced options</strong>, confirm <strong>Enable upon creation</strong> and tick <strong>Automatically resolve alerts</strong>. <strong>✅</strong></li>
+<li><strong>Review + create → Create.</strong> <strong>✅</strong></li>
+<li><strong>Make it fire.</strong> Visit a URL on your app that doesn't exist and will error — or, more reliably, <strong>stop the App Service</strong> (<strong>Overview → Stop</strong>), hit the URL a few times, then start it again. <strong>✅</strong></li>
+<li>
+<p>Wait a few minutes, then <strong>Monitor → Alerts.</strong> Your alert should appear, and <strong>an email should arrive.</strong> Click into it: <strong>Summary</strong>, <strong>History</strong>, and the alert's own state. <strong>✅</strong></p>
+<div class="admonition note">
+<p class="admonition-title">Alerts are not instantaneous, and that's normal</p>
+<p>Metric alerts typically fire within 1–5 minutes. There's metric ingestion latency, then evaluation latency. If you're waiting three minutes, nothing is broken.</p>
+<p>Also, <strong>it takes 10–15 minutes after creating a resource before its metrics are available at all</strong>, which is a real cause of "my brand new alert isn't working."</p>
+</div>
+</li>
+</ol>
+<h4 id="hands-on-an-activity-log-alert-completely-free">Hands-On: An Activity Log Alert ✅ (completely free)</h4>
+<p><em>"Tell me when someone deletes something."</em> This is the alert I'd put in every subscription I owned.</p>
+<ol>
+<li><strong>Monitor → Alerts → + Create → Alert rule.</strong> <strong>✅</strong></li>
+<li><strong>Scope:</strong> select your <strong>subscription</strong>. <strong>✅</strong></li>
+<li><strong>Condition → Signal type: Activity Log.</strong> Search the signal list for <strong><code>Delete Resource Group</code></strong>. <strong>✅</strong></li>
+<li><strong>Actions:</strong> <code>ag-lwm-oncall</code>. <strong>✅</strong></li>
+<li><strong>Details:</strong> <strong>Severity</strong> <code>1 - Error</code>. <strong>Name</strong> <code>alert-rg-deleted</code>. <strong>Create.</strong> <strong>✅</strong></li>
+</ol>
+<p><strong>This rule costs nothing to run, ever.</strong> Activity log alerts are free, which makes them the best value in Azure Monitor — and "someone deleted a resource group" is exactly the event you want to hear about within the minute.</p>
+<h4 id="hands-on-a-log-search-alert-050month-build-it-then-delete-it">Hands-On: A Log Search Alert ⚠️ (~$0.50/month — build it, then delete it)</h4>
+<p><em>"Tell me when there are more than five failed requests in five minutes."</em> A metric can't easily express this, so it's a genuine log alert.</p>
+<div class="admonition warning">
+<p class="admonition-title">This one is not free</p>
+<p>A log search alert rule costs roughly <strong>$0.50 per month</strong> for its first time series. That is small, and it is not zero, and it bills whether or not it ever fires. <strong>We build it to learn the mechanics and delete it in cleanup.</strong> Don't leave a shelf of forgotten log alert rules behind you.</p>
+</div>
+<ol>
+<li><strong>Log Analytics workspace → Logs</strong>, and get the query right <em>first</em> — always build the query before the rule: <strong>✅</strong></li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="n">AppServiceHTTPLogs</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="n">ago</span><span class="p">(</span><span class="mi">5</span><span class="n">m</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">ScStatus</span><span class="w"> </span><span class="p">&gt;=</span><span class="w"> </span><span class="mi">400</span>
+<span class="p">|</span><span class="w"> </span><span class="k">summarize</span><span class="w"> </span><span class="n">FailedRequests</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">count</span><span class="p">()</span>
+</code></pre></div>
+<ol>
+<li>Run it, confirm it returns a number. <strong>✅</strong></li>
+<li>Click <strong>+ New alert rule</strong> in the Logs toolbar — the query carries across. <strong>✅</strong></li>
+<li><strong>Condition:</strong> <strong>Measurement</strong> → <em>Table rows</em>, <strong>Aggregation type</strong> <em>Count</em>. <strong>Alert logic:</strong> Greater than <code>5</code>. <strong>Frequency of evaluation:</strong> 5 minutes. <strong>✅</strong></li>
+<li><strong>Actions:</strong> <code>ag-lwm-oncall</code>. <strong>Details:</strong> Severity <code>2</code>, name <code>alert-app-errors</code>. <strong>Create.</strong> <strong>✅</strong></li>
+<li>Note in the wizard where you'd configure <strong>split by dimensions</strong> — and remember each resulting series is billed separately. This is how a $0.50 rule quietly becomes a $20 one. <strong>✅</strong></li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">The rule of thumb worth remembering</p>
+<p><strong>If a metric can answer the question, use a metric alert.</strong> Faster, effectively free, simpler to reason about.</p>
+<p><strong>Use a log alert when the question needs the query language</strong> — correlating across fields, counting distinct users, matching on text, joining two tables. Powerful, slower, and billed per rule.</p>
+</div>
+<hr />
+<h3 id="part-12-application-insights">Part 12 — Application Insights</h3>
+<p>Everything so far has monitored <strong>infrastructure</strong>. Application Insights monitors <strong>the application</strong> — and it answers a completely different class of question. Not <em>"is the server up?"</em> but <em>"why is checkout slow for some users, and which line of code is throwing?"</em></p>
+<h4 id="what-it-gives-you">What It Gives You</h4>
+<ul>
+<li><strong>Request rates, response times and failure rates</strong>, per endpoint</li>
+<li><strong>Dependency tracking</strong> — every outbound call your app makes to SQL, Storage, Key Vault or an external API, timed individually. <strong>This is usually where the answer is.</strong> "The app is slow" is nearly always "one dependency is slow."</li>
+<li><strong>Exceptions</strong> with stack traces</li>
+<li><strong>The Application Map</strong> — an auto-generated diagram of your components and their dependencies, annotated with failure rates and latency. It draws your architecture from real traffic, which is often more accurate than the diagram in your wiki.</li>
+<li><strong>End-to-end transaction details</strong> — one user's request followed across every service it touched</li>
+<li><strong>Live Metrics</strong> — a real-time stream with roughly a one-second lag, invaluable during a deployment</li>
+<li><strong>Availability tests</strong> — synthetic requests from Azure regions worldwide, alerting when your site is unreachable from somewhere</li>
+</ul>
+<h4 id="two-things-that-changed">Two Things That Changed</h4>
+<p>Both worth knowing, because they invalidate a lot of older material:</p>
+<ul>
+<li><strong>Classic Application Insights was retired on 29 February 2024.</strong> Every Application Insights resource is now <strong>workspace-based</strong> — its data lives in a Log Analytics workspace. Which is excellent news, because it means you can <strong>query application telemetry and infrastructure logs in the same KQL query</strong>, and it's why App Insights bills as workspace ingestion rather than separately.</li>
+<li><strong>Instrumentation keys are out; connection strings are in.</strong> Support for instrumentation-key ingestion ended <strong>31 March 2025</strong>. If you see <code>InstrumentationKey=...</code> alone in a config file, that's the old way. <strong>Use the connection string.</strong></li>
+</ul>
+<h4 id="hands-on-turn-it-on">Hands-On: Turn It On ✅</h4>
+<p>Auto-instrumentation means no code changes at all.</p>
+<ol>
+<li><strong>App Service → Settings → Application Insights → Turn on Application Insights.</strong> <strong>✅</strong></li>
+<li><strong>Create new resource</strong> → name <code>appi-lwm-day19</code>. <strong>Crucially, set the Log Analytics workspace to <code>law-lwm-day19</code></strong> — put it in the workspace you already have rather than letting it create a new one. <strong>✅</strong></li>
+<li><strong>Apply → Yes.</strong> The app restarts. <strong>✅</strong></li>
+<li>Go and hammer your app's URL again — thirty refreshes, and try a URL that 404s. <strong>✅</strong></li>
+<li>Open <strong><code>appi-lwm-day19</code></strong> and work through the left menu: <strong>✅</strong></li>
+<li><strong>Application Dashboard</strong> — the auto-built overview</li>
+<li><strong>Live Metrics</strong> — refresh your site with this open and watch requests appear in real time</li>
+<li><strong>Failures</strong> — grouped by response code and exception type</li>
+<li><strong>Performance</strong> — response times by operation, with a distribution rather than just an average</li>
+<li><strong>Application map</strong> — thin today with one component, but this is the blade that makes large systems comprehensible</li>
+<li>Now the payoff of workspace-based App Insights. Go to the <strong>Log Analytics workspace → Logs</strong> and run: <strong>✅</strong></li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="n">requests</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">timestamp</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="n">ago</span><span class="p">(</span><span class="mi">1</span><span class="n">h</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">summarize</span><span class="w"> </span><span class="n">Count</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">count</span><span class="p">(),</span><span class="w"> </span><span class="n">AvgDuration</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">avg</span><span class="p">(</span><span class="n">duration</span><span class="p">)</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="n">resultCode</span>
+<span class="p">|</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">Count</span><span class="w"> </span><span class="n">desc</span>
+</code></pre></div>
+<p><strong>Application telemetry, in the same workspace, in the same query language as your infrastructure logs.</strong> Note the App Insights tables are lowercase — <code>requests</code>, <code>exceptions</code>, <code>dependencies</code>, <code>traces</code>, <code>customEvents</code>, <code>pageViews</code>.</p>
+<ol>
+<li>And the thing that's genuinely hard to do any other way — correlate the two: <strong>✅</strong></li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="n">requests</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">timestamp</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="n">ago</span><span class="p">(</span><span class="mi">1</span><span class="n">h</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">summarize</span><span class="w"> </span><span class="n">AppRequests</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">count</span><span class="p">()</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">bin</span><span class="p">(</span><span class="n">timestamp</span><span class="p">,</span><span class="w"> </span><span class="mi">5</span><span class="n">m</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">render</span><span class="w"> </span><span class="n">timechart</span>
+</code></pre></div>
+<p>Run that beside your <code>AppServiceHTTPLogs</code> query from Part 6. <strong>Same time buckets, two independent views of the same traffic</strong> — one from the platform, one from inside the application. When those two disagree, you've learned something important.</p>
+<div class="admonition tip">
+<p class="admonition-title">Availability tests are the cheapest real monitoring you can buy</p>
+<p>Under <strong>Application Insights → Availability</strong>, you can create a <strong>standard test</strong> that hits your URL from multiple Azure regions on a schedule and alerts when it fails.</p>
+<p>It catches the failure mode that internal monitoring is structurally blind to: <strong>the app is fine, and users can't reach it.</strong> DNS broke, the certificate expired, a firewall rule changed, the CDN is misconfigured. Every metric inside Azure looks perfect and the site is down.</p>
+<p>There's a small charge per test, so it's not part of today's lab — but it's one of the first things I'd add to anything with real users.</p>
+</div>
+<hr />
+<h3 id="part-13-visualising-it-dashboards-workbooks-and-insights">Part 13 — Visualising It: Dashboards, Workbooks and Insights</h3>
+<p>Four ways to put this on a screen, and knowing which to reach for is the whole point.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>Best for</th>
+<th>Interactive?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Azure Dashboard</strong></td>
+<td>A fixed at-a-glance view — pin charts from anywhere in the portal</td>
+<td>Barely</td>
+</tr>
+<tr>
+<td><strong>Workbook</strong></td>
+<td><strong>Interactive, parameterised reports</strong> — dropdowns, tabs, drill-downs, mixed text and data</td>
+<td><strong>Very</strong></td>
+</tr>
+<tr>
+<td><strong>Insights</strong></td>
+<td>Prebuilt, curated experiences per service — VM Insights, Container Insights, Storage Insights</td>
+<td>Prebuilt</td>
+</tr>
+<tr>
+<td><strong>Managed Grafana</strong> 💳</td>
+<td>Teams who already live in Grafana, or multi-cloud dashboards</td>
+<td>Very</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Dashboards</strong> are the simple option: click <em>Pin to dashboard</em> from any metric chart or query result, drag the tiles around, share it. Perfect for a wall screen.</p>
+<p><strong>Workbooks</strong> are the powerful one and the one worth investing an hour in. A workbook combines text, parameters, metric charts, log queries and visualisations into a document that responds to input — pick a resource from a dropdown, pick a time range, and every chart updates. They're shareable, exportable as ARM templates, and version-controllable.</p>
+<p>The reason they matter operationally: a workbook can encode an <strong>investigation</strong>, not just a picture. <em>"Here is our checkout latency runbook: pick the region, pick the window, and these six queries run in the order we'd want to run them."</em> That turns one engineer's expertise into something the whole team can use at 3am.</p>
+<p>And <strong>Azure ships dozens of them free</strong> — every workspace and most services come with a gallery of prebuilt workbooks.</p>
+<h4 id="hands-on-both">Hands-On: Both ✅</h4>
+<ol>
+<li><strong>Log Analytics workspace → Workbooks.</strong> Browse the gallery. Open <strong>Workspace Usage</strong> and explore it. <strong>✅</strong></li>
+<li><strong>+ New → + Add → Add text</strong>, type <code>## Day 19 Monitoring</code>, then <strong>Done Editing</strong>. <strong>✅</strong></li>
+<li><strong>+ Add → Add query.</strong> Paste: <strong>✅</strong></li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="n">AppServiceHTTPLogs</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="n">ago</span><span class="p">(</span><span class="mi">24</span><span class="n">h</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">summarize</span><span class="w"> </span><span class="n">Requests</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="k">count</span><span class="p">()</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">bin</span><span class="p">(</span><span class="n">TimeGenerated</span><span class="p">,</span><span class="w"> </span><span class="mi">15</span><span class="n">m</span><span class="p">)</span>
+</code></pre></div>
+<p>Set <strong>Visualization</strong> to <em>Area chart</em>, then <strong>Run Query → Done Editing</strong>.</p>
+<ol>
+<li><strong>+ Add → Add parameter</strong> → name <code>TimeRange</code>, type <strong>Time range picker</strong>. Then edit your query to use <code>{TimeRange}</code> instead of <code>ago(24h)</code>. <strong>Now the chart responds to the dropdown.</strong> That's the difference between a workbook and a dashboard. <strong>✅</strong></li>
+<li><strong>Save</strong> as <code>Day 19 — App Monitoring</code> in <code>rg-day19-demo</code>. <strong>✅</strong></li>
+<li>For contrast: go back to <strong>App Service → Metrics</strong>, build a chart, and <strong>Pin to dashboard</strong>. Then open <strong>Dashboard</strong> from the portal's left menu and see your tile. <strong>✅</strong></li>
+</ol>
+<div class="admonition tip">
+<p class="admonition-title">Which one, in one line</p>
+<p><strong>Dashboard</strong> = a fixed picture on a wall. <strong>Workbook</strong> = an interactive report you investigate with. <strong>Insights</strong> = the prebuilt one, always check whether it already exists before building your own.</p>
+</div>
+<hr />
+<h3 id="part-14-cost-control-gotchas-and-interview-prep">Part 14 — Cost Control, Gotchas and Interview Prep</h3>
+<h4 id="check-what-today-cost-you">Check What Today Cost You</h4>
+<ol>
+<li><strong>Log Analytics workspace → Settings → Usage and estimated costs.</strong> Empty three hours ago, populated now. <strong>✅</strong></li>
+<li>Run the billing query and see exactly where your (tiny) volume went: <strong>✅</strong></li>
+</ol>
+<div class="highlight"><pre><span></span><code><span class="n">Usage</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">TimeGenerated</span><span class="w"> </span><span class="p">&gt;</span><span class="w"> </span><span class="n">ago</span><span class="p">(</span><span class="mi">7</span><span class="n">d</span><span class="p">)</span>
+<span class="p">|</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">IsBillable</span><span class="w"> </span><span class="p">==</span><span class="w"> </span><span class="n">true</span>
+<span class="p">|</span><span class="w"> </span><span class="k">summarize</span><span class="w"> </span><span class="n">BillableGB</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="n">sum</span><span class="p">(</span><span class="n">Quantity</span><span class="p">)</span><span class="w"> </span><span class="p">/</span><span class="w"> </span><span class="mi">1000</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">DataType</span>
+<span class="p">|</span><span class="w"> </span><span class="k">order</span><span class="w"> </span><span class="k">by</span><span class="w"> </span><span class="n">BillableGB</span><span class="w"> </span><span class="n">desc</span>
+</code></pre></div>
+<ol>
+<li><strong>Set a daily cap while you're here</strong> — <strong>Usage and estimated costs → Daily cap → On</strong>, set something small like 1 GB. <strong>✅</strong></li>
+</ol>
+<p>Then remember the rule from Part 7: <strong>a daily cap that is hit stops ingestion, which means it blinds you.</strong> Always pair it with an alert on the cap being reached. It's a runaway guard, not a budgeting tool.</p>
+<h4 id="the-gotchas-that-waste-real-days">The Gotchas That Waste Real Days</h4>
+<ul>
+<li><strong>Logs are off by default and not retroactive.</strong> The single biggest one. No diagnostic setting on Tuesday means no Tuesday data, ever. Use <strong>Azure Policy <code>DeployIfNotExists</code></strong> to enforce diagnostic settings at scale.</li>
+<li><strong>The 5 GB free grant is per month, per billing account.</strong> Not per day, not per workspace. This is <em>the</em> Azure Monitor billing misconception.</li>
+<li><strong>New resources take 10–15 minutes before metrics appear.</strong> Your alert isn't broken.</li>
+<li><strong>First-time log ingestion lags 5–15 minutes.</strong> Neither is your diagnostic setting.</li>
+<li><strong>Average hides spikes.</strong> Alert on <strong>Max</strong> when you care about peaks.</li>
+<li><strong>Stateless alerts spam you.</strong> Tick <strong>Automatically resolve alerts</strong>.</li>
+<li><strong>Splitting an alert by dimensions multiplies its cost.</strong> Each time series is billed.</li>
+<li><strong>Basic and Auxiliary tables charge per GB scanned to query.</strong> Cheap to store, expensive to read — the wrong plan for data you query often.</li>
+<li><strong>The Log Analytics agent is retired</strong>, the diagnostics extension is deprecated, <strong>and the Data Collector API retires 14 September 2026.</strong> If you're following a guide that uses any of them, the guide is out of date.</li>
+<li><strong>Alert fatigue is a real outage cause.</strong> If everything is Sev 0, nothing is.</li>
+</ul>
+<h4 id="interview-and-exam-quick-reference">Interview and Exam Quick Reference</h4>
+<table>
+<thead>
+<tr>
+<th>If you're asked…</th>
+<th>The answer is…</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"Metrics vs logs?"</td>
+<td><strong>Metrics: numeric time series, free, 93 days, near real-time. Logs: structured records in a workspace, billed per GB ingested, retention you choose</strong></td>
+</tr>
+<tr>
+<td>"What does platform metric collection cost?"</td>
+<td><strong>Nothing.</strong> Same for the activity log</td>
+</tr>
+<tr>
+<td>"Free Log Analytics allowance"</td>
+<td><strong>5 GB per billing account per month</strong> — <em>not</em> per day</td>
+</tr>
+<tr>
+<td>"How do I get a resource's logs into a workspace?"</td>
+<td><strong>A diagnostic setting.</strong> Same mechanism for every Azure service</td>
+</tr>
+<tr>
+<td>"Why are last month's logs missing?"</td>
+<td><strong>Diagnostic settings are off by default and not retroactive.</strong> The data was never collected</td>
+</tr>
+<tr>
+<td>"Enforce diagnostic settings across a subscription"</td>
+<td><strong>Azure Policy with <code>DeployIfNotExists</code></strong></td>
+</tr>
+<tr>
+<td>"Diagnostic setting destinations"</td>
+<td><strong>Log Analytics, Storage account, Event Hub, partner solution</strong></td>
+</tr>
+<tr>
+<td>"Stream Azure logs to Splunk/Datadog"</td>
+<td><strong>Event Hub</strong></td>
+</tr>
+<tr>
+<td>"Cheap long-term log archive"</td>
+<td><strong>Storage account</strong> destination, or <strong>Auxiliary</strong> table plan + long-term retention</td>
+</tr>
+<tr>
+<td>"Query language"</td>
+<td><strong>KQL</strong> — same in Sentinel, Defender, Resource Graph, Data Explorer</td>
+</tr>
+<tr>
+<td>"Who deleted the resource group?"</td>
+<td><strong>Activity log</strong> — the <code>Caller</code> field; or <code>AzureActivity</code> in KQL</td>
+</tr>
+<tr>
+<td>"Collect the Windows Event Log from 200 VMs"</td>
+<td><strong>Azure Monitor Agent + data collection rule</strong>, deployed by Azure Policy</td>
+</tr>
+<tr>
+<td>"Log Analytics agent / MMA"</td>
+<td><strong>Retired 31 August 2024.</strong> AMA only</td>
+</tr>
+<tr>
+<td>"Custom log push via shared key"</td>
+<td><strong>Data Collector API — retires 14 September 2026.</strong> Use the DCR-based <strong>Logs Ingestion API</strong></td>
+</tr>
+<tr>
+<td>"Reduce ingestion volume at source"</td>
+<td><strong>DCR transformations</strong> — filter rows/columns before storage, so before billing</td>
+</tr>
+<tr>
+<td>"CPU above 80% for 5 minutes"</td>
+<td><strong>Metric alert</strong></td>
+</tr>
+<tr>
+<td>"More than 10 errors in 5 minutes"</td>
+<td><strong>Log search alert</strong></td>
+</tr>
+<tr>
+<td>"Someone deleted a resource"</td>
+<td><strong>Activity log alert</strong> — and it's <strong>free</strong></td>
+</tr>
+<tr>
+<td>"Is Azure itself having an incident?"</td>
+<td><strong>Service health alert</strong> — free</td>
+</tr>
+<tr>
+<td>"Cheapest alert type"</td>
+<td><strong>Activity log / service health / resource health — no charge</strong></td>
+</tr>
+<tr>
+<td>"Metric alert free allowance"</td>
+<td><strong>10 time series</strong>, then $0.10 each per month</td>
+</tr>
+<tr>
+<td>"Alert fired 400 times for one problem"</td>
+<td><strong>Stateless.</strong> Enable <em>Automatically resolve alerts</em></td>
+</tr>
+<tr>
+<td>"Threshold that adapts to normal behaviour"</td>
+<td><strong>Dynamic thresholds</strong></td>
+</tr>
+<tr>
+<td>"Suppress alerts during maintenance"</td>
+<td><strong>Alert processing rule</strong></td>
+</tr>
+<tr>
+<td>"Notify everyone with a subscription role"</td>
+<td>Action group → <strong>Email Azure Resource Manager Role</strong></td>
+</tr>
+<tr>
+<td>"Auto-remediate when an alert fires"</td>
+<td>Action group → <strong>Logic App / Azure Function / Automation Runbook</strong></td>
+</tr>
+<tr>
+<td>"Why is my app slow?"</td>
+<td><strong>Application Insights</strong> — dependency tracking, then the Application Map</td>
+</tr>
+<tr>
+<td>"Application Insights resource type"</td>
+<td><strong>Workspace-based.</strong> Classic retired 29 February 2024</td>
+</tr>
+<tr>
+<td>"Instrumentation key or connection string?"</td>
+<td><strong>Connection string.</strong> Key ingestion support ended 31 March 2025</td>
+</tr>
+<tr>
+<td>"Alert when the site is unreachable from outside"</td>
+<td><strong>Application Insights availability test</strong></td>
+</tr>
+<tr>
+<td>"Interactive parameterised report"</td>
+<td><strong>Workbook.</strong> A dashboard is a fixed view</td>
+</tr>
+<tr>
+<td>"Where is my monitoring money going?"</td>
+<td>The <strong><code>Usage</code></strong> table, or <em>Usage and estimated costs</em></td>
+</tr>
+<tr>
+<td>"Hard stop on ingestion spend"</td>
+<td><strong>Daily cap</strong> — and alert on hitting it, because it blinds you</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="cleanup">Cleanup ✅</h2>
+<ol>
+<li><strong>Delete the log search alert rule</strong> — the only recurring charge you created: <strong>Monitor → Alerts → Alert rules → <code>alert-app-errors</code> → Delete</strong>. <strong>✅</strong></li>
+<li><strong>Delete the other alert rules:</strong> <code>alert-app-5xx</code> and <code>alert-rg-deleted</code>. <strong>✅</strong></li>
+<li>
+<p><strong>Delete the subscription-level diagnostic setting</strong> — this one lives on the <em>subscription</em>, so deleting the resource group will <strong>not</strong> remove it: <strong>Monitor → Activity log → Export Activity Logs → <code>activity-to-law</code> → Delete</strong>. <strong>✅</strong></p>
+<div class="admonition warning">
+<p class="admonition-title">Don't skip step 3</p>
+<p>It's the same trap as yesterday's soft-deleted vault: the resource group delete looks like cleanup and leaves something behind, in a blade you weren't looking at. A diagnostic setting pointing at a deleted workspace is harmless but messy — and if you'd pointed it at a workspace you kept, it would quietly keep ingesting and billing.</p>
+</div>
+</li>
+<li>
+<p><strong>Delete the resource group <code>rg-day19-demo</code>.</strong> This removes the App Service, the plan, the VM, its disk, NIC and public IP, the data collection rule, the workspace, Application Insights, the action group and the workbook. <strong>✅</strong></p>
+<div class="admonition warning">
+<p class="admonition-title">Stopping the VM is not the same as deleting it</p>
+<p>If you want to keep the lab for another session, <strong>deallocating the VM stops the compute charge but not the rest of it</strong> — the OS disk and the public IP keep billing whether the machine runs or not. That's roughly $0.10 a day for something switched off.</p>
+<p>The data collection rule costs nothing on its own, but the agent keeps ingesting for as long as the VM is running. Delete the group and all of it goes at once.</p>
+</div>
+<ol>
+<li><strong>Keep <code>Priya Sharma</code> and <code>grp-finance-team</code></strong> — Day 30's capstone uses them. <strong>✅</strong></li>
+<li><strong>Keep <code>db-lwm-demo</code></strong> — Day 30 needs it. <strong>✅</strong></li>
+</ol>
+</li>
+</ol>
+<hr />
+<h2 id="summary">Summary</h2>
+<p>Today you stopped building and started <strong>watching</strong>, and the first thing you found was that Azure had been watching all along for free.</p>
+<p><strong>Metrics and the activity log cost nothing, are already on, and are already holding history</strong> — 93 days of numbers and 90 days of "who did what" on every resource you have ever created in this course. Most beginners never look. Metrics are the fastest answer to "is it broken and when did it start," and the activity log's <code>Caller</code> field is the answer to "who did that," which is a question that arrives at exactly the moment nobody wants to be guessing.</p>
+<p><strong>Logs are the part that costs money, and it's worth being precise about it.</strong> Everything is routed by a <strong>diagnostic setting</strong> — one mechanism, identical for every Azure service — into a <strong>Log Analytics workspace</strong>, billed per GB ingested, with <strong>5 GB free per billing account per month</strong>. Not per day. That one misreading is behind an enormous number of surprise Azure bills, and you now won't make it.</p>
+<p>And because logs are off by default and <strong>not retroactive</strong>, "turn on diagnostic settings" belongs in your build checklist, not your incident response. The scalable version of that sentence is <strong>Azure Policy with <code>DeployIfNotExists</code></strong> — Day 17's governance lesson doing real work here.</p>
+<p><strong>KQL is the skill you'll actually use.</strong> Table, then a pipeline: <code>where</code>, <code>project</code>, <code>summarize</code>, <code>bin</code>, <code>render</code>. Five operators cover most real work, and the same language runs Sentinel, Defender and Resource Graph. Filter early. Run <code>take 10</code> before you write anything clever.</p>
+<p>Then the platform started working for you. <strong>Metric alerts are fast and effectively free</strong> — ten time series before anyone charges you. <strong>Activity log alerts are completely free</strong>, which makes <em>"tell me when someone deletes a resource group"</em> the best-value alert in Azure. <strong>Log alerts cost about fifty cents a month each</strong>, so use them when the question genuinely needs a query and not before. Attach them all to an <strong>action group</strong> named for who it reaches, tick <strong>Automatically resolve alerts</strong>, and mean it when you set Sev 0 — because <strong>alert fatigue is a self-inflicted outage</strong>.</p>
+<p><strong>Application Insights</strong> answered the different question: not <em>is the server up</em> but <em>why is it slow</em>, with dependency tracking that usually finds the answer, and — because it's workspace-based now — application telemetry sitting in the same KQL query as your infrastructure logs.</p>
+<p>That's Phase 5 complete. Over three days you learned <strong>who someone is</strong> (Entra ID), <strong>what they may do</strong> (RBAC), <strong>where the secrets live</strong> (Key Vault), and <strong>how to know what's actually happening</strong> (Azure Monitor). That's the security and operations foundation, and it's the layer that separates "I can deploy this" from "I can run this."</p>
+<h3 id="whats-next">What's Next</h3>
+<p><strong>Day 20 — Azure DevOps Introduction</strong>, and the whole shape of the course changes.</p>
+<p>For nineteen days you've built things by clicking in a portal. That's the right way to learn — you can't automate what you don't understand. But it doesn't scale, it isn't repeatable, and it leaves no record of <em>why</em> anything is the way it is.</p>
+<p>Phase 6 is where we stop clicking. Boards, Repos, Pipelines, Artifacts — the tooling that takes an idea from a work item, through source control, through an automated build and test, to a deployment nobody had to perform by hand. And when we get to Pipelines on Day 22, watch for two things you already own coming straight back: a <strong>service principal with a federated credential</strong> to authenticate the pipeline without a stored secret, and a <strong>variable group linked to Key Vault</strong> so the deployment reads its secrets the same way your App Service did today.</p>
+<p>Everything from Phase 5 gets used. See you tomorrow.</p>
+<hr />
+<h2 id="key-takeaways">Key Takeaways</h2>
+<p><strong>Collect</strong></p>
+<ul>
+<li><strong>Azure Monitor is four data types:</strong> metrics, logs, traces and changes. <strong>Metrics and the activity log are free and already running</strong>; logs are where the bill is.</li>
+<li><strong>Platform metrics: free, 93-day retention, near real-time.</strong> Available on everything you've ever built, retroactively.</li>
+<li><strong>Activity log: free, 90 days, control plane only.</strong> The <code>Caller</code> field answers "who did that?" Export it to a workspace to keep and query it properly.</li>
+<li><strong>Diagnostic settings are the universal routing mechanism</strong> — same blade for every service, four destinations: Log Analytics, Storage, Event Hub, partner.</li>
+<li><strong>Resource logs are off by default and are never retroactive.</strong> Enforce them with <strong>Azure Policy <code>DeployIfNotExists</code></strong>.</li>
+<li><strong>The free Log Analytics grant is 5 GB per billing account per month.</strong> Analytics-plan queries are free; <strong>Basic and Auxiliary charge per GB scanned</strong>.</li>
+<li><strong>Start with one workspace</strong> per region per environment. Split for sovereignty, access isolation or retention — not per application.</li>
+<li><strong>Retention is two numbers:</strong> interactive (first 31 days free, up to 2 years) and total/long-term (up to 12 years). <strong>Configurable per table.</strong></li>
+<li><strong>KQL:</strong> table then pipeline. <code>where</code> → <code>project</code> → <code>summarize</code> → <code>bin</code> → <code>render</code>. Filter early; <code>take 10</code> first.</li>
+<li><strong>AMA + data collection rules</strong> is the only current agent story. <strong>MMA retired 31 Aug 2024</strong>, the diagnostics extension is deprecated, and <strong>the Data Collector API retires 14 Sept 2026</strong>. DCR <strong>transformations</strong> cut cost at ingestion.</li>
+</ul>
+<p><strong>Detect and respond</strong></p>
+<ul>
+<li><strong>Metric alerts</strong> — fast, <strong>10 free time series</strong>, then $0.10 each per month. Use these whenever a metric can express the question.</li>
+<li><strong>Log search alerts</strong> — ~$0.50/month per rule. Use only when the question needs KQL. Splitting by dimensions multiplies the cost.</li>
+<li><strong>Activity log, service health and resource health alerts are free.</strong> <em>"Someone deleted a resource group"</em> is the best-value alert in Azure.</li>
+<li><strong>Tick <em>Automatically resolve alerts</em></strong> or metric alerts are stateless and will spam you.</li>
+<li><strong>Dynamic thresholds</strong> adapt to normal behaviour; <strong>alert processing rules</strong> suppress notifications during maintenance.</li>
+<li><strong>Action groups</strong> separate <em>what fired</em> from <em>who hears about it</em>. Name them by audience. Email and webhook are effectively free; <strong>SMS and voice are charged</strong>. Actions can auto-remediate via Logic App, Function or Runbook.</li>
+<li><strong>Severity is a routing decision.</strong> If everything is Sev 0, nobody reads any of it.</li>
+<li><strong>Application Insights is workspace-based</strong> (classic retired 29 Feb 2024) and uses <strong>connection strings</strong>, not instrumentation keys (key ingestion ended 31 Mar 2025). Dependency tracking is usually where the answer is.</li>
+<li><strong>Workbook = interactive report. Dashboard = fixed view. Insights = the prebuilt one — check it exists before building your own.</strong></li>
+<li><strong>Watch the bill with the <code>Usage</code> table.</strong> A <strong>daily cap</strong> stops runaway spend and blinds you, so alert on it being reached.</li>
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+          <button type="button" class="md-top md-icon" data-md-component="top" hidden>
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8z"/></svg>
+  Back to top
+</button>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+    
+      
+      <nav class="md-footer__inner md-grid" aria-label="Footer" >
+        
+          
+          <a href="../day18_key_vault/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Day 18 — Azure Key Vault">
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+            </div>
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Previous
+              </span>
+              <div class="md-ellipsis">
+                Day 18 — Azure Key Vault
+              </div>
+            </div>
+          </a>
+        
+        
+          
+          <a href="../day20_capstone/" class="md-footer__link md-footer__link--next" aria-label="Next: Day 20 — Capstone: Build a Complete Three-Tier Application">
+            <div class="md-footer__title">
+              <span class="md-footer__direction">
+                Next
+              </span>
+              <div class="md-ellipsis">
+                Day 20 — Capstone: Build a Complete Three-Tier Application
+              </div>
+            </div>
+            <div class="md-footer__button md-icon">
+              
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11z"/></svg>
+            </div>
+          </a>
+        
+      </nav>
+    
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    
+      
+      
+      <script id="__config" type="application/json">{"annotate": null, "base": "..", "features": ["navigation.top", "navigation.footer", "search.highlight", "search.suggest", "content.code.copy"], "search": "../assets/javascripts/workers/search.2c215733.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.d7400e89.min.js"></script>
+      
+    
+  </body>
+</html>
